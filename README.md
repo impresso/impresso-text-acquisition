@@ -42,7 +42,7 @@ We defined
 
 ### Article JSON
 
-The schema is at [schemas/article.schema]("schemas/article.schema").
+The schema is at [schemas/article.schema](schemas/article.schema).
 
 An example:
 
@@ -80,6 +80,6 @@ An example:
 
 ### info.json
 
-The schema will be at [schemas/article.schema]("schemas/info.schema").
+The schema will be at [schemas/article.schema](schemas/info.schema).
 
 TODO: implement
