@@ -1,0 +1,39 @@
+{
+   "legacy": {
+      "continuation_from": null,
+      "continuation_to": null,
+      "id": "Ar00105",
+      "source": "103-GDL-1900-01-05-0001.pdf",
+      "word_count": 39,
+      "chars_count": 148,
+      "suspicious_chars_count": 0,
+      "first_id": "Ar00100",
+      "last_id": "Ar00109",
+      "next_id": "Ar00106",
+      "prev_id": "Ar00104"
+   },
+   "meta": {
+      "id": "GDL-1900-01-05-a-0006",
+      "title": "Untitled Article",
+      "page_no": [
+         1
+      ],
+      "publication": {
+         "code": "Gazette de Lausanne",
+         "label": "GDL"
+      },
+      "type": {
+         "code": "ar",
+         "label": "article"
+      },
+      "language": {
+         "code": "fr",
+         "label": "french"
+      }
+   },
+   "stats": {
+      "chars_count": 148,
+      "word_count": 27
+   },
+   "fulltext": "PRIX DES ANNONCES Pour la Suisse... 25 centimes J la ligne Pour l'\u00e9tranger .. 80 centimes j non \u2122 ^ R\u00c9CLAMES 1 franc) (corps 7), Toute lettre et tout envoi doivent eire affranchit."
+}

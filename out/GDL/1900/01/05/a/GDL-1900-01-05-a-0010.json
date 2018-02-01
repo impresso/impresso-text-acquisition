@@ -1,0 +1,39 @@
+{
+   "legacy": {
+      "continuation_from": null,
+      "continuation_to": null,
+      "id": "Ar00109",
+      "source": "103-GDL-1900-01-05-0001.pdf",
+      "word_count": 17,
+      "chars_count": 89,
+      "suspicious_chars_count": 0,
+      "first_id": "Ar00100",
+      "last_id": "Ar00109",
+      "next_id": "",
+      "prev_id": "Ar00108"
+   },
+   "meta": {
+      "id": "GDL-1900-01-05-a-0010",
+      "title": "Untitled Article",
+      "page_no": [
+         1
+      ],
+      "publication": {
+         "code": "Gazette de Lausanne",
+         "label": "GDL"
+      },
+      "type": {
+         "code": "ar",
+         "label": "article"
+      },
+      "language": {
+         "code": "fr",
+         "label": "french"
+      }
+   },
+   "stats": {
+      "chars_count": 88,
+      "word_count": 15
+   },
+   "fulltext": "I ^ e commencement dn feuilleton sera envoy\u00e9 gratuitement aux nouveaux abonn\u00e9s qui en feront la demande."
+}

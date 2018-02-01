@@ -9,12 +9,17 @@ name = "pypi"
 
 "bs4" = "*"
 docopt = "*"
+pandas = "*"
+dask = {extras = ["complete"]}
+lxml = "*"
+python-jsonschema-objects = "*"
 
 
 [dev-packages]
 
 pytest = "*"
 ipython = "*"
+ipdb = "*"
 
 
 [requires]
