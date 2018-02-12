@@ -13,6 +13,7 @@ Options:
 """
 
 import codecs
+import copy
 import json
 import logging
 import os
@@ -23,24 +24,27 @@ import zipfile
 from collections import deque, namedtuple
 from datetime import date
 from functools import reduce
+from operator import itemgetter
+from pprint import pprint
+
+from docopt import docopt
+from numpy import nan
 
 import dask
-# import ipdb as pdb
+import ipdb as pdb
 import pandas as pd
 import python_jsonschema_objects as pjs
 from bs4 import BeautifulSoup
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
 from dask.multiprocessing import get as mp_get
-from docopt import docopt
-from numpy import nan
 
 __author__ = "Matteo Romanello"
 __email__ = "matteo.romanello@epfl.ch"
 __organisation__ = "impresso @ DH Lab, EPFL"
 __copyright__ = "EPFL, 2017"
 __status__ = "development"
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +126,7 @@ def schemas_to_classes(schema_folder="./schemas/"):
     return builder.build_classes()
 
 
+# TODO: remove as it's now obsolete
 def write_coordinates(word_coordinates, region_coordinates, out_file):
     """Write word and region coordinates to a CSV file.
 
@@ -151,15 +156,31 @@ def write_coordinates(word_coordinates, region_coordinates, out_file):
     coords_df.to_csv(out_file, encoding="utf-8")
 
 
+def olive_toc_parser(text):
+    """TODO."""
+    return {
+        int(page.get('page_no')): {
+            entity.get("id"): {
+                "id": entity.get("id"),
+                "type": entity.get("entity_type"),
+                "seq": int(entity.get("index_in_doc"))
+            }
+            for entity in page.find_all("entity")
+        }
+        for page in BeautifulSoup(text, 'lxml').find_all('page')
+    }
+
+
 def olive_parser(text):
-    """Parse an Olive XML file (e.g. from Le Temps corpus).
+    u"""Parse an Olive XML file (e.g. from Le Temps corpus).
 
     The main logic implemented here was derived from
-    <https://github.com/dhlab-epfl/LeTemps-preprocessing/>.
+    <https://github.com/dhlab-epfl/LeTemps-preprocessing/>. Each XML file
+    corresponds to one article, as detected by Olive.
 
     :param text: a string with the textual xml file to parse
     :type text: string
-    :rtype: a dictionary, with keys "meta", "fulltext", "stats", "legacy"
+    :rtype: a dictionary, with keys "meta", °stats", "legacy"
     """
     soup = BeautifulSoup(text, "lxml")
     root = soup.find("xmd-entity")
@@ -176,10 +197,9 @@ def olive_parser(text):
             "language": {},
             "type": {}
         },
-        "fulltext": "",
+        "regions": [],
         "stats": {},
         "legacy": {"continuation_from": None, "continuation_to": None},
-        "coordinates": {"words": [], "regions": []}
     }
     out["meta"]["title"] = title
     out["meta"]["page_no"] = [int(page_no)]
@@ -188,69 +208,88 @@ def olive_parser(text):
     out["meta"]["type"]["raw"] = entity_type
     out["meta"]["issue_date"] = issue_date
 
-    # Prepare text
-    word_count = 0
-    char_count = 0
-    fulltext = ''
+    new_region = {
+        "coords": [],
+        "paragraphs": []
+    }
+
+    new_paragraph = {
+        "lines": []
+    }
+
+    new_line = {
+        "coords": [],
+        "tokens": []
+    }
+
+    new_token = {
+        "coords": [],
+        "text": ""
+    }
 
     for primitive in soup.find_all("primitive"):
 
         # store coordinate of text areas (boxes) by page
         # 1) page number, 2) coordinate list
-        coords = [int(i) for i in primitive.get('box').split(" ")]
-        out["coordinates"]["regions"].append((int(page_no), coords))
+        region = copy.deepcopy(new_region)
+        region["coords"] = [int(i) for i in primitive.get('box').split(" ")]
+        region["page_no"] = page_no
+
+        para = None
+        line = None
+        line_counter = 0
 
         for tag in primitive.find_all(recursive=False):
+
             if tag.name == "l":
-                if len(fulltext) > 0:
-                    if fulltext[-1] == "-":
-                        fulltext = fulltext[-1]
-                        word_count -= 1
-            if tag.name in ["q", "w"]:
+
+                if para is None and line is None:
+                    para = copy.deepcopy(new_paragraph)
+                    line = copy.deepcopy(new_line)
+
+                if line_counter > 0 and line is not None:
+                    para["lines"].append(line)
+
+                if tag.get("p") in ["S", "SA"] and line_counter > 0:
+                    region["paragraphs"].append(para)
+                    para = copy.deepcopy(new_paragraph)
+
+                line = copy.deepcopy(new_line)
+                line["coords"] = [
+                    int(i)
+                    for i in tag.get('box').split(" ")
+                ]
+                line_counter += 1
+
+            if tag.name in ["w", "q"]:
                 # store coordinates of each token
                 # 1) token, 2) page number, 3) coordinate list
-                coords = [int(i) for i in tag.get('box').split(" ")]
-                out["coordinates"]["words"].append(
-                    (
-                        tag.string,
-                        int(page_no),
-                        coords
-                    )
-                )
-            if tag.name in ["w", "qw"]:
-                if len(fulltext) > 0:
-                    if (
-                        tag.string in punctuation_nows_before or
-                        tag.string in punctuation_nows_beforeafter
-                    ) and fulltext[-1] == " ":
-                        fulltext = fulltext[:-1]
-                        word_count -= 1
+                t = copy.deepcopy(new_token)
+                t["coords"] = [int(i) for i in tag.get('box').split(" ")]
+                t["text"] = tag.string
 
-                    # fix digits
-                    if tag.string.isdigit():
-                        before = fulltext.split()[-1]
-                        if (
-                            before[:-1].isdigit() and
-                            before[-1] in punctuation_ciffre
-                        ):
-                            fulltext = fulltext[:-1]
-                            word_count -= 1
-                fulltext += tag.string + " "
-                if tag.string not in string.punctuation:
-                    word_count += 1
-                char_count += len(list(tag.string))
-                if len(fulltext) > 0:
-                    if (
-                        tag.string in punctuation_nows_after or
-                        tag.string in punctuation_nows_beforeafter
-                    ) and fulltext[-1] == " ":
-                        fulltext = fulltext[:-1]
-                        word_count -= 1
+                if tag.name == "q" and tag.get('qid') is not None:
+                    qid = tag.get('qid')
+                    normalized_form = soup.find('qw', qid=qid).text
+                    t["norm_form"] = normalized_form
 
-    out["fulltext"] = fulltext.strip()
+                    if len(line["tokens"]) > 1:
+                        if "norm_form" not in line["tokens"][-1]:
+                            t["skip"] = False
+                        else:
+                            t["skip"] = True
 
-    out["stats"]["word_count"] = int(word_count)
-    out["stats"]["chars_count"] = int(char_count)
+                # append the token to the line
+                line["tokens"].append(t)
+
+        # append orphan lines
+        if line is not None:
+            para["lines"].append(line)
+
+        region["paragraphs"].append(para)
+
+        if para is not None:
+            out["regions"].append(region)
 
     out["legacy"]["id"] = identifier
     out["legacy"]["source"] = soup.link['source']
@@ -270,6 +309,76 @@ def olive_parser(text):
         out["legacy"]["continuation_to"] = root['continuation_to']
 
     return out
+
+
+def recompose_page(page_number, info_from_toc, page_elements):
+    """Create a page document starting from a list of page documents.
+
+    :param page_number: page number
+    :type page_number: int
+    :param info_from_toc: a dictionary with element-ids as keys, and
+        dictionaries as values
+    :type info_from_toc:
+    :param page_elements: articles or advertisements
+    :type page_elements: list of dict
+
+    here the `TOC.xml` should be leveraged.
+
+    It's here that `n` attributes are assigned to each region/para/line/token.
+    """
+    page = {
+        "regions": []
+    }
+    ordered_elements = sorted(
+        list(info_from_toc.values()), key=itemgetter('seq')
+    )
+
+    # put together the regions while keeping the order in the page
+    for el in ordered_elements:
+        # element_type = el["type"]
+        if "Ar" not in el["id"]:
+            continue
+
+        element = page_elements[el["id"]]
+
+        for i, region in enumerate(element["regions"]):
+            region["seq"] = i + 1
+            region["partOf"] = el["id"]
+
+        page["regions"] += element["regions"]
+
+    paragraphs_count = 0
+    token_count = 0
+    line_count = 0
+
+    for region in page["regions"]:
+
+        for para in region["paragraphs"]:
+            paragraphs_count += 1
+            para["seq"] = paragraphs_count
+
+            for line in para["lines"]:
+                line_count += 1
+                line["seq"] = line_count
+
+                for token in line["tokens"]:
+                    token_count += 1
+                    token["seq"] = token_count
+
+    return page
+
+
+def print_article(article):
+    """Only for debug, remove later."""
+    print(article["legacy"]["id"])
+    for r in article["regions"]:
+        for p in r["paragraphs"]:
+            print("------------")
+            assert p["lines"] is not None
+            for line in p["lines"]:
+                print(" ".join(t['text'] for t in line["tokens"]))
+            print("------------")
+        print("#############")
 
 
 def combine_article_parts(article_parts):
@@ -311,12 +420,9 @@ def combine_article_parts(article_parts):
         article_dict["meta"]["issue_date"] =\
             article_parts[0]["meta"]["issue_date"]
 
-        #  using '\f' for now but open to suggestions
-        article_dict["fulltext"] =\
-            u"\u000C".join(ar["fulltext"] for ar in article_parts)
-
         # if an article has >1 part, combine the stats (e.g. by
         # summing individual counts)
+        """
         article_dict["stats"]["word_count"] = sum(
             [
                 ar["stats"]["word_count"]
@@ -346,6 +452,7 @@ def combine_article_parts(article_parts):
                 ar["legacy"]["suspicious_chars_count"]
                 for ar in article_parts]
         )
+        """
     else:
         article_dict = next(iter(article_parts))
     return article_dict
@@ -408,6 +515,7 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
             print(out_dir + ";bad zip file;\n")
             return (issue_dir, False, e)
 
+        # parse the XML files in the .zip archive
         counter = 0
         article = []
         items = sorted(
@@ -431,19 +539,25 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
                     xml_data = archive.read(item)
                     out_file.write(xml_data)
 
+        # parse the TOC
+        toc_path = os.path.join(issue_dir.path, "TOC.xml")
+
+        with codecs.open(toc_path, 'r', 'windows-1252') as f:
+            toc_data = olive_toc_parser(f.read())
+
+        logger.debug(toc_data)
+
         logger.debug("XML files contained in {}: {}".format(
             working_archive,
             items
         ))
+        articles = []
         while len(items) > 0:
             counter += 1
-            out_file = os.path.join(
-                out_dir,
-                canonical_path(issue_dir, str(counter).zfill(4), ".json")
-            )
 
             # if out file already exists skip the data it contains
             # TODO: change this to work with the JSON output
+            """
             if os.path.exists(out_file):
                 exclude_data = BeautifulSoup(open(out_file).read())
                 exclude_data = [
@@ -455,6 +569,7 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
                         if y in z:
                             items.remove(z)
                 continue
+            """
 
             internal_deque = deque([items[0]])
             items = items[1:]
@@ -464,6 +579,10 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
                 # legacy code had: `archive.read(item, 'r')` which won't work
                 xml_data = archive.read(item)
                 new_data = olive_parser(xml_data)
+
+                # TODO: try to recombine the tokens into a printable text
+                # with newlines, spaces between paragraphs etc.
+                # print_article(new_data)
 
                 # check if it needs to be parsed later on
                 if new_data["legacy"]['continuation_from'] is not None:
@@ -481,97 +600,37 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
                     internal_deque.append(next_id)
                     items.remove(next_id)
 
-            # aggregate word coordinates
-            word_coordinates = reduce(
-                lambda x, y: x + y,
-                [ar["coordinates"]["words"] for ar in article]
-            )
+            articles += article
 
-            # aggregate region coordinates
-            region_coordinates = reduce(
-                lambda x, y: x + y,
-                [ar["coordinates"]["regions"] for ar in article]
-            )
+            article = []
 
-            # build path of CSV file
-            coords_out_file = os.path.join(
+        # at this point the articles have been recomposed
+        # but we still need to recompose pages
+        for page_no in toc_data:
+            # element types: advertisement or article
+
+            # TODO: order elements by `seq` key
+            info_from_toc = toc_data[page_no]
+            element_ids = toc_data[page_no].keys()
+            filtered_elements = {
+                ar["legacy"]["id"]: ar
+                for ar in articles
+                if (ar["legacy"]["id"] in element_ids)
+            }
+            page = recompose_page(page_no, info_from_toc, filtered_elements)
+
+            out_file = os.path.join(
                 out_dir,
-                canonical_path(issue_dir, str(counter).zfill(4), ".coords.csv")
+                canonical_path(issue_dir, str(page_no).zfill(4), ".json")
             )
-
-            write_coordinates(
-                word_coordinates,
-                region_coordinates,
-                coords_out_file
-            )
-
-            # dispose of the `coordinates` field
-            for ar in article:
-                del ar["coordinates"]
-
-            article_dict = combine_article_parts(article)
-
-            doctypes_mappings = {
-                "article": "ar",
-                "page": "p"
-            }
-
-            doctype_label = article_dict["meta"]["type"]["raw"].lower()
-            doctype_code = doctypes_mappings[doctype_label]
-
-            lang_mappings = {
-                "french": "fr",
-                "english": "en"
-            }
-
-            lang_label = article_dict["meta"]["language"]["raw"].lower()
-            lang_code = lang_mappings[lang_label]
-
-            journal_mappings = {
-                "GDL": "Gazette de Lausanne",
-                "JDG": "Journal de Geneve"
-            }
-
-            journal_label = article_dict["meta"]["publication"]
-            journal_code = journal_mappings[journal_label]
-
-            article_id = canonical_path(issue_dir, str(counter).zfill(4))
-            metadata = ns.Metadata(
-                id=article_id,
-                title=article_dict["meta"]["title"],
-                page_no=article_dict["meta"]["page_no"],
-                language=ns.ControlledField(
-                    code=lang_code,
-                    label=lang_label
-                ),
-                publication=ns.ControlledField(
-                    code=journal_code,
-                    label=journal_label
-                ),
-                type=ns.ControlledField(
-                    code=doctype_code,
-                    label=doctype_label
-                )
-            )
-
-            ar = ns.Article(
-                meta=metadata,
-                fulltext=article_dict["fulltext"],
-                stats=article_dict["stats"],
-                legacy=article_dict["legacy"]
-            )
-            ar.validate()
-
-            # serialize to JSON
             with codecs.open(out_file, 'w', 'utf-8') as f:
-                json.dump(ar.as_dict(), f, indent=3)
+                json.dump(page, f, indent=3)
                 logger.info(
                     "Written article \'{}\' to {}".format(
-                        article_id,
+                        "",
                         out_file
                     )
                 )
-            article = []
 
     logger.debug("Done importing '{}'".format(out_dir))
     return (issue_dir, True, None)
@@ -661,14 +720,24 @@ def main(args):
         )
     )
     logger.debug("Following issues will be imported:{}".format(journal_issues))
-
+    """
+    result = [
+        import_issue(i, outp_dir, temp_dir)
+        for i in journal_issues
+    ]
+    """
     # prepare the execution of the import function
     tasks = [
         delayed(import_issue)(i, outp_dir, temp_dir)
         for i in journal_issues
     ]
 
-    print("\nImporting {} newspaper issues...".format(len(journal_issues)))
+    print(
+        "\nImporting {} newspaper issues...(parallelized={})".format(
+            len(journal_issues),
+            parallel_execution
+        )
+    )
     with ProgressBar():
         if parallel_execution:
             result = compute(*tasks, get=mp_get)
