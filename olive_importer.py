@@ -156,12 +156,20 @@ def write_coordinates(word_coordinates, region_coordinates, out_file):
     coords_df.to_csv(out_file, encoding="utf-8")
 
 
-def olive_toc_parser(text):
+def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
     """TODO."""
+    with codecs.open(toc_path, 'r', encoding) as f:
+        text = f.read()
+
     return {
         int(page.get('page_no')): {
             entity.get("id"): {
                 "id": entity.get("id"),
+                "canonical_id": canonical_path(
+                    issue_dir,
+                    name=entity.get("index_in_doc").zfill(4),
+                    extension=""
+                ),
                 "type": entity.get("entity_type"),
                 "seq": int(entity.get("index_in_doc"))
             }
@@ -316,13 +324,11 @@ def recompose_page(page_number, info_from_toc, page_elements):
 
     :param page_number: page number
     :type page_number: int
-    :param info_from_toc: a dictionary with element-ids as keys, and
-        dictionaries as values
+    :param info_from_toc: a dictionary with page element IDs (articles, ads.)
+        as keys, and dictionaries as values
     :type info_from_toc:
     :param page_elements: articles or advertisements
     :type page_elements: list of dict
-
-    here the `TOC.xml` should be leveraged.
 
     It's here that `n` attributes are assigned to each region/para/line/token.
     """
@@ -343,7 +349,7 @@ def recompose_page(page_number, info_from_toc, page_elements):
 
         for i, region in enumerate(element["regions"]):
             region["seq"] = i + 1
-            region["partOf"] = el["id"]
+            region["partOf"] = el["canonical_id"]
 
         page["regions"] += element["regions"]
 
@@ -528,10 +534,20 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
             ]
         )
 
+        contents = sorted(
+            [
+                item
+                for item in archive.namelist()
+                if ".xml" in item or ".txt" in item
+                and not item.startswith("._")
+            ]
+        )
+        logger.debug("Contents: {}".format(archive.namelist()))
+
         # if a `temp_dir` is passed as a parameter, do store the intermediate
         # Olive .xml files, otherwise just read without storing them
         if temp_dir is not None:
-            for item in items:
+            for item in items + contents:
                 with codecs.open(
                     os.path.join(temp_dir, item.replace('/', '-')),
                     'wb'
@@ -541,10 +557,7 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
 
         # parse the TOC
         toc_path = os.path.join(issue_dir.path, "TOC.xml")
-
-        with codecs.open(toc_path, 'r', 'windows-1252') as f:
-            toc_data = olive_toc_parser(f.read())
-
+        toc_data = olive_toc_parser(toc_path, issue_dir)
         logger.debug(toc_data)
 
         logger.debug("XML files contained in {}: {}".format(
@@ -606,12 +619,14 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
 
         # at this point the articles have been recomposed
         # but we still need to recompose pages
+        # pdb.set_trace()
         for page_no in toc_data:
             # element types: advertisement or article
 
             # TODO: order elements by `seq` key
             info_from_toc = toc_data[page_no]
             element_ids = toc_data[page_no].keys()
+            # pdb.set_trace()
             filtered_elements = {
                 ar["legacy"]["id"]: ar
                 for ar in articles
@@ -626,8 +641,8 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
             with codecs.open(out_file, 'w', 'utf-8') as f:
                 json.dump(page, f, indent=3)
                 logger.info(
-                    "Written article \'{}\' to {}".format(
-                        "",
+                    "Written page \'{}\' to {}".format(
+                        page_no,
                         out_file
                     )
                 )
@@ -744,6 +759,7 @@ def main(args):
         else:
             result = compute(*tasks, get=dask.get)
     print("Done.\n")
+    # """
 
     logger.debug(result)
 

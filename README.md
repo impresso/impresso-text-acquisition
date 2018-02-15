@@ -28,8 +28,13 @@ For further info about the usage, see:
 
 ## TODO
 
+- [ ] merge token sequences not at the end of line (`<QID>` elements)
+- [ ] add a sanity check: IDs of XML files in `Document.zip` should be found in `info.json`
+- [ ] more robust handling of exceptions
+- [ ] parse `styleGallery.txt` files
 - [ ] define and implement `page.json` schema
 - [ ] revise and implement the `info.json` schema
+- [x] replace `partOf` field with canonical article ID
 - [x] deal with `<QW>` elements when extracting box coordinates
 
 ## JSON Schemas

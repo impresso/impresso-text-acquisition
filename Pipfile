@@ -20,6 +20,9 @@ python-jsonschema-objects = "*"
 pytest = "*"
 ipython = "*"
 ipdb = "*"
+boto = "*"
+smart-open = "*"
+jupyter = "*"
 
 
 [requires]
