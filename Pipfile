@@ -13,6 +13,7 @@ pandas = "*"
 dask = {extras = ["complete"]}
 lxml = "*"
 python-jsonschema-objects = "*"
+jsonlines = "*"
 
 
 [dev-packages]

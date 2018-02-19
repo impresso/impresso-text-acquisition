@@ -464,6 +464,14 @@ def combine_article_parts(article_parts):
     return article_dict
 
 
+def parse_styles(text):
+    """TODO.
+
+    :param text: textual content of file `styleGallery.txt`
+    """
+    return
+
+
 def import_issue(issue_dir, out_dir, temp_dir=None):
     """Import newspaper issues from a directory structure.
 
@@ -530,7 +538,7 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
                 for item in archive.namelist()
                 if ".xml" in item
                 and not item.startswith("._")
-                and "/Ar" in item
+                and ("/Ar" in item or "/Ad" in item)
             ]
         )
 
@@ -538,7 +546,7 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
             [
                 item
                 for item in archive.namelist()
-                if ".xml" in item or ".txt" in item
+                if ".xml" in item
                 and not item.startswith("._")
             ]
         )
@@ -547,13 +555,17 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
         # if a `temp_dir` is passed as a parameter, do store the intermediate
         # Olive .xml files, otherwise just read without storing them
         if temp_dir is not None:
-            for item in items + contents:
+            for item in items:
                 with codecs.open(
                     os.path.join(temp_dir, item.replace('/', '-')),
                     'wb'
                 ) as out_file:
                     xml_data = archive.read(item)
                     out_file.write(xml_data)
+
+        # TODO: parse the `styleGallery.txt` file
+        if 'styleGallery.txt' in archive.namelist():
+            styles = parse_styles(archive.read('styleGallery.txt'))
 
         # parse the TOC
         toc_path = os.path.join(issue_dir.path, "TOC.xml")
@@ -627,6 +639,8 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
             info_from_toc = toc_data[page_no]
             element_ids = toc_data[page_no].keys()
             # pdb.set_trace()
+
+            # TODO: pass to `recompose_page` both ads and articles
             filtered_elements = {
                 ar["legacy"]["id"]: ar
                 for ar in articles
@@ -735,7 +749,7 @@ def main(args):
         )
     )
     logger.debug("Following issues will be imported:{}".format(journal_issues))
-    """
+    # """
     result = [
         import_issue(i, outp_dir, temp_dir)
         for i in journal_issues
@@ -759,7 +773,7 @@ def main(args):
         else:
             result = compute(*tasks, get=dask.get)
     print("Done.\n")
-    # """
+    """
 
     logger.debug(result)
 
