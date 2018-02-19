@@ -661,10 +661,11 @@ def detect_journal_issues(base_dir):
     detected_issues = []
     known_journals = ["GDL", "EVT", "JDG", "LNQ"]  # TODO: anything to add?
     dir_path, dirs, files = next(os.walk(base_dir))
-    journal_dirs = [d for d in dirs if d in known_journals]
+    journal_dirs = [d for d in dirs if d.split("_")[-1] in known_journals]
 
     for journal in journal_dirs:
         journal_path = os.path.join(base_dir, journal)
+        journal = journal.split("_")[-1] if "_" in journal else journal
         dir_path, year_dirs, files = next(os.walk(journal_path))
         # year_dirs = [d for d in dirs if len(d) == 4]
 
