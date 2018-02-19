@@ -696,16 +696,23 @@ def detect_journal_issues(base_dir):
                     # concerning `edition="a"`: for now, no cases of newspapers
                     # published more than once a day in Olive format (but it
                     # may come later on)
-                    detected_issue = IssueDir(
-                        journal,
-                        date(int(year), int(month), int(day)),
-                        'a',
-                        day_path
-                    )
-                    logger.debug("Found an issue: {}".format(
-                        str(detected_issue))
-                    )
-                    detected_issues.append(detected_issue)
+                    try:
+                        detected_issue = IssueDir(
+                            journal,
+                            date(int(year), int(month), int(day)),
+                            'a',
+                            day_path
+                        )
+                        logger.debug("Found an issue: {}".format(
+                            str(detected_issue))
+                        )
+                        detected_issues.append(detected_issue)
+                    except ValueError:
+                        logger.warning(
+                            "Path {} is not a valid issue directory".format(
+                                day_path
+                            )
+                        )
 
     return detected_issues
 
