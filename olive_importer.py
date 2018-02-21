@@ -2,7 +2,7 @@
 Functions and CLI script to convert Olive OCR data into Impresso's format.
 
 Usage:
-    olive_importer.py --input-dir=<id> --output-dir==<od> [--log-file=<f> --temp-dir==<td> --verbose --parallelize]
+    olive_importer.py --input-dir=<id> --output-dir==<od> [--log-file=<f> --temp-dir==<td> --verbose --parallelize --filter=<ft>]
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal.
@@ -10,6 +10,7 @@ Options:
     --log-file=<f>      Log file; when missing print log to stdout
     --verbose           Verbose log messages (good for debugging).
     --parallelize       Parallelize the import.
+    --filter=<ft>       Criteria to filter issues before import ("journal=GDL; date=1900/01/01-1950/12/31;")
 """
 
 import codecs
@@ -17,6 +18,7 @@ import copy
 import json
 import logging
 import os
+import re
 import shutil
 import string
 import sys
@@ -44,7 +46,7 @@ __email__ = "matteo.romanello@epfl.ch"
 __organisation__ = "impresso @ DH Lab, EPFL"
 __copyright__ = "EPFL, 2017"
 __status__ = "development"
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 logger = logging.getLogger(__name__)
 
@@ -126,36 +128,6 @@ def schemas_to_classes(schema_folder="./schemas/"):
     return builder.build_classes()
 
 
-# TODO: remove as it's now obsolete
-def write_coordinates(word_coordinates, region_coordinates, out_file):
-    """Write word and region coordinates to a CSV file.
-
-    :param word_coordinates: each tuple in the list contains [0] token (str);
-        [1] page number (int); [2] coordinates (list of int).
-    :type word_coordinates: list of tuples
-
-    :param region_coordinates: each tuple in the list contains: [0] page number
-        (int); [1] coordinates (list of int).
-    :type region_coordinates: list of tuples
-
-    :param out_file: path of the ouput CSV file
-    :type out_file: string
-    """
-    word_coords_df = pd.DataFrame(
-        word_coordinates,
-        columns=['token', 'page_no', 'coords']
-    )
-    region_coords_df = pd.DataFrame(
-        region_coordinates,
-        columns=['page_no', 'coords']
-    )
-    word_coords_df["type"] = "word"
-    region_coords_df["type"] = "region"
-    region_coords_df["token"] = nan
-    coords_df = pd.concat([word_coords_df, region_coords_df])
-    coords_df.to_csv(out_file, encoding="utf-8")
-
-
 def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
     """TODO."""
     with codecs.open(toc_path, 'r', encoding) as f:
@@ -167,7 +139,7 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
                 "id": entity.get("id"),
                 "canonical_id": canonical_path(
                     issue_dir,
-                    name=entity.get("index_in_doc").zfill(4),
+                    name="i" + entity.get("index_in_doc").zfill(4),
                     extension=""
                 ),
                 "type": entity.get("entity_type"),
@@ -270,11 +242,14 @@ def olive_parser(text):
                 line_counter += 1
 
             if tag.name in ["w", "q"]:
+                # TODO: store `style_ref` information
+
                 # store coordinates of each token
                 # 1) token, 2) page number, 3) coordinate list
                 t = copy.deepcopy(new_token)
                 t["coords"] = [int(i) for i in tag.get('box').split(" ")]
                 t["text"] = tag.string
+                t["style"] = int(tag.get('style_ref'))
 
                 if tag.name == "q" and tag.get('qid') is not None:
                     qid = tag.get('qid')
@@ -341,8 +316,10 @@ def recompose_page(page_number, info_from_toc, page_elements):
 
     # put together the regions while keeping the order in the page
     for el in ordered_elements:
-        # element_type = el["type"]
-        if "Ar" not in el["id"]:
+
+        # filter out the ids keeping only Ads or Articles
+        # but escluing various pther files in the archive
+        if ("Ar" not in el["id"] or "Ar" not in el["id"]):
             continue
 
         element = page_elements[el["id"]]
@@ -465,11 +442,34 @@ def combine_article_parts(article_parts):
 
 
 def parse_styles(text):
-    """TODO.
+    """Turn Olive style file into a dictionary.
 
     :param text: textual content of file `styleGallery.txt`
+    :type text: str
+    :rtype: list of dicts
     """
-    return
+    styles = []
+    regex = r'(\d{3})=("\D+?),(\d+\.?\d+),(\(.*?\))'
+
+    for line in text.split("\r\n"):
+
+        if line == "":
+            continue
+
+        n, font, font_size, color = re.match(regex, line).groups()
+        styles.append(
+            {
+                "id": int(n),
+                "font": font.replace('"', ""),
+                "font_size": float(font_size),
+                "rgb_color": [
+                    int(i)
+                    for i in color.replace("(", "").replace(")", "").split(",")
+                ]
+            }
+        )
+
+    return styles
 
 
 def import_issue(issue_dir, out_dir, temp_dir=None):
@@ -519,6 +519,8 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
 
     ns = schemas_to_classes()
 
+    issue_contents = []
+
     working_archive = os.path.join(issue_dir.path, "Document.zip")
     if os.path.isfile(working_archive):
         try:
@@ -542,14 +544,6 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
             ]
         )
 
-        contents = sorted(
-            [
-                item
-                for item in archive.namelist()
-                if ".xml" in item
-                and not item.startswith("._")
-            ]
-        )
         logger.debug("Contents: {}".format(archive.namelist()))
 
         # if a `temp_dir` is passed as a parameter, do store the intermediate
@@ -565,7 +559,7 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
 
         # TODO: parse the `styleGallery.txt` file
         if 'styleGallery.txt' in archive.namelist():
-            styles = parse_styles(archive.read('styleGallery.txt'))
+            styles = parse_styles(archive.read('styleGallery.txt').decode())
 
         # parse the TOC
         toc_path = os.path.join(issue_dir.path, "TOC.xml")
@@ -605,10 +599,6 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
                 xml_data = archive.read(item)
                 new_data = olive_parser(xml_data)
 
-                # TODO: try to recombine the tokens into a printable text
-                # with newlines, spaces between paragraphs etc.
-                # print_article(new_data)
-
                 # check if it needs to be parsed later on
                 if new_data["legacy"]['continuation_from'] is not None:
                     target = new_data["legacy"]["continuation_from"]
@@ -631,35 +621,51 @@ def import_issue(issue_dir, out_dir, temp_dir=None):
 
         # at this point the articles have been recomposed
         # but we still need to recompose pages
-        # pdb.set_trace()
         for page_no in toc_data:
-            # element types: advertisement or article
 
-            # TODO: order elements by `seq` key
             info_from_toc = toc_data[page_no]
             element_ids = toc_data[page_no].keys()
-            # pdb.set_trace()
-
-            # TODO: pass to `recompose_page` both ads and articles
-            filtered_elements = {
-                ar["legacy"]["id"]: ar
-                for ar in articles
-                if (ar["legacy"]["id"] in element_ids)
+            elements = {
+                el["legacy"]["id"]: el
+                for el in articles
+                if (el["legacy"]["id"] in element_ids)
             }
-            page = recompose_page(page_no, info_from_toc, filtered_elements)
+            page = recompose_page(page_no, info_from_toc, elements)
+            issue_contents += list(elements.values())
 
+            # write the json page to file
             out_file = os.path.join(
                 out_dir,
-                canonical_path(issue_dir, str(page_no).zfill(4), ".json")
+                canonical_path(issue_dir, "p" + str(page_no).zfill(4), ".json")
             )
             with codecs.open(out_file, 'w', 'utf-8') as f:
-                json.dump(page, f, indent=3)
+                json.dump(page, f)
                 logger.info(
                     "Written page \'{}\' to {}".format(
                         page_no,
                         out_file
                     )
                 )
+
+        # TODO: combine info in `articles`
+        content_items = [
+            toc_data[pn][elid]
+            for pn in toc_data.keys() for elid in toc_data[pn].keys()
+        ]
+
+        contents = {
+            "articles": [i for i in content_items if i["type"] == "Article"],
+            "ads": [i for i in content_items if i["type"] == "Ad"],
+            "styles": styles
+        }
+
+        contents_filename = os.path.join(
+            out_dir,
+            canonical_path(issue_dir, "info", extension=".json")
+        )
+
+        with codecs.open(contents_filename, 'w', 'utf-8') as f:
+            json.dump(contents, f)
 
     logger.debug("Done importing '{}'".format(out_dir))
     return (issue_dir, True, None)
@@ -675,6 +681,8 @@ def detect_journal_issues(base_dir):
     detected_issues = []
     known_journals = ["GDL", "EVT", "JDG", "LNQ"]  # TODO: anything to add?
     dir_path, dirs, files = next(os.walk(base_dir))
+
+    # workaround to deal with journal-level folders like: 01_GDL, 02_GDL
     journal_dirs = [d for d in dirs if d.split("_")[-1] in known_journals]
 
     for journal in journal_dirs:
@@ -717,6 +725,55 @@ def detect_journal_issues(base_dir):
     return detected_issues
 
 
+def _parse_filter(filter_string):
+    filters = {
+        f.split("=")[0].strip(): f.split("=")[1].strip()
+        for f in filter_string.split(";")
+    }
+
+    return filters
+
+
+def _apply_filters(filter_dict, issues):
+
+    filtered_issues = []
+
+    if "journal" in filter_dict:
+        filtered_issues = [
+            i for i in issues if i.journal == filter_dict["journal"]
+        ]
+    else:
+        filtered_issues = issues
+
+    if "date" in filter_dict:
+
+        # date filter is a range
+        if "-" in filter_dict["date"]:
+            start, end = filter_dict["date"].split("-")
+            start = date(*[int(x) for x in start.split("/")])
+            end = date(*[int(x) for x in end.split("/")])
+            print(start, end)
+            filtered_issues = [
+                i
+                for i in filtered_issues
+                if i.date >= start and i.date <= end
+            ]
+
+        # date filter is not a range
+        else:
+            filter_date = date(*[
+                int(x) for x in filter_dict["date"].split("/")
+            ])
+
+            filtered_issues += [
+                i
+                for i in issues
+                if i.date == filter_date
+            ]
+
+    return filtered_issues
+
+
 def main(args):
     """Execute the main with CLI parameters."""
     # store CLI parameters
@@ -750,14 +807,30 @@ def main(args):
         shutil.rmtree(outp_dir)
 
     # detect issues to be imported
-    journal_issues = detect_journal_issues(inp_dir)
+    issues = detect_journal_issues(inp_dir)
     logger.info(
         "Found {} newspaper issues to import".format(
-            len(journal_issues)
+            len(issues)
         )
     )
-    logger.debug("Following issues will be imported:{}".format(journal_issues))
-    # """
+
+    # filter issues before importing
+    if arguments["--filter"] is not None:
+        f = _parse_filter(arguments["--filter"])
+        issues = _apply_filters(f, issues)
+        logger.info(
+            "{} newspaper remained after applying filter {}".format(
+                len(issues),
+                f
+            )
+        )
+
+    if len(issues) == 0:
+        print("No issues to import (filtered too much perhaps?)")
+        return
+
+    logger.debug("Following issues will be imported:{}".format(issues))
+    """
     result = [
         import_issue(i, outp_dir, temp_dir)
         for i in journal_issues
@@ -766,12 +839,12 @@ def main(args):
     # prepare the execution of the import function
     tasks = [
         delayed(import_issue)(i, outp_dir, temp_dir)
-        for i in journal_issues
+        for i in issues
     ]
 
     print(
         "\nImporting {} newspaper issues...(parallelized={})".format(
-            len(journal_issues),
+            len(issues),
             parallel_execution
         )
     )
@@ -781,7 +854,7 @@ def main(args):
         else:
             result = compute(*tasks, get=dask.get)
     print("Done.\n")
-    """
+    # """
 
     logger.debug(result)
 
