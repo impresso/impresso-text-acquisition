@@ -11,7 +11,7 @@ TODO
 """
 
 setup(
-    name='text_acquisition',
+    name='text_importer',
     author='Matteo Romanello',
     author_email='matteo.romanello@epfl.ch',
     url='https://github.com/impresso/impresso-text-acquisition',
