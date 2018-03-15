@@ -14,6 +14,8 @@ dask = {extras = ["complete"]}
 lxml = "*"
 python-jsonschema-objects = "*"
 jsonlines = "*"
+impresso-commons = {git = "ssh://git@github.com/impresso/impresso-pycommons.git", editable = true}
+"e1839a8" = {path = ".", editable = true}
 
 
 [dev-packages]
@@ -24,7 +26,8 @@ ipdb = "*"
 boto = "*"
 smart-open = "*"
 jupyter = "*"
-pyarrow = "*"
+"flake8" = "*"
+isort = "*"
 
 
 [requires]
