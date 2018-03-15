@@ -35,7 +35,7 @@ For further info about the usage, see:
 - [ ] parse `styleGallery.txt` files
 - [ ] define and implement `page.json` schema
 - [ ] revise and implement the `info.json` schema
-- [ ] (refactoring) move all olive-related functions into `importers/olive.py` 
+- [ ] (refactoring) move all olive-related functions into `importers/olive.py`
 - [x] replace `partOf` field with canonical article ID
 - [x] deal with `<QW>` elements when extracting box coordinates
 
@@ -44,3 +44,9 @@ For further info about the usage, see:
 The output of this script is a bunch of JSON files.
 
 TODO: update with schema examples (when finalised)
+
+ALL LISTS IN THE JSON FILES ARE ORDERED.
+
+coordinates: top, left, bottom, right
+
+`issue.json`

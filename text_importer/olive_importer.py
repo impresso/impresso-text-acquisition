@@ -33,7 +33,7 @@ from docopt import docopt
 from numpy import nan
 
 import dask
-import ipdb as pdb
+# import ipdb as pdb  # remove from production version
 import pandas as pd
 import python_jsonschema_objects as pjs
 from bs4 import BeautifulSoup
