@@ -399,9 +399,20 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
                     xml_data = archive.read(item)
                     out_file.write(xml_data)
 
-        # TODO: parse the `styleGallery.txt` file
+        # parse the `styleGallery.txt` file
         if 'styleGallery.txt' in archive.namelist():
-            styles = parse_styles(archive.read('styleGallery.txt').decode())
+            try:
+                styles = parse_styles(
+                    archive.read('styleGallery.txt').decode()
+                )
+            except Exception as e:
+                logger.warning(
+                    "Parsing style file in {} failed with error {}".format(
+                        working_archive,
+                        e
+                    )
+                )
+                styles = []
 
         # parse the TOC
         toc_path = os.path.join(issue_dir.path, "TOC.xml")
@@ -437,7 +448,6 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
 
             while len(internal_deque) > 0:
                 item = internal_deque.popleft()
-                # legacy code had: `archive.read(item, 'r')` which won't work
                 xml_data = archive.read(item)
                 new_data = olive_parser(xml_data)
 

@@ -161,6 +161,10 @@ def main(args):
     if os.path.exists(outp_dir):
         shutil.rmtree(outp_dir)
 
+    # clean temp directory if existing
+    if temp_dir is not None and os.path.exists(temp_dir):
+        shutil.rmtree(temp_dir)
+
     # detect issues to be imported
     issues = detect_issues(inp_dir)
     logger.info(
