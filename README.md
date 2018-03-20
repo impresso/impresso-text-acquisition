@@ -1,4 +1,4 @@
-# Olive Importer
+# Impresso Text Importer
 
 ## Purpose
 
@@ -28,14 +28,14 @@ For further info about the usage, see:
 
 ## TODO
 
-- [ ] discuss canonical naming of pages vs content items: e.g. `GDL-1900-01-02-a-i0051` and `GDL-1900-01-02-a-p0001.json`
-- [ ] merge token sequences not at the end of line (`<QID>` elements)
 - [ ] add a sanity check: IDs of XML files in `Document.zip` should be found in `info.json`
-- [ ] more robust handling of exceptions
-- [ ] parse `styleGallery.txt` files
 - [ ] define and implement `page.json` schema
 - [ ] revise and implement the `info.json` schema
-- [ ] (refactoring) move all olive-related functions into `importers/olive.py`
+- [x] discuss canonical naming of pages vs content items: e.g. `GDL-1900-01-02-a-i0051` and `GDL-1900-01-02-a-p0001.json`
+- [x] merge token sequences not at the end of line (`<QID>` elements)
+- [x] more robust handling of exceptions
+- [x] parse `styleGallery.txt` files
+- [x] (refactoring) move all olive-related functions into `importers/olive.py`
 - [x] replace `partOf` field with canonical article ID
 - [x] deal with `<QW>` elements when extracting box coordinates
 

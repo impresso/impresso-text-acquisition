@@ -189,10 +189,10 @@ def main(args):
         return
 
     logger.debug("Following issues will be imported:{}".format(issues))
-    """
+
     result = [
-        import_issue(i, outp_dir, temp_dir)
-        for i in journal_issues
+        olive_import_issue(i, outp_dir, temp_dir)
+        for i in issues
     ]
     """
     # prepare the execution of the import function
@@ -213,7 +213,7 @@ def main(args):
         else:
             result = compute(*tasks, get=dask.get)
     print("Done.\n")
-    # """
+    """
 
     logger.debug(result)
 

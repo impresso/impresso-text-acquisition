@@ -1,6 +1,7 @@
 """The Olive XML OCR importer."""
 
 import codecs
+import ipdb as pdb
 import copy
 import json
 import logging
@@ -38,6 +39,130 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
         }
         for page in BeautifulSoup(text, 'lxml').find_all('page')
     }
+
+
+def normalize_hyphenation(line):
+    """Normalize end-of-line hyphenated words.
+
+    :param line: a line of OCR in JSON format
+    :type line: dict (keys: coords, tokens)
+    :rtype: dict (keys: coords, tokens)
+    """
+    for i, token in enumerate(line["tokens"]):
+        if i == (len(line["tokens"]) - 1):
+            if token["text"] == "-" and "norm_form" in token:
+                prev_token = line["tokens"][i - 1]
+                line["tokens"] = line["tokens"][:-2]
+                merged_token = {
+                    "text": "".join([prev_token["text"], token["text"]]),
+                    "coords": prev_token["coords"][:2] + token["coords"][2:],
+                    "style": token["style"]
+                }
+                logger.debug(
+                    "Merged {} and {} => {}".format(
+                        prev_token,
+                        token,
+                        merged_token
+                    )
+                )
+                line["tokens"].append(merged_token)
+    return line
+
+
+def merge_tokens(tokens, line):
+    merged_token = {
+        "text": "".join(
+            [
+                token["text"]
+                for token in tokens
+            ]
+        ),
+        "coords": tokens[0]["coords"][:2] + tokens[-1]["coords"][2:],
+        "norm_form": tokens[0]["norm_form"],
+        "style": tokens[0]["style"]
+    }
+    logger.warning(
+        "(In-line pseudo tokens) Merged {} => {} in line \"{}\"".format(
+            "".join([t["text"] for t in tokens]),
+            merged_token["text"],
+            line
+        )
+    )
+    return merged_token
+
+
+def merge_pseudo_tokens(line):
+    """Remove pseudo tokens from a line.
+
+    :param line: a line of OCR in JSON format
+    :type line: dict (keys: coords, tokens)
+    :rtype: dict (keys: coords, tokens)
+    """
+    original_line = " ".join([t["text"] for t in line["tokens"]])
+    qids = set([
+        token["qid"]
+        for token in line["tokens"]
+        if "qid" in token
+    ])
+
+    inline_qids = []
+
+    for qid in qids:
+        tokens = [
+            (i, token)
+            for i, token in enumerate(line["tokens"])
+            if "qid" in token and token["qid"] == qid
+        ]
+        last_token_idx, last_token = tokens[-1]
+
+        if last_token_idx < (len(line["tokens"]) - 1):
+            inline_qids.append(qid)
+
+    if len(inline_qids) == 0:
+        return line
+
+    for qid in inline_qids:
+        tokens = [
+            (i, token)
+            for i, token in enumerate(line["tokens"])
+            if "qid" in token and token["qid"] == qid
+        ]
+
+        tokens_to_merge = [
+            line["tokens"].pop(
+                line["tokens"].index(token)
+            )
+            for i, token in tokens
+        ]
+
+        if len(tokens_to_merge) < 2:
+            return line
+        else:
+            insertion_point = tokens[0][0]
+            merged_token = merge_tokens(tokens_to_merge, original_line)
+            line["tokens"].insert(insertion_point, merged_token)
+            return line
+
+
+def normalize_line(line):
+    """Apply normalization to a line of OCR.
+
+    :param line: a line of OCR text
+    :type line: dict (keys: coords, tokens)
+    :rtype: dict (keys: coords, tokens)
+    """
+    mw_tokens = [
+        token
+        for token in line["tokens"]
+        if "qid" in token
+    ]
+    # apply normalization only to those lines that contain at least one
+    # multi-word token (denoted by presence of `qid` field)
+    if len(mw_tokens) > 0:
+        line = merge_pseudo_tokens(line)
+        line = normalize_hyphenation(line)
+
+    return line
 
 
 def olive_parser(text):
@@ -117,6 +242,7 @@ def olive_parser(text):
                     line = copy.deepcopy(new_line)
 
                 if line_counter > 0 and line is not None:
+                    line = normalize_line(line)
                     para["lines"].append(line)
 
                 if tag.get("p") in ["S", "SA"] and line_counter > 0:
@@ -131,7 +257,6 @@ def olive_parser(text):
                 line_counter += 1
 
             if tag.name in ["w", "q"]:
-                # TODO: store `style_ref` information
 
                 # store coordinates of each token
                 # 1) token, 2) page number, 3) coordinate list
@@ -144,18 +269,14 @@ def olive_parser(text):
                     qid = tag.get('qid')
                     normalized_form = soup.find('qw', qid=qid).text
                     t["norm_form"] = normalized_form
-
-                    if len(line["tokens"]) > 1:
-                        if "norm_form" not in line["tokens"][-1]:
-                            t["skip"] = False
-                        else:
-                            t["skip"] = True
+                    t["qid"] = qid
 
                 # append the token to the line
                 line["tokens"].append(t)
 
         # append orphan lines
         if line is not None:
+            line = normalize_line(line)
             para["lines"].append(line)
 
         region["paragraphs"].append(para)
@@ -281,7 +402,7 @@ def recompose_page(page_number, info_from_toc, page_elements):
     for el in ordered_elements:
 
         # filter out the ids keeping only Ads or Articles
-        # but escluing various pther files in the archive
+        # but escluding various other files in the archive
         if ("Ar" not in el["id"] or "Ar" not in el["id"]):
             continue
 
@@ -491,7 +612,7 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
                 canonical_path(issue_dir, "p" + str(page_no).zfill(4), ".json")
             )
             with codecs.open(out_file, 'w', 'utf-8') as f:
-                json.dump(page, f)
+                json.dump(page, f, indent=3)
                 logger.info(
                     "Written page \'{}\' to {}".format(
                         page_no,
@@ -513,11 +634,11 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
 
         contents_filename = os.path.join(
             out_dir,
-            canonical_path(issue_dir, "info", extension=".json")
+            canonical_path(issue_dir, "issue", extension=".json")
         )
 
         with codecs.open(contents_filename, 'w', 'utf-8') as f:
-            json.dump(contents, f)
+            json.dump(contents, f, indent=3)
 
     logger.debug("Done importing '{}'".format(out_dir))
     return (issue_dir, True, None)
