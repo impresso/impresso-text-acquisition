@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+
+    "definitions": {
+
+        "region": {
+            "type": "object",
+            "properties": {
+                "coords": {
+                    "$ref": "#/definitions/coordinates"
+                },
+                "paragraphs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/paragraph"
+                    }
+                }
+            }
+        },
+        "coordinates": {
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "paragraph": {
+            "type": "object",
+            "properties": {
+                "coords": {
+                    "$ref": "#/definitions/coordinates"
+                },
+                "tokens": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/token"
+                    }
+                }
+            }
+        }
+
+
+    },
+
+    "id": "page",
+
+    "type": "object",
+
+    "properties": {
+        "regions": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/region"
+            }
+        }
+    }
+}
