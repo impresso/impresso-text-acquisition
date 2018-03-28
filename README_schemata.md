@@ -2,7 +2,7 @@
 
 ## Page schema
 
-To be found at [`text_importer/schemas/article.schema`](text_importer/schemas/page.schema).
+To be found at [`text_importer/schemas/page.schema`](text_importer/schemas/page.schema).
 
 Keys' meaning:
 
