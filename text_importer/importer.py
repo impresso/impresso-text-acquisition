@@ -22,7 +22,6 @@ from datetime import date
 
 import dask
 # import ipdb as pdb  # remove from production version
-import python_jsonschema_objects as pjs
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
 from dask.multiprocessing import get as mp_get
@@ -52,19 +51,6 @@ html_escape_table = {
     "&gt;": ">",
     "&lt;": "<",
 }
-
-
-def schemas_to_classes(schema_folder="./text_importer/schemas/"):
-    """Generate a list of python classes starting from JSON schemas.
-
-    :param schema_folder: path to the schema folder (default="./schemas/")
-    :type schema_folder: string
-    :rtype: `python_jsonschema_objects.util.Namespace`
-    """
-    with open(os.path.join(schema_folder, "article.schema"), 'r') as f:
-        json_schema = json.load(f)
-    builder = pjs.ObjectBuilder(json_schema)
-    return builder.build_classes()
 
 
 def print_article(article):

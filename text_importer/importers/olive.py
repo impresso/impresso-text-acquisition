@@ -14,6 +14,7 @@ from operator import itemgetter
 
 from bs4 import BeautifulSoup
 from impresso_commons.path import canonical_path
+from text_importer.helpers import get_page_schema, serialize_page
 
 logger = logging.getLogger(__name__)
 
@@ -48,15 +49,15 @@ def normalize_hyphenation(line):
     :type line: dict (keys: coords, tokens)
     :rtype: dict (keys: coords, tokens)
     """
-    for i, token in enumerate(line["tokens"]):
-        if i == (len(line["tokens"]) - 1):
-            if token["text"] == "-" and "norm_form" in token:
-                prev_token = line["tokens"][i - 1]
-                line["tokens"] = line["tokens"][:-2]
+    for i, token in enumerate(line["t"]):
+        if i == (len(line["t"]) - 1):
+            if token["tx"] == "-" and "norm_form" in token:
+                prev_token = line["t"][i - 1]
+                line["t"] = line["t"][:-2]
                 merged_token = {
-                    "text": "".join([prev_token["text"], token["text"]]),
-                    "coords": prev_token["coords"][:2] + token["coords"][2:],
-                    "style": token["style"]
+                    "tx": "".join([prev_token["tx"], token["tx"]]),
+                    "c": prev_token["c"][:2] + token["c"][2:],
+                    "s": token["s"]
                 }
                 logger.debug(
                     "Merged {} and {} => {}".format(
@@ -65,26 +66,26 @@ def normalize_hyphenation(line):
                         merged_token
                     )
                 )
-                line["tokens"].append(merged_token)
+                line["t"].append(merged_token)
     return line
 
 
 def merge_tokens(tokens, line):
     merged_token = {
-        "text": "".join(
+        "tx": "".join(
             [
-                token["text"]
+                token["tx"]
                 for token in tokens
             ]
         ),
-        "coords": tokens[0]["coords"][:2] + tokens[-1]["coords"][2:],
+        "c": tokens[0]["c"][:2] + tokens[-1]["c"][2:],
         "norm_form": tokens[0]["norm_form"],
-        "style": tokens[0]["style"]
+        "s": tokens[0]["s"]
     }
     logger.warning(
         "(In-line pseudo tokens) Merged {} => {} in line \"{}\"".format(
-            "".join([t["text"] for t in tokens]),
-            merged_token["text"],
+            "".join([t["tx"] for t in tokens]),
+            merged_token["tx"],
             line
         )
     )
@@ -98,10 +99,10 @@ def merge_pseudo_tokens(line):
     :type line: dict (keys: coords, tokens)
     :rtype: dict (keys: coords, tokens)
     """
-    original_line = " ".join([t["text"] for t in line["tokens"]])
+    original_line = " ".join([t["tx"] for t in line["t"]])
     qids = set([
         token["qid"]
-        for token in line["tokens"]
+        for token in line["t"]
         if "qid" in token
     ])
 
@@ -110,38 +111,45 @@ def merge_pseudo_tokens(line):
     for qid in qids:
         tokens = [
             (i, token)
-            for i, token in enumerate(line["tokens"])
+            for i, token in enumerate(line["t"])
             if "qid" in token and token["qid"] == qid
         ]
         last_token_idx, last_token = tokens[-1]
 
-        if last_token_idx < (len(line["tokens"]) - 1):
+        # FIXME: the problem with this is that it misses those cases
+        # where the pseudo tokens occur at the end of the line.
+        # TODO: check if the first token of the next line has the same `qid`
+        if last_token_idx < (len(line["t"]) - 1):
             inline_qids.append(qid)
 
     if len(inline_qids) == 0:
         return line
 
     for qid in inline_qids:
+        # identify tokens to merge
         tokens = [
             (i, token)
-            for i, token in enumerate(line["tokens"])
+            for i, token in enumerate(line["t"])
             if "qid" in token and token["qid"] == qid
         ]
 
+        # remove tokens to merge from the line
         tokens_to_merge = [
-            line["tokens"].pop(
-                line["tokens"].index(token)
+            line["t"].pop(
+                line["t"].index(token)
             )
             for i, token in tokens
         ]
 
         if len(tokens_to_merge) < 2:
-            return line
+            # check if this occurs
+            # pdb.set_trace()
+            pass
         else:
             insertion_point = tokens[0][0]
             merged_token = merge_tokens(tokens_to_merge, original_line)
-            line["tokens"].insert(insertion_point, merged_token)
-            return line
+            line["t"].insert(insertion_point, merged_token)
+    return line
 
 
 def normalize_line(line):
@@ -153,7 +161,7 @@ def normalize_line(line):
     """
     mw_tokens = [
         token
-        for token in line["tokens"]
+        for token in line["t"]
         if "qid" in token
     ]
     # apply normalization only to those lines that contain at least one
@@ -191,7 +199,7 @@ def olive_parser(text):
             "language": {},
             "type": {}
         },
-        "regions": [],
+        "r": [],
         "stats": {},
         "legacy": {"continuation_from": None, "continuation_to": None},
     }
@@ -203,22 +211,22 @@ def olive_parser(text):
     out["meta"]["issue_date"] = issue_date
 
     new_region = {
-        "coords": [],
-        "paragraphs": []
+        "c": [],
+        "p": []
     }
 
     new_paragraph = {
-        "lines": []
+        "l": []
     }
 
     new_line = {
-        "coords": [],
-        "tokens": []
+        "c": [],
+        "t": []
     }
 
     new_token = {
-        "coords": [],
-        "text": ""
+        "c": [],
+        "tx": ""
     }
 
     for primitive in soup.find_all("primitive"):
@@ -226,8 +234,8 @@ def olive_parser(text):
         # store coordinate of text areas (boxes) by page
         # 1) page number, 2) coordinate list
         region = copy.deepcopy(new_region)
-        region["coords"] = [int(i) for i in primitive.get('box').split(" ")]
-        region["page_no"] = page_no
+        region["c"] = [int(i) for i in primitive.get('box').split(" ")]
+        region["n"] = page_no
 
         para = None
         line = None
@@ -243,14 +251,14 @@ def olive_parser(text):
 
                 if line_counter > 0 and line is not None:
                     line = normalize_line(line)
-                    para["lines"].append(line)
+                    para["l"].append(line)
 
                 if tag.get("p") in ["S", "SA"] and line_counter > 0:
-                    region["paragraphs"].append(para)
+                    region["p"].append(para)
                     para = copy.deepcopy(new_paragraph)
 
                 line = copy.deepcopy(new_line)
-                line["coords"] = [
+                line["c"] = [
                     int(i)
                     for i in tag.get('box').split(" ")
                 ]
@@ -261,9 +269,9 @@ def olive_parser(text):
                 # store coordinates of each token
                 # 1) token, 2) page number, 3) coordinate list
                 t = copy.deepcopy(new_token)
-                t["coords"] = [int(i) for i in tag.get('box').split(" ")]
-                t["text"] = tag.string
-                t["style"] = int(tag.get('style_ref'))
+                t["c"] = [int(i) for i in tag.get('box').split(" ")]
+                t["tx"] = tag.string
+                t["s"] = int(tag.get('style_ref'))
 
                 if tag.name == "q" and tag.get('qid') is not None:
                     qid = tag.get('qid')
@@ -272,17 +280,17 @@ def olive_parser(text):
                     t["qid"] = qid
 
                 # append the token to the line
-                line["tokens"].append(t)
+                line["t"].append(t)
 
         # append orphan lines
         if line is not None:
             line = normalize_line(line)
-            para["lines"].append(line)
+            para["l"].append(line)
 
-        region["paragraphs"].append(para)
+        region["p"].append(para)
 
         if para is not None:
-            out["regions"].append(region)
+            out["r"].append(region)
 
     out["legacy"]["id"] = identifier
     out["legacy"]["source"] = soup.link['source']
@@ -392,7 +400,7 @@ def recompose_page(page_number, info_from_toc, page_elements):
     It's here that `n` attributes are assigned to each region/para/line/token.
     """
     page = {
-        "regions": []
+        "r": []
     }
     ordered_elements = sorted(
         list(info_from_toc.values()), key=itemgetter('seq')
@@ -408,29 +416,10 @@ def recompose_page(page_number, info_from_toc, page_elements):
 
         element = page_elements[el["id"]]
 
-        for i, region in enumerate(element["regions"]):
-            region["seq"] = i + 1
-            region["partOf"] = el["canonical_id"]
+        for i, region in enumerate(element["r"]):
+            region["pOf"] = el["canonical_id"]
 
-        page["regions"] += element["regions"]
-
-    paragraphs_count = 0
-    token_count = 0
-    line_count = 0
-
-    for region in page["regions"]:
-
-        for para in region["paragraphs"]:
-            paragraphs_count += 1
-            para["seq"] = paragraphs_count
-
-            for line in para["lines"]:
-                line_count += 1
-                line["seq"] = line_count
-
-                for token in line["tokens"]:
-                    token_count += 1
-                    token["seq"] = token_count
+        page["r"] += element["r"]
 
     return page
 
@@ -480,7 +469,7 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
     if temp_dir is not None and not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
 
-    # ns = schemas_to_classes()  # TODO: implement properly
+    PageSchema = get_page_schema()
 
     issue_contents = []
 
@@ -603,22 +592,14 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
                 for el in articles
                 if (el["legacy"]["id"] in element_ids)
             }
-            page = recompose_page(page_no, info_from_toc, elements)
+            page_dict = recompose_page(page_no, info_from_toc, elements)
             issue_contents += list(elements.values())
-
-            # write the json page to file
-            out_file = os.path.join(
-                out_dir,
-                canonical_path(issue_dir, "p" + str(page_no).zfill(4), ".json")
+            page = PageSchema(**page_dict)
+            serialize_page(
+                page_no, page,
+                issue_dir,
+                s3_bucket="canonical-json"
             )
-            with codecs.open(out_file, 'w', 'utf-8') as f:
-                json.dump(page, f, indent=3)
-                logger.info(
-                    "Written page \'{}\' to {}".format(
-                        page_no,
-                        out_file
-                    )
-                )
 
         # TODO: combine info in `articles`
         content_items = [

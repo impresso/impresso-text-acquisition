@@ -6,15 +6,41 @@
         "region": {
             "type": "object",
             "properties": {
-                "coords": {
+                "c": {
                     "$ref": "#/definitions/coordinates"
                 },
-                "paragraphs": {
+                "p": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/paragraph"
                     }
+                },
+                "n": { "type": "string" },
+                "pOf": { "type": "string" }
+            }
+        },
+        "line":{
+            "type": "object",
+            "properties": {
+                "c": {
+                    "$ref": "#/definitions/coordinates"
+                },
+                "t": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/token"
+                    }
                 }
+            }
+        },
+        "token":{
+            "type": "object",
+            "properties": {
+                "c": {
+                    "$ref": "#/definitions/coordinates"
+                },
+                "tx": {"type": "string"},
+                "s": {"type": "integer"}
             }
         },
         "coordinates": {
@@ -26,13 +52,10 @@
         "paragraph": {
             "type": "object",
             "properties": {
-                "coords": {
-                    "$ref": "#/definitions/coordinates"
-                },
-                "tokens": {
+                "l": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/token"
+                        "$ref": "#/definitions/line"
                     }
                 }
             }
@@ -41,12 +64,12 @@
 
     },
 
-    "id": "page",
+    "id": "PageSchema",
 
     "type": "object",
 
     "properties": {
-        "regions": {
+        "r": {
             "type": "array",
             "items": {
                 "$ref": "#/definitions/region"

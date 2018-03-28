@@ -15,6 +15,7 @@ lxml = "*"
 python-jsonschema-objects = "*"
 jsonlines = "*"
 impresso-commons = {git = "ssh://git@github.com/impresso/impresso-pycommons.git", editable = true}
+boto = "*"
 
 
 [dev-packages]
@@ -22,7 +23,6 @@ impresso-commons = {git = "ssh://git@github.com/impresso/impresso-pycommons.git"
 pytest = "*"
 ipython = "*"
 ipdb = "*"
-boto = "*"
 smart-open = "*"
 jupyter = "*"
 "flake8" = "*"
