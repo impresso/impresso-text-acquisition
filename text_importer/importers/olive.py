@@ -357,8 +357,10 @@ def combine_article_parts(article_parts):
             article_parts[0]["meta"]["publication"]
         article_dict["meta"]["issue_date"] =\
             article_parts[0]["meta"]["issue_date"]
-    else:
+    elif len(article_parts) == 1:
         article_dict = next(iter(article_parts))
+    else:
+        article_dict = None
     return article_dict
 
 
@@ -370,7 +372,7 @@ def parse_styles(text):
     :rtype: list of dicts
     """
     styles = []
-    regex = r'(\d{3})=("\D+?),(\d+\.?\d+),(\(.*?\))'
+    regex = r'(\d{3})=(".*?"),(\d+\.?\d+),(\(.*?\))'
 
     for line in text.split("\r\n"):
 
@@ -506,6 +508,7 @@ def check_consistency(issue_obj, element_ids):
 
     try:
         assert len(difference_btw_sets) == 0
+        logger.info("{} consistency check ok".format(issue_obj))
     except AssertionError as e:
         logger.warning(
             "There are missing elements in the issue.json: {}".format(
@@ -619,7 +622,7 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
                     )
                 )
                 styles = []
-
+        pdb.set_trace()
         # parse the TOC
         toc_path = os.path.join(issue_dir.path, "TOC.xml")
         toc_data = olive_toc_parser(toc_path, issue_dir)
@@ -679,14 +682,21 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
 
             try:
                 content_elements += article_parts
-                articles.append(combine_article_parts(article_parts))
+                combined_article = combine_article_parts(article_parts)
+
+                if combined_article is not None:
+                    articles.append(combined_article)
+
                 article_parts = []
             except Exception as e:
+                """
                 logger.error("Import of issue {} failed with error {}".format(
                     issue_dir,
                     e
                 ))
                 return
+                """
+                raise e
 
         # at this point the articles have been recomposed
         # but we still need to recompose pages
@@ -744,5 +754,5 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
         # 2. (TODO) check that each item in the issue.json
         # has at least one text region in the corresponding page file
 
-    logger.debug("Done importing '{}'".format(out_dir))
+    logger.info("Done importing '{}'".format(out_dir))
     return (issue_dir, True, None)

@@ -164,7 +164,7 @@ def main(args):
     logger.debug("Following issues will be imported:{}".format(issues))
 
     assert outp_dir is not None or out_bucket is not None
-    """
+
     if outp_dir is not None:
         result = [
             olive_import_issue(i, out_dir=outp_dir, temp_dir=temp_dir)
@@ -200,7 +200,7 @@ def main(args):
         else:
             result = compute(*tasks, get=dask.get)
     print("Done.\n")
-    # """
+    """
 
     logger.debug(result)
 
