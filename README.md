@@ -12,7 +12,7 @@ A sample of the input data for this script can be found in [sample_data/](sample
 
 Run the script sequentially:
 
-    python olive_importer.py --input-dir=sample_data/ --output-dir=out/ --temp-dir=tmp/ --verbose --log-file=import_test.log
+    python text_importer/importer.py --input-dir=sample_data/ --output-dir=out/ --temp-dir=tmp/ --verbose --log-file=import_test.log
 
 or in parallel:
 
@@ -28,9 +28,10 @@ For further info about the usage, see:
 
 ## TODO
 
-- [ ] add a sanity check: IDs of XML files in `Document.zip` should be found in `info.json`
-- [ ] define and implement `page.json` schema
-- [ ] revise and implement the `info.json` schema
+- [ ] convert coordinates using Maud's code 
+- [x] add a sanity check: IDs of XML files in `Document.zip` should be found in `info.json`
+- [x] define and implement `page.json` schema
+- [x] revise and implement the `info.json` schema
 - [x] discuss canonical naming of pages vs content items: e.g. `GDL-1900-01-02-a-i0051` and `GDL-1900-01-02-a-p0001.json`
 - [x] merge token sequences not at the end of line (`<QID>` elements)
 - [x] more robust handling of exceptions
