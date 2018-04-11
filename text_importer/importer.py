@@ -14,15 +14,13 @@ Options:
     --filter=<ft>       Criteria to filter issues before import ("journal=GDL; date=1900/01/01-1950/12/31;")
 """  # noqa: E501
 
-
-import json
 import logging
 import os
 import shutil
 from datetime import date
 
 import dask
-# import ipdb as pdb  # remove from production version
+import ipdb as pdb  # remove from production version
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
 from dask.multiprocessing import get as mp_get
@@ -55,7 +53,7 @@ html_escape_table = {
 
 def _parse_filter(filter_string):
     filters = {
-        f.split("=")[0].strip(): f.split("=")[1].strip()
+        f.split("=")[0].strip(): f.split("=")[1].strip().split(",")
         for f in filter_string.split(";")
     }
 
@@ -139,24 +137,25 @@ def main(args):
     if temp_dir is not None and os.path.exists(temp_dir):
         shutil.rmtree(temp_dir)
 
-    # detect issues to be imported
-    issues = detect_issues(inp_dir)
-    logger.info(
-        "Found {} newspaper issues to import".format(
-            len(issues)
-        )
-    )
-
     # filter issues before importing
     if arguments["--filter"] is not None:
         f = _parse_filter(arguments["--filter"])
-        issues = _apply_filters(f, issues)
+        issues = detect_issues(inp_dir, journal_filter=f["journal"])
         logger.info(
             "{} newspaper remained after applying filter {}".format(
                 len(issues),
                 f
             )
         )
+    else:
+        # detect issues to be imported
+        issues = detect_issues(inp_dir)
+
+    logger.info(
+        "Found {} newspaper issues to import".format(
+            len(issues)
+        )
+    )
 
     if len(issues) == 0:
         print("No issues to import (filtered too much perhaps?)")
@@ -165,7 +164,7 @@ def main(args):
     logger.debug("Following issues will be imported:{}".format(issues))
 
     assert outp_dir is not None or out_bucket is not None
-
+    """
     if outp_dir is not None:
         result = [
             olive_import_issue(i, out_dir=outp_dir, temp_dir=temp_dir)
@@ -179,10 +178,20 @@ def main(args):
 
     """
     # prepare the execution of the import function
-    tasks = [
-        delayed(olive_import_issue)(i, outp_dir, temp_dir)
-        for i in issues
-    ]
+    if outp_dir is not None:
+        tasks = [
+            delayed(olive_import_issue)(i, out_dir=outp_dir, temp_dir=temp_dir)
+            for i in issues
+        ]
+    elif out_bucket is not None:
+        tasks = [
+            delayed(olive_import_issue)(
+                i,
+                s3_bucket=out_bucket,
+                temp_dir=temp_dir
+            )
+            for i in issues
+        ]
 
     print(
         "\nImporting {} newspaper issues...(parallelized={})".format(
@@ -196,7 +205,7 @@ def main(args):
         else:
             result = compute(*tasks, get=dask.get)
     print("Done.\n")
-    """
+    # """
 
     logger.debug(result)
 
