@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+
+    "definitions": {
+        "metadata":{
+            "type": "object",
+            "properties": {
+                "id": {"type": "string"},
+                "lid": {"type": "string"},
+                "l": {"type": "string"},
+                "pp": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "pub": {"type": "string"},
+                "t": {"type": "string"},
+                "tp": {"type": "string"}
+            }
+        },
+        "style":{
+            "type": "object",
+            "properties": {
+                "rgb": {
+                    "$ref": "#/definitions/rgbColor"
+                },
+                "f": {"type": "string"},
+                "fs": {"type": "number"},
+                "id": {"type": "integer"}
+            }
+        },
+        "rgbColor": {
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "item": {
+            "type": "object",
+            "properties": {
+                "m": {
+                    "$ref": "#/definitions/metadata"
+                }
+            }
+        }
+
+
+    },
+
+    "id": "IssueSchema",
+
+    "type": "object",
+
+    "properties": {
+        "i": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/item"
+            }
+        },
+        "s": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/style"
+            }
+        }
+    }
+}
