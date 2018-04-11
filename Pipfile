@@ -14,16 +14,14 @@ dask = {extras = ["complete"]}
 lxml = "*"
 python-jsonschema-objects = "*"
 jsonlines = "*"
-impresso-commons = {git = "ssh://git@github.com/impresso/impresso-pycommons.git", editable = true}
-"e1839a8" = {path = ".", editable = true}
-
+boto = "*"
+impresso_commons = {git = "ssh://git@github.com/impresso/impresso-pycommons.git", editable = true}
 
 [dev-packages]
 
 pytest = "*"
 ipython = "*"
 ipdb = "*"
-boto = "*"
 smart-open = "*"
 jupyter = "*"
 "flake8" = "*"

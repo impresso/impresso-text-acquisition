@@ -2,8 +2,9 @@
 
 import os
 from setuptools import setup, find_packages
+from text_importer import __version__
 
-VERSION = ""
+VERSION = __version__
 
 
 DESCRIPTION = """

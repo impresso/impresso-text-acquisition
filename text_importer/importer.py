@@ -2,16 +2,17 @@
 Functions and CLI script to convert Olive OCR data into Impresso's format.
 
 Usage:
-    import.py --input-dir=<id> --output-dir==<od> [--log-file=<f> --temp-dir==<td> --verbose --parallelize --filter=<ft>]
+    import.py --input-dir=<id> [--output-dir==<od> --s3-bucket=<b> --log-file=<f> --temp-dir==<td> --verbose --parallelize --filter=<ft>]
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal.
-    --output-dir==<od>  Base directory where to write the output files.
+    --output-dir=<od>   Base directory where to write the output files.
+    --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket.
     --log-file=<f>      Log file; when missing print log to stdout
     --verbose           Verbose log messages (good for debugging).
     --parallelize       Parallelize the import.
     --filter=<ft>       Criteria to filter issues before import ("journal=GDL; date=1900/01/01-1950/12/31;")
-"""
+"""  # noqa: E501
 
 
 import json
@@ -22,7 +23,6 @@ from datetime import date
 
 import dask
 # import ipdb as pdb  # remove from production version
-import python_jsonschema_objects as pjs
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
 from dask.multiprocessing import get as mp_get
@@ -36,7 +36,6 @@ __email__ = "matteo.romanello@epfl.ch"
 __organisation__ = "impresso @ DH Lab, EPFL"
 __copyright__ = "EPFL, 2017"
 __status__ = "development"
-__version__ = "0.3.0"
 
 logger = logging.getLogger()
 
@@ -52,32 +51,6 @@ html_escape_table = {
     "&gt;": ">",
     "&lt;": "<",
 }
-
-
-def schemas_to_classes(schema_folder="./text_importer/schemas/"):
-    """Generate a list of python classes starting from JSON schemas.
-
-    :param schema_folder: path to the schema folder (default="./schemas/")
-    :type schema_folder: string
-    :rtype: `python_jsonschema_objects.util.Namespace`
-    """
-    with open(os.path.join(schema_folder, "article.schema"), 'r') as f:
-        json_schema = json.load(f)
-    builder = pjs.ObjectBuilder(json_schema)
-    return builder.build_classes()
-
-
-def print_article(article):
-    """Only for debug, remove later."""
-    print(article["legacy"]["id"])
-    for r in article["regions"]:
-        for p in r["paragraphs"]:
-            print("------------")
-            assert p["lines"] is not None
-            for line in p["lines"]:
-                print(" ".join(t['text'] for t in line["tokens"]))
-            print("------------")
-        print("#############")
 
 
 def _parse_filter(filter_string):
@@ -134,6 +107,7 @@ def main(args):
     # store CLI parameters
     inp_dir = args["--input-dir"]
     outp_dir = args["--output-dir"]
+    out_bucket = args["--s3-bucket"]
     temp_dir = args["--temp-dir"]
     log_file = args["--log-file"]
     parallel_execution = args["--parallelize"]
@@ -158,7 +132,7 @@ def main(args):
     logger.debug("CLI arguments received: {}".format(args))
 
     # clean output directory if existing
-    if os.path.exists(outp_dir):
+    if outp_dir is not None and os.path.exists(outp_dir):
         shutil.rmtree(outp_dir)
 
     # clean temp directory if existing
@@ -189,11 +163,20 @@ def main(args):
         return
 
     logger.debug("Following issues will be imported:{}".format(issues))
-    """
-    result = [
-        import_issue(i, outp_dir, temp_dir)
-        for i in journal_issues
-    ]
+
+    assert outp_dir is not None or out_bucket is not None
+
+    if outp_dir is not None:
+        result = [
+            olive_import_issue(i, out_dir=outp_dir, temp_dir=temp_dir)
+            for i in issues
+        ]
+    elif out_bucket is not None:
+        result = [
+            olive_import_issue(i, s3_bucket=out_bucket, temp_dir=temp_dir)
+            for i in issues
+        ]
+
     """
     # prepare the execution of the import function
     tasks = [
@@ -213,7 +196,7 @@ def main(args):
         else:
             result = compute(*tasks, get=dask.get)
     print("Done.\n")
-    # """
+    """
 
     logger.debug(result)
 

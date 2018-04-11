@@ -1,0 +1,79 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+
+    "definitions": {
+
+        "region": {
+            "type": "object",
+            "properties": {
+                "c": {
+                    "$ref": "#/definitions/coordinates"
+                },
+                "p": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/paragraph"
+                    }
+                },
+                "n": { "type": "string" },
+                "pOf": { "type": "string" }
+            }
+        },
+        "line":{
+            "type": "object",
+            "properties": {
+                "c": {
+                    "$ref": "#/definitions/coordinates"
+                },
+                "t": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/token"
+                    }
+                }
+            }
+        },
+        "token":{
+            "type": "object",
+            "properties": {
+                "c": {
+                    "$ref": "#/definitions/coordinates"
+                },
+                "tx": {"type": "string"},
+                "s": {"type": "integer"}
+            }
+        },
+        "coordinates": {
+            "type": "array",
+            "items": {
+                "type": "integer"
+            }
+        },
+        "paragraph": {
+            "type": "object",
+            "properties": {
+                "l": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/line"
+                    }
+                }
+            }
+        }
+
+
+    },
+
+    "id": "PageSchema",
+
+    "type": "object",
+
+    "properties": {
+        "r": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/region"
+            }
+        }
+    }
+}

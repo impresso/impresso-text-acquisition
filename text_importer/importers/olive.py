@@ -2,7 +2,6 @@
 
 import codecs
 import copy
-import json
 import logging
 import os
 import re
@@ -11,22 +10,26 @@ import zipfile
 from collections import deque
 from operator import itemgetter
 
+import ipdb as pdb
 from bs4 import BeautifulSoup
 from impresso_commons.path import canonical_path
+
+from text_importer.helpers import (get_issue_schema, get_page_schema,
+                                   serialize_issue, serialize_page)
 
 logger = logging.getLogger(__name__)
 
 
 def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
-    """TODO."""
+    """Parse the TOC.xml file (Olive format)."""
     with codecs.open(toc_path, 'r', encoding) as f:
         text = f.read()
 
     return {
         int(page.get('page_no')): {
             entity.get("id"): {
-                "id": entity.get("id"),
-                "canonical_id": canonical_path(
+                "legacy_id": entity.get("id"),
+                "id": canonical_path(
                     issue_dir,
                     name="i" + entity.get("index_in_doc").zfill(4),
                     extension=""
@@ -38,6 +41,134 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
         }
         for page in BeautifulSoup(text, 'lxml').find_all('page')
     }
+
+
+def normalize_hyphenation(line):
+    """Normalize end-of-line hyphenated words.
+
+    :param line: a line of OCR in JSON format
+    :type line: dict (keys: coords, tokens)
+    :rtype: dict (keys: coords, tokens)
+    """
+    for i, token in enumerate(line["t"]):
+        if i == (len(line["t"]) - 1):
+            if token["tx"] == "-" and "nf" in token:
+                prev_token = line["t"][i - 1]
+                line["t"] = line["t"][:-2]
+                merged_token = {
+                    "tx": "".join([prev_token["tx"], token["tx"]]),
+                    "c": prev_token["c"][:2] + token["c"][2:],
+                    "s": token["s"]
+                }
+                logger.debug(
+                    "Merged {} and {} => {}".format(
+                        prev_token,
+                        token,
+                        merged_token
+                    )
+                )
+                line["t"].append(merged_token)
+    return line
+
+
+def merge_tokens(tokens, line):
+    merged_token = {
+        "tx": "".join(
+            [
+                token["tx"]
+                for token in tokens
+            ]
+        ),
+        "c": tokens[0]["c"][:2] + tokens[-1]["c"][2:],
+        "s": tokens[0]["s"]
+    }
+    logger.debug(
+        "(In-line pseudo tokens) Merged {} => {} in line \"{}\"".format(
+            "".join([t["tx"] for t in tokens]),
+            merged_token["tx"],
+            line
+        )
+    )
+    return merged_token
+
+
+def merge_pseudo_tokens(line):
+    """Remove pseudo tokens from a line.
+
+    :param line: a line of OCR in JSON format
+    :type line: dict (keys: coords, tokens)
+    :rtype: dict (keys: coords, tokens)
+    """
+    original_line = " ".join([t["tx"] for t in line["t"]])
+    qids = set([
+        token["qid"]
+        for token in line["t"]
+        if "qid" in token
+    ])
+
+    inline_qids = []
+
+    for qid in qids:
+        tokens = [
+            (i, token)
+            for i, token in enumerate(line["t"])
+            if "qid" in token and token["qid"] == qid
+        ]
+        if len(tokens) > 1:
+            inline_qids.append(qid)
+
+    if len(inline_qids) == 0:
+        return line
+
+    for qid in inline_qids:
+        # identify tokens to merge
+        tokens = [
+            (i, token)
+            for i, token in enumerate(line["t"])
+            if "qid" in token and token["qid"] == qid
+        ]
+
+        # remove tokens to merge from the line
+        tokens_to_merge = [
+            line["t"].pop(
+                line["t"].index(token)
+            )
+            for i, token in tokens
+        ]
+
+        if len(tokens_to_merge) >= 2:
+            insertion_point = tokens[0][0]
+            merged_token = merge_tokens(tokens_to_merge, original_line)
+            line["t"].insert(insertion_point, merged_token)
+
+    return line
+
+
+def normalize_line(line):
+    """Apply normalization to a line of OCR.
+
+    :param line: a line of OCR text
+    :type line: dict (keys: coords, tokens)
+    :rtype: dict (keys: coords, tokens)
+    """
+    mw_tokens = [
+        token
+        for token in line["t"]
+        if "qid" in token
+    ]
+    # apply normalization only to those lines that contain at least one
+    # multi-word token (denoted by presence of `qid` field)
+    if len(mw_tokens) > 0:
+        line = merge_pseudo_tokens(line)
+        line = normalize_hyphenation(line)
+
+    for token in line["t"]:
+        if "qid" not in token and "nf" in token:
+            del token["nf"]
+        if "qid" in token:
+            del token["qid"]
+
+    return line
 
 
 def olive_parser(text):
@@ -66,7 +197,7 @@ def olive_parser(text):
             "language": {},
             "type": {}
         },
-        "regions": [],
+        "r": [],
         "stats": {},
         "legacy": {"continuation_from": None, "continuation_to": None},
     }
@@ -78,22 +209,22 @@ def olive_parser(text):
     out["meta"]["issue_date"] = issue_date
 
     new_region = {
-        "coords": [],
-        "paragraphs": []
+        "c": [],
+        "p": []
     }
 
     new_paragraph = {
-        "lines": []
+        "l": []
     }
 
     new_line = {
-        "coords": [],
-        "tokens": []
+        "c": [],
+        "t": []
     }
 
     new_token = {
-        "coords": [],
-        "text": ""
+        "c": [],
+        "tx": ""
     }
 
     for primitive in soup.find_all("primitive"):
@@ -101,8 +232,8 @@ def olive_parser(text):
         # store coordinate of text areas (boxes) by page
         # 1) page number, 2) coordinate list
         region = copy.deepcopy(new_region)
-        region["coords"] = [int(i) for i in primitive.get('box').split(" ")]
-        region["page_no"] = page_no
+        region["c"] = [int(i) for i in primitive.get('box').split(" ")]
+        region["n"] = page_no
 
         para = None
         line = None
@@ -117,51 +248,47 @@ def olive_parser(text):
                     line = copy.deepcopy(new_line)
 
                 if line_counter > 0 and line is not None:
-                    para["lines"].append(line)
+                    line = normalize_line(line)
+                    para["l"].append(line)
 
                 if tag.get("p") in ["S", "SA"] and line_counter > 0:
-                    region["paragraphs"].append(para)
+                    region["p"].append(para)
                     para = copy.deepcopy(new_paragraph)
 
                 line = copy.deepcopy(new_line)
-                line["coords"] = [
+                line["c"] = [
                     int(i)
                     for i in tag.get('box').split(" ")
                 ]
                 line_counter += 1
 
             if tag.name in ["w", "q"]:
-                # TODO: store `style_ref` information
 
                 # store coordinates of each token
                 # 1) token, 2) page number, 3) coordinate list
                 t = copy.deepcopy(new_token)
-                t["coords"] = [int(i) for i in tag.get('box').split(" ")]
-                t["text"] = tag.string
-                t["style"] = int(tag.get('style_ref'))
+                t["c"] = [int(i) for i in tag.get('box').split(" ")]
+                t["tx"] = tag.string
+                t["s"] = int(tag.get('style_ref'))
 
                 if tag.name == "q" and tag.get('qid') is not None:
                     qid = tag.get('qid')
                     normalized_form = soup.find('qw', qid=qid).text
-                    t["norm_form"] = normalized_form
-
-                    if len(line["tokens"]) > 1:
-                        if "norm_form" not in line["tokens"][-1]:
-                            t["skip"] = False
-                        else:
-                            t["skip"] = True
+                    t["nf"] = normalized_form
+                    t["qid"] = qid
 
                 # append the token to the line
-                line["tokens"].append(t)
+                line["t"].append(t)
 
         # append orphan lines
         if line is not None:
-            para["lines"].append(line)
+            line = normalize_line(line)
+            para["l"].append(line)
 
-        region["paragraphs"].append(para)
+        region["p"].append(para)
 
         if para is not None:
-            out["regions"].append(region)
+            out["r"].append(region)
 
     out["legacy"]["id"] = identifier
     out["legacy"]["source"] = soup.link['source']
@@ -200,7 +327,11 @@ def combine_article_parts(article_parts):
             "legacy": {}
         }
         article_dict["legacy"]["id"] = [
-            "{}.xml".format(ar["legacy"]["id"])
+            ar["legacy"]["id"]
+            for ar in article_parts
+        ]
+        article_dict["legacy"]["source"] = [
+            ar["legacy"]["source"]
             for ar in article_parts
         ]
         article_dict["meta"]["type"] = {}
@@ -213,6 +344,11 @@ def combine_article_parts(article_parts):
             for ar in article_parts
             for n in ar["meta"]["page_no"]
         ]
+
+        # TODO: remove from production
+        if len(article_dict["meta"]["page_no"]) > 1:
+            # pdb.set_trace()
+            pass
 
         article_dict["meta"]["language"] = {}
         article_dict["meta"]["language"]["raw"] =\
@@ -245,9 +381,9 @@ def parse_styles(text):
         styles.append(
             {
                 "id": int(n),
-                "font": font.replace('"', ""),
-                "font_size": float(font_size),
-                "rgb_color": [
+                "f": font.replace('"', ""),
+                "fs": float(font_size),
+                "rgb": [
                     int(i)
                     for i in color.replace("(", "").replace(")", "").split(",")
                 ]
@@ -271,7 +407,7 @@ def recompose_page(page_number, info_from_toc, page_elements):
     It's here that `n` attributes are assigned to each region/para/line/token.
     """
     page = {
-        "regions": []
+        "r": []
     }
     ordered_elements = sorted(
         list(info_from_toc.values()), key=itemgetter('seq')
@@ -281,40 +417,105 @@ def recompose_page(page_number, info_from_toc, page_elements):
     for el in ordered_elements:
 
         # filter out the ids keeping only Ads or Articles
-        # but escluing various pther files in the archive
-        if ("Ar" not in el["id"] or "Ar" not in el["id"]):
+        # but escluding various other files in the archive
+        if ("Ar" not in el["legacy_id"] or "Ar" not in el["legacy_id"]):
             continue
 
-        element = page_elements[el["id"]]
+        element = page_elements[el["legacy_id"]]
 
-        for i, region in enumerate(element["regions"]):
-            region["seq"] = i + 1
-            region["partOf"] = el["canonical_id"]
+        for i, region in enumerate(element["r"]):
+            region["pOf"] = el["id"]
 
-        page["regions"] += element["regions"]
-
-    paragraphs_count = 0
-    token_count = 0
-    line_count = 0
-
-    for region in page["regions"]:
-
-        for para in region["paragraphs"]:
-            paragraphs_count += 1
-            para["seq"] = paragraphs_count
-
-            for line in para["lines"]:
-                line_count += 1
-                line["seq"] = line_count
-
-                for token in line["tokens"]:
-                    token_count += 1
-                    token["seq"] = token_count
+        page["r"] += element["r"]
 
     return page
 
 
-def olive_import_issue(issue_dir, out_dir, temp_dir=None):
+def recompose_ToC(toc_data, articles):
+    """TODO."""
+    # concate content items from all pages into a single flat list
+    content_items = [
+        toc_data[pn][elid]
+        for pn in toc_data.keys() for elid in toc_data[pn].keys()
+    ]
+
+    # filter out those items that are part of a multipart article
+    contents = []
+    sorted_content_items = sorted(content_items, key=itemgetter('seq'))
+    for item in sorted_content_items:
+        if(item["type"] == "Article" or item["type"] == "Ad"):
+
+            # find the corresponding item in `articles`
+            # by using `legacy_id` as the search key
+            # if not found (raises exception) means that it's one of the
+            # multipart articles, and it's ok to skip it
+            legacy_id = item['legacy_id']
+            article = None
+            for ar in articles:
+                if isinstance(ar["legacy"]["id"], list):
+                    if ar["legacy"]["id"][0] == legacy_id:
+                        article = ar
+                else:
+                    if ar["legacy"]["id"] == legacy_id:
+                        article = ar
+
+            try:
+                assert article is not None
+            except Exception:
+                continue
+
+            item['m'] = {}
+            item['m']["id"] = item["id"]
+            item['m']['pp'] = article["meta"]["page_no"]
+            item['m']['l'] = article["meta"]["language"]["raw"].lower()
+            item['m']['pub'] = article["meta"]["publication"]
+            item['m']['tp'] = article["meta"]["type"]["raw"].lower()
+            item['m']['t'] = article["meta"]["title"]
+
+            item["l"] = {}
+            item["l"]["id"] = article["legacy"]["id"]
+            item["l"]["source"] = article["legacy"]["source"]
+
+            # delete redundant fields
+            del item['seq']
+            del item['legacy_id']
+            del item['type']
+            del item['id']
+
+            contents.append(item)
+    return contents
+
+
+def check_consistency(issue_obj, element_ids):
+    """Perform a consistency check of Issue against the Olive files.
+
+    Ensure that all article ids from the Olive package are found in the Issue
+    object. Separate article components may have been merged into a single
+    ToC item, so it's necessary to compare the set of legacy IDs with the
+    set of all element IDs found within the Olive files.
+    """
+    # check that the IDs from the ToC.XML are found also in the issue.json
+    all_item_ids = []
+    for item in issue_obj.i:
+        if isinstance(item["l"]["id"], list):
+            all_item_ids += item["l"]["id"]
+        else:
+            all_item_ids.append(item["l"]["id"])
+
+    difference_btw_sets = set(element_ids).difference(set(all_item_ids))
+
+    try:
+        assert len(difference_btw_sets) == 0
+    except AssertionError as e:
+        logger.warning(
+            "There are missing elements in the issue.json: {}".format(
+                difference_btw_sets
+            )
+        )
+        raise e
+
+
+def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
     """Import newspaper issues from a directory structure.
 
     This function imports a set of newspaper issues from a directory
@@ -344,11 +545,17 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
         the import was successful; [2] the exception message if [1] is `False`,
         otherwise `None`.
     """
-    out_dir = os.path.join(out_dir, canonical_path(issue_dir, path_type="dir"))
     logger.info("Started importing '{}'...'".format(issue_dir.path))
 
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
+    if out_dir is not None:
+
+        out_dir = os.path.join(
+            out_dir,
+            canonical_path(issue_dir, path_type="dir")
+        )
+
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
 
     if temp_dir is not None:
         temp_dir = os.path.join(
@@ -359,9 +566,8 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
     if temp_dir is not None and not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
 
-    # ns = schemas_to_classes()  # TODO: implement properly
-
-    issue_contents = []
+    PageSchema = get_page_schema()
+    IssueSchema = get_issue_schema()
 
     working_archive = os.path.join(issue_dir.path, "Document.zip")
     if os.path.isfile(working_archive):
@@ -375,7 +581,7 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
 
         # parse the XML files in the .zip archive
         counter = 0
-        article = []
+        content_elements = []
         items = sorted(
             [
                 item
@@ -424,6 +630,10 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
             items
         ))
         articles = []
+        all_element_ids = []
+
+        # recompose each article by following the continuation links
+        article_parts = []
         while len(items) > 0:
             counter += 1
 
@@ -459,7 +669,7 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
                         items.append(item)
                         continue
 
-                article.append(new_data)
+                article_parts.append(new_data)
 
                 if new_data["legacy"]['continuation_to'] is not None:
                     next_id = new_data["legacy"]["continuation_to"]
@@ -467,9 +677,9 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
                     internal_deque.append(next_id)
                     items.remove(next_id)
 
-            articles += article
-
-            article = []
+            content_elements += article_parts
+            articles.append(combine_article_parts(article_parts))
+            article_parts = []
 
         # at this point the articles have been recomposed
         # but we still need to recompose pages
@@ -477,47 +687,55 @@ def olive_import_issue(issue_dir, out_dir, temp_dir=None):
 
             info_from_toc = toc_data[page_no]
             element_ids = toc_data[page_no].keys()
+
+            # create a list of all element IDs for the issue.json
+            all_element_ids = [
+                el_id
+                for el_id in toc_data[page_no].keys()
+                if "Ar" in el_id or "Ad" in el_id
+            ]
+
             elements = {
                 el["legacy"]["id"]: el
-                for el in articles
+                for el in content_elements
                 if (el["legacy"]["id"] in element_ids)
             }
-            page = recompose_page(page_no, info_from_toc, elements)
-            issue_contents += list(elements.values())
 
-            # write the json page to file
-            out_file = os.path.join(
-                out_dir,
-                canonical_path(issue_dir, "p" + str(page_no).zfill(4), ".json")
-            )
-            with codecs.open(out_file, 'w', 'utf-8') as f:
-                json.dump(page, f)
-                logger.info(
-                    "Written page \'{}\' to {}".format(
-                        page_no,
-                        out_file
-                    )
+            page_dict = recompose_page(page_no, info_from_toc, elements)
+            page = PageSchema(**page_dict)
+
+            # serialize the page object to JSON
+            if out_dir is not None:
+                serialize_page(
+                    page_no,
+                    page,
+                    issue_dir,
+                    out_dir=out_dir
+                )
+            elif s3_bucket is not None:
+                serialize_page(
+                    page_no,
+                    page,
+                    issue_dir,
+                    s3_bucket=s3_bucket
                 )
 
-        # TODO: combine info in `articles`
-        content_items = [
-            toc_data[pn][elid]
-            for pn in toc_data.keys() for elid in toc_data[pn].keys()
-        ]
-
-        contents = {
-            "articles": [i for i in content_items if i["type"] == "Article"],
-            "ads": [i for i in content_items if i["type"] == "Ad"],
-            "styles": styles
+        contents = recompose_ToC(toc_data, articles)
+        issue_data = {
+            "s": styles,
+            "i": contents
         }
 
-        contents_filename = os.path.join(
-            out_dir,
-            canonical_path(issue_dir, "info", extension=".json")
-        )
+        issue = IssueSchema(**issue_data)
+        if out_dir is not None:
+            serialize_issue(issue, issue_dir, out_dir=out_dir)
+        elif s3_bucket is not None:
+            serialize_issue(issue, issue_dir, s3_bucket=s3_bucket)
 
-        with codecs.open(contents_filename, 'w', 'utf-8') as f:
-            json.dump(contents, f)
+        check_consistency(issue, all_element_ids)
+
+        # 2. (TODO) check that each item in the issue.json
+        # has at least one text region in the corresponding page file
 
     logger.debug("Done importing '{}'".format(out_dir))
     return (issue_dir, True, None)
