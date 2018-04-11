@@ -1,13 +1,14 @@
 """A bunch of helper functions."""
 
-import os
+import codecs
 import json
+import logging
+import os
+
 import boto
 import boto.s3.connection
-from boto.s3.key import Key
-import codecs
-import logging
 import python_jsonschema_objects as pjs
+from boto.s3.key import Key
 from impresso_commons.path import canonical_path
 
 logger = logging.getLogger(__name__)
@@ -24,6 +25,20 @@ def get_page_schema(schema_folder="./text_importer/schemas/"):
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().Pageschema
+    return ns
+
+
+def get_issue_schema(schema_folder="./text_importer/schemas/"):
+    """Generate a list of python classes starting from a JSON schema.
+
+    :param schema_folder: path to the schema folder (default="./schemas/")
+    :type schema_folder: string
+    :rtype: `python_jsonschema_objects.util.Namespace`
+    """
+    with open(os.path.join(schema_folder, "issue.schema"), 'r') as f:
+        json_schema = json.load(f)
+    builder = pjs.ObjectBuilder(json_schema)
+    ns = builder.build_classes().Issueschema
     return ns
 
 
@@ -83,6 +98,51 @@ def serialize_page(page_number, page, issue_dir, out_dir=None, s3_bucket=None):
             canonical_filename
         )
         k.set_contents_from_string(page.serialize())
+        s3_connection.close()
+        logger.info("Written output to s3 (bucket={}, key={})".format(
+            bucket.name,
+            k.key
+        ))
+
+    else:
+        raise Exception
+
+
+def serialize_issue(issue, issue_dir, out_dir=None, s3_bucket=None):
+    issue.validate()
+    # write the json page to file
+
+    canonical_filename = canonical_path(issue_dir, "issue", extension=".json")
+
+    if out_dir is not None and s3_bucket is None:
+        out_file = os.path.join(
+            out_dir,
+            canonical_filename
+        )
+
+        with codecs.open(out_file, 'w', 'utf-8') as f:
+            f.write(issue.serialize(indent=3))
+            logger.info(
+                "Written issue info file to {}".format(out_file)
+            )
+
+    elif s3_bucket is not None and out_dir is None:
+        s3_connection = get_s3_connection()
+        bucket_names = [b.name for b in s3_connection.get_all_buckets()]
+
+        if s3_bucket not in bucket_names:
+            bucket = s3_connection.create_bucket(s3_bucket)
+        else:
+            bucket = s3_connection.get_bucket(s3_bucket)
+
+        assert bucket is not None
+
+        k = Key(bucket)
+        k.key = os.path.join(
+            canonical_path(issue_dir, path_type="dir"),
+            canonical_filename
+        )
+        k.set_contents_from_string(issue.serialize())
         s3_connection.close()
         logger.info("Written output to s3 (bucket={}, key={})".format(
             bucket.name,
