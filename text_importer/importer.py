@@ -178,20 +178,15 @@ def main(args):
 
     """
     # prepare the execution of the import function
-    if outp_dir is not None:
-        tasks = [
-            delayed(olive_import_issue)(i, out_dir=outp_dir, temp_dir=temp_dir)
-            for i in issues
-        ]
-    elif out_bucket is not None:
-        tasks = [
-            delayed(olive_import_issue)(
-                i,
-                s3_bucket=out_bucket,
-                temp_dir=temp_dir
-            )
-            for i in issues
-        ]
+    tasks = [
+        delayed(olive_import_issue)(
+            i,
+            out_dir=outp_dir,
+            s3_bucket=out_bucket,
+            temp_dir=temp_dir
+        )
+        for i in issues
+    ]
 
     print(
         "\nImporting {} newspaper issues...(parallelized={})".format(

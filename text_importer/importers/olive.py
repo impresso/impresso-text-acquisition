@@ -677,9 +677,16 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
                     internal_deque.append(next_id)
                     items.remove(next_id)
 
-            content_elements += article_parts
-            articles.append(combine_article_parts(article_parts))
-            article_parts = []
+            try:
+                content_elements += article_parts
+                articles.append(combine_article_parts(article_parts))
+                article_parts = []
+            except Exception as e:
+                logger.error("Import of issue {} failed with error {}".format(
+                    issue_dir,
+                    e
+                ))
+                return
 
         # at this point the articles have been recomposed
         # but we still need to recompose pages
