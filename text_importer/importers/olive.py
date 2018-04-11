@@ -622,7 +622,7 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
                     )
                 )
                 styles = []
-        pdb.set_trace()
+
         # parse the TOC
         toc_path = os.path.join(issue_dir.path, "TOC.xml")
         toc_data = olive_toc_parser(toc_path, issue_dir)
