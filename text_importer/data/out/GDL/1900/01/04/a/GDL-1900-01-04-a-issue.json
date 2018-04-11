@@ -1,1286 +1,1955 @@
 {
-   "articles": [
+   "i": [
       {
-         "id": "Ar00100",
-         "canonical_id": "GDL-1900-01-04-a-i0005",
-         "type": "Article",
-         "seq": 5
+         "l": {
+            "id": "Ar00102",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0001",
+            "l": "french",
+            "pp": [
+               1
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00101",
-         "canonical_id": "GDL-1900-01-04-a-i0009",
-         "type": "Article",
-         "seq": 9
+         "l": {
+            "id": "Ar00105",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0002",
+            "l": "french",
+            "pp": [
+               1
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00102",
-         "canonical_id": "GDL-1900-01-04-a-i0001",
-         "type": "Article",
-         "seq": 1
+         "l": {
+            "id": "Ar00103",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0003",
+            "l": "french",
+            "pp": [
+               1
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00103",
-         "canonical_id": "GDL-1900-01-04-a-i0003",
-         "type": "Article",
-         "seq": 3
+         "l": {
+            "id": "Ar00107",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0004",
+            "l": "french",
+            "pp": [
+               1
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00104",
-         "canonical_id": "GDL-1900-01-04-a-i0008",
-         "type": "Article",
-         "seq": 8
+         "l": {
+            "id": "Ar00100",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0005",
+            "l": "french",
+            "pp": [
+               1
+            ],
+            "pub": "GDL",
+            "t": "Lausanne, 4 janvier 1900.",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00105",
-         "canonical_id": "GDL-1900-01-04-a-i0002",
-         "type": "Article",
-         "seq": 2
+         "l": {
+            "id": "Ar00108",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0006",
+            "l": "french",
+            "pp": [
+               1
+            ],
+            "pub": "GDL",
+            "t": "A la Haute Cour.",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00106",
-         "canonical_id": "GDL-1900-01-04-a-i0007",
-         "type": "Article",
-         "seq": 7
+         "l": {
+            "id": "Ar00106",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0007",
+            "l": "french",
+            "pp": [
+               1
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00107",
-         "canonical_id": "GDL-1900-01-04-a-i0004",
-         "type": "Article",
-         "seq": 4
+         "l": {
+            "id": "Ar00104",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0008",
+            "l": "french",
+            "pp": [
+               1
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00108",
-         "canonical_id": "GDL-1900-01-04-a-i0006",
-         "type": "Article",
-         "seq": 6
+         "l": {
+            "id": [
+               "Ar00101",
+               "Ar00204"
+            ],
+            "source": [
+               "103-GDL-1900-01-04-0001.pdf",
+               "103-GDL-1900-01-04-0001.pdf"
+            ]
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0009",
+            "l": "french",
+            "pp": [
+               1,
+               2
+            ],
+            "pub": "GDL",
+            "t": "Pierre-Conradin Romedi.",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00200",
-         "canonical_id": "GDL-1900-01-04-a-i0011",
-         "type": "Article",
-         "seq": 11
+         "l": {
+            "id": "Ar00200",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0011",
+            "l": "french",
+            "pp": [
+               2
+            ],
+            "pub": "GDL",
+            "t": "LETTRE DE PARIS",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00201",
-         "canonical_id": "GDL-1900-01-04-a-i0012",
-         "type": "Article",
-         "seq": 12
+         "l": {
+            "id": "Ar00201",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0012",
+            "l": "french",
+            "pp": [
+               2
+            ],
+            "pub": "GDL",
+            "t": "LES JUSTES",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00202",
-         "canonical_id": "GDL-1900-01-04-a-i0013",
-         "type": "Article",
-         "seq": 13
+         "l": {
+            "id": "Ar00202",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0013",
+            "l": "french",
+            "pp": [
+               2
+            ],
+            "pub": "GDL",
+            "t": "Rescrit imp\u00e9rial.",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00203",
-         "canonical_id": "GDL-1900-01-04-a-i0014",
-         "type": "Article",
-         "seq": 14
+         "l": {
+            "id": "Ar00203",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0014",
+            "l": "french",
+            "pp": [
+               2
+            ],
+            "pub": "GDL",
+            "t": "CONF\u00c9D\u00c9RATION SOISSE",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00204",
-         "canonical_id": "GDL-1900-01-04-a-i0010",
-         "type": "Article",
-         "seq": 10
+         "l": {
+            "id": "Ar00300",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0015",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00300",
-         "canonical_id": "GDL-1900-01-04-a-i0015",
-         "type": "Article",
-         "seq": 15
+         "l": {
+            "id": "Ar00309",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0016",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "NOUVELLES DES GANTONS",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00301",
-         "canonical_id": "GDL-1900-01-04-a-i0017",
-         "type": "Article",
-         "seq": 17
+         "l": {
+            "id": "Ar00301",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0017",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "CANTON DE VAUD",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00302",
-         "canonical_id": "GDL-1900-01-04-a-i0018",
-         "type": "Article",
-         "seq": 18
+         "l": {
+            "id": "Ar00302",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0018",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "LAUSANNE",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00303",
-         "canonical_id": "GDL-1900-01-04-a-i0019",
-         "type": "Article",
-         "seq": 19
+         "l": {
+            "id": "Ar00303",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0019",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "CHRONIQUE VITICOLE",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00304",
-         "canonical_id": "GDL-1900-01-04-a-i0020",
-         "type": "Article",
-         "seq": 20
+         "l": {
+            "id": "Ar00304",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0020",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "CHRONIQUE JUDICIAIRE",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00305",
-         "canonical_id": "GDL-1900-01-04-a-i0021",
-         "type": "Article",
-         "seq": 21
+         "l": {
+            "id": "Ar00305",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0021",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "LES LIVRES",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00306",
-         "canonical_id": "GDL-1900-01-04-a-i0022",
-         "type": "Article",
-         "seq": 22
+         "l": {
+            "id": "Ar00306",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0022",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "DERNIER COURRIER",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00307",
-         "canonical_id": "GDL-1900-01-04-a-i0023",
-         "type": "Article",
-         "seq": 23
+         "l": {
+            "id": "Ar00307",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0023",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "Derni\u00e8res d\u00e9p\u00eaches",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00308",
-         "canonical_id": "GDL-1900-01-04-a-i0024",
-         "type": "Article",
-         "seq": 24
+         "l": {
+            "id": "Ar00308",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0024",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "FAITS DIVERS",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00309",
-         "canonical_id": "GDL-1900-01-04-a-i0016",
-         "type": "Article",
-         "seq": 16
+         "l": {
+            "id": "Ar00314",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0025",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00314",
-         "canonical_id": "GDL-1900-01-04-a-i0025",
-         "type": "Article",
-         "seq": 25
+         "l": {
+            "id": "Ar00315",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0026",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
       },
       {
-         "id": "Ar00315",
-         "canonical_id": "GDL-1900-01-04-a-i0026",
-         "type": "Article",
-         "seq": 26
+         "l": {
+            "id": "Ad00310",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0027",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
       },
       {
-         "id": "Ar00404",
-         "canonical_id": "GDL-1900-01-04-a-i0042",
-         "type": "Article",
-         "seq": 42
+         "l": {
+            "id": "Ad00311",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0028",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
       },
       {
-         "id": "Ar00405",
-         "canonical_id": "GDL-1900-01-04-a-i0046",
-         "type": "Article",
-         "seq": 46
+         "l": {
+            "id": "Ad00312",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0029",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
       },
       {
-         "id": "Ar00436",
-         "canonical_id": "GDL-1900-01-04-a-i0049",
-         "type": "Article",
-         "seq": 49
+         "l": {
+            "id": "Ad00313",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0030",
+            "l": "french",
+            "pp": [
+               3
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00400",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0031",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00401",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0032",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00402",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0033",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00431",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0034",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00430",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0035",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00429",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0036",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00428",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0037",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00406",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0038",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00426",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0039",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00425",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0040",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00427",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0041",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ar00404",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0042",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00407",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0043",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00419",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0044",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00421",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0045",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ar00405",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0046",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00422",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0047",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00403",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0048",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ar00436",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0049",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00420",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0050",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00424",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0051",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00423",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0052",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00408",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0053",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00437",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0054",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00418",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0055",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00417",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0056",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00416",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0057",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00432",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0058",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00409",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0059",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00435",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0060",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00410",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0061",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00413",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0062",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00433",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0063",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00412",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0064",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00415",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0065",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00414",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0066",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00411",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0067",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
+      },
+      {
+         "l": {
+            "id": "Ad00434",
+            "source": "103-GDL-1900-01-04-0001.pdf"
+         },
+         "m": {
+            "id": "GDL-1900-01-04-a-i0068",
+            "l": "french",
+            "pp": [
+               4
+            ],
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
+         }
       }
    ],
-   "ads": [
+   "s": [
       {
-         "id": "Ad00310",
-         "canonical_id": "GDL-1900-01-04-a-i0027",
-         "type": "Ad",
-         "seq": 27
-      },
-      {
-         "id": "Ad00311",
-         "canonical_id": "GDL-1900-01-04-a-i0028",
-         "type": "Ad",
-         "seq": 28
-      },
-      {
-         "id": "Ad00312",
-         "canonical_id": "GDL-1900-01-04-a-i0029",
-         "type": "Ad",
-         "seq": 29
-      },
-      {
-         "id": "Ad00313",
-         "canonical_id": "GDL-1900-01-04-a-i0030",
-         "type": "Ad",
-         "seq": 30
-      },
-      {
-         "id": "Ad00400",
-         "canonical_id": "GDL-1900-01-04-a-i0031",
-         "type": "Ad",
-         "seq": 31
-      },
-      {
-         "id": "Ad00401",
-         "canonical_id": "GDL-1900-01-04-a-i0032",
-         "type": "Ad",
-         "seq": 32
-      },
-      {
-         "id": "Ad00402",
-         "canonical_id": "GDL-1900-01-04-a-i0033",
-         "type": "Ad",
-         "seq": 33
-      },
-      {
-         "id": "Ad00403",
-         "canonical_id": "GDL-1900-01-04-a-i0048",
-         "type": "Ad",
-         "seq": 48
-      },
-      {
-         "id": "Ad00406",
-         "canonical_id": "GDL-1900-01-04-a-i0038",
-         "type": "Ad",
-         "seq": 38
-      },
-      {
-         "id": "Ad00407",
-         "canonical_id": "GDL-1900-01-04-a-i0043",
-         "type": "Ad",
-         "seq": 43
-      },
-      {
-         "id": "Ad00408",
-         "canonical_id": "GDL-1900-01-04-a-i0053",
-         "type": "Ad",
-         "seq": 53
-      },
-      {
-         "id": "Ad00409",
-         "canonical_id": "GDL-1900-01-04-a-i0059",
-         "type": "Ad",
-         "seq": 59
-      },
-      {
-         "id": "Ad00410",
-         "canonical_id": "GDL-1900-01-04-a-i0061",
-         "type": "Ad",
-         "seq": 61
-      },
-      {
-         "id": "Ad00411",
-         "canonical_id": "GDL-1900-01-04-a-i0067",
-         "type": "Ad",
-         "seq": 67
-      },
-      {
-         "id": "Ad00412",
-         "canonical_id": "GDL-1900-01-04-a-i0064",
-         "type": "Ad",
-         "seq": 64
-      },
-      {
-         "id": "Ad00413",
-         "canonical_id": "GDL-1900-01-04-a-i0062",
-         "type": "Ad",
-         "seq": 62
-      },
-      {
-         "id": "Ad00414",
-         "canonical_id": "GDL-1900-01-04-a-i0066",
-         "type": "Ad",
-         "seq": 66
-      },
-      {
-         "id": "Ad00415",
-         "canonical_id": "GDL-1900-01-04-a-i0065",
-         "type": "Ad",
-         "seq": 65
-      },
-      {
-         "id": "Ad00416",
-         "canonical_id": "GDL-1900-01-04-a-i0057",
-         "type": "Ad",
-         "seq": 57
-      },
-      {
-         "id": "Ad00417",
-         "canonical_id": "GDL-1900-01-04-a-i0056",
-         "type": "Ad",
-         "seq": 56
-      },
-      {
-         "id": "Ad00418",
-         "canonical_id": "GDL-1900-01-04-a-i0055",
-         "type": "Ad",
-         "seq": 55
-      },
-      {
-         "id": "Ad00419",
-         "canonical_id": "GDL-1900-01-04-a-i0044",
-         "type": "Ad",
-         "seq": 44
-      },
-      {
-         "id": "Ad00420",
-         "canonical_id": "GDL-1900-01-04-a-i0050",
-         "type": "Ad",
-         "seq": 50
-      },
-      {
-         "id": "Ad00421",
-         "canonical_id": "GDL-1900-01-04-a-i0045",
-         "type": "Ad",
-         "seq": 45
-      },
-      {
-         "id": "Ad00422",
-         "canonical_id": "GDL-1900-01-04-a-i0047",
-         "type": "Ad",
-         "seq": 47
-      },
-      {
-         "id": "Ad00423",
-         "canonical_id": "GDL-1900-01-04-a-i0052",
-         "type": "Ad",
-         "seq": 52
-      },
-      {
-         "id": "Ad00424",
-         "canonical_id": "GDL-1900-01-04-a-i0051",
-         "type": "Ad",
-         "seq": 51
-      },
-      {
-         "id": "Ad00425",
-         "canonical_id": "GDL-1900-01-04-a-i0040",
-         "type": "Ad",
-         "seq": 40
-      },
-      {
-         "id": "Ad00426",
-         "canonical_id": "GDL-1900-01-04-a-i0039",
-         "type": "Ad",
-         "seq": 39
-      },
-      {
-         "id": "Ad00427",
-         "canonical_id": "GDL-1900-01-04-a-i0041",
-         "type": "Ad",
-         "seq": 41
-      },
-      {
-         "id": "Ad00428",
-         "canonical_id": "GDL-1900-01-04-a-i0037",
-         "type": "Ad",
-         "seq": 37
-      },
-      {
-         "id": "Ad00429",
-         "canonical_id": "GDL-1900-01-04-a-i0036",
-         "type": "Ad",
-         "seq": 36
-      },
-      {
-         "id": "Ad00430",
-         "canonical_id": "GDL-1900-01-04-a-i0035",
-         "type": "Ad",
-         "seq": 35
-      },
-      {
-         "id": "Ad00431",
-         "canonical_id": "GDL-1900-01-04-a-i0034",
-         "type": "Ad",
-         "seq": 34
-      },
-      {
-         "id": "Ad00432",
-         "canonical_id": "GDL-1900-01-04-a-i0058",
-         "type": "Ad",
-         "seq": 58
-      },
-      {
-         "id": "Ad00433",
-         "canonical_id": "GDL-1900-01-04-a-i0063",
-         "type": "Ad",
-         "seq": 63
-      },
-      {
-         "id": "Ad00434",
-         "canonical_id": "GDL-1900-01-04-a-i0068",
-         "type": "Ad",
-         "seq": 68
-      },
-      {
-         "id": "Ad00435",
-         "canonical_id": "GDL-1900-01-04-a-i0060",
-         "type": "Ad",
-         "seq": 60
-      },
-      {
-         "id": "Ad00437",
-         "canonical_id": "GDL-1900-01-04-a-i0054",
-         "type": "Ad",
-         "seq": 54
-      }
-   ],
-   "styles": [
-      {
-         "id": 1,
-         "font": "Times-Roman",
-         "font_size": 10.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 10.0,
+         "id": 1
       },
       {
-         "id": 2,
-         "font": "Helvetica-BoldOblique",
-         "font_size": 13.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-BoldOblique",
+         "fs": 13.0,
+         "id": 2
       },
       {
-         "id": 3,
-         "font": "Times-BoldItalic",
-         "font_size": 7.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 7.0,
+         "id": 3
       },
       {
-         "id": 4,
-         "font": "Times-Bold",
-         "font_size": 14.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 14.0,
+         "id": 4
       },
       {
-         "id": 5,
-         "font": "Helvetica",
-         "font_size": 10.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica",
+         "fs": 10.0,
+         "id": 5
       },
       {
-         "id": 6,
-         "font": "Helvetica-Bold",
-         "font_size": 10.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 10.0,
+         "id": 6
       },
       {
-         "id": 7,
-         "font": "Times-Bold",
-         "font_size": 117.99,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 117.99,
+         "id": 7
       },
       {
-         "id": 8,
-         "font": "Times-Roman",
-         "font_size": 12.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 12.0,
+         "id": 8
       },
       {
-         "id": 9,
-         "font": "Times-Bold",
-         "font_size": 12.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 12.0,
+         "id": 9
       },
       {
-         "id": 10,
-         "font": "Times-Italic",
-         "font_size": 12.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Italic",
+         "fs": 12.0,
+         "id": 10
       },
       {
-         "id": 11,
-         "font": "Times-Bold",
-         "font_size": 36.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 36.0,
+         "id": 11
       },
       {
-         "id": 12,
-         "font": "Times-Bold",
-         "font_size": 10.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 10.0,
+         "id": 12
       },
       {
-         "id": 13,
-         "font": "Times-Bold",
-         "font_size": 9.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 9.0,
+         "id": 13
       },
       {
-         "id": 14,
-         "font": "Times-Roman",
-         "font_size": 9.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 9.0,
+         "id": 14
       },
       {
-         "id": 15,
-         "font": "Times-Italic",
-         "font_size": 10.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Italic",
+         "fs": 10.0,
+         "id": 15
       },
       {
-         "id": 16,
-         "font": "Times-BoldItalic",
-         "font_size": 10.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 10.0,
+         "id": 16
       },
       {
-         "id": 17,
-         "font": "Times-Bold",
-         "font_size": 11.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 11.0,
+         "id": 17
       },
       {
-         "id": 18,
-         "font": "Times-Roman",
-         "font_size": 11.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 11.0,
+         "id": 18
       },
       {
-         "id": 19,
-         "font": "Times-Bold",
-         "font_size": 17.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 17.0,
+         "id": 19
       },
       {
-         "id": 20,
-         "font": "Times-Roman",
-         "font_size": 6.5,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 6.5,
+         "id": 20
       },
       {
-         "id": 21,
-         "font": "Times-Roman",
-         "font_size": 21.31,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 21.31,
+         "id": 21
       },
       {
-         "id": 22,
-         "font": "Times-Roman",
-         "font_size": 22.707,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 22.707,
+         "id": 22
       },
       {
-         "id": 23,
-         "font": "Times-Bold",
-         "font_size": 24.993,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 24.993,
+         "id": 23
       },
       {
-         "id": 24,
-         "font": "Times-Roman",
-         "font_size": 8.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 8.0,
+         "id": 24
       },
       {
-         "id": 25,
-         "font": "Times-Roman",
-         "font_size": 6.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 6.0,
+         "id": 25
       },
       {
-         "id": 26,
-         "font": "Times-Roman",
-         "font_size": 3.9,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 3.9,
+         "id": 26
       },
       {
-         "id": 27,
-         "font": "Times-Bold",
-         "font_size": 20.994,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 20.994,
+         "id": 27
       },
       {
-         "id": 28,
-         "font": "Times-Roman",
-         "font_size": 13.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 13.0,
+         "id": 28
       },
       {
-         "id": 29,
-         "font": "Helvetica-Oblique",
-         "font_size": 10.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Oblique",
+         "fs": 10.0,
+         "id": 29
       },
       {
-         "id": 30,
-         "font": "Times-BoldItalic",
-         "font_size": 14.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 14.0,
+         "id": 30
       },
       {
-         "id": 31,
-         "font": "Times-Roman",
-         "font_size": 7.8,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 7.8,
+         "id": 31
       },
       {
-         "id": 32,
-         "font": "Helvetica-Bold",
-         "font_size": 15.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 15.0,
+         "id": 32
       },
       {
-         "id": 33,
-         "font": "Helvetica-Bold",
-         "font_size": 24.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 24.0,
+         "id": 33
       },
       {
-         "id": 34,
-         "font": "Times-Roman",
-         "font_size": 21.126,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 21.126,
+         "id": 34
       },
       {
-         "id": 35,
-         "font": "Helvetica-Oblique",
-         "font_size": 13.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Oblique",
+         "fs": 13.0,
+         "id": 35
       },
       {
-         "id": 36,
-         "font": "Times-Roman",
-         "font_size": 16.449,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 16.449,
+         "id": 36
       },
       {
-         "id": 37,
-         "font": "Helvetica",
-         "font_size": 21.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica",
+         "fs": 21.0,
+         "id": 37
       },
       {
-         "id": 38,
-         "font": "Times-Bold",
-         "font_size": 13.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 13.0,
+         "id": 38
       },
       {
-         "id": 39,
-         "font": "Helvetica-Bold",
-         "font_size": 6.999,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 6.999,
+         "id": 39
       },
       {
-         "id": 40,
-         "font": "Times-Bold",
-         "font_size": 19.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 19.0,
+         "id": 40
       },
       {
-         "id": 41,
-         "font": "Times-Italic",
-         "font_size": 6.5,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Italic",
+         "fs": 6.5,
+         "id": 41
       },
       {
-         "id": 42,
-         "font": "Times-Bold",
-         "font_size": 15.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 15.0,
+         "id": 42
       },
       {
-         "id": 43,
-         "font": "Times-Bold",
-         "font_size": 8.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 8.0,
+         "id": 43
       },
       {
-         "id": 44,
-         "font": "Times-Roman",
-         "font_size": 23.145,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 23.145,
+         "id": 44
       },
       {
-         "id": 45,
-         "font": "Times-Bold",
-         "font_size": 24.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 24.0,
+         "id": 45
       },
       {
-         "id": 46,
-         "font": "Times-Roman",
-         "font_size": 23.057,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 23.057,
+         "id": 46
       },
       {
-         "id": 47,
-         "font": "Courier",
-         "font_size": 12.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Courier",
+         "fs": 12.0,
+         "id": 47
       },
       {
-         "id": 48,
-         "font": "Courier-Bold",
-         "font_size": 8.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Courier-Bold",
+         "fs": 8.0,
+         "id": 48
       },
       {
-         "id": 49,
-         "font": "Courier-Bold",
-         "font_size": 9.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Courier-Bold",
+         "fs": 9.0,
+         "id": 49
       },
       {
-         "id": 50,
-         "font": "Times-Bold",
-         "font_size": 23.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 23.0,
+         "id": 50
       },
       {
-         "id": 51,
-         "font": "Helvetica-Bold",
-         "font_size": 32.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 32.0,
+         "id": 51
       },
       {
-         "id": 52,
-         "font": "Times-BoldItalic",
-         "font_size": 17.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 17.0,
+         "id": 52
       },
       {
-         "id": 53,
-         "font": "Helvetica-Bold",
-         "font_size": 21.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 21.0,
+         "id": 53
       },
       {
-         "id": 54,
-         "font": "Helvetica",
-         "font_size": 1.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica",
+         "fs": 1.0,
+         "id": 54
       },
       {
-         "id": 55,
-         "font": "Helvetica",
-         "font_size": 0.65,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica",
+         "fs": 0.65,
+         "id": 55
       },
       {
-         "id": 56,
-         "font": "Times-Bold",
-         "font_size": 31.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 31.0,
+         "id": 56
       },
       {
-         "id": 57,
-         "font": "Times-Bold",
-         "font_size": 49.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 49.0,
+         "id": 57
       },
       {
-         "id": 58,
-         "font": "Times-Roman",
-         "font_size": 46.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 46.0,
+         "id": 58
       },
       {
-         "id": 59,
-         "font": "Times-Italic",
-         "font_size": 9.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Italic",
+         "fs": 9.0,
+         "id": 59
       },
       {
-         "id": 60,
-         "font": "Times-Italic",
-         "font_size": 20.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Italic",
+         "fs": 20.0,
+         "id": 60
       },
       {
-         "id": 61,
-         "font": "Times-Roman",
-         "font_size": 20.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 20.0,
+         "id": 61
       },
       {
-         "id": 62,
-         "font": "Times-Bold",
-         "font_size": 16.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 16.0,
+         "id": 62
       },
       {
-         "id": 63,
-         "font": "Times-BoldItalic",
-         "font_size": 16.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 16.0,
+         "id": 63
       },
       {
-         "id": 64,
-         "font": "Times-Roman",
-         "font_size": 5.85,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 5.85,
+         "id": 64
       },
       {
-         "id": 65,
-         "font": "Helvetica-Bold",
-         "font_size": 20.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 20.0,
+         "id": 65
       },
       {
-         "id": 66,
-         "font": "Helvetica-BoldOblique",
-         "font_size": 20.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-BoldOblique",
+         "fs": 20.0,
+         "id": 66
       },
       {
-         "id": 67,
-         "font": "Times-Roman",
-         "font_size": 14.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 14.0,
+         "id": 67
       },
       {
-         "id": 68,
-         "font": "Times-BoldItalic",
-         "font_size": 49.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 49.0,
+         "id": 68
       },
       {
-         "id": 69,
-         "font": "Helvetica",
-         "font_size": 11.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica",
+         "fs": 11.0,
+         "id": 69
       },
       {
-         "id": 70,
-         "font": "Helvetica",
-         "font_size": 7.15,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica",
+         "fs": 7.15,
+         "id": 70
       },
       {
-         "id": 71,
-         "font": "Helvetica-Bold",
-         "font_size": 8.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 8.0,
+         "id": 71
       },
       {
-         "id": 72,
-         "font": "Times-Roman",
-         "font_size": 8.1,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 8.1,
+         "id": 72
       },
       {
-         "id": 73,
-         "font": "Times-Roman",
-         "font_size": 7.1,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 7.1,
+         "id": 73
       },
       {
-         "id": 74,
-         "font": "Helvetica-Bold",
-         "font_size": 7.1,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 7.1,
+         "id": 74
       },
       {
-         "id": 75,
-         "font": "Helvetica-Bold",
-         "font_size": 17.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 17.0,
+         "id": 75
       },
       {
-         "id": 76,
-         "font": "Times-Bold",
-         "font_size": 20.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 20.0,
+         "id": 76
       },
       {
-         "id": 77,
-         "font": "Times-Bold",
-         "font_size": 27.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 27.0,
+         "id": 77
       },
       {
-         "id": 78,
-         "font": "Helvetica",
-         "font_size": 15.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica",
+         "fs": 15.0,
+         "id": 78
       },
       {
-         "id": 79,
-         "font": "Times-Bold",
-         "font_size": 14.95,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 14.95,
+         "id": 79
       },
       {
-         "id": 80,
-         "font": "Times-Bold",
-         "font_size": 22.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 22.0,
+         "id": 80
       },
       {
-         "id": 81,
-         "font": "Times-Roman",
-         "font_size": 22.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Roman",
+         "fs": 22.0,
+         "id": 81
       },
       {
-         "id": 82,
-         "font": "Times-Bold",
-         "font_size": 35.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 35.0,
+         "id": 82
       },
       {
-         "id": 83,
-         "font": "Helvetica-Bold",
-         "font_size": 23.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 23.0,
+         "id": 83
       },
       {
-         "id": 84,
-         "font": "Courier",
-         "font_size": 10.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Courier",
+         "fs": 10.0,
+         "id": 84
       },
       {
-         "id": 85,
-         "font": "Times-Bold",
-         "font_size": 7.1,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Bold",
+         "fs": 7.1,
+         "id": 85
       },
       {
-         "id": 86,
-         "font": "Times-Italic",
-         "font_size": 11.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Times-Italic",
+         "fs": 11.0,
+         "id": 86
       },
       {
-         "id": 87,
-         "font": "Helvetica-Oblique",
-         "font_size": 11.0,
-         "rgb_color": [
+         "rgb": [
             0,
             0,
             0
-         ]
+         ],
+         "f": "Helvetica-Oblique",
+         "fs": 11.0,
+         "id": 87
       }
    ]
 }
