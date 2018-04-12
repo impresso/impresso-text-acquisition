@@ -100,9 +100,11 @@ def _apply_filters(filter_dict, issues):
     return filtered_issues
 
 
-def main(args):
+def main():
     """Execute the main with CLI parameters."""
+
     # store CLI parameters
+    args = docopt(__doc__)
     inp_dir = args["--input-dir"]
     outp_dir = args["--output-dir"]
     out_bucket = args["--s3-bucket"]
@@ -138,8 +140,8 @@ def main(args):
         shutil.rmtree(temp_dir)
 
     # filter issues before importing
-    if arguments["--filter"] is not None:
-        f = _parse_filter(arguments["--filter"])
+    if args["--filter"] is not None:
+        f = _parse_filter(args["--filter"])
         issues = detect_issues(inp_dir, journal_filter=f["journal"])
         logger.info(
             "{} newspaper remained after applying filter {}".format(
@@ -206,5 +208,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__)
-    main(arguments)
+    main()
