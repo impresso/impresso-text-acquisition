@@ -23,6 +23,11 @@ setup(
             'data/*.*'
         ]
     },
+    entry_points={
+        'console_scripts': [
+            'impresso-txt-importer = text_importer.importer:main'
+        ]
+    },
     long_description=DESCRIPTION,
     install_requires=[
         'bs4',
