@@ -42,6 +42,7 @@ def get_issue_schema(schema_folder="./text_importer/schemas/"):
     return ns
 
 
+# TODO: from impresso_commons.utils.s3 import get_s3_connection
 def get_s3_connection(host="os.zhdk.cloud.switch.ch"):
     """Create a connection to impresso's S3 drive.
 
