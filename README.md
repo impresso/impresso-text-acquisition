@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Import the data from Olive OCR XML files into a canonical JSON format defined by the Impresso project.
+Import the data from Olive OCR XML files into a canonical JSON format defined by the Impresso project (see [documentation of schemas](./README_schemata.md)).
 
 ## Input data
 
@@ -28,7 +28,7 @@ For further info about the usage, see:
 
 ## TODO
 
-- [ ] convert coordinates using Maud's code 
+- [ ] convert coordinates using Maud's code
 - [x] add a sanity check: IDs of XML files in `Document.zip` should be found in `info.json`
 - [x] define and implement `page.json` schema
 - [x] revise and implement the `info.json` schema
@@ -39,15 +39,3 @@ For further info about the usage, see:
 - [x] (refactoring) move all olive-related functions into `importers/olive.py`
 - [x] replace `partOf` field with canonical article ID
 - [x] deal with `<QW>` elements when extracting box coordinates
-
-## JSON Schemas
-
-The output of this script is a bunch of JSON files.
-
-TODO: update with schema examples (when finalised)
-
-ALL LISTS IN THE JSON FILES ARE ORDERED.
-
-coordinates: top, left, bottom, right
-
-`issue.json`
