@@ -23,13 +23,21 @@ setup(
             'data/*.*'
         ]
     },
+    entry_points={
+        'console_scripts': [
+            'impresso-txt-importer = text_importer.importer:main'
+        ]
+    },
     long_description=DESCRIPTION,
     install_requires=[
         'bs4',
         'docopt',
+        'ipdb',  # TODO: remove from production
+        'impresso-commons',
         'pandas',
         'dask[complete]',
         'lxml',
+        'boto',
         'python-jsonschema-objects',
     ]
 )

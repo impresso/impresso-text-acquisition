@@ -42,17 +42,22 @@ def get_issue_schema(schema_folder="./text_importer/schemas/"):
     return ns
 
 
+# TODO: from impresso_commons.utils.s3 import get_s3_connection
 def get_s3_connection(host="os.zhdk.cloud.switch.ch"):
-    """Create a connection to impresso's S3 drive."""
+    """Create a connection to impresso's S3 drive.
+
+    Assumes that two environment variables are set: `SE_ACCESS_KEY` and
+        `SE_SECRET_KEY`.
+    """
     try:
         access_key = os.environ["SE_ACCESS_KEY"]
     except Exception:
-        pass
+        raise
 
     try:
         secret_key = os.environ["SE_SECRET_KEY"]
     except Exception:
-        pass
+        raise
 
     return boto.connect_s3(
         aws_access_key_id=access_key,
