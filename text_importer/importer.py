@@ -2,10 +2,11 @@
 Functions and CLI script to convert Olive OCR data into Impresso's format.
 
 Usage:
-    import.py --input-dir=<id> [--output-dir==<od> --s3-bucket=<b> --log-file=<f> --temp-dir==<td> --verbose --parallelize --filter=<ft>]
+    import.py --input-dir=<id> --image-dir=<imgd> [--output-dir==<od> --s3-bucket=<b> --log-file=<f> --temp-dir==<td> --verbose --parallelize --filter=<ft>]
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal.
+    --image-dir=<imgd>  Directory containing (canonical) images and their metadata.
     --output-dir=<od>   Base directory where to write the output files.
     --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket.
     --log-file=<f>      Log file; when missing print log to stdout
@@ -106,6 +107,7 @@ def main():
     # store CLI parameters
     args = docopt(__doc__)
     inp_dir = args["--input-dir"]
+    img_dir = args["--image-dir"]
     outp_dir = args["--output-dir"]
     out_bucket = args["--s3-bucket"]
     temp_dir = args["--temp-dir"]
@@ -169,12 +171,22 @@ def main():
     """
     if outp_dir is not None:
         result = [
-            olive_import_issue(i, out_dir=outp_dir, temp_dir=temp_dir)
+            olive_import_issue(
+                i,
+                img_dir,
+                out_dir=outp_dir,
+                temp_dir=temp_dir
+            )
             for i in issues
         ]
     elif out_bucket is not None:
         result = [
-            olive_import_issue(i, s3_bucket=out_bucket, temp_dir=temp_dir)
+            olive_import_issue(
+                i,
+                img_dir,
+                s3_bucket=out_bucket,
+                temp_dir=temp_dir
+            )
             for i in issues
         ]
 
@@ -183,6 +195,7 @@ def main():
     tasks = [
         delayed(olive_import_issue)(
             i,
+            img_dir,
             out_dir=outp_dir,
             s3_bucket=out_bucket,
             temp_dir=temp_dir
