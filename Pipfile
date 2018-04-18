@@ -15,7 +15,8 @@ lxml = "*"
 python-jsonschema-objects = "*"
 jsonlines = "*"
 boto = "*"
-impresso_commons = {git = "ssh://git@github.com/impresso/impresso-pycommons.git", editable = true}
+"cb8c26a" = {path = "./../impresso-pycommons", editable = true}
+"boto3" = "*"
 
 [dev-packages]
 

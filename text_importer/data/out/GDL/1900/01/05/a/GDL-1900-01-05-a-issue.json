@@ -1,926 +1,5 @@
 {
-   "s": [
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 10.0,
-         "f": "Times-Roman",
-         "id": 1
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 13.0,
-         "f": "Helvetica-BoldOblique",
-         "id": 2
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 14.0,
-         "f": "Times-Bold",
-         "id": 3
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 10.0,
-         "f": "Times-Bold",
-         "id": 4
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 10.0,
-         "f": "Times-BoldItalic",
-         "id": 5
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.0,
-         "f": "Helvetica-Bold",
-         "id": 6
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 36.0,
-         "f": "Times-Bold",
-         "id": 7
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 6.5,
-         "f": "Times-Roman",
-         "id": 8
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 6.5,
-         "f": "Times-BoldItalic",
-         "id": 9
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 10.0,
-         "f": "Times-Italic",
-         "id": 10
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.0,
-         "f": "Times-Bold",
-         "id": 11
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.0,
-         "f": "Times-Roman",
-         "id": 12
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 22.0,
-         "f": "Helvetica-Bold",
-         "id": 13
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 24.0,
-         "f": "Helvetica-Bold",
-         "id": 14
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.001,
-         "f": "Times-Bold",
-         "id": 15
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 17.0,
-         "f": "Helvetica-Bold",
-         "id": 16
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 9.003,
-         "f": "Helvetica-Bold",
-         "id": 17
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 10.0,
-         "f": "Helvetica-Bold",
-         "id": 18
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 8.0,
-         "f": "Times-Roman",
-         "id": 19
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 17.0,
-         "f": "Times-Bold",
-         "id": 20
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 6.5,
-         "f": "Helvetica-Bold",
-         "id": 21
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.0,
-         "f": "Helvetica-Bold",
-         "id": 22
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 22.443,
-         "f": "Times-Roman",
-         "id": 23
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.0,
-         "f": "Times-BoldItalic",
-         "id": 24
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 9.0,
-         "f": "Times-Roman",
-         "id": 25
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 1.0,
-         "f": "Helvetica",
-         "id": 26
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 21.0,
-         "f": "Helvetica-Bold",
-         "id": 27
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 21.239,
-         "f": "Times-Roman",
-         "id": 28
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 9.0,
-         "f": "Times-BoldItalic",
-         "id": 29
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 5.85,
-         "f": "Times-Roman",
-         "id": 30
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 21.126,
-         "f": "Times-Roman",
-         "id": 31
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 19.0,
-         "f": "Times-Bold",
-         "id": 32
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 9.0,
-         "f": "Times-Italic",
-         "id": 33
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 21.0,
-         "f": "Times-Bold",
-         "id": 34
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 14.0,
-         "f": "Helvetica-Bold",
-         "id": 35
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 8.1,
-         "f": "Times-Roman",
-         "id": 36
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 10.0,
-         "f": "Courier-Bold",
-         "id": 37
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 9.0,
-         "f": "Courier-Bold",
-         "id": 38
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 5.85,
-         "f": "Courier-Bold",
-         "id": 39
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 12.999,
-         "f": "Courier",
-         "id": 40
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 12.0,
-         "f": "Times-Bold",
-         "id": 41
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.1,
-         "f": "Times-Bold",
-         "id": 42
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.1,
-         "f": "Helvetica-Bold",
-         "id": 43
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 5.6,
-         "f": "Helvetica-Bold",
-         "id": 44
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 9.0,
-         "f": "Times-Bold",
-         "id": 45
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 8.001,
-         "f": "Courier-Bold",
-         "id": 46
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 26.0,
-         "f": "Times-Roman",
-         "id": 47
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 12.0,
-         "f": "Courier",
-         "id": 48
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 4.615,
-         "f": "Times-Bold",
-         "id": 49
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.1,
-         "f": "Times-Roman",
-         "id": 50
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.7,
-         "f": "Times-BoldItalic",
-         "id": 51
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 14.0,
-         "f": "Helvetica",
-         "id": 52
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 26.0,
-         "f": "Times-Bold",
-         "id": 53
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.1,
-         "f": "Times-Bold",
-         "id": 54
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.1,
-         "f": "Times-BoldItalic",
-         "id": 55
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 17.0,
-         "f": "Times-Roman",
-         "id": 56
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 20.0,
-         "f": "Times-Bold",
-         "id": 57
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 24.0,
-         "f": "Times-Roman",
-         "id": 58
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.7,
-         "f": "Times-Bold",
-         "id": 59
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 41.0,
-         "f": "Times-Bold",
-         "id": 60
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 65.0,
-         "f": "Times-Bold",
-         "id": 61
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 29.0,
-         "f": "Helvetica-Bold",
-         "id": 62
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.7,
-         "f": "Helvetica-Oblique",
-         "id": 63
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 24.0,
-         "f": "Times-Bold",
-         "id": 64
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 32.0,
-         "f": "Times-Bold",
-         "id": 65
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 5.85,
-         "f": "Times-Italic",
-         "id": 66
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 19.0,
-         "f": "Helvetica",
-         "id": 67
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 19.0,
-         "f": "Helvetica-Bold",
-         "id": 68
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 16.0,
-         "f": "Helvetica-Bold",
-         "id": 69
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 50.013,
-         "f": "Helvetica-Bold",
-         "id": 70
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 11.1,
-         "f": "Helvetica-Bold",
-         "id": 71
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 54.014,
-         "f": "Helvetica-Bold",
-         "id": 72
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 41.0,
-         "f": "Times-Italic",
-         "id": 73
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 10.0,
-         "f": "Helvetica",
-         "id": 74
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 6.5,
-         "f": "Helvetica",
-         "id": 75
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 14.3,
-         "f": "Helvetica-Bold",
-         "id": 76
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 5.8,
-         "f": "Helvetica-Bold",
-         "id": 77
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.1,
-         "f": "Helvetica-BoldOblique",
-         "id": 78
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.1,
-         "f": "Times-Italic",
-         "id": 79
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 5.8,
-         "f": "Times-Roman",
-         "id": 80
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 5.8,
-         "f": "Times-Bold",
-         "id": 81
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.1,
-         "f": "Helvetica-Oblique",
-         "id": 82
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.1,
-         "f": "Helvetica",
-         "id": 83
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 17.0,
-         "f": "Times-BoldItalic",
-         "id": 84
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 23.0,
-         "f": "Helvetica-Bold",
-         "id": 85
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 37.0,
-         "f": "Times-Bold",
-         "id": 86
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.1,
-         "f": "Times-BoldItalic",
-         "id": 87
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 25.0,
-         "f": "Times-Bold",
-         "id": 88
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 7.215,
-         "f": "Times-BoldItalic",
-         "id": 89
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 5.8,
-         "f": "Helvetica",
-         "id": 90
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 8.0,
-         "f": "Times-Bold",
-         "id": 91
-      },
-      {
-         "rgb": [
-            0,
-            0,
-            0
-         ],
-         "fs": 26.0,
-         "f": "Helvetica-Bold",
-         "id": 92
-      }
-   ],
+   "id": "GDL-1900-01-05-a",
    "i": [
       {
          "l": {
@@ -928,14 +7,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0001",
+            "l": "french",
             "pp": [
                1
             ],
-            "id": "GDL-1900-01-05-a-i0001",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -944,14 +23,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0002",
+            "l": "french",
             "pp": [
                1
             ],
-            "id": "GDL-1900-01-05-a-i0002",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -960,14 +39,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0003",
+            "l": "french",
             "pp": [
                1
             ],
-            "id": "GDL-1900-01-05-a-i0003",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -976,14 +55,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0004",
+            "l": "french",
             "pp": [
                1
             ],
-            "id": "GDL-1900-01-05-a-i0004",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -992,14 +71,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "BULLETnTp\u00d4LITIQUE",
+            "id": "GDL-1900-01-05-a-i0005",
+            "l": "french",
             "pp": [
                1
             ],
-            "id": "GDL-1900-01-05-a-i0005",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "BULLETnTp\u00d4LITIQUE",
+            "tp": "article"
          }
       },
       {
@@ -1014,15 +93,15 @@
             ]
          },
          "m": {
-            "t": "LES JUSTES",
+            "id": "GDL-1900-01-05-a-i0006",
+            "l": "french",
             "pp": [
                1,
                2
             ],
-            "id": "GDL-1900-01-05-a-i0006",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "LES JUSTES",
+            "tp": "article"
          }
       },
       {
@@ -1031,14 +110,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Notes sur l'Am\u00e9rique",
+            "id": "GDL-1900-01-05-a-i0008",
+            "l": "french",
             "pp": [
                1
             ],
-            "id": "GDL-1900-01-05-a-i0008",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Notes sur l'Am\u00e9rique",
+            "tp": "article"
          }
       },
       {
@@ -1047,14 +126,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0009",
+            "l": "french",
             "pp": [
                1
             ],
-            "id": "GDL-1900-01-05-a-i0009",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -1063,14 +142,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0010",
+            "l": "french",
             "pp": [
                1
             ],
-            "id": "GDL-1900-01-05-a-i0010",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -1085,15 +164,15 @@
             ]
          },
          "m": {
-            "t": "A la Haute Cour",
+            "id": "GDL-1900-01-05-a-i0011",
+            "l": "french",
             "pp": [
                1,
                2
             ],
-            "id": "GDL-1900-01-05-a-i0011",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "A la Haute Cour",
+            "tp": "article"
          }
       },
       {
@@ -1102,14 +181,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "L'\u00e9bonlement dans le tunnel dn Credo.",
+            "id": "GDL-1900-01-05-a-i0013",
+            "l": "french",
             "pp": [
                2
             ],
-            "id": "GDL-1900-01-05-a-i0013",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "L'\u00e9bonlement dans le tunnel dn Credo.",
+            "tp": "article"
          }
       },
       {
@@ -1118,14 +197,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "f\u00e8e s\u00e9rum antialcoolique.",
+            "id": "GDL-1900-01-05-a-i0014",
+            "l": "french",
             "pp": [
                2
             ],
-            "id": "GDL-1900-01-05-a-i0014",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "f\u00e8e s\u00e9rum antialcoolique.",
+            "tp": "article"
          }
       },
       {
@@ -1134,14 +213,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "CONF\u00c9D\u00c9RATION SUISSE",
+            "id": "GDL-1900-01-05-a-i0015",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0015",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "CONF\u00c9D\u00c9RATION SUISSE",
+            "tp": "article"
          }
       },
       {
@@ -1150,14 +229,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "NOUVELLES DES GANTONS",
+            "id": "GDL-1900-01-05-a-i0016",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0016",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "NOUVELLES DES GANTONS",
+            "tp": "article"
          }
       },
       {
@@ -1166,14 +245,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0017",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0017",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -1182,14 +261,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "CANTON DE VAUD",
+            "id": "GDL-1900-01-05-a-i0018",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0018",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "CANTON DE VAUD",
+            "tp": "article"
          }
       },
       {
@@ -1198,14 +277,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0019",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0019",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -1214,14 +293,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "LAUSANNE",
+            "id": "GDL-1900-01-05-a-i0020",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0020",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "LAUSANNE",
+            "tp": "article"
          }
       },
       {
@@ -1230,14 +309,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "DERNIER COURRIER",
+            "id": "GDL-1900-01-05-a-i0021",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0021",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "DERNIER COURRIER",
+            "tp": "article"
          }
       },
       {
@@ -1246,14 +325,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Derni\u00e8res d\u00e9p\u00eaches",
+            "id": "GDL-1900-01-05-a-i0022",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0022",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Derni\u00e8res d\u00e9p\u00eaches",
+            "tp": "article"
          }
       },
       {
@@ -1262,14 +341,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Article",
+            "id": "GDL-1900-01-05-a-i0023",
+            "l": "french",
             "pp": [
                3
             ],
-            "id": "GDL-1900-01-05-a-i0023",
-            "tp": "article",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Article",
+            "tp": "article"
          }
       },
       {
@@ -1278,14 +357,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0024",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0024",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1294,14 +373,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0025",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0025",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1310,14 +389,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0026",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0026",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1326,14 +405,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0027",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0027",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1342,14 +421,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0028",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0028",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1358,14 +437,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0029",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0029",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1374,14 +453,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0030",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0030",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1390,14 +469,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0031",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0031",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1406,14 +485,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0032",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0032",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1422,14 +501,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0033",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0033",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1438,14 +517,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0034",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0034",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1454,14 +533,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0035",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0035",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1470,14 +549,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0036",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0036",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1486,14 +565,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0037",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0037",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1502,14 +581,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0038",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0038",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1518,14 +597,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0039",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0039",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1534,14 +613,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0040",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0040",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1550,14 +629,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0041",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0041",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1566,14 +645,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0042",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0042",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1582,14 +661,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0043",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0043",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1598,14 +677,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0044",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0044",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1614,14 +693,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0045",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0045",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1630,14 +709,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0046",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0046",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1646,14 +725,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0047",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0047",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1662,14 +741,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0048",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0048",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1678,14 +757,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0049",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0049",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1694,14 +773,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0050",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0050",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1710,14 +789,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0051",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0051",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1726,14 +805,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0052",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0052",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1742,14 +821,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0053",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0053",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1758,14 +837,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0054",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0054",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1774,14 +853,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0055",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0055",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1790,14 +869,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0056",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0056",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1806,14 +885,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0057",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0057",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1822,14 +901,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0058",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0058",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1838,14 +917,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0059",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0059",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1854,14 +933,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0060",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0060",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1870,14 +949,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0061",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0061",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1886,14 +965,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0062",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0062",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1902,14 +981,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0063",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0063",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1918,14 +997,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0064",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0064",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1934,14 +1013,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0065",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0065",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1950,14 +1029,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0066",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0066",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1966,14 +1045,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0067",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0067",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1982,14 +1061,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0068",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0068",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -1998,14 +1077,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0069",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0069",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -2014,14 +1093,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0070",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0070",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -2030,14 +1109,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0071",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0071",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -2046,14 +1125,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0072",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0072",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -2062,14 +1141,14 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0073",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0073",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
       },
       {
@@ -2078,15 +1157,937 @@
             "source": "103-GDL-1900-01-05-0001.pdf"
          },
          "m": {
-            "t": "Untitled Ad",
+            "id": "GDL-1900-01-05-a-i0074",
+            "l": "french",
             "pp": [
                4
             ],
-            "id": "GDL-1900-01-05-a-i0074",
-            "tp": "ad",
-            "l": "french",
-            "pub": "GDL"
+            "pub": "GDL",
+            "t": "Untitled Ad",
+            "tp": "ad"
          }
+      }
+   ],
+   "s": [
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 10.0,
+         "id": 1
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-BoldOblique",
+         "fs": 13.0,
+         "id": 2
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 14.0,
+         "id": 3
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 10.0,
+         "id": 4
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 10.0,
+         "id": 5
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 11.0,
+         "id": 6
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 36.0,
+         "id": 7
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 6.5,
+         "id": 8
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 6.5,
+         "id": 9
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Italic",
+         "fs": 10.0,
+         "id": 10
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 11.0,
+         "id": 11
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 11.0,
+         "id": 12
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 22.0,
+         "id": 13
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 24.0,
+         "id": 14
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 7.001,
+         "id": 15
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 17.0,
+         "id": 16
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 9.003,
+         "id": 17
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 10.0,
+         "id": 18
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 8.0,
+         "id": 19
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 17.0,
+         "id": 20
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 6.5,
+         "id": 21
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 7.0,
+         "id": 22
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 22.443,
+         "id": 23
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 11.0,
+         "id": 24
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 9.0,
+         "id": 25
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica",
+         "fs": 1.0,
+         "id": 26
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 21.0,
+         "id": 27
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 21.239,
+         "id": 28
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 9.0,
+         "id": 29
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 5.85,
+         "id": 30
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 21.126,
+         "id": 31
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 19.0,
+         "id": 32
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Italic",
+         "fs": 9.0,
+         "id": 33
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 21.0,
+         "id": 34
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 14.0,
+         "id": 35
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 8.1,
+         "id": 36
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Courier-Bold",
+         "fs": 10.0,
+         "id": 37
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Courier-Bold",
+         "fs": 9.0,
+         "id": 38
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Courier-Bold",
+         "fs": 5.85,
+         "id": 39
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Courier",
+         "fs": 12.999,
+         "id": 40
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 12.0,
+         "id": 41
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 7.1,
+         "id": 42
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 7.1,
+         "id": 43
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 5.6,
+         "id": 44
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 9.0,
+         "id": 45
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Courier-Bold",
+         "fs": 8.001,
+         "id": 46
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 26.0,
+         "id": 47
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Courier",
+         "fs": 12.0,
+         "id": 48
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 4.615,
+         "id": 49
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 7.1,
+         "id": 50
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 11.7,
+         "id": 51
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica",
+         "fs": 14.0,
+         "id": 52
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 26.0,
+         "id": 53
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 11.1,
+         "id": 54
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 11.1,
+         "id": 55
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 17.0,
+         "id": 56
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 20.0,
+         "id": 57
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 24.0,
+         "id": 58
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 11.7,
+         "id": 59
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 41.0,
+         "id": 60
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 65.0,
+         "id": 61
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 29.0,
+         "id": 62
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Oblique",
+         "fs": 11.7,
+         "id": 63
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 24.0,
+         "id": 64
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 32.0,
+         "id": 65
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Italic",
+         "fs": 5.85,
+         "id": 66
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica",
+         "fs": 19.0,
+         "id": 67
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 19.0,
+         "id": 68
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 16.0,
+         "id": 69
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 50.013,
+         "id": 70
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 11.1,
+         "id": 71
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 54.014,
+         "id": 72
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Italic",
+         "fs": 41.0,
+         "id": 73
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica",
+         "fs": 10.0,
+         "id": 74
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica",
+         "fs": 6.5,
+         "id": 75
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 14.3,
+         "id": 76
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 5.8,
+         "id": 77
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-BoldOblique",
+         "fs": 7.1,
+         "id": 78
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Italic",
+         "fs": 7.1,
+         "id": 79
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Roman",
+         "fs": 5.8,
+         "id": 80
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 5.8,
+         "id": 81
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Oblique",
+         "fs": 7.1,
+         "id": 82
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica",
+         "fs": 7.1,
+         "id": 83
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 17.0,
+         "id": 84
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 23.0,
+         "id": 85
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 37.0,
+         "id": 86
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 7.1,
+         "id": 87
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 25.0,
+         "id": 88
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-BoldItalic",
+         "fs": 7.215,
+         "id": 89
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica",
+         "fs": 5.8,
+         "id": 90
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Times-Bold",
+         "fs": 8.0,
+         "id": 91
+      },
+      {
+         "rgb": [
+            0,
+            0,
+            0
+         ],
+         "f": "Helvetica-Bold",
+         "fs": 26.0,
+         "id": 92
       }
    ]
 }

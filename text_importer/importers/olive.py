@@ -15,7 +15,8 @@ from bs4 import BeautifulSoup
 from impresso_commons.path import canonical_path
 
 from text_importer.helpers import (get_issue_schema, get_page_schema,
-                                   serialize_issue, serialize_page)
+                                   serialize_issue, serialize_page,
+                                   get_image_info, convert_page_coordinates)
 
 logger = logging.getLogger(__name__)
 
@@ -508,7 +509,7 @@ def check_consistency(issue_obj, element_ids):
 
     try:
         assert len(difference_btw_sets) == 0
-        logger.info("{} consistency check ok".format(issue_obj))
+        logger.info("{} consistency check ok".format(issue_obj.id))
     except AssertionError as e:
         logger.warning(
             "There are missing elements in the issue.json: {}".format(
@@ -518,7 +519,13 @@ def check_consistency(issue_obj, element_ids):
         raise e
 
 
-def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
+def olive_import_issue(
+    issue_dir,
+    image_dir,
+    out_dir=None,
+    s3_bucket=None,
+    temp_dir=None
+):
     """Import newspaper issues from a directory structure.
 
     This function imports a set of newspaper issues from a directory
@@ -571,6 +578,7 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
 
     PageSchema = get_page_schema()
     IssueSchema = get_issue_schema()
+    pages = {}
 
     working_archive = os.path.join(issue_dir.path, "Document.zip")
     if os.path.isfile(working_archive):
@@ -594,6 +602,12 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
                 and ("/Ar" in item or "/Ad" in item)
             ]
         )
+        # a dict mapping page numbers to names of page xml files
+        page_xml_files = {
+            int(item.split("/")[0]): item
+            for item in archive.namelist()
+            if ".xml" in item and not item.startswith("._") and "/Pg" in item
+        }
 
         logger.debug("Contents: {}".format(archive.namelist()))
 
@@ -717,9 +731,59 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
                 for el in content_elements
                 if (el["legacy"]["id"] in element_ids)
             }
-
             page_dict = recompose_page(page_no, info_from_toc, elements)
             page = PageSchema(**page_dict)
+            pages[page_no] = page
+
+        contents = recompose_ToC(toc_data, articles)
+        issue_data = {
+            "id": canonical_path(issue_dir, path_type="dir").replace("/", "-"),
+            "s": styles,
+            "i": contents
+        }
+
+        image_info = get_image_info(issue_dir, image_dir)
+
+        for page_no in pages:
+            page = pages[page_no]
+
+            # fail gracefully if no entry in image-info.json for this page
+            try:
+                image_info_record = [
+                    page
+                    for page in image_info
+                    if int(page['pg']) == page_no
+                ][0]
+                box_strategy = image_info_record['strat']
+                image_name = image_info_record['s']
+                page_xml_file = page_xml_files[page_no]
+            except Exception as e:
+                logger.error(
+                    "Couldn't get information about page img {} in {}".format(
+                        page_no,
+                        issue_data["id"]
+                    )
+                )
+
+            # convert the box coordinates
+            try:
+                convert_page_coordinates(
+                    page,
+                    archive.read(page_xml_file),
+                    image_name,
+                    archive,
+                    box_strategy,
+                    issue_dir
+                )
+                pages[page_no].cc = True
+            except Exception as e:
+                logger.error(
+                    "Couldn't convert coordinates in p. {} {}".format(
+                        page_no,
+                        issue_data["id"]
+                    )
+                )
+                pages[page_no].cc = False
 
             # serialize the page object to JSON
             if out_dir is not None:
@@ -736,12 +800,6 @@ def olive_import_issue(issue_dir, out_dir=None, s3_bucket=None, temp_dir=None):
                     issue_dir,
                     s3_bucket=s3_bucket
                 )
-
-        contents = recompose_ToC(toc_data, articles)
-        issue_data = {
-            "s": styles,
-            "i": contents
-        }
 
         issue = IssueSchema(**issue_data)
         if out_dir is not None:

@@ -4,12 +4,16 @@ import codecs
 import json
 import logging
 import os
+import time
 
 import boto
 import boto.s3.connection
+import ipdb as pdb
 import python_jsonschema_objects as pjs
 from boto.s3.key import Key
-from impresso_commons.path import canonical_path
+
+from impresso_commons.images.olive_boxes import compute_box, get_scale_factor
+from impresso_commons.path import IssueDir, canonical_path
 
 logger = logging.getLogger(__name__)
 
@@ -156,3 +160,89 @@ def serialize_issue(issue, issue_dir, out_dir=None, s3_bucket=None):
 
     else:
         raise Exception
+
+
+# TODO: possibly move somewhere else
+def get_image_info(issue, data_dir):
+    """
+    Get the contents of the `image-info.json` file for a given issue.
+
+    :param issue: a newspaper issue
+    :type issue: `IssueDir`
+    :param data_dir: the path to the directory with the images
+    :type data_dir: string
+    :return: the content of the `image-info.json` file
+    :rtype: dict
+    """
+
+    issue_dir = os.path.join(
+        data_dir,
+        issue.journal,
+        str(issue.date).replace("-", "/"),
+        issue.edition
+    )
+
+    issue_w_images = IssueDir(
+        journal=issue.journal,
+        date=issue.date,
+        edition=issue.edition,
+        path=issue_dir
+    )
+
+    image_info_name = canonical_path(
+        issue_w_images,
+        name="image-info",
+        extension=".json"
+    )
+
+    image_info_path = os.path.join(issue_w_images.path, image_info_name)
+
+    with open(image_info_path, 'r') as inp_file:
+        json_data = json.load(inp_file)
+        return json_data
+
+
+def convert_box(coords, scale_factor):
+    box = " ".join([str(coord) for coord in coords])
+    converted_box = compute_box(scale_factor, box)
+    new_box = [int(c) for c in converted_box.split()]
+    logger.debug(f'Converted box coordinates: {box} => {converted_box}')
+    return new_box
+
+
+def convert_page_coordinates(
+    page,
+    page_xml,
+    page_image_name,
+    zip_archive,
+    box_strategy,
+    issue
+):
+    """
+    Logic:
+        - get scale factor (passing strategy)
+        - for each element with coordinates recompute box
+
+    Returns the same page, with converted boxes.
+    """
+    start_t = time.clock()
+    scale_factor = get_scale_factor(
+        issue.path,
+        zip_archive,
+        page_xml,
+        box_strategy,
+        page_image_name
+    )
+    for region in page.r:
+        region.c = convert_box(region.c, scale_factor)
+        for paragraph in region.p:
+            for line in paragraph.l:
+                line.c = convert_box(line.c, scale_factor)
+                for token in line.t:
+                    token.c = convert_box(token.c, scale_factor)
+    end_t = time.clock()
+    t = end_t - start_t
+    logger.info(
+        f'Converted coordinates {page_image_name} in {issue.path} (took {t}s)'
+    )
+    return page

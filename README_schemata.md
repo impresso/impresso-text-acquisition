@@ -8,6 +8,7 @@ Meanings of keys:
 
 - `r`: regions
 - `c`: coordinates
+- `cc`: converted coordinates
 - `p`: paragraphs
 - `l`: lines
 - `t`: tokens
