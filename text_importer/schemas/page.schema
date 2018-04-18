@@ -69,6 +69,7 @@
     "type": "object",
 
     "properties": {
+        "cc":{"type": "boolean"},
         "r": {
             "type": "array",
             "items": {

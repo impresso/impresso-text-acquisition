@@ -53,6 +53,7 @@
     "type": "object",
 
     "properties": {
+        "id": {"type": "string"},
         "i": {
             "type": "array",
             "items": {
