@@ -9,6 +9,7 @@ import time
 import boto
 import boto.s3.connection
 import ipdb as pdb
+import pkg_resources
 import python_jsonschema_objects as pjs
 from boto.s3.key import Key
 
@@ -18,28 +19,36 @@ from impresso_commons.path import IssueDir, canonical_path
 logger = logging.getLogger(__name__)
 
 
-def get_page_schema(schema_folder="./text_importer/schemas/"):
+def get_page_schema():
     """Generate a list of python classes starting from a JSON schema.
 
     :param schema_folder: path to the schema folder (default="./schemas/")
     :type schema_folder: string
     :rtype: `python_jsonschema_objects.util.Namespace`
     """
-    with open(os.path.join(schema_folder, "page.schema"), 'r') as f:
+    schema_path = pkg_resources.resource_filename(
+        'text_importer',
+        'schemas/page.schema'
+    )
+    with open(os.path.join(schema_path), 'r') as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().Pageschema
     return ns
 
 
-def get_issue_schema(schema_folder="./text_importer/schemas/"):
+def get_issue_schema():
     """Generate a list of python classes starting from a JSON schema.
 
     :param schema_folder: path to the schema folder (default="./schemas/")
     :type schema_folder: string
     :rtype: `python_jsonschema_objects.util.Namespace`
     """
-    with open(os.path.join(schema_folder, "issue.schema"), 'r') as f:
+    schema_path = pkg_resources.resource_filename(
+        'text_importer',
+        'schemas/issue.schema'
+    )
+    with open(os.path.join(schema_path), 'r') as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().Issueschema
