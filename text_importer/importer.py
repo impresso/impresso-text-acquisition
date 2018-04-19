@@ -2,17 +2,20 @@
 Functions and CLI script to convert Olive OCR data into Impresso's format.
 
 Usage:
-    import.py --input-dir=<id> --image-dir=<imgd> [--output-dir==<od> --s3-bucket=<b> --log-file=<f> --temp-dir==<td> --verbose --parallelize --filter=<ft>]
+    impresso-txt-importer --input-dir=<id> --image-dir=<imgd> [--output-dir==<od> --s3-bucket=<b> --clear --log-file=<f> --temp-dir==<td> --verbose --parallelize --filter=<ft>]
+    impresso-txt-importer --version
 
 Options:
-    --input-dir=<id>    Base directory containing one sub-directory for each journal.
-    --image-dir=<imgd>  Directory containing (canonical) images and their metadata.
-    --output-dir=<od>   Base directory where to write the output files.
-    --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket.
+    --input-dir=<id>    Base directory containing one sub-directory for each journal
+    --image-dir=<imgd>  Directory containing (canonical) images and their metadata
+    --output-dir=<od>   Base directory where to write the output files
+    --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket
     --log-file=<f>      Log file; when missing print log to stdout
-    --verbose           Verbose log messages (good for debugging).
-    --parallelize       Parallelize the import.
+    --verbose           Verbose log messages (good for debugging)
+    --clear             Removes the output folder (if already existing)
+    --parallelize       Parallelize the import
     --filter=<ft>       Criteria to filter issues before import ("journal=GDL; date=1900/01/01-1950/12/31;")
+    --version
 """  # noqa: E501
 
 import logging
@@ -28,6 +31,7 @@ from dask.multiprocessing import get as mp_get
 from docopt import docopt
 from impresso_commons.path import detect_issues
 
+from text_importer import __version__
 from text_importer.importers.olive import olive_import_issue
 
 __author__ = "Matteo Romanello"
@@ -113,7 +117,13 @@ def main():
     temp_dir = args["--temp-dir"]
     log_file = args["--log-file"]
     parallel_execution = args["--parallelize"]
+    clear_output = args["--clear"]
     log_level = logging.DEBUG if args["--verbose"] else logging.INFO
+    print_version = args["--version"]
+
+    if print_version:
+        print(f'impresso-txt-importer v{__version__}')
+        return
 
     # Initialise the logger
     global logger
@@ -135,7 +145,8 @@ def main():
 
     # clean output directory if existing
     if outp_dir is not None and os.path.exists(outp_dir):
-        shutil.rmtree(outp_dir)
+        if clear_output is not None and clear_output:
+            shutil.rmtree(outp_dir)
 
     # clean temp directory if existing
     if temp_dir is not None and os.path.exists(temp_dir):
