@@ -12,23 +12,19 @@ A sample of the input data for this script can be found in [sample_data/](sample
 
 Run the script sequentially:
 
-    python text_importer/importer.py --input-dir=sample_data/ --output-dir=out/ --temp-dir=tmp/ --verbose --log-file=import_test.log
+    impresso-txt-importer --input-dir=text_importer/data/sample_data/ --output-dir=text_importer/data/out/ --temp-dir=text_importer/data/tmp/ --image-dir="/Volumes/project_impresso/images/" --filter="journal=IMP" --log-file=text_importer/data/import_test.log
 
 or in parallel:
 
-    python olive_importer.py --input-dir=sample_data/ --output-dir=out/ --temp-dir=tmp/ --verbose --log-file=import_test.log --parallelize
+    impresso-txt-importer --input-dir=text_importer/data/sample_data/ --output-dir=text_importer/data/out/ --temp-dir=text_importer/data/tmp/ --image-dir="/Volumes/project_impresso/images/" --filter="journal=IMP" --log-file=text_importer/data/import_test.log --parallelize
 
 For further info about the usage, see:
 
-    python olive_importer.py --help
-
-## Notes
-
-- the JSON schemas implemented here are provisional, and should just serve as the basis for discussion
+    impresso-txt-importer --help
 
 ## TODO
 
-- [ ] convert coordinates using Maud's code
+- [x] convert coordinates using Maud's code
 - [x] add a sanity check: IDs of XML files in `Document.zip` should be found in `info.json`
 - [x] define and implement `page.json` schema
 - [x] revise and implement the `info.json` schema
