@@ -25,7 +25,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'impresso-txt-importer = text_importer.importer:main'
+            'impresso-txt-importer = text_importer.importer:main',
+            'impresso-txt-uploader = text_importer.upload:main',
         ]
     },
     long_description=DESCRIPTION,
