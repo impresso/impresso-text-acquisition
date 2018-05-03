@@ -639,8 +639,17 @@ def olive_import_issue(
 
         # parse the TOC
         toc_path = os.path.join(issue_dir.path, "TOC.xml")
-        toc_data = olive_toc_parser(toc_path, issue_dir)
-        logger.debug(toc_data)
+        try:
+            toc_data = olive_toc_parser(toc_path, issue_dir)
+            logger.debug(toc_data)
+        except FileNotFoundError as e:
+            logger.error(f'Missing ToC.xml for {issue_dir.path}')
+            logger.error(e)
+            return (issue_dir, False, e)
+        except Exception as e:
+            logger.error(f'Corrupted ToC.xml for {issue_dir.path}')
+            logger.error(e)
+            return (issue_dir, False, e)
 
         logger.debug("XML files contained in {}: {}".format(
             working_archive,
@@ -715,7 +724,7 @@ def olive_import_issue(
         # at this point the articles have been recomposed
         # but we still need to recompose pages
         for page_no in toc_data:
-
+            logger.info(f'Processing page {page_no} of {issue_dir.path}')
             info_from_toc = toc_data[page_no]
             element_ids = toc_data[page_no].keys()
 

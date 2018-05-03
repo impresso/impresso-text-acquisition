@@ -2,13 +2,14 @@
 Functions and CLI script to convert Olive OCR data into Impresso's format.
 
 Usage:
-    impresso-txt-importer --input-dir=<id> --image-dir=<imgd> [--output-dir==<od> --s3-bucket=<b> --clear --log-file=<f> --temp-dir==<td> --verbose --parallelize --filter=<ft>]
+    impresso-txt-importer --input-dir=<id> --image-dir=<imgd> (--clear | --incremental) [--output-dir==<od> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --temp-dir==<td> --verbose --parallelize]
     impresso-txt-importer --version
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal
     --image-dir=<imgd>  Directory containing (canonical) images and their metadata
     --output-dir=<od>   Base directory where to write the output files
+    --config-file=<cf>  configuration file for selective import
     --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket
     --log-file=<f>      Log file; when missing print log to stdout
     --verbose           Verbose log messages (good for debugging)
@@ -18,19 +19,22 @@ Options:
     --version
 """  # noqa: E501
 
+import json
 import logging
 import os
 import shutil
 from datetime import date
 
-import dask
 import ipdb as pdb  # remove from production version
+from docopt import docopt
+
+import dask
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
 from dask.multiprocessing import get as mp_get
-from docopt import docopt
-from impresso_commons.path import detect_issues
-
+from impresso_commons.path import detect_issues, select_issues
+from impresso_commons.path import detect_canonical_issues
+from impresso_commons.path import KNOWN_JOURNALS
 from text_importer import __version__
 from text_importer.importers.olive import olive_import_issue
 
@@ -118,8 +122,10 @@ def main():
     log_file = args["--log-file"]
     parallel_execution = args["--parallelize"]
     clear_output = args["--clear"]
+    incremental_output = args["--incremental"]
     log_level = logging.DEBUG if args["--verbose"] else logging.INFO
     print_version = args["--version"]
+    config_file = args["--config-file"]
 
     if print_version:
         print(f'impresso-txt-importer v{__version__}')
@@ -152,29 +158,40 @@ def main():
     if temp_dir is not None and os.path.exists(temp_dir):
         shutil.rmtree(temp_dir)
 
-    # filter issues before importing
-    if args["--filter"] is not None:
-        f = _parse_filter(args["--filter"])
-        issues = detect_issues(inp_dir, journal_filter=f["journal"])
+    # detect/select issues
+    if config_file and os.path.isfile(config_file):
+        logger.info(f"Found config file: {os.path.realpath(config_file)}")
+        with open(config_file, 'r') as f:
+            config = json.load(f)
+            issues = select_issues(config, inp_dir)
+
         logger.info(
-            "{} newspaper remained after applying filter {}".format(
+            "{} newspaper remained after applying filter: {}".format(
                 len(issues),
-                f
+                issues
             )
         )
     else:
-        # detect issues to be imported
+        logger.info("No config file found.")
         issues = detect_issues(inp_dir)
+        print(f'{len(issues)} newspaper issues detected')
 
-    logger.info(
-        "Found {} newspaper issues to import".format(
-            len(issues)
+    if os.path.exists(outp_dir) and incremental_output:
+        issues_to_skip = [
+            (issue.journal, issue.date, issue.edition)
+            for issue in detect_canonical_issues(outp_dir, KNOWN_JOURNALS)
+        ]
+        logger.debug(f"Issues to skip: {issues_to_skip}")
+        logger.info(f"{len(issues_to_skip)} issues to skip")
+        issues = list(
+            filter(
+                lambda x: (x.journal, x.date, x.edition) not in issues_to_skip,
+                issues
+            )
         )
-    )
-
-    if len(issues) == 0:
-        print("No issues to import (filtered too much perhaps?)")
-        return
+        logger.debug(f"Remaining issues: {issues}")
+        logger.info(f"{len(issues)} remaining issues")
+    # pdb.set_trace()
 
     logger.debug("Following issues will be imported:{}".format(issues))
 
@@ -226,9 +243,17 @@ def main():
         else:
             result = compute(*tasks, get=dask.get)
     print("Done.\n")
-    # """
-
     logger.debug(result)
+
+    # write a sort of report to a TSV file
+    report = "\n".join(
+        [
+            f'{issue.path}\t{success}\t{error}'
+            for issue, success, error in result
+        ]
+    )
+    with open(os.path.join(outp_dir, "result.tsv"), 'w') as report_file:
+        report_file.write(report)
 
 
 if __name__ == '__main__':
