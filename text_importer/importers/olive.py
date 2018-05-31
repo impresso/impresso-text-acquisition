@@ -249,7 +249,7 @@ def olive_parser(text):
                     line = copy.deepcopy(new_line)
 
                 if line_counter > 0 and line is not None:
-                    line = normalize_line(line)
+                    line = normalize_line(line)  # TODO: pass language param
                     para["l"].append(line)
 
                 if tag.get("p") in ["S", "SA"] and line_counter > 0:

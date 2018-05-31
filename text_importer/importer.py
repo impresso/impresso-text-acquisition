@@ -46,11 +46,6 @@ __status__ = "development"
 
 logger = logging.getLogger()
 
-punctuation_nows_before = [".", ",", ")", "]", "}", "°", "..."]
-punctuation_nows_after = ["(", "[", "{"]
-punctuation_nows_beforeafter = ["'", "-"]
-punctuation_ciffre = [".", ","]
-
 html_escape_table = {
     "&amp;": "&",
     "&quot;": '"',
@@ -58,55 +53,6 @@ html_escape_table = {
     "&gt;": ">",
     "&lt;": "<",
 }
-
-
-def _parse_filter(filter_string):
-    filters = {
-        f.split("=")[0].strip(): f.split("=")[1].strip().split(",")
-        for f in filter_string.split(";")
-    }
-
-    return filters
-
-
-def _apply_filters(filter_dict, issues):
-
-    filtered_issues = []
-
-    if "journal" in filter_dict:
-        filtered_issues = [
-            i for i in issues if i.journal == filter_dict["journal"]
-        ]
-    else:
-        filtered_issues = issues
-
-    if "date" in filter_dict:
-
-        # date filter is a range
-        if "-" in filter_dict["date"]:
-            start, end = filter_dict["date"].split("-")
-            start = date(*[int(x) for x in start.split("/")])
-            end = date(*[int(x) for x in end.split("/")])
-            print(start, end)
-            filtered_issues = [
-                i
-                for i in filtered_issues
-                if i.date >= start and i.date <= end
-            ]
-
-        # date filter is not a range
-        else:
-            filter_date = date(*[
-                int(x) for x in filter_dict["date"].split("/")
-            ])
-
-            filtered_issues += [
-                i
-                for i in issues
-                if i.date == filter_date
-            ]
-
-    return filtered_issues
 
 
 def main():
