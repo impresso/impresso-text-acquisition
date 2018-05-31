@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3cca6d03b716e37eca0560eb485823fc4215c790c6be110807fe26af3de2bade"
+            "sha256": "889458962747c7463897a4e0452a98b9fbfc7c64725839b39b7555cbc45e730c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -59,10 +59,6 @@
                 "sha256:64c1f811e31556ba9931953c8ec7b397488726c63e09a4c67004f43bdd28da88"
             ],
             "version": "==0.98"
-        },
-        "cb8c26a": {
-            "editable": true,
-            "path": "./../impresso-pycommons"
         },
         "certifi": {
             "hashes": [
@@ -134,6 +130,11 @@
                 "sha256:8c7309c718f94b3a625cb648ace320157ad16ff131ae0af362c9f21b80ef6ec4"
             ],
             "version": "==2.6"
+        },
+        "impresso-commons": {
+            "editable": true,
+            "git": "https://github.com/impresso/impresso-pycommons",
+            "ref": "bf2dece6565af2667656670996d4076913c23a2d"
         },
         "inflection": {
             "hashes": [
@@ -568,6 +569,7 @@
                 "sha256:eca537aa61592aca2fef4adea12af8e42f5c335004dfa80c78caf80e8b525e5c"
             ],
             "index": "pypi",
+            "markers": "python_version >= '3.3'",
             "version": "==6.4.0"
         },
         "ipython-genutils": {

@@ -20,7 +20,7 @@ setup(
     packages=find_packages(),
     package_data={
         'text_importer': [
-            'data/*.*'
+            'data/',
         ]
     },
     entry_points={
@@ -34,7 +34,7 @@ setup(
         'bs4',
         'docopt',
         'ipdb',  # TODO: remove from production
-        'impresso-commons',
+        'impresso_commons',
         'pandas',
         'dask[complete]',
         'lxml',
@@ -42,6 +42,6 @@ setup(
         'python-jsonschema-objects',
     ],
     dependency_links=[
-      'git+ssh://git@github.com/impresso/impresso-pycommons.git#egg=impresso_commons',
+      'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons-0.2.2',
       ]
 )

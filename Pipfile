@@ -12,11 +12,11 @@ docopt = "*"
 pandas = "*"
 dask = {extras = ["complete"]}
 lxml = "*"
-python-jsonschema-objects = "*"
+python_jsonschema_objects = "*"
 jsonlines = "*"
 boto = "*"
-"cb8c26a" = {path = "./../impresso-pycommons", editable = true}
 "boto3" = "*"
+impresso-commons = {git = "https://github.com/impresso/impresso-pycommons.git", editable = true, ref = "master"}
 
 
 [dev-packages]
@@ -24,7 +24,7 @@ boto = "*"
 pytest = "*"
 ipython = "*"
 ipdb = "*"
-smart-open = "*"
+smart_open = "*"
 jupyter = "*"
 "flake8" = "*"
 isort = "*"
