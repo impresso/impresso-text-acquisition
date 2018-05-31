@@ -40,5 +40,8 @@ setup(
         'lxml',
         'boto',
         'python-jsonschema-objects',
-    ]
+    ],
+    dependency_links=[
+      'git+ssh://git@github.com/impresso/impresso-pycommons.git#egg=impresso_commons',
+      ]
 )
