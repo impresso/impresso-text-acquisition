@@ -71,10 +71,11 @@ Meanings of keys:
 - `m`: metadata
 - `id`: canonical ID of the item
 - `l`: language
-- `pp`: page numbers
+- `pp` (within `m`): page numbers
 - `pub`: publication (i.e. acronym of newspaper)
 - `t`: title
 - `tp`: type (e.g. article or ad)
+- `pp` (at top-level): canonical names of pages in the issue (without extension) 
 
 Example:
 

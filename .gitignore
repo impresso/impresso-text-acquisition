@@ -1,4 +1,5 @@
 .DS_Store
+.tox/
 *pyc
 text_importer/data/tmp/
 .pytest_cache

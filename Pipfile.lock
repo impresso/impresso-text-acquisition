@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "889458962747c7463897a4e0452a98b9fbfc7c64725839b39b7555cbc45e730c"
+            "sha256": "b6e7a27e0143cfb8f190856d29f0dba518c1f09180670c3ae9cff2a8de41ad51"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -133,8 +133,8 @@
         },
         "impresso-commons": {
             "editable": true,
-            "git": "https://github.com/impresso/impresso-pycommons",
-            "ref": "bf2dece6565af2667656670996d4076913c23a2d"
+            "git": "https://github.com/impresso/impresso-pycommons.git",
+            "ref": "952d74f84ca2afe12f0eb8043eb5f0eea8cec71f"
         },
         "inflection": {
             "hashes": [
@@ -334,7 +334,6 @@
                 "sha256:1adb80e7a782c12e52ef9a8182bebeb73f1d7e24e374397af06fb4956c8dc5c0",
                 "sha256:e27001de32f627c22380a688bcc43ce83504a7bc5da472209b4c70f02829f0b8"
             ],
-            "markers": "python_version >= '2.7'",
             "version": "==2.7.3"
         },
         "python-jsonschema-objects": {
@@ -381,10 +380,10 @@
         },
         "sortedcontainers": {
             "hashes": [
-                "sha256:2c9db81119d0285a26119554e1ce7332b846ff7f0d05c9a46e9490423685808a",
-                "sha256:87b80f909def3f73778a7c4572ae1d3615daad0c86fc01cb046b51c32bbf85c1"
+                "sha256:34014aa3f1da6d7196d4733f8b058b5b4239534e3df9366f899394336c5b5ed5",
+                "sha256:5ef9b9e3da1e235c54dc5ff0233ca663e1eb96063bf5ad1a67fa0acb780c9f57"
             ],
-            "version": "==2.0.2"
+            "version": "==2.0.3"
         },
         "tblib": {
             "hashes": [
@@ -795,7 +794,6 @@
                 "sha256:1adb80e7a782c12e52ef9a8182bebeb73f1d7e24e374397af06fb4956c8dc5c0",
                 "sha256:e27001de32f627c22380a688bcc43ce83504a7bc5da472209b4c70f02829f0b8"
             ],
-            "markers": "python_version >= '2.7'",
             "version": "==2.7.3"
         },
         "pyzmq": {

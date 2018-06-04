@@ -2,11 +2,12 @@
 Functions and CLI script to convert Olive OCR data into Impresso's format.
 
 Usage:
-    impresso-txt-importer --input-dir=<id> --image-dir=<imgd> (--clear | --incremental) [--output-dir==<od> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --temp-dir==<td> --verbose --parallelize]
+    impresso-txt-importer --input-dir=<id> --image-dir=<imgd> --input-format=<if> (--clear | --incremental) [--output-dir==<od> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --temp-dir==<td> --verbose --parallelize]
     impresso-txt-importer --version
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal
+    --input-format=<if>      The OCR format to be imported
     --image-dir=<imgd>  Directory containing (canonical) images and their metadata
     --output-dir=<od>   Base directory where to write the output files
     --config-file=<cf>  configuration file for selective import
@@ -55,6 +56,71 @@ html_escape_table = {
 }
 
 
+def import_issues(
+    issues,
+    img_dir,
+    out_bucket,
+    outp_dir,
+    temp_dir,
+    format,
+    parallel_execution
+):
+    """# TODO: finish adding parameters."""
+
+    """
+    if outp_dir is not None:
+        result = [
+            olive_import_issue(
+                i,
+                img_dir,
+                out_dir=outp_dir,
+                temp_dir=temp_dir
+            )
+            for i in issues
+        ]
+    elif out_bucket is not None:
+        result = [
+            olive_import_issue(
+                i,
+                img_dir,
+                s3_bucket=out_bucket,
+                temp_dir=temp_dir
+            )
+            for i in issues
+        ]
+
+    """
+    # TODO: support the others
+    importer_function = olive_import_issue
+
+    # prepare the execution of the import function
+    tasks = [
+        delayed(importer_function)(
+            i,
+            img_dir,
+            out_dir=outp_dir,
+            s3_bucket=out_bucket,
+            temp_dir=temp_dir
+        )
+        for i in issues
+    ]
+
+    print(
+        "\nImporting {} newspaper issues...(parallelized={})".format(
+            len(issues),
+            parallel_execution
+        )
+    )
+    with ProgressBar():
+        if parallel_execution:
+            result = compute(*tasks, get=mp_get)
+        else:
+            result = compute(*tasks, get=dask.get)
+    print("Done.\n")
+    logger.debug(result)
+    return result
+
+
 def main():
     """Execute the main with CLI parameters."""
 
@@ -62,6 +128,7 @@ def main():
     args = docopt(__doc__)
     inp_dir = args["--input-dir"]
     img_dir = args["--image-dir"]
+    ocr_format = args["--input-format"]
     outp_dir = args["--output-dir"]
     out_bucket = args["--s3-bucket"]
     temp_dir = args["--temp-dir"]
@@ -137,59 +204,20 @@ def main():
         )
         logger.debug(f"Remaining issues: {issues}")
         logger.info(f"{len(issues)} remaining issues")
-    # pdb.set_trace()
 
     logger.debug("Following issues will be imported:{}".format(issues))
 
     assert outp_dir is not None or out_bucket is not None
-    """
-    if outp_dir is not None:
-        result = [
-            olive_import_issue(
-                i,
-                img_dir,
-                out_dir=outp_dir,
-                temp_dir=temp_dir
-            )
-            for i in issues
-        ]
-    elif out_bucket is not None:
-        result = [
-            olive_import_issue(
-                i,
-                img_dir,
-                s3_bucket=out_bucket,
-                temp_dir=temp_dir
-            )
-            for i in issues
-        ]
 
-    """
-    # prepare the execution of the import function
-    tasks = [
-        delayed(olive_import_issue)(
-            i,
-            img_dir,
-            out_dir=outp_dir,
-            s3_bucket=out_bucket,
-            temp_dir=temp_dir
-        )
-        for i in issues
-    ]
-
-    print(
-        "\nImporting {} newspaper issues...(parallelized={})".format(
-            len(issues),
-            parallel_execution
-        )
+    result = import_issues(
+        issues,
+        img_dir,
+        out_bucket,
+        outp_dir,
+        temp_dir,
+        ocr_format,
+        parallel_execution
     )
-    with ProgressBar():
-        if parallel_execution:
-            result = compute(*tasks, get=mp_get)
-        else:
-            result = compute(*tasks, get=dask.get)
-    print("Done.\n")
-    logger.debug(result)
 
     # write a sort of report to a TSV file
     report = "\n".join(
@@ -198,7 +226,10 @@ def main():
             for issue, success, error in result
         ]
     )
-    with open(os.path.join(outp_dir, "result.tsv"), 'w') as report_file:
+    report_file = os.path.join(outp_dir, "result.tsv")
+    with open(report_file, 'w') as report_file:
+        msg = f'Report file written to {report_file}'
+        print(msg)
         report_file.write(report)
 
 

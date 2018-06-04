@@ -15,7 +15,6 @@
                         "$ref": "#/definitions/paragraph"
                     }
                 },
-                "n": { "type": "string" },
                 "pOf": { "type": "string" }
             }
         },

@@ -14,9 +14,10 @@ import ipdb as pdb
 from bs4 import BeautifulSoup
 from impresso_commons.path import canonical_path
 
-from text_importer.helpers import (get_issue_schema, get_page_schema,
-                                   serialize_issue, serialize_page,
-                                   get_image_info, convert_page_coordinates)
+from text_importer.helpers import get_issue_schema, get_page_schema, serialize_issue
+from text_importer.helpers import serialize_page, get_image_info, convert_page_coordinates
+from text_importer.helpers import normalize_language, keep_title
+from text_importer.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
 
@@ -53,13 +54,16 @@ def normalize_hyphenation(line):
     """
     for i, token in enumerate(line["t"]):
         if i == (len(line["t"]) - 1):
+            if token["tx"][-1] == "-":
+                token["hy"] = True
             if token["tx"] == "-" and "nf" in token:
                 prev_token = line["t"][i - 1]
                 line["t"] = line["t"][:-2]
                 merged_token = {
                     "tx": "".join([prev_token["tx"], token["tx"]]),
                     "c": prev_token["c"][:2] + token["c"][2:],
-                    "s": token["s"]
+                    "s": token["s"],
+                    "hy": token["hy"]
                 }
                 logger.debug(
                     "Merged {} and {} => {}".format(
@@ -145,7 +149,7 @@ def merge_pseudo_tokens(line):
     return line
 
 
-def normalize_line(line):
+def normalize_line(line, lang):
     """Apply normalization to a line of OCR.
 
     :param line: a line of OCR text
@@ -163,11 +167,46 @@ def normalize_line(line):
         line = merge_pseudo_tokens(line)
         line = normalize_hyphenation(line)
 
-    for token in line["t"]:
+    for i, token in enumerate(line["t"]):
         if "qid" not in token and "nf" in token:
             del token["nf"]
+
         if "qid" in token:
             del token["qid"]
+
+        if i == 0 and i != len(line["t"]) - 1:
+            insert_ws = insert_whitespace(
+                token["tx"],
+                line["t"][i+1]["tx"],
+                None,
+                lang
+            )
+
+        elif i == 0 and i == len(line["t"]) - 1:
+            insert_ws = insert_whitespace(
+                token["tx"],
+                None,
+                None,
+                lang
+            )
+
+        elif i == len(line["t"]) - 1:
+            insert_ws = insert_whitespace(
+                token["tx"],
+                None,
+                line["t"][i-1]["tx"],
+                lang
+            )
+
+        else:
+            insert_ws = insert_whitespace(
+                token["tx"],
+                line["t"][i+1]["tx"],
+                line["t"][i-1]["tx"],
+                lang
+            )
+        if not insert_ws:
+            token["gn"] = True
 
     return line
 
@@ -195,7 +234,7 @@ def olive_parser(text):
 
     out = {
         "meta": {
-            "language": {},
+            "language": None,
             "type": {}
         },
         "r": [],
@@ -204,8 +243,7 @@ def olive_parser(text):
     }
     out["meta"]["title"] = title
     out["meta"]["page_no"] = [int(page_no)]
-    out["meta"]["language"]["raw"] = language
-    out["meta"]["publication"] = publication
+    out["meta"]["language"] = normalize_language(language)
     out["meta"]["type"]["raw"] = entity_type
     out["meta"]["issue_date"] = issue_date
 
@@ -234,7 +272,6 @@ def olive_parser(text):
         # 1) page number, 2) coordinate list
         region = copy.deepcopy(new_region)
         region["c"] = [int(i) for i in primitive.get('box').split(" ")]
-        region["n"] = page_no
 
         para = None
         line = None
@@ -249,7 +286,7 @@ def olive_parser(text):
                     line = copy.deepcopy(new_line)
 
                 if line_counter > 0 and line is not None:
-                    line = normalize_line(line)  # TODO: pass language param
+                    line = normalize_line(line, out["meta"]["language"])  # TODO: pass language param
                     para["l"].append(line)
 
                 if tag.get("p") in ["S", "SA"] and line_counter > 0:
@@ -283,7 +320,7 @@ def olive_parser(text):
 
         # append orphan lines
         if line is not None:
-            line = normalize_line(line)
+            line = normalize_line(line, out["meta"]["language"])
             para["l"].append(line)
 
         region["p"].append(para)
@@ -352,10 +389,8 @@ def combine_article_parts(article_parts):
             pass
 
         article_dict["meta"]["language"] = {}
-        article_dict["meta"]["language"]["raw"] =\
-            article_parts[0]["meta"]["language"]["raw"]
-        article_dict["meta"]["publication"] =\
-            article_parts[0]["meta"]["publication"]
+        article_dict["meta"]["language"] =\
+            article_parts[0]["meta"]["language"]
         article_dict["meta"]["issue_date"] =\
             article_parts[0]["meta"]["issue_date"]
     elif len(article_parts) == 1:
@@ -470,10 +505,11 @@ def recompose_ToC(toc_data, articles):
             item['m'] = {}
             item['m']["id"] = item["id"]
             item['m']['pp'] = article["meta"]["page_no"]
-            item['m']['l'] = article["meta"]["language"]["raw"].lower()
-            item['m']['pub'] = article["meta"]["publication"]
+            item['m']['l'] = article["meta"]["language"]
             item['m']['tp'] = article["meta"]["type"]["raw"].lower()
-            item['m']['t'] = article["meta"]["title"]
+
+            if keep_title(article["meta"]["title"]):
+                item['m']['t'] = article["meta"]["title"]
 
             item["l"] = {}
             item["l"]["id"] = article["legacy"]["id"]
@@ -745,10 +781,15 @@ def olive_import_issue(
             pages[page_no] = page
 
         contents = recompose_ToC(toc_data, articles)
+        pages_ids = [
+            canonical_path(issue_dir, "p" + str(page_number).zfill(4))
+            for page_number in sorted(pages.keys())
+        ]
         issue_data = {
             "id": canonical_path(issue_dir, path_type="dir").replace("/", "-"),
             "s": styles,
-            "i": contents
+            "i": contents,
+            "pp": pages_ids
         }
 
         image_info = get_image_info(issue_dir, image_dir)

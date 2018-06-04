@@ -81,7 +81,6 @@ def get_s3_connection(host="os.zhdk.cloud.switch.ch"):
 
 
 def serialize_page(page_number, page, issue_dir, out_dir=None, s3_bucket=None):
-    page.validate()
     # write the json page to file
 
     canonical_filename = canonical_path(
@@ -127,7 +126,6 @@ def serialize_page(page_number, page, issue_dir, out_dir=None, s3_bucket=None):
 
 
 def serialize_issue(issue, issue_dir, out_dir=None, s3_bucket=None):
-    issue.validate()
     # write the json page to file
 
     canonical_filename = canonical_path(issue_dir, "issue", extension=".json")
@@ -209,6 +207,24 @@ def get_image_info(issue, data_dir):
     with open(image_info_path, 'r') as inp_file:
         json_data = json.load(inp_file)
         return json_data
+
+
+def normalize_language(language):
+    mappings = {
+        "french": "fr"
+    }
+    return mappings[language.lower()]
+
+
+def keep_title(title):
+    black_list = [
+        "untitled article",
+        "untitled ad"
+    ]
+    if title.lower() in black_list:
+        return False
+    else:
+        return True
 
 
 def convert_box(coords, scale_factor):
