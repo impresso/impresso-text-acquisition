@@ -791,8 +791,10 @@ def olive_import_issue(
             "i": contents,
             "pp": pages_ids
         }
-
-        image_info = get_image_info(issue_dir, image_dir)
+        try:
+            image_info = get_image_info(issue_dir, image_dir)
+        except FileNotFoundError:
+            logger.error("Missing image-info.json file for {issue_dir.path}")
 
         for page_no in pages:
             page = pages[page_no]
