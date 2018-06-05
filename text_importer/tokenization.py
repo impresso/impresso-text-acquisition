@@ -44,7 +44,11 @@ def insert_whitespace(token, following_token, previous_token, language):
     elif token in wsrules["punctuation_nows_after"]:
         insert_ws = False
 
-    elif token in wsrules["punctuation_ciffre"]:
+    elif (
+            token in wsrules["punctuation_ciffre"] and
+            previous_token is not None and
+            following_token is not None
+    ):
         if previous_token.isdigit() and following_token.isdigit():
             return False
         else:
