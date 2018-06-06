@@ -15,6 +15,7 @@ import logging
 import os
 import ipdb as pdb
 import pickle
+import getpass
 
 from docopt import docopt
 
@@ -22,13 +23,14 @@ from boto.s3.connection import Key
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
 from dask.multiprocessing import get as mp_get
-from impresso_commons.path import (KNOWN_JOURNALS, detect_canonical_issues)
-from impresso_commons.utils.s3 import get_s3_connection
+import text_importer
+from impresso_commons.path.path_fs import (KNOWN_JOURNALS, detect_canonical_issues)
+from impresso_commons.utils.s3 import get_s3_connection, get_s3_versions
 
 logger = logging.getLogger(__name__)
 
 
-def s3_upload_issue(local_issue, input_dir, ouput_bucket, overwrite=False):
+def s3_upload_issue(local_issue, input_dir, output_bucket, overwrite=False):
     """Upload a canonical newspaper issue to an S3 bucket.
 
     :param local_issue: the issue to upload
@@ -43,7 +45,7 @@ def s3_upload_issue(local_issue, input_dir, ouput_bucket, overwrite=False):
     files = [os.path.join(my_dir, f) for f in os.listdir(my_dir)]
     try:
         for f in files:
-            k = Key(ouput_bucket)
+            k = Key(output_bucket)
             # remove the input_dir when setting the key's name
             k.key = f.replace(input_dir, "")
 
@@ -53,10 +55,21 @@ def s3_upload_issue(local_issue, input_dir, ouput_bucket, overwrite=False):
                 )
             else:
                 # copy the content of the file into the key
-                k.set_contents_from_filename(f)
-                logger.info(
-                    f'Uploaded {f} to s3://{ouput_bucket.name}/{k.key}'
+                # TODO: add support for metadata
+                k.set_metadata('uuser', getpass.getuser())
+                k.set_metadata(
+                    'script',
+                    f'{text_importer.__name__} v{text_importer.__version__}'
                 )
+                k.set_contents_from_filename(f)
+                version_id, last_modified = get_s3_versions(
+                    output_bucket.name,
+                    k.name
+                )[0]
+                logger.info(
+                    f'Uploaded {f} to s3://{output_bucket.name}/{k.key}'
+                )
+                logger.info(f'Current version id of {k} = {version_id}')
 
             k.close()
         return (local_issue, True)
@@ -86,8 +99,7 @@ def main():
     logger.addHandler(handler)
 
     # gather issues to upload
-    local_issues = detect_canonical_issues(
-        input_dir,
+    local_issues = detect_canonical_issues(input_dir,
         KNOWN_JOURNALS
     )
     print(f"Starting import of {len(local_issues)} issues")

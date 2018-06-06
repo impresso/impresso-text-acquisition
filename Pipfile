@@ -1,12 +1,9 @@
 [[source]]
-
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-
 [packages]
-
 "bs4" = "*"
 docopt = "*"
 pandas = "*"
@@ -16,11 +13,9 @@ python-jsonschema-objects = "*"
 jsonlines = "*"
 boto = "*"
 "boto3" = "*"
-impresso-commons = {git = "https://github.com/impresso/impresso-pycommons.git", editable = true, ref = "master"}
-
+impresso-commons = {git = "https://github.com/impresso/impresso-pycommons.git", editable = true}
 
 [dev-packages]
-
 pytest = "*"
 ipython = "*"
 ipdb = "*"
@@ -30,7 +25,5 @@ jupyter = "*"
 isort = "*"
 tox = "*"
 
-
 [requires]
-
 python_version = "3.6"
