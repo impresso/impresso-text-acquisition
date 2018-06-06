@@ -19,6 +19,6 @@ def test_olive_import_issues():
         pkg_resources.resource_filename('text_importer', 'data/out/'),
         pkg_resources.resource_filename('text_importer', 'data/temp/'),
         "olive",
-        True
+        True  # whether to parallelize or not
     )
     print(result)

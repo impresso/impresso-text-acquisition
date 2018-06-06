@@ -286,7 +286,7 @@ def olive_parser(text):
                     line = copy.deepcopy(new_line)
 
                 if line_counter > 0 and line is not None:
-                    line = normalize_line(line, out["meta"]["language"])  # TODO: pass language param
+                    line = normalize_line(line, out["meta"]["language"])
                     para["l"].append(line)
 
                 if tag.get("p") in ["S", "SA"] and line_counter > 0:
@@ -330,10 +330,13 @@ def olive_parser(text):
 
     out["legacy"]["id"] = identifier
     out["legacy"]["source"] = soup.link['source']
+    """
+    # I suspect this could be deleted
     out["legacy"]["word_count"] = int(soup.meta['wordcnt'])
     out["legacy"]["chars_count"] = int(soup.meta['total_chars_count'])
     suspicious_chars_count = int(soup.meta['suspicious_chars_count'])
     out["legacy"]["suspicious_chars_count"] = int(suspicious_chars_count)
+    """
     out["legacy"]["first_id"] = soup.link['first_id']
     out["legacy"]["last_id"] = soup.link['last_id']
     out["legacy"]["next_id"] = soup.link['next_id']
@@ -720,7 +723,7 @@ def olive_import_issue(
 
             while len(internal_deque) > 0:
                 item = internal_deque.popleft()
-                xml_data = archive.read(item)
+                xml_data = archive.read(item).decode('windows-1252')
                 new_data = olive_parser(xml_data)
 
                 # check if it needs to be parsed later on
@@ -794,7 +797,7 @@ def olive_import_issue(
         try:
             image_info = get_image_info(issue_dir, image_dir)
         except FileNotFoundError:
-            logger.error("Missing image-info.json file for {issue_dir.path}")
+            logger.error(f"Missing image-info.json file for {issue_dir.path}")
 
         for page_no in pages:
             page = pages[page_no]
