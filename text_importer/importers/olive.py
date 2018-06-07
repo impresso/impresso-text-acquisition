@@ -12,7 +12,7 @@ from operator import itemgetter
 
 import ipdb as pdb
 from bs4 import BeautifulSoup
-from impresso_commons.path import canonical_path
+from impresso_commons.path.path_fs import canonical_path
 
 from text_importer.helpers import get_issue_schema, get_page_schema, serialize_issue
 from text_importer.helpers import serialize_page, get_image_info, convert_page_coordinates

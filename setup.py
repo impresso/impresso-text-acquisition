@@ -42,6 +42,6 @@ setup(
         'python-jsonschema-objects',
     ],
     dependency_links=[
-      'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons-0.2.2',
+      'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons',
       ]
 )

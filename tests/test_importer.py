@@ -1,5 +1,5 @@
 import pkg_resources
-from impresso_commons.path import detect_issues
+from impresso_commons.path.path_fs import detect_issues
 from text_importer.importer import import_issues
 
 

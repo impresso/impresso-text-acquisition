@@ -14,7 +14,7 @@ import python_jsonschema_objects as pjs
 from boto.s3.key import Key
 
 from impresso_commons.images.olive_boxes import compute_box, get_scale_factor
-from impresso_commons.path import IssueDir, canonical_path
+from impresso_commons.path.path_fs import IssueDir, canonical_path
 
 logger = logging.getLogger(__name__)
 

@@ -26,18 +26,19 @@ import os
 import shutil
 from datetime import date
 
-import ipdb as pdb  # remove from production version
-from docopt import docopt
-
 import dask
+import ipdb as pdb  # remove from production version
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
 from dask.multiprocessing import get as mp_get
-from impresso_commons.path import detect_issues, select_issues
-from impresso_commons.path import detect_canonical_issues
-from impresso_commons.path import KNOWN_JOURNALS
+from docopt import docopt
+
 from text_importer import __version__
 from text_importer.importers.olive import olive_import_issue
+
+from impresso_commons.path.path_fs import detect_issues, select_issues
+from impresso_commons.path.path_fs import detect_canonical_issues
+from impresso_commons.path.path_fs import KNOWN_JOURNALS
 
 __author__ = "Matteo Romanello"
 __email__ = "matteo.romanello@epfl.ch"
