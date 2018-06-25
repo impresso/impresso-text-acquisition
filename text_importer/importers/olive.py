@@ -33,13 +33,14 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
                 "legacy_id": entity.get("id"),
                 "id": canonical_path(
                     issue_dir,
-                    name="i" + entity.get("index_in_doc").zfill(4)\
-                    if entity.get("index_in_doc")is not None \
+                    name="i" + entity.get("index_in_doc").zfill(4)
+                    if entity.get("index_in_doc") is not None
                     else "i" + str(n).zfill(4),
                     extension=""
                 ),
                 "type": entity.get("entity_type"),
                 "seq": int(entity.get("index_in_doc"))
+                if entity.get("index_in_doc") is not None else str(n)
             }
             for n, entity in enumerate(page.find_all("entity"))
         }
