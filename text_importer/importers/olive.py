@@ -33,13 +33,15 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
                 "legacy_id": entity.get("id"),
                 "id": canonical_path(
                     issue_dir,
-                    name="i" + entity.get("index_in_doc").zfill(4),
+                    name="i" + entity.get("index_in_doc").zfill(4)\
+                    if entity.get("index_in_doc")is not None \
+                    else "i" + n.zfill(4),
                     extension=""
                 ),
                 "type": entity.get("entity_type"),
                 "seq": int(entity.get("index_in_doc"))
             }
-            for entity in page.find_all("entity")
+            for n, entity in enumerate(page.find_all("entity"))
         }
         for page in BeautifulSoup(text, 'lxml').find_all('page')
     }
