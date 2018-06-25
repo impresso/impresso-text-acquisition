@@ -40,7 +40,7 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
                 ),
                 "type": entity.get("entity_type"),
                 "seq": int(entity.get("index_in_doc"))
-                if entity.get("index_in_doc") is not None else str(n + 1)
+                if entity.get("index_in_doc") is not None else n + 1
             }
             for n, entity in enumerate(page.find_all("entity"))
         }
