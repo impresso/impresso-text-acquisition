@@ -35,7 +35,7 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
                     issue_dir,
                     name="i" + entity.get("index_in_doc").zfill(4)\
                     if entity.get("index_in_doc")is not None \
-                    else "i" + n.zfill(4),
+                    else "i" + str(n).zfill(4),
                     extension=""
                 ),
                 "type": entity.get("entity_type"),
