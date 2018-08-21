@@ -211,7 +211,9 @@ def get_image_info(issue, data_dir):
 
 def normalize_language(language):
     mappings = {
-        "french": "fr"
+        "french": "fr",
+        "english": "en",
+        "german": "de"
     }
     return mappings[language.lower()]
 
