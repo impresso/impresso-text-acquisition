@@ -13,7 +13,8 @@ python-jsonschema-objects = "*"
 jsonlines = "*"
 boto = "*"
 "boto3" = "*"
-impresso-commons = {git = "https://github.com/impresso/impresso-pycommons.git", editable = true}
+"511b36c" = {path = "./../impresso-pycommons-dev", editable = true}
+impresso_commons = {git = "https://github.com/impresso/impresso-pycommons.git", editable = true}
 
 [dev-packages]
 pytest = "*"
