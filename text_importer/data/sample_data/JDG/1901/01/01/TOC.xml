@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="windows-1252" standalone="no"?>
+<Xmd_toc REPOSITORY_FORMAT="1.0" PRXML_VER="2.2" PUBLICATION="JDG" PUBLICATION_DESCRIPTION="" ISSUE_DATE="01/01/1901" RELEASE_NO="103_JDG_1901_01_01_0001" LANGUAGE="French">
+	<Head_np>
+		<Meta PAGES_NUMBER="4" SOURCE_TYPE="TIFF" SOURCE_RESOLUTION="72" IMAGES_RESOLUTION="120" PAGE_THUMBNAIL_RESOLUTION="45" PAGE_PREVIEW_RESOLUTION="15" DEFAULT_IMG_EXT="png" DEFAULT_PREVIEW_IMG_EXT="png" BASE_HREF="JDG/1901/01/01" PDF_DESTINATION_MAPPED="OLV0_Page_0001" TITLE_SNP_EXT="png" AD_SNP_EXT="png" IMAGE_SNP_EXT="jpg" MULTI_LAYER_PAGE_IMG="false" TOTAL_CHARS_COUNT="125754" SUSPICIOUS_CHARS_COUNT="0">
+			<Publisher XMD_VER="2.6.239.15" ACROBAT_VER="7.08" PUBLISHER="Olive" PROFILE_ID="W:\Batch\Profile\XMD_JDG_1869_1912.ini">
+				<PublishDate>Fri, 20 Jun 2008 14:41:24 UTC</PublishDate>
+				<PublishSWFCompatible>false</PublishSWFCompatible>
+			</Publisher>
+			<Resolutions>
+				<Resolution DEFAULT="true">45</Resolution>
+				<Resolution>60</Resolution>
+				<Resolution>120</Resolution>
+			</Resolutions>
+		</Meta>
+		<Link SOURCE="103_JDG_1901_01_01_0001.PDF"/>
+		<DataFiles>
+			<Files TYPE="DOC_PDF" PRESENT="1"/>
+			<Files TYPE="PAGE_PDF" PRESENT="1"/>
+			<Files TYPE="DOC_IMG" PRESENT="0"/>
+			<Files TYPE="PAGE_IMG" PRESENT="1"/>
+			<Files TYPE="PAGE_VIEW_IMG" PRESENT="1"/>
+			<Files TYPE="PAGE_PREVIEW_IMG" PRESENT="1"/>
+			<Files TYPE="PRIMITIVE_IMG" PRESENT="1"/>
+			<Files TYPE="SNIPPET_IMG" PRESENT="1"/>
+		</DataFiles>
+	</Head_np>
+	<Body_np>
+		<Section NAME="Front page">
+			<Page SINGLE_PAGE_PDF_NAME="/Res/PDF/Pg0001_s_0001.pdf" PAGE_NO="1" NAME="" PAGE_LABEL="1" ID="Pg001" PAGE_TYPE="Single" PAGE_WIDTH="737" PAGE_HEIGHT="1002" CROP_BOX="0 0 736 1001" MEDIA_BOX="0 0 736 1001" HREF="/1/Pg001" TOTAL_CHARS_COUNT="32283" SUSPICIOUS_CHARS_COUNT="0">
+				<Entity ENTITY_TYPE="Article" PAGE_NO="1" NAME="LA SUISSE EN 1900" ID="Ar00100" HREF="/1/Ar00100" SIZE="Medium" CONTINUATION_TO="Ar00101" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="1" NAME="Untitled Article" ID="Ar00101" HREF="/1/Ar00101" SIZE="Medium" CONTINUATION_TO="Ar00102" CONTINUATION_FROM="Ar00100" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="1" NAME="de l'assurance dans notre pays et ne cherchât pas à les développer en les améliorant et en leur accordant son appui moral et fi-" ID="Ar00102" HREF="/1/Ar00102" SIZE="Medium" CONTINUATION_TO="Ar00103" CONTINUATION_FROM="Ar00101" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="1" NAME="de l'assurance dans notre pays et ne cherchât pas à les développer en les améliorant et en leur accordant son appui moral et fi-" ID="Ar00103" HREF="/1/Ar00103" SIZE="Medium" CONTINUATION_TO="Ar00104" CONTINUATION_FROM="Ar00102" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="1" NAME="de l'assurance dans notre pays et ne cherchât pas à les développer en les améliorant et en leur accordant son appui moral et fi-" ID="Ar00104" HREF="/1/Ar00104" SIZE="Medium" CONTINUATION_TO="Ar00105" CONTINUATION_FROM="Ar00103" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="1" NAME="de l'assurance dans notre pays et ne cherchât pas à les développer en les améliorant et en leur accordant son appui moral et fi-" ID="Ar00105" HREF="/1/Ar00105" SIZE="Medium" CONTINUATION_TO="Ar00200" CONTINUATION_FROM="Ar00104" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="1" NAME="Untitled Article" ID="Ar00106" HREF="/1/Ar00106" SIZE="Medium" IMAGES_RESOLUTION="120"/>
+			</Page>
+		</Section>
+		<Section NAME="None">
+			<Page SINGLE_PAGE_PDF_NAME="/Res/PDF/Pg0002_s_0002.pdf" PAGE_NO="2" NAME="" PAGE_LABEL="2" ID="Pg002" PAGE_TYPE="Single" PAGE_WIDTH="741" PAGE_HEIGHT="1004" CROP_BOX="0 0 740 1003" MEDIA_BOX="0 0 740 1003" HREF="/2/Pg002" TOTAL_CHARS_COUNT="33734" SUSPICIOUS_CHARS_COUNT="0">
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="Untitled Article" ID="Ar00200" HREF="/2/Ar00200" SIZE="Medium" CONTINUATION_FROM="Ar00105" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="Untitled Article" ID="Ar00201" HREF="/2/Ar00201" SIZE="Medium" CONTINUATION_FROM="Ar00209" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="Untitled Article" ID="Ar00202" HREF="/2/Ar00202" SIZE="Medium" CONTINUATION_TO="Ar00203" CONTINUATION_FROM="Ar00210" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="Untitled Article" ID="Ar00203" HREF="/2/Ar00203" SIZE="Small" CONTINUATION_FROM="Ar00202" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="CONFÉDÉRATION SUISSE" ID="Ar00204" HREF="/2/Ar00204" SIZE="Medium" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="ÉTRANGER" ID="Ar00205" HREF="/2/Ar00205" SIZE="Small" CONTINUATION_TO="Ar00206" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="ÉTRANGER" ID="Ar00206" HREF="/2/Ar00206" SIZE="Medium" CONTINUATION_TO="Ar00207" CONTINUATION_FROM="Ar00205" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="ÉTRANGER" ID="Ar00207" HREF="/2/Ar00207" SIZE="Medium" CONTINUATION_FROM="Ar00206" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="ACTUALITÉ" ID="Ar00208" HREF="/2/Ar00208" SIZE="Small" CONTINUATION_TO="Ar00300" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="GENÈVE" ID="Ar00209" HREF="/2/Ar00209" SIZE="Small" CONTINUATION_TO="Ar00201" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="2" NAME="Politique cantonale" ID="Ar00210" HREF="/2/Ar00210" SIZE="Small" CONTINUATION_TO="Ar00202" IMAGES_RESOLUTION="120"/>
+			</Page>
+			<Page SINGLE_PAGE_PDF_NAME="/Res/PDF/Pg0003_s_0003.pdf" PAGE_NO="3" NAME="" PAGE_LABEL="3" ID="Pg003" PAGE_TYPE="Single" PAGE_WIDTH="738" PAGE_HEIGHT="1003" CROP_BOX="0 0 737 1002" MEDIA_BOX="0 0 737 1002" HREF="/3/Pg003" TOTAL_CHARS_COUNT="32297" SUSPICIOUS_CHARS_COUNT="0">
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Untitled Article" ID="Ar00300" HREF="/3/Ar00300" SIZE="Medium" CONTINUATION_TO="Ar00301" CONTINUATION_FROM="Ar00208" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Messieurs du Conseil ne s'étaient pas couverts, M r Tronchin commença son discours et chacun se couviit." ID="Ar00301" HREF="/3/Ar00301" SIZE="Medium" CONTINUATION_FROM="Ar00300" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="CHRONIQUE LOCALE" ID="Ar00302" HREF="/3/Ar00302" SIZE="Small" CONTINUATION_TO="Ar00303" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Untitled Article" ID="Ar00303" HREF="/3/Ar00303" SIZE="Medium" CONTINUATION_TO="Ar00304" CONTINUATION_FROM="Ar00302" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Untitled Article" ID="Ar00304" HREF="/3/Ar00304" SIZE="Medium" CONTINUATION_FROM="Ar00303" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="RÉURIONS.-CONVOCATIONS.-CeNCEIITS" ID="Ar00305" HREF="/3/Ar00305" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="SERVICE TÉLÉGRAPHIQUE" ID="Ar00306" HREF="/3/Ar00306" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Les affaires ù* Chine" ID="Ar00307" HREF="/3/Ar00307" SIZE="Small" CONTINUATION_TO="Ar00308" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Les affaires ù* Chine" ID="Ar00308" HREF="/3/Ar00308" SIZE="Small" CONTINUATION_FROM="Ar00307" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Guerre anglotransvaalienne" ID="Ar00309" HREF="/3/Ar00309" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Untitled Article" ID="Ar00310" HREF="/3/Ar00310" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Untitled Article" ID="Ar00311" HREF="/3/Ar00311" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Allemagn e" ID="Ar00312" HREF="/3/Ar00312" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Russie" ID="Ar00313" HREF="/3/Ar00313" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="3" NAME="Untitled Article" ID="Ar00314" HREF="/3/Ar00314" SIZE="Small" IMAGES_RESOLUTION="120"/>
+			</Page>
+			<Page SINGLE_PAGE_PDF_NAME="/Res/PDF/Pg0004_s_0004.pdf" PAGE_NO="4" NAME="" PAGE_LABEL="4" ID="Pg004" PAGE_TYPE="Single" PAGE_WIDTH="740" PAGE_HEIGHT="1012" CROP_BOX="0 0 739 1011" MEDIA_BOX="0 0 739 1011" HREF="/4/Pg004" TOTAL_CHARS_COUNT="27440" SUSPICIOUS_CHARS_COUNT="0">
+				<Entity ENTITY_TYPE="Article" ENTITY_FORMAT="Data" PAGE_NO="4" NAME="Untitled Article" ID="Ar00400" HREF="/4/Ar00400" SIZE="Small" IMAGES_RESOLUTION="144"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00401" HREF="/4/Ar00401" SIZE="Large" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00402" HREF="/4/Ar00402" SIZE="Large" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00403" HREF="/4/Ar00403" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00404" HREF="/4/Ar00404" SIZE="Medium" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00405" HREF="/4/Ar00405" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00406" HREF="/4/Ar00406" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00407" HREF="/4/Ar00407" SIZE="Medium" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00408" HREF="/4/Ar00408" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00409" HREF="/4/Ar00409" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00410" HREF="/4/Ar00410" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00411" HREF="/4/Ar00411" SIZE="Small" IMAGES_RESOLUTION="120"/>
+				<Entity ENTITY_TYPE="Article" PAGE_NO="4" NAME="Untitled Article" ID="Ar00412" HREF="/4/Ar00412" SIZE="Small" IMAGES_RESOLUTION="120"/>
+			</Page>
+		</Section>
+	</Body_np>
+</Xmd_toc>
