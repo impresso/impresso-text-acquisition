@@ -10,13 +10,13 @@ import zipfile
 from collections import deque
 from operator import itemgetter
 
-import ipdb as pdb
 from bs4 import BeautifulSoup
 from impresso_commons.path.path_fs import canonical_path
 
-from text_importer.helpers import get_issue_schema, get_page_schema, serialize_issue
-from text_importer.helpers import serialize_page, get_image_info, convert_page_coordinates
-from text_importer.helpers import normalize_language, keep_title
+from text_importer.helpers import (convert_page_coordinates, get_image_info,
+                                   get_issue_schema, get_page_schema,
+                                   keep_title, normalize_language,
+                                   serialize_issue, serialize_page)
 from text_importer.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
@@ -27,15 +27,13 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
     with codecs.open(toc_path, 'r', encoding) as f:
         text = f.read()
 
-    return {
+    toc_data = {
         int(page.get('page_no')): {
             entity.get("id"): {
                 "legacy_id": entity.get("id"),
                 "id": canonical_path(
                     issue_dir,
-                    name="i" + entity.get("index_in_doc").zfill(4)
-                    if entity.get("index_in_doc") is not None
-                    else "i" + str(n + 1).zfill(4),
+                    name=f"i{str(n + 1).zfill(4)}",
                     extension=""
                 ),
                 "type": entity.get("entity_type"),
@@ -46,6 +44,14 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
         }
         for page in BeautifulSoup(text, 'lxml').find_all('page')
     }
+
+    # for every page, check that the generated canonical IDs are unique
+    for page in toc_data:
+
+        ids = [toc_data[page][item]["id"] for item in toc_data[page]]
+        assert len(ids) == len(list(set(ids)))
+
+    return toc_data
 
 
 def normalize_hyphenation(line):
@@ -231,7 +237,6 @@ def olive_parser(text):
     identifier = root['id']
     language = root['language']
     title = soup.meta['name']
-    publication = soup.meta['publication']
     entity_type = root['entity_type']
     issue_date = soup.meta['issue_date']
 
@@ -816,6 +821,11 @@ def olive_import_issue(
                 image_name = image_info_record['s']
                 page_xml_file = page_xml_files[page_no]
             except Exception as e:
+                logger.error("Page {} in {} raised error: {}".format(
+                    page_no,
+                    issue_data["id"],
+                    e
+                ))
                 logger.error(
                     "Couldn't get information about page img {} in {}".format(
                         page_no,
@@ -835,6 +845,11 @@ def olive_import_issue(
                 )
                 pages[page_no].cc = True
             except Exception as e:
+                logger.error("Page {} in {} raised error: {}".format(
+                    page_no,
+                    issue_data["id"],
+                    e
+                ))
                 logger.error(
                     "Couldn't convert coordinates in p. {} {}".format(
                         page_no,

@@ -14,7 +14,7 @@ def test_olive_import_issues():
 
     result = import_issues(
         issues,
-        "/Volumes/project_impresso/images/",
+        "/Volumes/cdh_dhlab_2_arch/project_impresso/images/",
         None,
         pkg_resources.resource_filename('text_importer', 'data/out/'),
         pkg_resources.resource_filename('text_importer', 'data/temp/'),
