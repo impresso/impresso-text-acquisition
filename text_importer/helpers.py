@@ -204,9 +204,13 @@ def get_image_info(issue, data_dir):
 
     image_info_path = os.path.join(issue_w_images.path, image_info_name)
 
-    with open(image_info_path, 'r') as inp_file:
-        json_data = json.load(inp_file)
-        return json_data
+    try:
+        with open(image_info_path, 'r') as inp_file:
+            json_data = json.load(inp_file)
+            return json_data
+    except Exception as e:
+        logger.error(f"Decoding file {image_info_path} failed with '{e}'")
+        raise e
 
 
 def normalize_language(language):
