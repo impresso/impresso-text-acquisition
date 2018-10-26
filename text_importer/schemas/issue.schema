@@ -6,7 +6,6 @@
             "type": "object",
             "properties": {
                 "id": {"type": "string"},
-                "lid": {"type": "string"},
                 "l": {"type": "string"},
                 "pp": {
                     "type": "array",
@@ -14,10 +13,10 @@
                         "type": "integer"
                     }
                 },
-                "pub": {"type": "string"},
                 "t": {"type": "string"},
                 "tp": {"type": "string"}
-            }
+            },
+            "required": ["id", "l", "tp"]
         },
         "style":{
             "type": "object",
