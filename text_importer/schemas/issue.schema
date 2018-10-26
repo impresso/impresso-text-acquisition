@@ -70,5 +70,6 @@
             "type": "array",
             "items": {"type": "string"}
         }
-    }
+    },
+    "required": ["id", "i", "pp"]
 }
