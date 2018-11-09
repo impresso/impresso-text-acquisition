@@ -16,7 +16,8 @@
                     }
                 },
                 "pOf": { "type": "string" }
-            }
+            },
+            "required": ["c"]
         },
         "line":{
             "type": "object",
@@ -30,7 +31,8 @@
                         "$ref": "#/definitions/token"
                     }
                 }
-            }
+            },
+            "required": ["c", "t"]
         },
         "token":{
             "type": "object",
@@ -40,7 +42,8 @@
                 },
                 "tx": {"type": "string"},
                 "s": {"type": "integer"}
-            }
+            },
+            "required": ["c", "tx"]
         },
         "coordinates": {
             "type": "array",
@@ -75,5 +78,6 @@
                 "$ref": "#/definitions/region"
             }
         }
-    }
+    },
+    "required": ["r"]
 }

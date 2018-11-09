@@ -27,29 +27,42 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
     with codecs.open(toc_path, 'r', encoding) as f:
         text = f.read()
 
-    toc_data = {
-        int(page.get('page_no')): {
-            entity.get("id"): {
-                "legacy_id": entity.get("id"),
+    toc_data = {}
+
+    global_counter = 0
+
+    for page in BeautifulSoup(text, 'lxml').find_all('page'):
+        page_data = {}
+
+        for n, entity in enumerate(page.find_all("entity")):
+
+            global_counter += 1
+            item_legacy_id = entity.get("id")
+
+            item = {
+                "legacy_id": item_legacy_id,
                 "id": canonical_path(
                     issue_dir,
-                    name=f"i{str(n + 1).zfill(4)}",
+                    name=f"i{str(global_counter).zfill(4)}",
                     extension=""
                 ),
                 "type": entity.get("entity_type"),
-                "seq": int(entity.get("index_in_doc"))
-                if entity.get("index_in_doc") is not None else n + 1
+                "seq": n + 1
             }
-            for n, entity in enumerate(page.find_all("entity"))
-        }
-        for page in BeautifulSoup(text, 'lxml').find_all('page')
-    }
 
-    # for every page, check that the generated canonical IDs are unique
-    for page in toc_data:
+            page_data[item_legacy_id] = item
 
-        ids = [toc_data[page][item]["id"] for item in toc_data[page]]
-        assert len(ids) == len(list(set(ids)))
+        toc_data[int(page.get('page_no'))] = page_data
+
+    # gather the IDs of all content items int the issue
+    ids = [
+        toc_data[page][item]["id"]
+        for page in toc_data
+        for item in toc_data[page]
+    ]
+
+    # check that these IDs are unique within the issue
+    assert len(ids) == len(list(set(ids)))
 
     return toc_data
 
