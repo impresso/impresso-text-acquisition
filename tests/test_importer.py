@@ -6,7 +6,7 @@ from text_importer.importer import import_issues
 def test_olive_import_issues():
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
-        'data/sample_data/'
+        'data/sample_data/Olive/'
     )
     issues = detect_issues(inp_dir)
     assert issues is not None
