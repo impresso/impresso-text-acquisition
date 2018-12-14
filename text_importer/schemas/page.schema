@@ -71,7 +71,9 @@
     "type": "object",
 
     "properties": {
+        "id": {"type": "string"},
         "cc":{"type": "boolean"},
+        "cdt":{"type": "string"},
         "r": {
             "type": "array",
             "items": {
@@ -79,5 +81,5 @@
             }
         }
     },
-    "required": ["r"]
+    "required": ["id", "cdt", "r"]
 }
