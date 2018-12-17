@@ -34,6 +34,7 @@ def test_lux_importer():
     )
     out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
     issues = lux_detect_issues(inp_dir)
+    print(issues[:10])
     assert issues is not None
     result = lux_import_issues(issues, out_dir)
     print(result)
