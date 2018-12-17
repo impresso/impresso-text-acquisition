@@ -93,7 +93,7 @@ def serialize_page(page_number, page, issue_dir, out_dir=None, s3_bucket=None):
         out_file = os.path.join(out_dir, canonical_filename)
 
         with codecs.open(out_file, 'w', 'utf-8') as f:
-            f.write(page.serialize(indent=3, ensure_ascii=False))
+            f.write(page.serialize(ensure_ascii=False))
             logger.info(
                 "Written page \'{}\' to {}".format(page_number, out_file)
             )
@@ -137,7 +137,7 @@ def serialize_issue(issue, issue_dir, out_dir=None, s3_bucket=None):
         )
 
         with codecs.open(out_file, 'w', 'utf-8') as f:
-            f.write(issue.serialize(indent=3))
+            f.write(issue.serialize())
             logger.info(
                 "Written issue info file to {}".format(out_file)
             )
