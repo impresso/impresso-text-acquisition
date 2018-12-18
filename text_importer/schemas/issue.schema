@@ -53,6 +53,7 @@
 
     "properties": {
         "id": {"type": "string"},
+        "cdt":{"type": "string"},
         "i": {
             "type": "array",
             "items": {
@@ -70,5 +71,5 @@
             "items": {"type": "string"}
         }
     },
-    "required": ["id", "i", "pp"]
+    "required": ["id", "cdt", "i", "pp"]
 }

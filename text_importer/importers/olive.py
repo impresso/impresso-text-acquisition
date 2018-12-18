@@ -9,10 +9,11 @@ import sys
 import zipfile
 from collections import deque
 from operator import itemgetter
+from time import strftime
 
 from bs4 import BeautifulSoup
-from impresso_commons.path.path_fs import canonical_path
 
+from impresso_commons.path.path_fs import canonical_path
 from text_importer.helpers import (convert_page_coordinates, get_image_info,
                                    get_issue_schema, get_page_schema,
                                    keep_title, normalize_language,
@@ -469,7 +470,8 @@ def recompose_page(page_number, info_from_toc, page_elements):
     It's here that `n` attributes are assigned to each region/para/line/token.
     """
     page = {
-        "r": []
+        "r": [],
+        "cdt": strftime("%Y-%m-%d %H:%M:%S")
     }
     ordered_elements = sorted(
         list(info_from_toc.values()), key=itemgetter('seq')
@@ -801,19 +803,20 @@ def olive_import_issue(
                 if (el["legacy"]["id"] in element_ids)
             }
             page_dict = recompose_page(page_no, info_from_toc, elements)
+            page_dict['id'] = canonical_path(
+                issue_dir,
+                "p" + str(page_no).zfill(4)
+            )
             page = PageSchema(**page_dict)
             pages[page_no] = page
 
         contents = recompose_ToC(toc_data, articles)
-        pages_ids = [
-            canonical_path(issue_dir, "p" + str(page_number).zfill(4))
-            for page_number in sorted(pages.keys())
-        ]
         issue_data = {
             "id": canonical_path(issue_dir, path_type="dir").replace("/", "-"),
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "s": styles,
             "i": contents,
-            "pp": pages_ids
+            "pp": [pages[page_no].id for page_no in pages]
         }
         try:
             image_info = get_image_info(issue_dir, image_dir)

@@ -112,9 +112,9 @@ def import_issues(
     )
     with ProgressBar():
         if parallel_execution:
-            result = compute(*tasks, get=mp_get)
+            result = compute(*tasks, scheduler='processes')
         else:
-            result = compute(*tasks, get=dask.get)
+            result = compute(*tasks, scheduler='single-threaded')
     print("Done.\n")
     logger.debug(result)
     return result
