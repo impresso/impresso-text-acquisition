@@ -810,6 +810,10 @@ def olive_import_issue(
             page = PageSchema(**page_dict)
             pages[page_no] = page
 
+            # flag those cases where the Olive XML does not contain any OCR
+            if len(page.r) == 0:
+                logger.warning(f"Page {page.id} has no OCR text")
+
         contents = recompose_ToC(toc_data, articles)
         issue_data = {
             "id": canonical_path(issue_dir, path_type="dir").replace("/", "-"),
