@@ -11,21 +11,20 @@ Options:
     --overwrite         Overwrite files on S3 if already present
 """  # noqa: E501
 
+import getpass
 import logging
 import os
-import ipdb as pdb
 import pickle
-import getpass
-
-from docopt import docopt
 
 from boto.s3.connection import Key
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
-from dask.multiprocessing import get as mp_get
-import text_importer
-from impresso_commons.path.path_fs import (KNOWN_JOURNALS, detect_canonical_issues)
+from docopt import docopt
+from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
+                                           detect_canonical_issues)
 from impresso_commons.utils.s3 import get_s3_connection, get_s3_versions
+
+import text_importer
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +98,8 @@ def main():
     logger.addHandler(handler)
 
     # gather issues to upload
-    local_issues = detect_canonical_issues(input_dir,
+    local_issues = detect_canonical_issues(
+        input_dir,
         KNOWN_JOURNALS
     )
     print(f"Starting import of {len(local_issues)} issues")
@@ -110,7 +110,7 @@ def main():
     ]
 
     with ProgressBar():
-        result = compute(*tasks, get=mp_get)
+        result = compute(*tasks, scheduler='processes')
 
     errors = [
         issue
