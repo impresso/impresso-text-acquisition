@@ -480,9 +480,9 @@ def recompose_page(page_number, info_from_toc, page_elements):
     # put together the regions while keeping the order in the page
     for el in ordered_elements:
 
-        # filter out the ids keeping only Ads or Articles
+        # keep only IDS of content items that are Ads or Articles
         # but escluding various other files in the archive
-        if ("Ar" not in el["legacy_id"] or "Ar" not in el["legacy_id"]):
+        if ("Ar" not in el["legacy_id"] and "Ad" not in el["legacy_id"]):
             continue
 
         element = page_elements[el["legacy_id"]]
