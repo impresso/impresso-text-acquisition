@@ -746,8 +746,13 @@ def olive_import_issue(
 
             while len(internal_deque) > 0:
                 item = internal_deque.popleft()
-                xml_data = archive.read(item).decode('windows-1252')
-                new_data = olive_parser(xml_data)
+                try:
+                    xml_data = archive.read(item).decode('windows-1252')
+                    new_data = olive_parser(xml_data)
+                except Exception as e:
+                    logger.error(f'Corrupted zip archive for {issue_dir.path}')
+                    logger.error(e)
+                    return (issue_dir, False, e)
 
                 # check if it needs to be parsed later on
                 if new_data["legacy"]['continuation_from'] is not None:
