@@ -4,6 +4,7 @@ import codecs
 import os
 from collections import namedtuple
 from datetime import date
+from time import strftime
 
 from bs4 import BeautifulSoup
 
@@ -103,6 +104,7 @@ def mets2issue(issue_dir, encoding='utf-8'):
     # instantiate the IssueSchema #
     ###############################
     issue_data = {
+        "cdt": strftime("%Y-%m-%d %H:%M:%S"),
         "t": title,
         "i": content_items,
         "id": issue_id,
