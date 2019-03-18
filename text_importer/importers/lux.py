@@ -129,7 +129,7 @@ def dir2issue(path):
     local_id = issue_dir.split('_')[2]
     issue_date = issue_dir.split('_')[3]
     year, month, day = issue_date.split('-')
-    rights = 'o' if 'public_domain' in path else 'c'
+    rights = 'o' if 'public_domain' in path else 'c' # to be discussed
     editions_mappings = {
         1: 'a',
         2: 'b',
