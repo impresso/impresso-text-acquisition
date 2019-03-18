@@ -25,6 +25,7 @@ jupyter = "*"
 "flake8" = "*"
 isort = "*"
 tox = "*"
+bokeh = "*"
 
 [requires]
 python_version = "3.6"

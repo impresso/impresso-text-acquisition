@@ -39,6 +39,7 @@ def mets2issue(issue_dir, encoding='utf-8'):
     # get the canonical names for pages in the newspaper issue by
     # visiting the `text` sub-folder with the alto XML files
     text_path = os.path.join(issue_dir.path, 'text')
+    """
     page_file_names = [
         file
         for file in os.listdir(text_path)
@@ -52,6 +53,8 @@ def mets2issue(issue_dir, encoding='utf-8'):
         "{}-p{}".format(issue_id, str(page_n).zfill(4))
         for page_n in page_numbers
     ]
+    """
+    page_canonical_names = []
 
     #######################
     # parse the METS file #
@@ -79,12 +82,15 @@ def mets2issue(issue_dir, encoding='utf-8'):
 
         if 'COLLECTION' in section_id:
             local_id = section.findAll('identifier')[0].getText()
-            title = section.find_all('title')[0].getText()
+            try:
+                title = section.find_all('title')[0].getText()
+            except IndexError:
+                title = None
         elif 'ARTICLE' in section_id:
             item_counter += 1
             lang = section.find_all('languageTerm')[0].getText()
-            item_title = section.find_all('titleInfo')[0]\
-                .getText().replace('\n', ' ').strip()
+            title_elements = section.find_all('titleInfo')
+            item_title = title_elements[0].getText().replace('\n', ' ').strip() if len(title_elements) > 0 else None
             metadata = {
                 'id': str(item_counter),
                 't': item_title,
@@ -110,17 +116,22 @@ def mets2issue(issue_dir, encoding='utf-8'):
         "id": issue_id,
         "pp": page_canonical_names
     }
-    IssueSchema = get_issue_schema()
-    issue = IssueSchema(**issue_data)
-    return issue
+    #IssueSchema = get_issue_schema()
+    #issue = IssueSchema(**issue_data)
+    return issue_data
 
 
-def import_issues(issues, out_dir):
+def import_issues(issues, out_dir, serialize=False):
+    imported_issues = []
     for issue_dir in issues:
         issue_json = mets2issue(issue_dir)
         issue_out_dir = os.path.join(out_dir, issue_dir.journal)
-        serialize_issue(issue_json, issue_dir, issue_out_dir)
-    return
+
+        if serialize:
+                serialize_issue(issue_json, issue_dir, issue_out_dir)
+
+        imported_issues.append(issue_json)
+    return imported_issues
 
 
 def dir2issue(path):
@@ -134,6 +145,8 @@ def dir2issue(path):
         1: 'a',
         2: 'b',
         3: 'c',
+        4: 'd',
+        5: 'e'
     }
 
     if len(issue_dir.split('_')) == 4:
