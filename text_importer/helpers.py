@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import time
+from pathlib import Path
 
 import boto
 import boto.s3.connection
@@ -131,6 +132,7 @@ def serialize_issue(issue, issue_dir, out_dir=None, s3_bucket=None):
     canonical_filename = canonical_path(issue_dir, "issue", extension=".json")
 
     if out_dir is not None and s3_bucket is None:
+        Path(out_dir).mkdir(exist_ok=True)
         out_file = os.path.join(
             out_dir,
             canonical_filename
