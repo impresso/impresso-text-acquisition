@@ -17,7 +17,8 @@ from impresso_commons.path.path_fs import canonical_path
 from text_importer.helpers import (convert_page_coordinates, get_image_info,
                                    get_issue_schema, get_page_schema,
                                    keep_title, normalize_language,
-                                   serialize_issue, serialize_page)
+                                   serialize_issue, serialize_page,
+                                   convert_image_coordinates)
 from text_importer.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
@@ -50,6 +51,12 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
                 "type": entity.get("entity_type"),
                 "seq": n + 1
             }
+
+            # if it's a picture we want to get also the article into which
+            # the image is embedded
+            if item['type'].lower() == "picture":
+                if entity.get("embedded_into") is not None:
+                    item['embedded_into'] = entity.get("embedded_into")
 
             page_data[item_legacy_id] = item
 
@@ -373,6 +380,20 @@ def olive_parser(text):
     return out
 
 
+def olive_image_parser(text):
+    soup = BeautifulSoup(text, "lxml")
+    root = soup.find("xmd-entity")
+
+    img = {
+        'id': root.get('id'),
+        'coords': root.img.get('box').split(),
+        'name': root.meta.get('name'),
+        'resolution': root.meta.get('images_resolution'),
+        'filepath': root.img.get('href')
+    }
+    return img
+
+
 def combine_article_parts(article_parts):
     """TODO.
 
@@ -495,7 +516,7 @@ def recompose_page(page_number, info_from_toc, page_elements):
     return page
 
 
-def recompose_ToC(toc_data, articles):
+def recompose_ToC(toc_data, articles, images):
     """TODO."""
     # concate content items from all pages into a single flat list
     content_items = [
@@ -507,6 +528,10 @@ def recompose_ToC(toc_data, articles):
     contents = []
     sorted_content_items = sorted(content_items, key=itemgetter('seq'))
     for item in sorted_content_items:
+
+        item['m'] = {}
+        item["l"] = {}
+
         if(item["type"] == "Article" or item["type"] == "Ad"):
 
             # find the corresponding item in `articles`
@@ -528,7 +553,7 @@ def recompose_ToC(toc_data, articles):
             except Exception:
                 continue
 
-            item['m'] = {}
+
             item['m']["id"] = item["id"]
             item['m']['pp'] = article["meta"]["page_no"]
             item['m']['l'] = article["meta"]["language"]
@@ -537,17 +562,59 @@ def recompose_ToC(toc_data, articles):
             if keep_title(article["meta"]["title"]):
                 item['m']['t'] = article["meta"]["title"]
 
-            item["l"] = {}
             item["l"]["id"] = article["legacy"]["id"]
             item["l"]["source"] = article["legacy"]["source"]
 
-            # delete redundant fields
-            del item['seq']
-            del item['legacy_id']
-            del item['type']
-            del item['id']
+        elif(item["type"] == "Picture"):
 
-            contents.append(item)
+            # find in which page the image is
+            page_no = [
+                page_no
+                for page_no in toc_data
+                if item['legacy_id'] in toc_data[page_no]
+            ]
+
+            # get the new canonical id via the legacy id
+            item['m']['id'] = item['id']
+            item['m']['tp'] = item['type'].lower()
+            item['m']['pp'] = page_no
+
+            image = [
+                image
+                for image in images
+                if image['id'] == item['legacy_id']
+            ][0]
+
+            if keep_title(image["name"]):
+                item['m']['t'] = image["name"]
+
+            item['l']['id'] = item['legacy_id']
+            item['l']['res'] = image['resolution']
+            item['l']['path'] = image['filepath']
+
+            item['c'] = image['coords']
+            toc_item = toc_data[page_no[0]][item['legacy_id']]
+
+            if "embedded_into" in item:
+                containing_article = toc_item['embedded_into']
+
+                # content item entries exists in different shapes within the
+                # `toc_data` dict, depending on whether they have already been
+                # processed in this `for` loop or not
+                if "m" in toc_data[page_no[0]][containing_article]:
+                    item['pOf'] = toc_data[page_no[0]][containing_article]['m']['id']
+                else:
+                    item['pOf'] = toc_data[page_no[0]][containing_article]['id']
+
+        # delete redundant fields
+        if "embedded_into" in item:
+            del item['embedded_into']
+        del item['seq']
+        del item['legacy_id']
+        del item['type']
+        del item['id']
+
+        contents.append(item)
     return contents
 
 
@@ -664,12 +731,18 @@ def olive_import_issue(
                 and ("/Ar" in item or "/Ad" in item)
             ]
         )
-        # a dict mapping page numbers to names of page xml files
+
         page_xml_files = {
             int(item.split("/")[0]): item
             for item in archive.namelist()
             if ".xml" in item and not item.startswith("._") and "/Pg" in item
         }
+
+        image_xml_files = [
+            item
+            for item in archive.namelist()
+            if ".xml" in item and not item.startswith("._") and "/Pc" in item
+        ]
 
         logger.debug("Contents: {}".format(archive.namelist()))
 
@@ -712,6 +785,12 @@ def olive_import_issue(
             logger.error(f'Corrupted ToC.xml for {issue_dir.path}')
             logger.error(e)
             return (issue_dir, False, e)
+
+        # parse the XML files into JSON dicts
+        images = [
+            olive_image_parser(archive.read(image_file))
+            for image_file in image_xml_files
+        ]
 
         logger.debug("XML files contained in {}: {}".format(
             working_archive,
@@ -819,7 +898,7 @@ def olive_import_issue(
             if len(page.r) == 0:
                 logger.warning(f"Page {page.id} has no OCR text")
 
-        contents = recompose_ToC(toc_data, articles)
+        contents = recompose_ToC(toc_data, articles, images)
         issue_data = {
             "id": canonical_path(issue_dir, path_type="dir").replace("/", "-"),
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
@@ -827,6 +906,7 @@ def olive_import_issue(
             "i": contents,
             "pp": [pages[page_no].id for page_no in pages]
         }
+        issue = IssueSchema(**issue_data)
         try:
             image_info = get_image_info(issue_dir, image_dir)
         except FileNotFoundError:
@@ -848,16 +928,17 @@ def olive_import_issue(
             except Exception as e:
                 logger.error("Page {} in {} raised error: {}".format(
                     page_no,
-                    issue_data["id"],
+                    issue_data.id,
                     e
                 ))
                 logger.error(
                     "Couldn't get information about page img {} in {}".format(
                         page_no,
-                        issue_data["id"]
+                        issue_data.id
                     )
                 )
 
+            # TODO move this to the helper function
             # convert the box coordinates
             try:
                 convert_page_coordinates(
@@ -872,16 +953,39 @@ def olive_import_issue(
             except Exception as e:
                 logger.error("Page {} in {} raised error: {}".format(
                     page_no,
-                    issue_data["id"],
+                    issue_data.id,
                     e
                 ))
                 logger.error(
                     "Couldn't convert coordinates in p. {} {}".format(
                         page_no,
-                        issue_data["id"]
+                        issue_data.id
                     )
                 )
                 pages[page_no].cc = False
+
+            """
+            conversion of image coordinates:
+            - fetch all images belonging to current page
+            - for each image, convert and set .cc=True if ok
+            """
+
+            images_in_page = [
+                content_item
+                for content_item in issue.i
+                if content_item.m.tp == "picture" and page_no in
+                content_item.m.pp
+            ]
+            for image in images_in_page:
+                image = convert_image_coordinates(
+                    image,
+                    archive.read(page_xml_file),
+                    image_name,
+                    archive,
+                    box_strategy,
+                    issue_dir
+                )
+                image.m.tp =  'image'
 
             # serialize the page object to JSON
             if out_dir is not None:
@@ -899,7 +1003,6 @@ def olive_import_issue(
                     s3_bucket=s3_bucket
                 )
 
-        issue = IssueSchema(**issue_data)
         if out_dir is not None:
             serialize_issue(issue, issue_dir, out_dir=out_dir)
         elif s3_bucket is not None:

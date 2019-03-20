@@ -1,6 +1,7 @@
 import pkg_resources
 from impresso_commons.path.path_fs import detect_issues
 from text_importer.importer import import_issues
+from text_importer.importers.olive import olive_import_issue
 
 
 def test_olive_import_issues():
@@ -22,3 +23,16 @@ def test_olive_import_issues():
         True  # whether to parallelize or not
     )
     print(result)
+
+
+def test_olive_import_images():
+    inp_dir = pkg_resources.resource_filename(
+        'text_importer',
+        'data/sample_data/'
+    )
+    issues = detect_issues(inp_dir)
+    olive_import_issue(
+        issues[1],
+        image_dir='/mnt/project_impresso/images/',
+        out_dir=pkg_resources.resource_filename('text_importer', 'data/out/')
+    )

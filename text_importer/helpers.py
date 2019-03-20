@@ -225,7 +225,8 @@ def normalize_language(language):
 def keep_title(title):
     black_list = [
         "untitled article",
-        "untitled ad"
+        "untitled ad",
+        "untitled picture"
     ]
     if title.lower() in black_list:
         return False
@@ -277,3 +278,34 @@ def convert_page_coordinates(
         f'Converted coordinates {page_image_name} in {issue.path} (took {t}s)'
     )
     return page
+
+
+def convert_image_coordinates(
+    image,
+    page_xml,
+    page_image_name,
+    zip_archive,
+    box_strategy,
+    issue
+):
+    """
+    Logic:
+        - get scale factor (passing strategy)
+        - for each element with coordinates recompute box
+
+    Returns the same page, with converted boxes.
+    """
+    try:
+        scale_factor = get_scale_factor(
+            issue.path,
+            zip_archive,
+            page_xml,
+            box_strategy,
+            page_image_name
+        )
+        image.c = convert_box(image.c, scale_factor)
+        image.cc = True
+    except Exception:
+        image.cc = False
+        # pass
+    return image
