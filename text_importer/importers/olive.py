@@ -596,15 +596,21 @@ def recompose_ToC(toc_data, articles, images):
             toc_item = toc_data[page_no[0]][item['legacy_id']]
 
             if "embedded_into" in item:
-                containing_article = toc_item['embedded_into']
+                cont_article_id = toc_item['embedded_into']
+                containing_article = toc_data[page_no[0]][cont_article_id]
 
                 # content item entries exists in different shapes within the
                 # `toc_data` dict, depending on whether they have already been
                 # processed in this `for` loop or not
-                if "m" in toc_data[page_no[0]][containing_article]:
-                    item['pOf'] = toc_data[page_no[0]][containing_article]['m']['id']
+                if "m" in containing_article:
+                    if "id" in containing_article['m']:
+                        item['pOf'] = containing_article['m']['id']
+                    else:
+                        logger.warning("Missing field ID in {}".format(
+                            containing_article
+                        ))
                 else:
-                    item['pOf'] = toc_data[page_no[0]][containing_article]['id']
+                    item['pOf'] = containing_article['id']
 
         # delete redundant fields
         if "embedded_into" in item:
