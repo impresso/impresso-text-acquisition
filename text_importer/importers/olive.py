@@ -602,13 +602,11 @@ def recompose_ToC(toc_data, articles, images):
                 # content item entries exists in different shapes within the
                 # `toc_data` dict, depending on whether they have already been
                 # processed in this `for` loop or not
-                if "m" in containing_article:
-                    if "id" in containing_article['m']:
-                        item['pOf'] = containing_article['m']['id']
-                    else:
-                        logger.warning("Missing field ID in {}".format(
-                            containing_article
-                        ))
+                if (
+                    "m" in containing_article and
+                    len(containing_article['m'].keys()) > 0
+                ):
+                    item['pOf'] = containing_article['m']['id']
                 else:
                     item['pOf'] = containing_article['id']
 
