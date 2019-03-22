@@ -597,18 +597,23 @@ def recompose_ToC(toc_data, articles, images):
 
             if "embedded_into" in item:
                 cont_article_id = toc_item['embedded_into']
-                containing_article = toc_data[page_no[0]][cont_article_id]
+                try:
+                    containing_article = toc_data[page_no[0]][cont_article_id]
 
-                # content item entries exists in different shapes within the
-                # `toc_data` dict, depending on whether they have already been
-                # processed in this `for` loop or not
-                if (
-                    "m" in containing_article and
-                    len(containing_article['m'].keys()) > 0
-                ):
-                    item['pOf'] = containing_article['m']['id']
-                else:
-                    item['pOf'] = containing_article['id']
+                    # content item entries exists in different shapes within the
+                    # `toc_data` dict, depending on whether they have already been
+                    # processed in this `for` loop or not
+                    if (
+                        "m" in containing_article and
+                        len(containing_article['m'].keys()) > 0
+                    ):
+                        item['pOf'] = containing_article['m']['id']
+                    else:
+                        item['pOf'] = containing_article['id']
+                except Exception as e:
+                    logger.error(
+                        f"Containing article for {item['m']['id']} not found (error = {e})"
+                    )
 
         # delete redundant fields
         if "embedded_into" in item:
