@@ -384,14 +384,19 @@ def olive_image_parser(text):
     soup = BeautifulSoup(text, "lxml")
     root = soup.find("xmd-entity")
 
-    img = {
-        'id': root.get('id'),
-        'coords': root.img.get('box').split(),
-        'name': root.meta.get('name'),
-        'resolution': root.meta.get('images_resolution'),
-        'filepath': root.img.get('href')
-    }
-    return img
+    try:
+        assert root is not None
+        img = {
+            'id': root.get('id'),
+            'coords': root.img.get('box').split(),
+            'name': root.meta.get('name'),
+            'resolution': root.meta.get('images_resolution'),
+            'filepath': root.img.get('href')
+        }
+        return img
+    except AssertionError:
+        logger.error("")
+        return None
 
 
 def combine_article_parts(article_parts):
@@ -796,10 +801,13 @@ def olive_import_issue(
             return (issue_dir, False, e)
 
         # parse the XML files into JSON dicts
-        images = [
-            olive_image_parser(archive.read(image_file))
-            for image_file in image_xml_files
-        ]
+        images = []
+        for image_file in image_xml_files:
+            image_data = olive_image_parser(archive.read(image_file))
+
+            # because of course there are empty files!
+            if image_data is not None:
+                images.append(image_data)
 
         logger.debug("XML files contained in {}: {}".format(
             working_archive,
@@ -994,7 +1002,7 @@ def olive_import_issue(
                     box_strategy,
                     issue_dir
                 )
-                image.m.tp =  'image'
+                image.m.tp = 'image'
 
             # serialize the page object to JSON
             if out_dir is not None:
