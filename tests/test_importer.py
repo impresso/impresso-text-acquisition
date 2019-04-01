@@ -36,3 +36,9 @@ def test_olive_import_images():
         image_dir='/mnt/project_impresso/images/',
         out_dir=pkg_resources.resource_filename('text_importer', 'data/out/')
     )
+
+
+# TODO: implement
+def test_imported_data():
+    """Verify that canonical IDs stay the same."""
+    pass
