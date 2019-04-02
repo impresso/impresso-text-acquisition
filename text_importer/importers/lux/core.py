@@ -1,49 +1,181 @@
 """Importer for the newspapers data of the Luxembourg National Library"""
 
+import codecs
+import json
+import logging
 import os
+
+import jsonlines
+from dask import bag as db
+from impresso_commons.path.path_fs import canonical_path
+from impresso_commons.utils.s3 import get_s3_resource
+from smart_open import smart_open as smart_open_function
+
+from text_importer.importers.lux.classes import LuxNewspaperIssue
+
 # from text_importer.helpers import get_issue_schema, serialize_issue
 
-
-def compress_issues(group_id, issues, output_dir):
-    pass
+logger = logging.getLogger(__name__)
 
 
-def convert_coordinates(hpos, vpos, height, width, x_res, y_res):
+def compress_issues(key, issues, output_dir=None):
+    """Short summary.
+
+    :param type key: Description of parameter `key`.
+    :param list issues: A list of `LuxNewspaperIssue` instances.
+    :param type output_dir: Description of parameter `output_dir`.
+    :return: TODO: Description of returned object.
+    :rtype: tuple
+
     """
-    x =   (coordinate['xResolution']/254.0) * coordinate['hpos']
+    newspaper, year = key
+    filename = f'{newspaper}-{year}-issues.jsonl.bz2'
+    filepath = os.path.join(output_dir, filename)
+    logger.info(f'Compressing {len(issues)} JSON files into {filepath}')
 
-    y =   (coordinate['yResolution']/254.0) * coordinate['vpos']
+    with smart_open_function(filepath, 'wb') as fout:
+        writer = jsonlines.Writer(fout)
+        items = [
+            issue._issue_data
+            for issue in issues
+        ]
+        writer.write_all(items)
+        logger.info(
+            f'Written {len(items)} docs from to {filepath}'
+        )
+        writer.close()
 
-    w =  (coordinate['xResolution']/254.0) * coordinate['width']
+    return (f'{newspaper}-{year}', filepath)
 
-    h =  (coordinate['yResolution']/254.0) * coordinate['height']
+
+def upload_issues(sort_key, filepath, bucket_name=None):
+    """Uploads a file to a given S3 bucket.
+    :param sort_key: the key used to group articles (e.g. "GDL-1900")
+    :type sort_key: str
+    :param filepath: path of the file to upload to S3
+    :type filepath: str
+    :param bucket_name: name of S3 bucket where to upload the file
+    :type bucket_name: str
+    :return: a tuple with [0] whether the upload was successful (boolean) and
+        [1] the path of the uploaded file (string)
+    .. note::
+        `sort_key` is expected to be the concatenation of newspaper ID and year
+        (e.g. GDL-1900).
     """
-    x = (x_res / 254) * hpos
-    y = (y_res / 254) * vpos
-    w = (x_res / 254) * width
-    h = (y_res / 254) * height
-    return int(x), int(y), int(w), int(h)
+    # create connection with bucket
+    # copy contents to s3 key
+    newspaper, year = sort_key.split('-')
+    key_name = "{}/{}/{}".format(
+        newspaper,
+        f'{newspaper}-{year}',
+        os.path.basename(filepath)
+    )
+    s3 = get_s3_resource()
+    try:
+        bucket = s3.Bucket(bucket_name)
+        bucket.upload_file(filepath, key_name)
+        logger.info(f'Uploaded {filepath} to {key_name}')
+        return True, filepath
+    except Exception as e:
+        logger.error(e)
+        logger.error(f'The upload of {filepath} failed with error {e}')
+        return False, filepath
 
 
-def encode_ark(ark):
-    return ark.replace('/', '%2f')
+def mets2issue(issue):
+    """Instantiates a LuxNewspaperIssue instance from an IssueDir."""
+    try:
+        return LuxNewspaperIssue(issue)
+    except Exception as e:
+        logger.error(f'Error when processing issue {issue}')
+        logger.exception(e)
+        return None
 
 
-def import_issues(issues, out_dir, serialize=False):
+def issue2pages(issue):
+    pages = []
+    for page in issue.pages:
+        page.add_issue(issue)
+        pages.append(page)
+    return pages
+
+
+def serialize_page(luxpage, output_dir=None):
+
+    issue_dir = luxpage.issue.issuedir
+
+    out_dir = os.path.join(
+        output_dir,
+        canonical_path(issue_dir, path_type="dir")
+    )
+
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
+    canonical_filename = canonical_path(
+        issue_dir,
+        "p" + str(luxpage.number).zfill(4),
+        ".json"
+    )
+
+    out_file = os.path.join(out_dir, canonical_filename)
+
+    with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
+        json.dump(luxpage.data, jsonfile)
+        print(
+            "Written page \'{}\' to {}".format(luxpage.number, out_file)
+        )
+    del luxpage
+    return (issue_dir, out_file)
+
+
+def process_page(page):
+    try:
+        page.parse()
+        return page
+    except Exception as e:
+        logger.error(f'Error when processing page {page}')
+        logger.exception(e)
+        return None
+
+
+def import_issues(issues, out_dir, s3_bucket):
+    """Imports a bunch of BNL newspaper issues in Mets/Alto format.
+
+    :param list issues: Description of parameter `issues`.
+    :param str out_dir: Description of parameter `out_dir`.
+    :param str s3_bucket: Description of parameter `s3_bucket`.
+    :return: Description of returned object.
+    :rtype: tuple
+
     """
-    # TODO: copy Implementation from notebook
-    - start from detected issues (a bag ?)
-    - for each issue, read the mets file and process it
-    - group the issues by newspaper/year
-    - serialize each group into a separate zipped archive
-    """
-    imported_issues = []
-    for issue_dir in issues:
-        issue_json = mets2issue(issue_dir)
-        issue_out_dir = os.path.join(out_dir, issue_dir.journal)
 
-        if serialize:
-                serialize_issue(issue_json, issue_dir, issue_out_dir)
+    issue_bag = db.from_sequence(issues)
+    logger.info(f'Issues to import: {issue_bag.count().compute()}')
 
-        imported_issues.append(issue_json)
-    return imported_issues
+    # .repartition(1000)
+    issue_bag = issue_bag.filter(lambda i: i.journal == 'luxzeit1858')\
+        .map(mets2issue)\
+        .filter(lambda i: i is not None)\
+        .persist()
+
+    # .starmap(upload_issues, bucket_name=s3_bucket)\
+    result = issue_bag.groupby(lambda i: (i.journal, i.date.year))\
+        .starmap(compress_issues, output_dir=out_dir)\
+        .starmap(upload_issues, bucket_name=s3_bucket)\
+        .compute()
+
+    pages_bag = issue_bag\
+        .map(issue2pages)\
+        .flatten()\
+        .repartition(500)\
+        .persist()
+
+    print(f'Pages to process: {pages_bag.count().compute()}')
+
+    result = pages_bag\
+        .map(process_page)\
+        .map(serialize_page, output_dir=out_dir)\
+        .compute()
+
+    return result

@@ -11,10 +11,6 @@ def distill_coordinates(element):
     return [hpos, vpos, width, height]
 
 
-def parse_textblock(element):
-    pass
-
-
 def parse_textline(element):
     line = {}
     line['c'] = distill_coordinates(element)
