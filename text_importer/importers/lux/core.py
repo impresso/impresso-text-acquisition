@@ -7,6 +7,7 @@ import os
 
 import jsonlines
 from dask import bag as db
+from dask.distributed import Client, progress
 from impresso_commons.path.path_fs import canonical_path
 from impresso_commons.utils.s3 import get_s3_resource
 from smart_open import smart_open as smart_open_function
@@ -40,7 +41,7 @@ def compress_issues(key, issues, output_dir=None):
             for issue in issues
         ]
         writer.write_all(items)
-        logger.info(
+        print(
             f'Written {len(items)} docs from to {filepath}'
         )
         writer.close()
@@ -154,7 +155,8 @@ def import_issues(issues, out_dir, s3_bucket):
     logger.info(f'Issues to import: {issue_bag.count().compute()}')
 
     # .repartition(1000)
-    issue_bag = issue_bag.filter(lambda i: i.journal == 'luxzeit1858')\
+    # .filter(lambda i: i.journal == 'luxzeit1858')
+    issue_bag =  issue_bag.filter(lambda i: i.journal == 'luxzeit1858')\
         .map(mets2issue)\
         .filter(lambda i: i is not None)\
         .persist()
@@ -168,14 +170,14 @@ def import_issues(issues, out_dir, s3_bucket):
     pages_bag = issue_bag\
         .map(issue2pages)\
         .flatten()\
-        .repartition(500)\
         .persist()
 
     print(f'Pages to process: {pages_bag.count().compute()}')
 
     result = pages_bag\
+        .repartition(1000)\
         .map(process_page)\
         .map(serialize_page, output_dir=out_dir)\
-        .compute()
-
+        .persist()
+    progress(result)
     return result
