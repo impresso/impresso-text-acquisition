@@ -66,9 +66,8 @@ def upload_issues(sort_key, filepath, bucket_name=None):
     # create connection with bucket
     # copy contents to s3 key
     newspaper, year = sort_key.split('-')
-    key_name = "{}/{}/{}".format(
+    key_name = "{}/{}".format(
         newspaper,
-        f'{newspaper}-{year}',
         os.path.basename(filepath)
     )
     s3 = get_s3_resource()
