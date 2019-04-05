@@ -76,7 +76,8 @@ def process_pages(pages):
 @profile
 def main():
 
-    client = Client(n_workers=48)
+    #client = Client(n_workers=48)
+    client = Client('localhost:8786')
     print(client)
     input_dir = "/mnt/project_impresso/original/BNL/"
     out_dir = "/scratch/matteo/impresso-canonical/BNL/"
@@ -88,9 +89,9 @@ def main():
 
     for chunk_n, chunk_of_issues in enumerate(chunks):
 
-        print(f'Processing chunk {chunk_n}/{len(chunk)}')
+        print(f'Processing chunk {chunk_n}')
 
-        issue_bag =  issue_bag.from_sequence(chunk_of_issues)\
+        issue_bag =  db.from_sequence(chunk_of_issues)\
                 .map(mets2issue)\
                 .filter(lambda i: i is not None)\
                 .persist()
