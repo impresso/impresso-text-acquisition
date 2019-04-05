@@ -176,6 +176,12 @@ def main():
                 .persist()
 
 
+        issue_bag = issue_bag.groupby(lambda i: (i.journal, i.date.year))\
+            .starmap(compress_issues, output_dir=out_dir)\
+            .starmap(upload_issues, bucket_name=s3_bucket)\
+            .persist()
+
+        print('Compressing and uploading issues')
         progress(issue_bag)
 
         pages_bag = issue_bag\
