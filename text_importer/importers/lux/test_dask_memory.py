@@ -163,7 +163,7 @@ def main():
     s3_bucket = 'original-canonical-data'
     issues = lux_detect_issues(input_dir)
     selected_issues = db.from_sequence(issues)\
-        .filter(lambda i: i.journal == 'courriergdl').compute()
+        .filter(lambda i: i.journal == 'onsjongen').compute()
     chunks = chunk(selected_issues, 1000)
 
     for chunk_n, chunk_of_issues in enumerate(chunks):
@@ -202,7 +202,7 @@ def main():
             )\
             .starmap(compress_pages, prefix='pages', output_dir=out_dir)\
             .starmap(upload_pages, bucket_name='original-canonical-data')\
-            .starmap.cleanup()\
+            .starmap(cleanup)\
             .persist()
 
         progress(pages_bag)
