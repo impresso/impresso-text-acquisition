@@ -24,13 +24,15 @@ import shutil
 
 from dask.distributed import Client
 from docopt import docopt
+from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
+                                           detect_canonical_issues)
 
 from text_importer import __version__
 from text_importer.importers.lux.core import import_issues as lux_import_issues
-from text_importer.importers.lux.detect import detect_issues as lux_detect_issues
-
-from impresso_commons.path.path_fs import detect_canonical_issues
-from impresso_commons.path.path_fs import KNOWN_JOURNALS
+from text_importer.importers.lux.detect import \
+    detect_issues as lux_detect_issues
+from text_importer.importers.lux.detect import \
+    select_issues as lux_select_issues
 
 __author__ = "Matteo Romanello"
 __email__ = "matteo.romanello@epfl.ch"
@@ -92,12 +94,9 @@ def main():
             shutil.rmtree(outp_dir)
 
     # detect/select issues
-    if config_file and os.path.isfile(config_file):
+    if config_file:
         logger.info(f"Found config file: {os.path.realpath(config_file)}")
-        with open(config_file, 'r') as f:
-            config = json.load(f)
-            # TODO: adapt this part
-            # issues = select_issues(config, inp_dir)
+        issues = lux_select_issues(config_file, inp_dir)
 
         logger.info(
             "{} newspaper remained after applying filter: {}".format(

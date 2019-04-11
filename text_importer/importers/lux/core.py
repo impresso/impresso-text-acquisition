@@ -150,18 +150,8 @@ def import_issues(issues, out_dir, s3_bucket):
     :rtype: tuple
 
     """
-
     issue_bag = db.from_sequence(issues)
     logger.info(f'Issues to import: {issue_bag.count().compute()}')
-
-    # .repartition(1000)
-    def select_issues(issue):
-        # npfilter = ['armeteufel', 'luxzeit1858', 'diekwochen']
-        npfilter = ['onsjongen']
-        return issue.journal in npfilter
-
-    issue_bag = issue_bag.filter(select_issues)
-    logger.info(f'Issues selected: {issue_bag.count().compute()}')
 
     # .repartition(500)
     issue_bag = issue_bag\
@@ -171,7 +161,6 @@ def import_issues(issues, out_dir, s3_bucket):
     logger.info(
         f'Issues successfully processed: {issue_bag.count().compute()}'
     )
-    """
     # .starmap(upload_issues, bucket_name=s3_bucket)\
     result = issue_bag.groupby(lambda i: (i.journal, i.date.year))\
         .starmap(compress_issues, output_dir=out_dir)\
@@ -190,5 +179,4 @@ def import_issues(issues, out_dir, s3_bucket):
         .map(serialize_page, output_dir=out_dir)\
         .persist()
     progress(result)
-    """
     return result
