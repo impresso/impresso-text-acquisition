@@ -170,11 +170,10 @@ def main():
 
         print(f'Processing chunk {chunk_n}')
 
-        issue_bag =  db.from_sequence(chunk_of_issues)\
-                .map(mets2issue)\
-                .filter(lambda i: i is not None)\
-                .persist()
-
+        issue_bag = db.from_sequence(chunk_of_issues)\
+            .map(mets2issue)\
+            .filter(lambda i: i is not None)\
+            .persist()
 
         issue_bag = issue_bag.groupby(lambda i: (i.journal, i.date.year))\
             .starmap(compress_issues, output_dir=out_dir)\
