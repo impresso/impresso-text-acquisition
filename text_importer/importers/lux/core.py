@@ -126,6 +126,7 @@ def serialize_page(luxpage, output_dir=None):
             "Written page \'{}\' to {}".format(luxpage.number, out_file)
         )
     del luxpage
+    del jsonfile
     return (issue_dir, out_file)
 
 
@@ -149,21 +150,20 @@ def import_issues(issues, out_dir, s3_bucket):
     :rtype: tuple
 
     """
-
     issue_bag = db.from_sequence(issues)
     logger.info(f'Issues to import: {issue_bag.count().compute()}')
 
-    # .repartition(1000)
-    # .filter(lambda i: i.journal == 'luxzeit1858')
-    issue_bag =  issue_bag.filter(lambda i: i.journal == 'luxzeit1858')\
+    # .repartition(500)
+    issue_bag = issue_bag\
         .map(mets2issue)\
         .filter(lambda i: i is not None)\
         .persist()
-
+    logger.info(
+        f'Issues successfully processed: {issue_bag.count().compute()}'
+    )
     # .starmap(upload_issues, bucket_name=s3_bucket)\
     result = issue_bag.groupby(lambda i: (i.journal, i.date.year))\
         .starmap(compress_issues, output_dir=out_dir)\
-        .starmap(upload_issues, bucket_name=s3_bucket)\
         .compute()
 
     pages_bag = issue_bag\
@@ -171,7 +171,7 @@ def import_issues(issues, out_dir, s3_bucket):
         .flatten()\
         .persist()
 
-    print(f'Pages to process: {pages_bag.count().compute()}')
+    logger.info(f'Pages to process: {pages_bag.count().compute()}')
 
     result = pages_bag\
         .repartition(1000)\

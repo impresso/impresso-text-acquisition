@@ -316,11 +316,17 @@ class LuxNewspaperIssue(object):
 
                     # filter content item part that is the actual image
                     # the other part is the caption
-                    part = [
-                        part
-                        for part in ci['l']['parts']
-                        if part['comp_role'] == 'image'
-                    ][0]
+                    try:
+                        part = [
+                            part
+                            for part in ci['l']['parts']
+                            if part['comp_role'] == 'image'
+                        ][0]
+                    except IndexError as e:
+                        logger.error(f'{legacy_id} without image subpart')
+                        logger.error(f"{legacy_id} has {ci['l']['parts']}")
+                        logger.exception(e)
+                        continue
 
                     # find the corresponding page where it's located
                     curr_page = None

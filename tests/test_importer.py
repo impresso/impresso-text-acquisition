@@ -4,7 +4,7 @@ from impresso_commons.path.path_fs import detect_issues
 from text_importer.importer import import_issues
 from text_importer.importers.lux.core import import_issues as lux_import_issues
 from text_importer.importers.lux.detect import \
-    detect_issues as lux_detect_issues
+    detect_issues as lux_detect_issues, select_issues as lux_select_issues
 
 
 from dask.distributed import Client
@@ -12,8 +12,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# client = Client(processes=False, n_workers=8, threads_per_worker=2)
-client = Client("localhost:8786")
+client = Client(processes=False, n_workers=8, threads_per_worker=2)
 logger.info(client)
 
 
@@ -39,17 +38,38 @@ def test_olive_import_issues():
 
 
 def test_lux_importer():
-    """
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
         'data/sample_data/Luxembourg/'
     )
-    """
-    inp_dir = "/mnt/project_impresso/original/BNL/"
     out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
-    output_bucket = 'original-canonical-data'
+    output_bucket = None
 
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
     result = lux_import_issues(issues, out_dir, s3_bucket=output_bucket)
-    import ipdb; ipdb.set_trace()
+    assert result is not None
+
+
+def test_lux_select():
+    """Tests selective ingestion of BNL data.
+
+    What to ingest is specified in a JSON configuration file.
+
+    ..todo::
+
+        - add support filtering/selection based on dates and date-ranges;
+        - add support for exclusion of newspapers
+    """
+    cfg_file = pkg_resources.resource_filename(
+        'text_importer',
+        'config/import_BNL.json'
+    )
+
+    inp_dir = pkg_resources.resource_filename(
+        'text_importer',
+        'data/sample_data/Luxembourg/'
+    )
+
+    issues = lux_select_issues(cfg_file, inp_dir)
+    assert issues
