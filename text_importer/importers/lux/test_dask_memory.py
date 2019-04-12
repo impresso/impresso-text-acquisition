@@ -170,18 +170,19 @@ def main():
 
         print(f'Processing chunk {chunk_n}')
 
-        issue_bag = db.from_sequence(chunk_of_issues)\
-            .map(mets2issue)\
-            .filter(lambda i: i is not None)\
-            .persist()
+        issue_bag =  db.from_sequence(chunk_of_issues)\
+                .map(mets2issue)\
+                .filter(lambda i: i is not None)\
+                .persist()
 
-        issue_bag = issue_bag.groupby(lambda i: (i.journal, i.date.year))\
+        progress(issue_bag)
+
+
+        issue_bag.groupby(lambda i: (i.journal, i.date.year))\
             .starmap(compress_issues, output_dir=out_dir)\
             .starmap(upload_issues, bucket_name=s3_bucket)\
-            .persist()
+            .compute()
 
-        print('Compressing and uploading issues')
-        progress(issue_bag)
 
         pages_bag = issue_bag\
             .map(issue2pages)\
