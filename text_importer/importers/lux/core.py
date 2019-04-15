@@ -1,5 +1,6 @@
 """Importer for the newspapers data of the Luxembourg National Library"""
 
+import random
 import codecs
 import gc
 import json
@@ -286,7 +287,7 @@ def import_issues(issues, out_dir, s3_bucket):
     logger.info(msg)
     print(msg)
 
-    issue_bag = db.from_sequence(issues)\
+    issue_bag = db.from_sequence(issues, npartitions=500)\
         .map(mets2issue)\
         .filter(lambda i: i is not None)\
         .persist()
@@ -300,11 +301,11 @@ def import_issues(issues, out_dir, s3_bucket):
         .compute()
 
     processed_issues = list(issue_bag)
+    random.shuffle(processed_issues)
 
-    chunks = chunk(processed_issues, 1000)
+    chunks = chunk(processed_issues, 400)
 
     for chunk_n, chunk_of_issues in enumerate(chunks):
-
         print(f'Processing chunk {chunk_n}')
 
         pages_bag = db.from_sequence(chunk_of_issues)\
@@ -316,7 +317,7 @@ def import_issues(issues, out_dir, s3_bucket):
         print(f'Pages to process: {pages_bag.count().compute()}\n')
 
         pages_bag = pages_bag\
-            .repartition(1000)\
+            .repartition(200)\
             .map_partitions(process_pages)\
             .map_partitions(serialize_pages, output_dir=out_dir)\
             .persist()
