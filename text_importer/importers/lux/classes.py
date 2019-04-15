@@ -92,8 +92,8 @@ class LuxNewspaperIssue(object):
             issue_dir.journal,
             "{}-{}-{}".format(
                 issue_dir.date.year,
-                issue_dir.date.month,
-                issue_dir.date.day
+                str(issue_dir.date.month).zfill(2),
+                str(issue_dir.date.day).zfill(2)
             ),
             issue_dir.edition
         )
