@@ -43,12 +43,11 @@ def test_lux_importer():
         'data/sample_data/Luxembourg/'
     )
     out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
-    output_bucket = None
+    output_bucket = 'TRANSFER'
 
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
-    result = lux_import_issues(issues, out_dir, s3_bucket=output_bucket)
-    assert result is not None
+    lux_import_issues(issues, out_dir, s3_bucket=output_bucket)
 
 
 def test_lux_select():

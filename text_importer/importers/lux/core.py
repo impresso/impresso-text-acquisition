@@ -334,7 +334,7 @@ def import_issues(issues, out_dir, s3_bucket):
                 ).replace('/', '-')
             )\
             .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir)\
-            .starmap(upload_pages, bucket_name='original-canonical-data')\
+            .starmap(upload_pages, bucket_name=s3_bucket)\
             .starmap(cleanup)\
             .persist()
 

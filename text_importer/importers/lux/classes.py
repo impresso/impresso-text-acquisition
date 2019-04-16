@@ -65,10 +65,39 @@ class LuxNewspaperPage(object):
                     mappings[part['comp_id']] = ci_id
 
         pselement = doc.find('PrintSpace')
-        self.data["r"] = alto.parse_printspace(pselement, mappings)
-
-        # TODO: convert the coordinates
+        page_data = alto.parse_printspace(pselement, mappings)
+        self.data['cc'], self.data["r"] = self._convert_coordinates(page_data)
         return
+
+    def _convert_coordinates(self, page_data):
+        # TODO: move this to a separate method ?
+        success = False
+        try:
+            img_props = self.issue.image_properties[self.number]
+            x_res = img_props['x_resolution']
+            y_res = img_props['y_resolution']
+
+            for region in page_data:
+
+                x, y, w, h = region['c']
+                region['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
+
+                for paragraph in region['p']:
+
+                    x, y, w, h = region['c']
+                    region['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
+
+                    for line in paragraph['l']:
+                        for token in line:
+                            x, y, w, h = region['c']
+                            region['c'] = convert_coordinates(
+                                x, y, w, h, x_res, y_res
+                            )
+            success = True
+        except Exception as e:
+            pass
+        finally:
+            return (success, page_data)
 
     @property
     def xml(self):
