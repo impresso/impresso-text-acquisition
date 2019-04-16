@@ -294,12 +294,41 @@ def import_issues(issues, out_dir, s3_bucket):
 
     progress(issue_bag)
 
+    print('Start compressing and uploading issues')
+
     issue_bag.groupby(lambda i: (i.journal, i.date.year))\
         .starmap(compress_issues, output_dir=out_dir)\
         .starmap(upload_issues, bucket_name=s3_bucket)\
         .starmap(cleanup)\
         .compute()
+    print('...done.')
 
+    print("Start processing pages")
+    processed_issues = list(issue_bag)
+    # we build all our computation graph
+    pages_bag = db.from_sequence(processed_issues, npartitions=200)\
+        .map(issue2pages)\
+        .flatten()\
+        .map_partitions(process_pages)\
+        .map_partitions(serialize_pages, output_dir=out_dir)
+
+    pages_out_dir = os.path.join(out_dir, 'pages')
+    Path(pages_out_dir).mkdir(exist_ok=True)
+
+    pages_bag = pages_bag.groupby(
+            lambda x: canonical_path(
+                x[0], path_type='dir'
+            ).replace('/', '-')
+        )\
+        .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir)\
+        .starmap(upload_pages, bucket_name=s3_bucket)\
+        .starmap(cleanup)
+
+    # and here we execute the computation graph
+    pages_bag.compute()
+    print('...done.')
+
+    """
     processed_issues = list(issue_bag)
     random.shuffle(processed_issues)
 
@@ -339,5 +368,5 @@ def import_issues(issues, out_dir, s3_bucket):
             .persist()
 
         progress(pages_bag)
-
+    """
     return
