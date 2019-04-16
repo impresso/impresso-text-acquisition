@@ -303,32 +303,6 @@ def import_issues(issues, out_dir, s3_bucket):
         .compute()
     print('...done.')
 
-    print("Start processing pages")
-    processed_issues = list(issue_bag)
-    # we build all our computation graph
-    pages_bag = db.from_sequence(processed_issues, npartitions=200)\
-        .map(issue2pages)\
-        .flatten()\
-        .map_partitions(process_pages)\
-        .map_partitions(serialize_pages, output_dir=out_dir)
-
-    pages_out_dir = os.path.join(out_dir, 'pages')
-    Path(pages_out_dir).mkdir(exist_ok=True)
-
-    pages_bag = pages_bag.groupby(
-            lambda x: canonical_path(
-                x[0], path_type='dir'
-            ).replace('/', '-')
-        )\
-        .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir)\
-        .starmap(upload_pages, bucket_name=s3_bucket)\
-        .starmap(cleanup)
-
-    # and here we execute the computation graph
-    pages_bag.compute()
-    print('...done.')
-
-    """
     processed_issues = list(issue_bag)
     random.shuffle(processed_issues)
 
@@ -340,18 +314,11 @@ def import_issues(issues, out_dir, s3_bucket):
         pages_bag = db.from_sequence(chunk_of_issues)\
             .map(issue2pages)\
             .flatten()\
-            .persist()
-        progress(pages_bag)
-
-        print(f'Pages to process: {pages_bag.count().compute()}\n')
-
-        pages_bag = pages_bag\
             .repartition(200)\
             .map_partitions(process_pages)\
-            .map_partitions(serialize_pages, output_dir=out_dir)\
-            .persist()
+            .map_partitions(serialize_pages, output_dir=out_dir)
 
-        progress(pages_bag)
+        # print(f'Pages to process: {pages_bag.count().compute()}\n')
 
         pages_out_dir = os.path.join(out_dir, 'pages')
         Path(pages_out_dir).mkdir(exist_ok=True)
@@ -364,9 +331,8 @@ def import_issues(issues, out_dir, s3_bucket):
             )\
             .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir)\
             .starmap(upload_pages, bucket_name=s3_bucket)\
-            .starmap(cleanup)\
-            .persist()
+            .starmap(cleanup)
 
-        progress(pages_bag)
-    """
+        pages_bag.compute()
+
     return
