@@ -60,7 +60,7 @@ def compress_pages(key, json_files, output_dir, prefix=""):
                 writer.write(item)
                 items_count += 1
         print(
-            f'Written {len(items_count)} docs from {json_file} to {filepath}'
+            f'Written {items_count} docs from {json_file} to {filepath}'
         )
 
         writer.close()
@@ -295,14 +295,15 @@ def import_issues(issues, out_dir, s3_bucket):
     progress(issue_bag)
 
     print('Start compressing and uploading issues')
-
+    """
+    # TODO skipping until we are testing
     issue_bag.groupby(lambda i: (i.journal, i.date.year))\
         .starmap(compress_issues, output_dir=out_dir)\
         .starmap(upload_issues, bucket_name=s3_bucket)\
         .starmap(cleanup)\
         .compute()
     print('...done.')
-
+    """
     processed_issues = list(issue_bag)
     random.shuffle(processed_issues)
 
