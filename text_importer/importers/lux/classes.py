@@ -368,32 +368,42 @@ class LuxNewspaperIssue(object):
                     if curr_page.number not in ci['m']['pp']:
                         ci['m']['pp'].append(curr_page.number)
 
-                    # parse the Alto file to fetch the coordinates
-                    composed_block = curr_page.xml.find(
-                        'ComposedBlock',
-                        {"ID": part['comp_id']}
-                    )
-                    graphic_el = composed_block.find('GraphicalElement')
-                    hpos = int(graphic_el.get('HPOS'))
-                    vpos = int(graphic_el.get('VPOS'))
-                    width = int(graphic_el.get('WIDTH'))
-                    height = int(graphic_el.get('HEIGHT'))
-                    img_props = self.image_properties[curr_page.number]
-                    x_resolution = img_props['x_resolution']
-                    y_resolution = img_props['y_resolution']
-                    coordinates = convert_coordinates(
-                        hpos,
-                        vpos,
-                        height,
-                        width,
-                        x_resolution,
-                        y_resolution
-                    )
-                    encoded_ark_id = encode_ark(self.ark_id)
-                    iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
-                    ci['m']['iiif_link'] = f'{iiif_base_link}%2fpages%2f{curr_page.number}/info.json'
-                    ci['c'] = list(coordinates)
-                    del ci['l']['parts']
+                    try:
+                        # parse the Alto file to fetch the coordinates
+                        composed_block = curr_page.xml.find(
+                            'ComposedBlock',
+                            {"ID": part['comp_id']}
+                        )
+                        graphic_el = composed_block.find('GraphicalElement')
+                        hpos = int(graphic_el.get('HPOS'))
+                        vpos = int(graphic_el.get('VPOS'))
+                        width = int(graphic_el.get('WIDTH'))
+                        height = int(graphic_el.get('HEIGHT'))
+                        img_props = self.image_properties[curr_page.number]
+                        x_resolution = img_props['x_resolution']
+                        y_resolution = img_props['y_resolution']
+                        coordinates = convert_coordinates(
+                            hpos,
+                            vpos,
+                            height,
+                            width,
+                            x_resolution,
+                            y_resolution
+                        )
+                        encoded_ark_id = encode_ark(self.ark_id)
+                        iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
+                        ci['m']['iiif_link'] = f'{iiif_base_link}%2fpages%2f{curr_page.number}/info.json'
+                        ci['c'] = list(coordinates)
+                        del ci['l']['parts']
+                    except Exception as e:
+                        logger.error(
+                            f'An error occurred with {curr_page.filename}'
+                        )
+                        logger.error(
+                            f"<ComposedBlock> @ID {part['comp_id']} not found"
+                        )
+                        logger.exception(e)
+
 
             elif ci['m']['tp'] == 'ar':
                 for part in ci['l']['parts']:
