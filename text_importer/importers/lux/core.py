@@ -1,19 +1,20 @@
 """Importer for the newspapers data of the Luxembourg National Library"""
 
-import random
 import codecs
 import gc
 import json
 import logging
 import os
+import random
+from copy import copy
 from pathlib import Path
 
 import jsonlines
 from dask import bag as db
 from dask.distributed import progress
+from impresso_commons.path.path_fs import canonical_path
 from impresso_commons.text.rebuilder import cleanup
 from impresso_commons.utils import chunk
-from impresso_commons.path.path_fs import canonical_path
 from impresso_commons.utils.s3 import get_s3_resource
 from smart_open import smart_open as smart_open_function
 
@@ -51,16 +52,15 @@ def compress_pages(key, json_files, output_dir, prefix=""):
     with smart_open_function(filepath, 'wb') as fout:
         writer = jsonlines.Writer(fout)
 
-        items = []
+        items_count = 0
         for issue, json_file in json_files:
 
             with open(json_file, 'r') as inpf:
                 item = json.load(inpf)
-                items.append(item)
-
-        writer.write_all(items)
+                writer.write(item)
+                items_count += 1
         print(
-            f'Written {len(items)} docs from {json_file} to {filepath}'
+            f'Written {len(items_count)} docs from {json_file} to {filepath}'
         )
 
         writer.close()
@@ -220,7 +220,7 @@ def serialize_pages(pages, output_dir=None):
 
     for luxpage in pages:
 
-        issue_dir = luxpage.issue.issuedir
+        issue_dir = copy(luxpage.issue.issuedir)
 
         out_dir = os.path.join(
             output_dir,
@@ -245,7 +245,7 @@ def serialize_pages(pages, output_dir=None):
             )
         result.append((issue_dir, out_file))
 
-    del pages
+    # del pages
 
     gc.collect()
     return result
@@ -287,7 +287,7 @@ def import_issues(issues, out_dir, s3_bucket):
     logger.info(msg)
     print(msg)
 
-    issue_bag = db.from_sequence(issues, npartitions=500)\
+    issue_bag = db.from_sequence(issues, partition_size=60)\
         .map(mets2issue)\
         .filter(lambda i: i is not None)\
         .persist()
