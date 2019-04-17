@@ -375,6 +375,8 @@ class LuxNewspaperIssue(object):
                             {"ID": part['comp_id']}
                         )
                         graphic_el = composed_block.find('GraphicalElement')
+                        if graphic_el is None:
+                            graphic_el = composed_block.find('Illustration')
                         hpos = int(graphic_el.get('HPOS'))
                         vpos = int(graphic_el.get('VPOS'))
                         width = int(graphic_el.get('WIDTH'))
@@ -408,7 +410,6 @@ class LuxNewspaperIssue(object):
                             f"<ComposedBlock> @ID {part['comp_id']} not found"
                         )
                         logger.exception(e)
-
 
             elif ci['m']['tp'] == 'ar':
                 for part in ci['l']['parts']:
