@@ -397,7 +397,12 @@ class LuxNewspaperIssue(object):
                         del ci['l']['parts']
                     except Exception as e:
                         logger.error(
-                            f'An error occurred with {curr_page.filename}'
+                            'An error occurred with {}'.format(
+                                os.path.join(
+                                    curr_page.basedir,
+                                    curr_page.filename
+                                )
+                            )
                         )
                         logger.error(
                             f"<ComposedBlock> @ID {part['comp_id']} not found"
