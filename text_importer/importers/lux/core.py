@@ -7,6 +7,7 @@ import logging
 import os
 import random
 from copy import copy
+from json.decoder import JSONDecodeError
 from pathlib import Path
 
 import jsonlines
@@ -56,9 +57,15 @@ def compress_pages(key, json_files, output_dir, prefix=""):
         for issue, json_file in json_files:
 
             with open(json_file, 'r') as inpf:
-                item = json.load(inpf)
-                writer.write(item)
-                items_count += 1
+                try:
+                    item = json.load(inpf)
+                    writer.write(item)
+                    items_count += 1
+                except JSONDecodeError as e:
+                    logger.error(
+                        f'Reading data from {json_file} failed'
+                    )
+                    logger.exception(e)
         print(
             f'Written {items_count} docs from {json_file} to {filepath}'
         )
