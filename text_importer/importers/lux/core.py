@@ -293,10 +293,8 @@ def import_issues(issues, out_dir, s3_bucket):
         .persist()
 
     progress(issue_bag)
-
-    print('Start compressing and uploading issues')
     """
-    # TODO skipping until we are testing
+    print('Start compressing and uploading issues')
     issue_bag.groupby(lambda i: (i.journal, i.date.year))\
         .starmap(compress_issues, output_dir=out_dir)\
         .starmap(upload_issues, bucket_name=s3_bucket)\
@@ -312,14 +310,12 @@ def import_issues(issues, out_dir, s3_bucket):
     for chunk_n, chunk_of_issues in enumerate(chunks):
         print(f'Processing chunk {chunk_n}')
 
-        pages_bag = db.from_sequence(chunk_of_issues)\
+        pages_bag = db.from_sequence(chunk_of_issues, partition_size=2)\
             .map(issue2pages)\
             .flatten()\
-            .repartition(200)\
             .map_partitions(process_pages)\
             .map_partitions(serialize_pages, output_dir=out_dir)
-
-        # print(f'Pages to process: {pages_bag.count().compute()}\n')
+        #print(f'Pages to process: {pages_bag.count().compute()}\n')
 
         pages_out_dir = os.path.join(out_dir, 'pages')
         Path(pages_out_dir).mkdir(exist_ok=True)
