@@ -33,8 +33,7 @@ def dir2issue(path):
     local_id = issue_dir.split('_')[2]
     issue_date = issue_dir.split('_')[3]
     year, month, day = issue_date.split('-')
-    # how many rights still to be discussed
-    rights = 'o' if 'public_domain' in path else 'c'
+    rights = 'open_public' if 'public_domain' in path else 'closed'
 
     if len(issue_dir.split('_')) == 4:
         edition = 'a'

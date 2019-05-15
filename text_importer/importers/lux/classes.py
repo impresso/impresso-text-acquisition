@@ -131,6 +131,7 @@ class LuxNewspaperIssue(object):
         self.path = issue_dir.path
         self.date = issue_dir.date
         self._issue_data = {}
+        self.rights = issue_dir.rights
         self.image_properties = {}
         self.ark_id = None
 
@@ -423,6 +424,7 @@ class LuxNewspaperIssue(object):
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "i": content_items,
             "id": self.id,
+            "ar": self.rights,
             "pp": [p.id for p in self.pages]
         }
 

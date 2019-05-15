@@ -300,7 +300,7 @@ def import_issues(issues, out_dir, s3_bucket):
         .persist()
 
     progress(issue_bag)
-    """
+    
     print('Start compressing and uploading issues')
     issue_bag.groupby(lambda i: (i.journal, i.date.year))\
         .starmap(compress_issues, output_dir=out_dir)\
@@ -308,7 +308,7 @@ def import_issues(issues, out_dir, s3_bucket):
         .starmap(cleanup)\
         .compute()
     print('...done.')
-    """
+
     processed_issues = list(issue_bag)
     random.shuffle(processed_issues)
 

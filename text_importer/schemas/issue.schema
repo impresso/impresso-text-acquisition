@@ -53,6 +53,7 @@
 
     "properties": {
         "id": {"type": "string"},
+        "ar":{"type": "string"},
         "cdt":{"type": "string"},
         "i": {
             "type": "array",
