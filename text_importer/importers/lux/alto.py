@@ -60,7 +60,7 @@ def parse_printspace(element, mappings):
 
         lines = [
             parse_textline(line_element)
-            for line_element in element.findAll('TextLine')
+            for line_element in block.findAll('TextLine')
         ]
 
         paragraph = {
@@ -75,6 +75,5 @@ def parse_printspace(element, mappings):
 
         if part_of_contentitem:
             region['pOf'] = part_of_contentitem
-
         regions.append(region)
     return regions

@@ -12,6 +12,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# uncomment to debug interactively e.g. with `pyest --pdb`
+# import dask
+# dask.config.set(scheduler="synchronous")
+
 client = Client(processes=False, n_workers=8, threads_per_worker=2)
 logger.info(client)
 

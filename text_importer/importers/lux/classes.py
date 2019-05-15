@@ -134,6 +134,8 @@ class LuxNewspaperIssue(object):
         self.image_properties = {}
         self.ark_id = None
 
+        # TODO: copy the license/rights information from `issue_dir`
+
         self._find_pages()
         self._parse_mets()
 
