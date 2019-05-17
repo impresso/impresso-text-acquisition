@@ -6,18 +6,9 @@ from text_importer.importers.lux.core import import_issues as lux_import_issues
 from text_importer.importers.lux.detect import \
     detect_issues as lux_detect_issues, select_issues as lux_select_issues
 
-
-from dask.distributed import Client
 import logging
 
 logger = logging.getLogger(__name__)
-
-# uncomment to debug interactively e.g. with `pyest --pdb`
-# import dask
-# dask.config.set(scheduler="synchronous")
-
-client = Client(processes=False, n_workers=8, threads_per_worker=2)
-logger.info(client)
 
 
 def test_olive_import_issues():
@@ -47,11 +38,14 @@ def test_lux_importer():
         'data/sample_data/Luxembourg/'
     )
     out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
-    output_bucket = 'TRANSFER'
+    output_bucket = "TRANSFER"
 
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
     lux_import_issues(issues, out_dir, s3_bucket=output_bucket)
+
+    # TODO verify that issues processed are actually in the output folder
+    # try to validate the JSON documents (pages and issues)
 
 
 def test_lux_select():

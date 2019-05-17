@@ -243,6 +243,41 @@ class LuxNewspaperIssue(object):
                 content_items.append(item)
         return content_items
 
+    def _parse_structmap_divs(self, mets_doc, start_counter):
+        """TODO."""
+        content_items = []
+        counter = start_counter
+        element = mets_doc.find('structMap', {'TYPE': 'LOGICAL'})
+        allowed_types = ["ADVERTISEMENT", "DEATH_NOTICE", "WEATHER"]
+        divs = []
+
+        for div_type in allowed_types:
+            divs += element.findAll('div', {'TYPE': div_type})
+
+        sorted_divs = sorted(
+            divs,
+            key=lambda elem: elem.get('ID')
+        )
+
+        for div in sorted_divs:
+            metadata = {
+                'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
+                'l': "n/a",
+                'tp': div.get('TYPE').lower(),
+                'pp': [],
+                't': div.get('LABEL')
+            }
+            item = {
+                "m": metadata,
+                "l": {
+                    "id": div.get('ID')
+                }
+            }
+            counter += 1
+            content_items.append(item)
+
+        return content_items
+
     def _parse_mets_div(self, element):
         # to each section_id corresponds a div
         # find first-level DIVs inside the element
@@ -260,7 +295,8 @@ class LuxNewspaperIssue(object):
             if isinstance(child, NavigableString):
                 continue
             elif isinstance(child, Tag):
-                comp_role = child.get('TYPE').lower()
+                type_attr = child.get('TYPE')
+                comp_role = type_attr.lower() if type_attr else None
                 areas = child.findAll('area')
                 for area in areas:
                     comp_id = area.get('BEGIN')
@@ -272,7 +308,7 @@ class LuxNewspaperIssue(object):
                             'comp_role': comp_role,
                             'comp_id': comp_id,
                             'comp_fileid': comp_fileid,
-                            'comp_page_no': comp_page_no  # it's a bit quick and dirty
+                            'comp_page_no': comp_page_no
                         }
                     )
         return parts
@@ -319,6 +355,18 @@ class LuxNewspaperIssue(object):
         self.image_properties = self.parse_mets_amdsec(mets_doc)
 
         content_items = self._parse_mets_sections(mets_doc)
+        content_items += self._parse_structmap_divs(
+            mets_doc,
+            start_counter=len(content_items) + 1
+        )
+
+        # NOTE: there are potentially other CIs that are not captured
+        # by the method above. For example DEATH_NOTICE, WEATHER and
+        # ADVERTISEMENT
+
+        # TODO: implement a function that finds those other CIs
+        # and assigns to them a canonical identifier. Search all DIVs,
+        # filter by type, sort by ID et voila.
 
         ark_link = mets_doc.find('mets').get('OBJID')
         self.ark_id = ark_link.replace('https://persist.lu/', '')
@@ -326,9 +374,14 @@ class LuxNewspaperIssue(object):
         for ci in content_items:
             try:
                 legacy_id = ci['l']['id']
-                item_div = mets_doc.findAll('div', {'DMDID': legacy_id})[0]
+                if ci['m']['tp'] == "ar" or ci['m']['tp'] == "image":
+                    item_div = mets_doc.findAll('div', {'DMDID': legacy_id})[0]
+                else:
+                    item_div = mets_doc.findAll('div', {'ID': legacy_id})[0]
             except IndexError:
-                logger.error(f"<div DMID={legacy_id}> not found {mets_file}")
+                logger.error(
+                    f"<div [DMID|ID]={legacy_id}> not found {mets_file}"
+                )
                 continue
 
             ci['l']['parts'] = self._parse_mets_div(item_div)
@@ -414,7 +467,7 @@ class LuxNewspaperIssue(object):
                         )
                         logger.exception(e)
 
-            elif ci['m']['tp'] == 'ar':
+            elif ci['m']['tp']:
                 for part in ci['l']['parts']:
                     page_no = part["comp_page_no"]
                     if page_no not in ci['m']['pp']:

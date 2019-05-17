@@ -122,8 +122,9 @@ def upload_issues(sort_key, filepath, bucket_name=None):
     # create connection with bucket
     # copy contents to s3 key
     newspaper, year = sort_key.split('-')
-    key_name = "{}/{}".format(
+    key_name = "{}/{}/{}".format(
         newspaper,
+        "issues",
         os.path.basename(filepath)
     )
     s3 = get_s3_resource()
@@ -155,7 +156,7 @@ def upload_pages(sort_key, filepath, bucket_name=None):
     # create connection with bucket
     # copy contents to s3 key
     newspaper, year, month, day, edition = sort_key.split('-')
-    key_name = "{}/{}/{}".format(
+    key_name = "{}/pages/{}/{}".format(
         newspaper,
         f'{newspaper}-{year}',
         os.path.basename(filepath)
@@ -167,8 +168,6 @@ def upload_pages(sort_key, filepath, bucket_name=None):
         print(f'Uploaded {filepath} to {key_name}')
         return True, filepath
     except Exception as e:
-        #logger.error(e)
-        #logger.error(f'The upload of {filepath} failed with error {e}')
         print(f'The upload of {filepath} failed with error {e}')
         return False, filepath
 
@@ -299,8 +298,8 @@ def import_issues(issues, out_dir, s3_bucket):
         .filter(lambda i: i is not None)\
         .persist()
 
-    progress(issue_bag)
-    
+    # progress(issue_bag)
+
     print('Start compressing and uploading issues')
     issue_bag.groupby(lambda i: (i.journal, i.date.year))\
         .starmap(compress_issues, output_dir=out_dir)\
