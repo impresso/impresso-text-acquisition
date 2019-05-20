@@ -9,7 +9,6 @@ from pathlib import Path
 
 import boto
 import boto.s3.connection
-import ipdb as pdb
 import pkg_resources
 import python_jsonschema_objects as pjs
 from boto.s3.key import Key
