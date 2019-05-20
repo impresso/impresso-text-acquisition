@@ -29,12 +29,12 @@ def get_page_schema():
     """
     schema_path = pkg_resources.resource_filename(
         'text_importer',
-        'schemas/page.schema'
+        'impresso-schemas/json/newspaper/page.schema.json'
     )
     with open(os.path.join(schema_path), 'r') as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
-    ns = builder.build_classes().Pageschema
+    ns = builder.build_classes().NewspaperPage
     return ns
 
 
@@ -47,12 +47,12 @@ def get_issue_schema():
     """
     schema_path = pkg_resources.resource_filename(
         'text_importer',
-        'schemas/issue.schema'
+        'impresso-schemas/json/newspaper/issue.schema.json'
     )
     with open(os.path.join(schema_path), 'r') as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
-    ns = builder.build_classes().Issueschema
+    ns = builder.build_classes().NewspaperIssue
     return ns
 
 
