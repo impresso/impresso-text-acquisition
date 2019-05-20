@@ -416,7 +416,10 @@ class LuxNewspaperIssue(object):
 
                 if item_div.get('TYPE').lower() == "table":
                     ci['m']['tp'] = CONTENTITEM_TYPE_TABLE
-                    pass
+                    for part in ci['l']['parts']:
+                        page_no = part["comp_page_no"]
+                        if page_no not in ci['m']['pp']:
+                            ci['m']['pp'].append(page_no)
 
                 elif item_div.get('TYPE').lower() == "illustration":
 
