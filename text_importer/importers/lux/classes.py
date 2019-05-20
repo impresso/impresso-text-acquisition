@@ -11,6 +11,13 @@ from impresso_commons.path.path_fs import IssueDir
 from text_importer.helpers import get_issue_schema, get_page_schema
 from text_importer.importers.lux import alto
 from text_importer.importers.lux.helpers import convert_coordinates, encode_ark
+from text_importer.importers import CONTENTITEM_TYPE_IMAGE
+from text_importer.importers import CONTENTITEM_TYPE_TABLE
+from text_importer.importers import CONTENTITEM_TYPE_ARTICLE
+from text_importer.importers import CONTENTITEM_TYPE_WEATHER
+from text_importer.importers import CONTENTITEM_TYPE_OBITUARY
+from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT
+
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -131,6 +138,7 @@ class LuxNewspaperIssue(object):
         self.path = issue_dir.path
         self.date = issue_dir.date
         self._issue_data = {}
+        self._notes = []
         self.rights = issue_dir.rights
         self.image_properties = {}
         self.ark_id = None
@@ -206,7 +214,7 @@ class LuxNewspaperIssue(object):
                 metadata = {
                     'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
                     'l': lang,
-                    'tp': 'ar',
+                    'tp': CONTENTITEM_TYPE_ARTICLE,
                     'pp': []
                 }
                 # if there is not a title we omit the field
@@ -227,8 +235,8 @@ class LuxNewspaperIssue(object):
                     .strip() if len(title_elements) > 0 else None
                 metadata = {
                     'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
-                    'l': 'n/a',
-                    'tp': 'image',  # TODO: check!
+                    # 'l': 'n/a',
+                    'tp': CONTENTITEM_TYPE_IMAGE,
                     'pp': []
                 }
                 # if there is not a title we omit the field
@@ -260,10 +268,19 @@ class LuxNewspaperIssue(object):
         )
 
         for div in sorted_divs:
+
+            div_type = div.get('TYPE').lower()
+            if div_type == 'advertisement':
+                content_item_type = CONTENTITEM_TYPE_ADVERTISEMENT
+            elif div_type == 'weather':
+                content_item_type = CONTENTITEM_TYPE_WEATHER
+            elif div_type == 'death_notice':
+                content_item_type = CONTENTITEM_TYPE_OBITUARY
+
             metadata = {
                 'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
                 'l': "n/a",
-                'tp': div.get('TYPE').lower(),
+                'tp': content_item_type,
                 'pp': [],
                 't': div.get('LABEL')
             }
@@ -374,27 +391,31 @@ class LuxNewspaperIssue(object):
         for ci in content_items:
             try:
                 legacy_id = ci['l']['id']
-                if ci['m']['tp'] == "ar" or ci['m']['tp'] == "image":
+                if (
+                    ci['m']['tp'] == CONTENTITEM_TYPE_ARTICLE or
+                    ci['m']['tp'] == CONTENTITEM_TYPE_IMAGE
+                ):
                     item_div = mets_doc.findAll('div', {'DMDID': legacy_id})[0]
                 else:
                     item_div = mets_doc.findAll('div', {'ID': legacy_id})[0]
             except IndexError:
-                logger.error(
-                    f"<div [DMID|ID]={legacy_id}> not found {mets_file}"
-                )
+                err_msg = f"<div [DMID|ID]={legacy_id}> not found {mets_file}"
+                self._notes.append(err_msg)
+                logger.error(err_msg)
+                # the problem here is that a sort of ill-formed CI will
+                # remain in the issue ToC (it has no pages)
                 continue
 
             ci['l']['parts'] = self._parse_mets_div(item_div)
 
+            # for each "part" open the XML file of corresponding page
+            # get the coordinates and convert them
+            # some imgs are in fact tables (meaning they have text
+            # recognized)
             if ci['m']['tp'] == 'image':
-                # import ipdb; ipdb.set_trace()
-                # for each "part" open the XML file of corresponding page
-                # get the coordinates and convert them
-                # some imgs are in fact tables (meaning they have text
-                # recognized)
 
                 if item_div.get('TYPE').lower() == "table":
-                    ci['m']['tp'] = 'table'
+                    ci['m']['tp'] = CONTENTITEM_TYPE_TABLE
                     pass
 
                 elif item_div.get('TYPE').lower() == "illustration":
@@ -408,8 +429,10 @@ class LuxNewspaperIssue(object):
                             if part['comp_role'] == 'image'
                         ][0]
                     except IndexError as e:
-                        logger.error(f'{legacy_id} without image subpart')
-                        logger.error(f"{legacy_id} has {ci['l']['parts']}")
+                        err_msg = f'{legacy_id} without image subpart'
+                        err_msg += f"; {legacy_id} has {ci['l']['parts']}"
+                        logger.error(err_msg)
+                        self._notes.append(err_msg)
                         logger.exception(e)
                         continue
 
@@ -454,17 +477,16 @@ class LuxNewspaperIssue(object):
                         ci['c'] = list(coordinates)
                         del ci['l']['parts']
                     except Exception as e:
-                        logger.error(
-                            'An error occurred with {}'.format(
-                                os.path.join(
-                                    curr_page.basedir,
-                                    curr_page.filename
-                                )
+                        err_msg = 'An error occurred with {}'.format(
+                            os.path.join(
+                                curr_page.basedir,
+                                curr_page.filename
                             )
                         )
-                        logger.error(
-                            f"<ComposedBlock> @ID {part['comp_id']} not found"
-                        )
+                        err_msg += f"<ComposedBlock> @ID {part['comp_id']} \
+                        not found"
+                        logger.error(err_msg)
+                        self._notes.append(err_msg)
                         logger.exception(e)
 
             elif ci['m']['tp']:
@@ -480,6 +502,9 @@ class LuxNewspaperIssue(object):
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
         }
+
+        if self._notes:
+            self._issue_data["n"] = "\n".join(self._notes)
 
     @property
     def xml(self):

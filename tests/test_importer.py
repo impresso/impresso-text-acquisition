@@ -38,7 +38,7 @@ def test_lux_importer():
         'data/sample_data/Luxembourg/'
     )
     out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
-    output_bucket = "TRANSFER"
+    output_bucket = None  # this disables the s3 upload
 
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
@@ -63,10 +63,14 @@ def test_lux_select():
         'config/import_BNL.json'
     )
 
+    """
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
         'data/sample_data/Luxembourg/'
     )
-
+    """
+    inp_dir = "/mnt/project_impresso/original/BNL/"
     issues = lux_select_issues(cfg_file, inp_dir)
     assert issues
+    for issue in issues[:10]:
+        print(issue.path)
