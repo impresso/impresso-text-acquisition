@@ -233,9 +233,10 @@ class LuxNewspaperIssue(object):
                 title_elements = section.find_all('titleInfo')
                 item_title = title_elements[0].getText().replace('\n', ' ')\
                     .strip() if len(title_elements) > 0 else None
+
+                # TODO: how to get language information for these CIs ?
                 metadata = {
                     'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
-                    # 'l': 'n/a',
                     'tp': CONTENTITEM_TYPE_IMAGE,
                     'pp': []
                 }
@@ -277,9 +278,9 @@ class LuxNewspaperIssue(object):
             elif div_type == 'death_notice':
                 content_item_type = CONTENTITEM_TYPE_OBITUARY
 
+            # TODO: how to get language information for these CIs ?
             metadata = {
                 'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
-                'l': "n/a",
                 'tp': content_item_type,
                 'pp': [],
                 't': div.get('LABEL')
