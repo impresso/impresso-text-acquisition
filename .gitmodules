@@ -1,3 +1,4 @@
 [submodule "text_importer/impresso-schemas"]
 	path = text_importer/impresso-schemas
 	url = https://github.com/impresso/impresso-schemas.git
+        branch = schemas-update
