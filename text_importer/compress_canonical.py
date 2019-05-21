@@ -8,7 +8,7 @@ import jsonlines
 from dask.distributed import Client, progress
 import os
 from smart_open import smart_open
-from impresso_commons.text.rebuilder import cleanup, upload
+from impresso_commons.text.rebuilder import cleanup
 from impresso_commons.utils.s3 import get_s3_resource
 
 
@@ -86,6 +86,40 @@ def compress_pages(key, json_files, output_dir, prefix=""):
     print(len(json_files))
 
 
+def upload_issues(sort_key, filepath, bucket_name=None):
+    """Uploads a file to a given S3 bucket.
+    :param sort_key: the key used to group articles (e.g. "GDL-1900")
+    :type sort_key: str
+    :param filepath: path of the file to upload to S3
+    :type filepath: str
+    :param bucket_name: name of S3 bucket where to upload the file
+    :type bucket_name: str
+    :return: a tuple with [0] whether the upload was successful (boolean) and
+        [1] the path of the uploaded file (string)
+    .. note::
+        `sort_key` is expected to be the concatenation of newspaper ID and year
+        (e.g. GDL-1900).
+    """
+    # create connection with bucket
+    # copy contents to s3 key
+    newspaper, year = sort_key.split('-')
+    key_name = "{}/{}/{}".format(
+        newspaper,
+        "issues",
+        os.path.basename(filepath)
+    )
+    s3 = get_s3_resource()
+    try:
+        bucket = s3.Bucket(bucket_name)
+        bucket.upload_file(filepath, key_name)
+        # logger.info(f'Uploaded {filepath} to {key_name}')
+        return True, filepath
+    except Exception as e:
+        # logger.error(e)
+        # logger.error(f'The upload of {filepath} failed with error {e}')
+        return False, filepath
+
+
 def upload_pages(sort_key, filepath, bucket_name=None):
     """Uploads a file to a given S3 bucket.
     :param sort_key: the key used to group articles (e.g. "GDL-1900")
@@ -103,7 +137,7 @@ def upload_pages(sort_key, filepath, bucket_name=None):
     # create connection with bucket
     # copy contents to s3 key
     newspaper, year, month, day, edition = sort_key.split('-')
-    key_name = "{}/{}/{}".format(
+    key_name = "{}/pages/{}/{}".format(
         newspaper,
         f'{newspaper}-{year}',
         os.path.basename(filepath)
@@ -138,8 +172,6 @@ def compress(key, json_files, output_dir, prefix=""):
         `sort_key` is expected to be the concatenation of newspaper ID and year
         (e.g. GDL-1900).
     """
-
-
     newspaper, year = key.split('-')
     prefix_string = "" if prefix == "" else f"-{prefix}"
     filename = f'{newspaper}-{year}{prefix_string}.jsonl.bz2'
@@ -164,8 +196,9 @@ def compress(key, json_files, output_dir, prefix=""):
     print(len(json_files))
 
 
-input_dir = "/scratch/matteo/impresso/canonical"
-outp_dir = '/scratch/matteo/impresso/compressed'
+input_dir = "/scratch/matteo/impresso-canonical-compressed"
+outp_dir = '/scratch/matteo/impresso-compressed'
+s3_bucket = None
 
 local_issues = detect_canonical_issues(
         input_dir,
@@ -173,20 +206,21 @@ local_issues = detect_canonical_issues(
 )
 
 
-# dask_client = Client('iccluster036.iccluster.epfl.ch:8786')
-dask_client = Client()
+dask_client = Client('localhost:8786')
+# dask_client = Client()
 issue_bag = db.from_sequence(local_issues)
 
 grouped_bag = issue_bag.groupby(lambda i: f'{i.journal}-{i.date}-{i.edition}')
 
-# .starmap(upload_pages, bucket_name='original-canonical-compressed')
+# .starmap(cleanup).persist()
 result = grouped_bag.starmap(find_page_files)\
     .starmap(
         compress_pages,
         prefix="pages",
-        output_dir=os.path.join(outp_dir, 'issues/')
+        output_dir=os.path.join(outp_dir, 'pages/')
     )\
-    .starmap(cleanup).persist()
+    .starmap(upload_pages, bucket_name=s3_bucket)\
+    .persist()
 
 progress(result)
 
@@ -196,12 +230,11 @@ grouped_bag = issue_bag.groupby(
     lambda issue: f'{issue.journal}-{issue.date.year}'
 )
 
-
-# .starmap(upload, bucket_name='original-canonical-compressed')
 grouped_bag.starmap(find_issue_files)\
     .starmap(
         compress,
         prefix="issues",
         output_dir=os.path.join(outp_dir, 'issues/')
     )\
-    .starmap(cleanup).compute()
+    .starmap(upload_issues, bucket_name=s3_bucket)\
+    .compute()

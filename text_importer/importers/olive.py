@@ -803,7 +803,13 @@ def olive_import_issue(
         # parse the XML files into JSON dicts
         images = []
         for image_file in image_xml_files:
-            image_data = olive_image_parser(archive.read(image_file))
+            try:
+                image_data = olive_image_parser(archive.read(image_file))
+            except Exception as e:
+                # there are e.g. image file with empty coordinate attributes
+                logger.error(f'Failed parsing img file {image_file}')
+                logger.error(e)
+                continue
 
             # because of course there are empty files!
             if image_data is not None:
