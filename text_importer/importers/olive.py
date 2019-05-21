@@ -951,13 +951,13 @@ def olive_import_issue(
             except Exception as e:
                 logger.error("Page {} in {} raised error: {}".format(
                     page_no,
-                    issue_data.id,
+                    issue.id,
                     e
                 ))
                 logger.error(
                     "Couldn't get information about page img {} in {}".format(
                         page_no,
-                        issue_data.id
+                        issue.id
                     )
                 )
 
@@ -976,13 +976,13 @@ def olive_import_issue(
             except Exception as e:
                 logger.error("Page {} in {} raised error: {}".format(
                     page_no,
-                    issue_data.id,
+                    issue.id,
                     e
                 ))
                 logger.error(
                     "Couldn't convert coordinates in p. {} {}".format(
                         page_no,
-                        issue_data.id
+                        issue.id
                     )
                 )
                 pages[page_no].cc = False
