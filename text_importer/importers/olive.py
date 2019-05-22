@@ -812,7 +812,10 @@ def olive_import_issue(
                 image_data = olive_image_parser(archive.read(image_file))
             except Exception as e:
                 # there are e.g. image file with empty coordinate attributes
-                logger.error(f'Failed parsing img file {image_file}')
+                logger.error('Failed parsing img file {} in {}'.format(
+                    image_file,
+                    issue_dir.path
+                ))
                 logger.error(e)
                 continue
 
