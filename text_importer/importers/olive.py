@@ -558,7 +558,6 @@ def recompose_ToC(toc_data, articles, images):
             except Exception:
                 continue
 
-
             item['m']["id"] = item["id"]
             item['m']['pp'] = article["meta"]["page_no"]
             item['m']['l'] = article["meta"]["language"]
@@ -584,11 +583,17 @@ def recompose_ToC(toc_data, articles, images):
             item['m']['tp'] = item['type'].lower()
             item['m']['pp'] = page_no
 
-            image = [
-                image
-                for image in images
-                if image['id'] == item['legacy_id']
-            ][0]
+            try:
+                image = [
+                    image
+                    for image in images
+                    if image['id'] == item['legacy_id']
+                ][0]
+            except IndexError:
+                # if the image XML was faulty (e.g. because of missing
+                # coords, it won't find a corresping image item
+                logger.info(f"Image {item['legacy_id']} will be skipped")
+                continue
 
             if keep_title(image["name"]):
                 item['m']['t'] = image["name"]
@@ -605,9 +610,9 @@ def recompose_ToC(toc_data, articles, images):
                 try:
                     containing_article = toc_data[page_no[0]][cont_article_id]
 
-                    # content item entries exists in different shapes within the
-                    # `toc_data` dict, depending on whether they have already been
-                    # processed in this `for` loop or not
+                    # content item entries exists in different shapes within
+                    # the `toc_data` dict, depending on whether they have
+                    # already been processed in this `for` loop or not
                     if (
                         "m" in containing_article and
                         len(containing_article['m'].keys()) > 0
