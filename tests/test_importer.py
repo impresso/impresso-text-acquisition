@@ -70,7 +70,11 @@ def test_lux_select():
     )
     """
     inp_dir = "/mnt/project_impresso/original/BNL/"
+    out_dir = pkg_resources.resource_filename(
+        'text_importer',
+        'data/out/debug/'
+    )
     issues = lux_select_issues(cfg_file, inp_dir)
     assert issues
-    for issue in issues[:10]:
-        print(issue.path)
+    logger.info(f'There are {len(issues)} to ingest')
+    lux_import_issues(issues, out_dir, s3_bucket=None)

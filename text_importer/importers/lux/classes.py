@@ -349,10 +349,17 @@ class LuxNewspaperIssue(object):
         image_properties_dict = {}
         for image_no, image_id in page_image_ids.items():
             amd_sect = amd_sections[image_id]
-            image_properties_dict[image_no] = {
-                'x_resolution': int(amd_sect.find('xOpticalResolution').text),
-                'y_resolution': int(amd_sect.find('yOpticalResolution').text)
-            }
+            try:
+                image_properties_dict[image_no] = {
+                    'x_resolution': int(amd_sect.find('xOpticalResolution').text),
+                    'y_resolution': int(amd_sect.find('yOpticalResolution').text)
+                }
+            # if it fails it's because of value < 1
+            except Exception as e:
+                image_properties_dict[image_no] = {
+                    'x_resolution': 300,
+                    'y_resolution': 300
+                }
         return image_properties_dict
 
     def _parse_mets(self):
