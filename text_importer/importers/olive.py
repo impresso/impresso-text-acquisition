@@ -23,6 +23,8 @@ from text_importer.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
 
+IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
+
 
 def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
     """Parse the TOC.xml file (Olive format)."""
@@ -482,7 +484,7 @@ def parse_styles(text):
     return styles
 
 
-def recompose_page(page_number, info_from_toc, page_elements):
+def recompose_page(page_number, info_from_toc, page_elements, clusters):
     """Create a page document starting from a list of page documents.
 
     :param page_number: page number
@@ -492,16 +494,27 @@ def recompose_page(page_number, info_from_toc, page_elements):
     :type info_from_toc:
     :param page_elements: articles or advertisements
     :type page_elements: list of dict
+    :param clusters: an inverted index of legacy ids; if an id is part of
+        multipart article, the id is found not as a key but in one of the
+        values.
+    :type clusters: dict of lists
 
     It's here that `n` attributes are assigned to each region/para/line/token.
     """
+
     page = {
         "r": [],
         "cdt": strftime("%Y-%m-%d %H:%M:%S")
     }
     ordered_elements = sorted(
-        list(info_from_toc.values()), key=itemgetter('seq')
+        list(info_from_toc[page_number].values()), key=itemgetter('seq')
     )
+
+    id_mappings = {
+        legacy_id: info_from_toc[page][legacy_id]['id']
+        for page in info_from_toc
+        for legacy_id in info_from_toc[page]
+    }
 
     # put together the regions while keeping the order in the page
     for el in ordered_elements:
@@ -511,10 +524,19 @@ def recompose_page(page_number, info_from_toc, page_elements):
         if ("Ar" not in el["legacy_id"] and "Ad" not in el["legacy_id"]):
             continue
 
+        # this is to manage the situation of a multi-part article
+        if el['legacy_id'] in clusters:
+            part_of = el['legacy_id']
+        else:
+            for key in clusters:
+                if el['legacy_id'] in clusters[key]:
+                    part_of = key
+                    break
+
         element = page_elements[el["legacy_id"]]
 
         for i, region in enumerate(element["r"]):
-            region["pOf"] = el["id"]
+            region["pOf"] = id_mappings[part_of]
 
         page["r"] += element["r"]
 
@@ -917,10 +939,24 @@ def olive_import_issue(
                 for el in content_elements
                 if (el["legacy"]["id"] in element_ids)
             }
-            page_dict = recompose_page(page_no, info_from_toc, elements)
-            page_dict['id'] = canonical_path(
+
+            clusters = {}
+            for ar in articles:
+                legacy_id = ar["legacy"]["id"]
+                if isinstance(legacy_id, list):
+                    clusters[legacy_id[0]] = legacy_id
+                else:
+                    clusters[legacy_id] = [legacy_id]
+
+            page_dict = recompose_page(page_no, toc_data, elements, clusters)
+            page_canonical_id = canonical_path(
                 issue_dir,
                 "p" + str(page_no).zfill(4)
+            )
+            page_dict['id'] = page_canonical_id
+            page_dict['iiif'] = os.path.join(
+                IMPRESSO_IIIF_BASEURI,
+                page_canonical_id
             )
             page = PageSchema(**page_dict)
             pages[page_no] = page
