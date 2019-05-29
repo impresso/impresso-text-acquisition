@@ -464,12 +464,22 @@ class LuxNewspaperIssue(object):
                             'ComposedBlock',
                             {"ID": part['comp_id']}
                         )
-                        graphic_el = composed_block.find('GraphicalElement')
-                        if graphic_el is None:
+
+                        if composed_block:
+                            graphic_el = composed_block.find(
+                                'GraphicalElement'
+                            )
+
+                            if graphic_el is None:
+                                graphic_el = curr_page.xml.find(
+                                    'Illustration'
+                                )
+                        else:
                             graphic_el = curr_page.xml.find(
                                 'Illustration',
                                 {"ID": part['comp_id']}
                             )
+
                         hpos = int(graphic_el.get('HPOS'))
                         vpos = int(graphic_el.get('VPOS'))
                         width = int(graphic_el.get('WIDTH'))
