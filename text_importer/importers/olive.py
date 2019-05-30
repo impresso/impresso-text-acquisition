@@ -525,6 +525,7 @@ def recompose_page(page_number, info_from_toc, page_elements, clusters):
             continue
 
         # this is to manage the situation of a multi-part article
+        part_of = None
         if el['legacy_id'] in clusters:
             part_of = el['legacy_id']
         else:
@@ -533,10 +534,15 @@ def recompose_page(page_number, info_from_toc, page_elements, clusters):
                     part_of = key
                     break
 
-        element = page_elements[el["legacy_id"]]
+        if el["legacy_id"] in page_elements:
+            element = page_elements[el["legacy_id"]]
+        else:
+            logger.error(f"{el['id']}: {el['legacy_id']} not found in page {page_number}")
+            continue
+        mapped_id = id_mappings[part_of] if part_of in id_mappings else None
 
         for i, region in enumerate(element["r"]):
-            region["pOf"] = id_mappings[part_of]
+            region["pOf"] = mapped_id
 
         page["r"] += element["r"]
 
