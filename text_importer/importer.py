@@ -108,11 +108,13 @@ def import_issues(
             parallel_execution
         )
     )
+
     with ProgressBar():
         if parallel_execution:
             result = compute(*tasks, scheduler='processes')
         else:
             result = compute(*tasks, scheduler='single-threaded')
+
     print("Done.\n")
     logger.debug(result)
     return result
