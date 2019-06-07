@@ -1,8 +1,21 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""
+Simple CLI script to compress canonical data and upload to s3.
+
+Usage:
+    text_importer/compress_canonical.py --input-dir=<id> --output-dir=<od> --s3-bucket=<s3b>
+
+Options:
+    --input-dir=<id>     Directory with uncompressed canonical data
+    --output-dir=<od>   TODO
+    --s3-bucket=<s3b>   TODO
+"""
+
 from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
                                            detect_canonical_issues)
+from docopt import docopt
 import dask.bag as db
 import jsonlines
 from dask.distributed import Client, progress
@@ -196,45 +209,53 @@ def compress(key, json_files, output_dir, prefix=""):
     print(len(json_files))
 
 
-input_dir = "/scratch/matteo/impresso-canonical-compressed"
-outp_dir = '/scratch/matteo/impresso-compressed'
-s3_bucket = None
+def main():
+    args = docopt(__doc__)
+    input_dir = args['--input-dir']
+    outp_dir = args['--output-dir']
+    s3_bucket = args['--s3-bucket']
 
-local_issues = detect_canonical_issues(
-        input_dir,
-        KNOWN_JOURNALS
-)
+    local_issues = detect_canonical_issues(
+            input_dir,
+            KNOWN_JOURNALS
+    )
+    print(f'Found {len(local_issues)} issues to upload to {s3_bucket}')
+
+    dask_client = Client('localhost:8786')
+    print(dask_client)
+    issue_bag = db.from_sequence(local_issues)
+
+    grouped_bag = issue_bag.groupby(
+        lambda i: f'{i.journal}-{i.date}-{i.edition}'
+    )
+
+    print('Starting to compress and upload pages')
+    # .starmap(cleanup).persist()
+    result = grouped_bag.starmap(find_page_files)\
+        .starmap(
+            compress_pages,
+            prefix="pages",
+            output_dir=os.path.join(outp_dir, 'pages/')
+        )\
+        .starmap(upload_pages, bucket_name=s3_bucket)\
+        .persist()
+    progress(result)
+
+    print('Starting to compress and upload issues')
+    issue_bag = db.from_sequence(local_issues)
+    grouped_bag = issue_bag.groupby(
+        lambda issue: f'{issue.journal}-{issue.date.year}'
+    )
+
+    grouped_bag.starmap(find_issue_files)\
+        .starmap(
+            compress,
+            prefix="issues",
+            output_dir=os.path.join(outp_dir, 'issues/')
+        )\
+        .starmap(upload_issues, bucket_name=s3_bucket)\
+        .compute()
 
 
-dask_client = Client('localhost:8786')
-# dask_client = Client()
-issue_bag = db.from_sequence(local_issues)
-
-grouped_bag = issue_bag.groupby(lambda i: f'{i.journal}-{i.date}-{i.edition}')
-
-# .starmap(cleanup).persist()
-result = grouped_bag.starmap(find_page_files)\
-    .starmap(
-        compress_pages,
-        prefix="pages",
-        output_dir=os.path.join(outp_dir, 'pages/')
-    )\
-    .starmap(upload_pages, bucket_name=s3_bucket)\
-    .persist()
-
-progress(result)
-
-
-issue_bag = db.from_sequence(local_issues)
-grouped_bag = issue_bag.groupby(
-    lambda issue: f'{issue.journal}-{issue.date.year}'
-)
-
-grouped_bag.starmap(find_issue_files)\
-    .starmap(
-        compress,
-        prefix="issues",
-        output_dir=os.path.join(outp_dir, 'issues/')
-    )\
-    .starmap(upload_issues, bucket_name=s3_bucket)\
-    .compute()
+if __name__ == '__main__':
+    main()
