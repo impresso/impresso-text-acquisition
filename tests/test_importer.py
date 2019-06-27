@@ -63,17 +63,18 @@ def test_lux_select():
         'config/import_BNL.json'
     )
 
-    """
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
         'data/sample_data/Luxembourg/'
     )
+    out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
     """
     inp_dir = "/mnt/project_impresso/original/BNL/"
     out_dir = pkg_resources.resource_filename(
         'text_importer',
         'data/out/debug/'
     )
+    """
     issues = lux_select_issues(cfg_file, inp_dir)
     assert issues
     logger.info(f'There are {len(issues)} to ingest')

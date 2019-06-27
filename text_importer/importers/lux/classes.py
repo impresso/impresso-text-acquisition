@@ -89,17 +89,23 @@ class LuxNewspaperPage(object):
                 x, y, w, h = region['c']
                 region['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
 
+                logger.info(f"Page {self.number}: {x},{y},{w},{h} => {region['c']}")
+
                 for paragraph in region['p']:
 
-                    x, y, w, h = region['c']
-                    region['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
+                    x, y, w, h = paragraph['c']
+                    paragraph['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
+
+                    logger.info(f"(para) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}")
 
                     for line in paragraph['l']:
-                        for token in line:
-                            x, y, w, h = region['c']
-                            region['c'] = convert_coordinates(
+
+                        for token in line['t']:
+                            x, y, w, h = token['c']
+                            token['c'] = convert_coordinates(
                                 x, y, w, h, x_res, y_res
                             )
+                            logger.info(f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}")
             success = True
         except Exception as e:
             pass

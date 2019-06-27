@@ -1,4 +1,4 @@
-def convert_coordinates(hpos, vpos, height, width, x_res, y_res):
+def convert_coordinates(hpos, vpos, width, height, x_res, y_res):
     """
     x =   (coordinate['xResolution']/254.0) * coordinate['hpos']
 
