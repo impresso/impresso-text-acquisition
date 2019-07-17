@@ -480,9 +480,9 @@ def recompose_page(page_number, info_from_toc, page_elements):
     # put together the regions while keeping the order in the page
     for el in ordered_elements:
 
-        # filter out the ids keeping only Ads or Articles
+        # keep only IDS of content items that are Ads or Articles
         # but escluding various other files in the archive
-        if ("Ar" not in el["legacy_id"] or "Ar" not in el["legacy_id"]):
+        if ("Ar" not in el["legacy_id"] and "Ad" not in el["legacy_id"]):
             continue
 
         element = page_elements[el["legacy_id"]]
@@ -746,8 +746,13 @@ def olive_import_issue(
 
             while len(internal_deque) > 0:
                 item = internal_deque.popleft()
-                xml_data = archive.read(item).decode('windows-1252')
-                new_data = olive_parser(xml_data)
+                try:
+                    xml_data = archive.read(item).decode('windows-1252')
+                    new_data = olive_parser(xml_data)
+                except Exception as e:
+                    logger.error(f'Corrupted zip archive for {issue_dir.path}')
+                    logger.error(e)
+                    return (issue_dir, False, e)
 
                 # check if it needs to be parsed later on
                 if new_data["legacy"]['continuation_from'] is not None:
@@ -809,6 +814,10 @@ def olive_import_issue(
             )
             page = PageSchema(**page_dict)
             pages[page_no] = page
+
+            # flag those cases where the Olive XML does not contain any OCR
+            if len(page.r) == 0:
+                logger.warning(f"Page {page.id} has no OCR text")
 
         contents = recompose_ToC(toc_data, articles)
         issue_data = {

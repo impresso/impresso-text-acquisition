@@ -24,19 +24,17 @@ import json
 import logging
 import os
 import shutil
+from time import strftime
 
-import dask
 from dask import compute, delayed
 from dask.diagnostics import ProgressBar
-from dask.multiprocessing import get as mp_get
 from docopt import docopt
+from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
+                                           detect_canonical_issues,
+                                           detect_issues, select_issues)
 
 from text_importer import __version__
 from text_importer.importers.olive import olive_import_issue
-
-from impresso_commons.path.path_fs import detect_issues, select_issues
-from impresso_commons.path.path_fs import detect_canonical_issues
-from impresso_commons.path.path_fs import KNOWN_JOURNALS
 
 __author__ = "Matteo Romanello"
 __email__ = "matteo.romanello@epfl.ch"
@@ -225,7 +223,10 @@ def main():
             for issue, success, error in result
         ]
     )
-    report_file = os.path.join(outp_dir, "result.tsv")
+    report_file = os.path.join(
+        outp_dir,
+        "result_{}.tsv".format(strftime("%Y%m%d%H%M%S"))
+    )
     with open(report_file, 'w') as report_file:
         msg = f'Report file written to {report_file}'
         print(msg)
