@@ -1,14 +1,12 @@
-import os
-from dask import bag as db
 import json
 import logging
+import os
 from datetime import datetime
-from collections import namedtuple
+
+from dask import bag as db
 from impresso_commons.path.path_fs import IssueDir
 
 logger = logging.getLogger(__name__)
-
-DATA_DIR = 'data'
 
 EDITIONS_MAPPINGS = {
         1: 'a',
@@ -33,22 +31,22 @@ def dir2issues(path):
     return IssueDir(journal=journal, date=date, edition=edition, path=path)
 
 
-def detect_issues(base_dir):
+def detect_issues(base_dir, data_dir='data'):
     """ Parse directory structure and detect newspaper issues to be imported (RERO format)
     :param base_dir: the root of the directory structure
     :type base_dir: directory of RERO
     :return: list of `IssueDir` instances
     :rtype: list
     """
+    
     # TODO: Should we only include known journals ?
     dir_path, dirs, files = next(os.walk(base_dir))
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
-    
     journal_dirs = [
             os.path.join(journal, _dir, _dir2)
             for journal in journal_dirs
             for _dir in os.listdir(journal)
-            if _dir == DATA_DIR
+            if _dir == data_dir
             for _dir2 in os.listdir(os.path.join(journal, _dir))
             ]
     
