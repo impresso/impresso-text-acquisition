@@ -1,22 +1,15 @@
 import codecs
 import logging
 import os
-import re
 from time import strftime
+from typing import Dict, List
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 from impresso_commons.path.path_fs import IssueDir
 
 from text_importer.helpers import get_issue_schema, get_page_schema
-from text_importer.importers.lux import alto
-from text_importer.importers.lux.helpers import convert_coordinates, encode_ark
-from text_importer.importers import CONTENTITEM_TYPE_IMAGE
-from text_importer.importers import CONTENTITEM_TYPE_TABLE
-from text_importer.importers import CONTENTITEM_TYPE_ARTICLE
-from text_importer.importers import CONTENTITEM_TYPE_WEATHER
-from text_importer.importers import CONTENTITEM_TYPE_OBITUARY
-from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT
+from text_importer.importers import *
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -69,8 +62,10 @@ class ReroNewspaperIssue(object):
         self._notes = []
         self.image_properties = {}
         self.ark_id = None
+        self.rights = None
         
         self._find_pages()
+        self._parse_mets()
     
     @property
     def xml(self):
@@ -88,10 +83,13 @@ class ReroNewspaperIssue(object):
         return mets_doc
     
     @property
-    def issuedir(self):
+    def issuedir(self) -> IssueDir:
         return IssueDir(self.journal, self.date, self.edition, self.path)
     
     def _find_pages(self):
+        """
+        Finds the pages associated to the issue and stores them as `ReroNewspaperPage`
+        """
         alto_path = os.path.join(self.path, 'ALTO')
         
         if not os.path.exists(alto_path):
@@ -124,19 +122,159 @@ class ReroNewspaperIssue(object):
                         f'raised following exception: {e}'
                         )
                 raise e
+    
+    def _parse_mets_filegroup(self, element) -> Dict:  # TODO: make this function generic
+        # return a list of page image ids
+        
+        return {
+                int(child.get("SEQ")): child.get("ADMID")
+                for child in element.findAll('file')
+                }
+    
+    def _parse_mets_amdsec(self, mets_doc) -> Dict:  # TODO : make this generic
+        """
+        Gathers information about each page (size of image)
+        :param mets_doc:  BeautifulSoup document of METS.xml
+        :return: dict, containing the resolution for each image
+        """
+        image_filegroup = mets_doc.findAll('fileGrp', {'USE': 'Images'})[0]
+        page_image_ids = self._parse_mets_filegroup(image_filegroup)  # Returns {page: im_id}
+        
+        amd_sections = {
+                image_id: mets_doc.findAll('amdSec', {'ID': image_id})[0]  # Returns {page_id: amdsec}
+                for image_id in page_image_ids.values()
+                }
+        
+        image_properties_dict = {}
+        for image_no, image_id in page_image_ids.items():
+            amd_sect = amd_sections[image_id]
+            try:
+                image_properties_dict[image_no] = {
+                        'x_resolution': int(amd_sect.find('XphysScanResolution').text),
+                        'y_resolution': int(amd_sect.find('YphysScanResolution').text)
+                        }
+            # if it fails it's because of value < 1
+            except Exception as e:
+                logger.debug(f'Error occured when parsing {e}')
+                image_properties_dict[image_no] = {
+                        'x_resolution': 300,
+                        'y_resolution': 300
+                        }
+        return image_properties_dict
+    
+    def _parse_content_parts(self, content_div) -> List[Dict[str, str]]:
+        """
+        Given the div of a content item, this function parses the children and constructs the legacy `parts` component
+        :param content_div: The div containing the content item
+        :return: list[dict] of different parts for this content item (role, id, fileid, page)
+        """
+        parts = []
+        for child in content_div.children:
             
+            if isinstance(child, NavigableString):
+                continue
+            elif isinstance(child, Tag):
+                type_attr = child.get('TYPE')
+                comp_role = type_attr.lower() if type_attr else None
+                areas = child.findAll('area')
+                for area in areas:
+                    comp_id = area.get('BEGIN')
+                    comp_fileid = area.get('FILEID')
+                    comp_page_no = int(comp_fileid.replace('ALTO', ''))
+                    
+                    parts.append(
+                            {
+                                    'comp_role': comp_role,
+                                    'comp_id': comp_id,
+                                    'comp_fileid': comp_fileid,
+                                    'comp_page_no': comp_page_no
+                                    }
+                            )
+        return parts
+    
+    def _parse_content_item(self, item_div, counter: int):
+        """
+        Parses a content item div and returns the dictionary representing it
+        :param item_div: Div of content item
+        :param counter: Number of content items already added (to generate canonical id)
+        :return:  dict, of the resulting content item
+        """
+        div_type = item_div.get('TYPE').lower()
+        
+        if div_type == 'picture':  # TODO: check if other content items can be translated (maybe add translation dict)
+            div_type = CONTENTITEM_TYPE_IMAGE
+        
+        if div_type not in CONTENTITEM_TYPES:  # Check if new content item is found (or if we need more translation)
+            logger.debug(f"Found new content item type: {div_type}")
+        
+        metadata = {
+                'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
+                'tp': div_type,
+                'pp': [],
+                't': item_div.get('LABEL')
+                }
+        
+        content_item = {
+                "m": metadata,
+                "l": {
+                        "id": item_div.get('ID'),
+                        "parts": self._parse_content_parts(item_div)
+                        }
+                }
+        for p in content_item['l']['parts']:
+            pge_no = p["comp_page_no"]
+            if pge_no not in content_item['m']['pp']:
+                content_item['m']['pp'].append(pge_no)
+        return content_item
+    
+    def _parse_content_items(self, mets_doc):
+        """
+        Given the XML document, this function parses all the content items it can find
+        :param mets_doc:
+        :return:
+        """
+        content_items = []
+        divs = mets_doc.find('div', {'TYPE': 'CONTENT'}).findChildren('div',
+                                                                      recursive=False)  # Children of "Content" tag
+        sorted_divs = sorted(divs, key=lambda x: x.get('ID').lower())  # Sort to have same naming
+        
+        found_types = set(x.get('TYPE') for x in sorted_divs)
+        print(f"Found types {found_types} for content items")
+        
+        counter = 1
+        for div in sorted_divs:
+            content_items.append(self._parse_content_item(div, counter))  # Parse Each contentitem
+            counter += 1
+        return content_items
+    
     def _parse_mets(self):
         """Parses the Mets XML file of the newspaper issue."""
-
+        
         mets_file = [
-            os.path.join(self.path, f)
-            for f in os.listdir(self.path)
-            if 'mets.xml' in f
-        ][0]
-
+                os.path.join(self.path, f)
+                for f in os.listdir(self.path)
+                if 'mets.xml' in f.lower()
+                ][0]
+        
         with codecs.open(mets_file, 'r', "utf-8") as f:
             raw_xml = f.read()
-
+        
         mets_doc = BeautifulSoup(raw_xml, 'xml')
         
-        # TODO: Implement METS parsing
+        self.image_properties = self._parse_mets_amdsec(mets_doc)
+        
+        content_items = self._parse_content_items(mets_doc)
+        
+        self._issue_data = {
+                "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+                "i": content_items,
+                "id": self.id,
+                "ar": "open_public",
+                "pp": [p.id for p in self.pages]
+                }
+        
+        # return content_items
+    
+    def to_json(self):
+        issue = IssueSchema(**self._issue_data)
+        return issue.serialize()
