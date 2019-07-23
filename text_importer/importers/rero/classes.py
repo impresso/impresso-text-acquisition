@@ -10,11 +10,14 @@ from impresso_commons.path.path_fs import IssueDir
 
 from text_importer.helpers import get_issue_schema, get_page_schema
 from text_importer.importers import *
+from text_importer.importers.lux import alto
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
+
+IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
 
 
 class ReroNewspaperPage(object):
@@ -30,6 +33,26 @@ class ReroNewspaperPage(object):
                 'r': []  # here go the page regions
                 }
     
+    def add_issue(self, issue):
+        self.issue = issue
+        self.data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
+    
+    def parse(self):
+        
+        doc = self.xml
+        
+        mappings = {}
+        for ci in self.issue._issue_data['i']:
+            ci_id = ci['m']['id']
+            if 'parts' in ci['l']:
+                for part in ci['l']['parts']:
+                    mappings[part['comp_id']] = ci_id
+        
+        pselement = doc.find('PrintSpace')
+        page_data = alto.parse_printspace(pselement, mappings)
+        self.data['cc'], self.data["r"] = False, page_data
+        return
+    
     @property
     def xml(self):
         """Returns a BeautifulSoup object with Alto XML of the page."""
@@ -40,6 +63,17 @@ class ReroNewspaperPage(object):
         
         alto_doc = BeautifulSoup(raw_xml, 'xml')
         return alto_doc
+    
+    def to_json(self):
+        """Validates `page.data` against PageSchema & serializes to string.
+
+        ..note::
+            Validation adds a substantial overhead to computing time. For
+            serialization of lots of pages it is recommendable to bypass
+            schema validation.
+        """
+        page = Pageschema(**self.data)
+        return page.serialize()
 
 
 class ReroNewspaperIssue(object):
@@ -67,25 +101,6 @@ class ReroNewspaperIssue(object):
         self._find_pages()
         self._parse_mets()
     
-    @property
-    def xml(self):
-        mets_file = [os.path.join(self.path, f) for f in os.listdir(self.path) if 'mets.xml' in f.lower()]
-        if len(mets_file) == 0:
-            logger.critical(f"Could not find METS file in {self.path}")
-            return
-        
-        mets_file = mets_file[0]
-        
-        with codecs.open(mets_file, 'r', "utf-8") as f:
-            raw_xml = f.read()
-        
-        mets_doc = BeautifulSoup(raw_xml, 'xml')
-        return mets_doc
-    
-    @property
-    def issuedir(self) -> IssueDir:
-        return IssueDir(self.journal, self.date, self.edition, self.path)
-    
     def _find_pages(self):
         """
         Finds the pages associated to the issue and stores them as `ReroNewspaperPage`
@@ -93,7 +108,7 @@ class ReroNewspaperIssue(object):
         alto_path = os.path.join(self.path, 'ALTO')
         
         if not os.path.exists(alto_path):
-            logger.critical(f"Could not find pages for {self.path}")
+            logger.critical(f"Could not find pages for {self.id}")
         
         page_file_names = [file for file in os.listdir(alto_path) if not file.startswith('.') and '.xml' in file]
         
@@ -250,30 +265,38 @@ class ReroNewspaperIssue(object):
     def _parse_mets(self):
         """Parses the Mets XML file of the newspaper issue."""
         
-        mets_file = [
-                os.path.join(self.path, f)
-                for f in os.listdir(self.path)
-                if 'mets.xml' in f.lower()
-                ][0]
+        mets_doc = self.xml
         
-        with codecs.open(mets_file, 'r', "utf-8") as f:
-            raw_xml = f.read()
+        self.image_properties = self._parse_mets_amdsec(mets_doc)  # Parse the resolution of page images
         
-        mets_doc = BeautifulSoup(raw_xml, 'xml')
-        
-        self.image_properties = self._parse_mets_amdsec(mets_doc)
-        
-        content_items = self._parse_content_items(mets_doc)
+        content_items = self._parse_content_items(mets_doc)  # Parse all the content items
         
         self._issue_data = {
                 "cdt": strftime("%Y-%m-%d %H:%M:%S"),
                 "i": content_items,
                 "id": self.id,
-                "ar": "open_public",
+                "ar": "open_public",  # TODO : change this
                 "pp": [p.id for p in self.pages]
                 }
+    
+    @property
+    def xml(self):
+        mets_file = [os.path.join(self.path, f) for f in os.listdir(self.path) if 'mets.xml' in f.lower()]
+        if len(mets_file) == 0:
+            logger.critical(f"Could not find METS file in {self.path}")
+            return
         
-        # return content_items
+        mets_file = mets_file[0]
+        
+        with codecs.open(mets_file, 'r', "utf-8") as f:
+            raw_xml = f.read()
+        
+        mets_doc = BeautifulSoup(raw_xml, 'xml')
+        return mets_doc
+    
+    @property
+    def issuedir(self) -> IssueDir:
+        return IssueDir(self.journal, self.date, self.edition, self.path)
     
     def to_json(self):
         issue = IssueSchema(**self._issue_data)
