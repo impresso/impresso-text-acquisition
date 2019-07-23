@@ -265,12 +265,13 @@ def process_pages(pages: List[MetsAltoNewspaperPage]) -> List[MetsAltoNewspaperP
     return result
 
 
-def import_issues(issues: List[IssueDir], out_dir, s3_bucket, issue_class):  # TODO: make issue class a string
+def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_class: MetsAltoNewPaperIssue):
     """Imports a bunch of newspaper issues in Mets/Alto format.
 
     :param list issues: Description of parameter `issues`.
     :param str out_dir: Description of parameter `out_dir`.
     :param str s3_bucket: Description of parameter `s3_bucket`.
+    :param issue_class: The newspaper issue class to import (Child of MetsAltoNewPaperIssue)
     :return: Description of returned object.
     :rtype: tuple
 
