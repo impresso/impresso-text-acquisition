@@ -1,14 +1,22 @@
 import json
 import logging
 import os
+from collections import namedtuple
 from datetime import datetime
 
 from dask import bag as db
-from impresso_commons.path.path_fs import IssueDir
 
 logger = logging.getLogger(__name__)
 
-# TODO: add access rights
+Rero2IssueDir = namedtuple(
+        "IssueDirectory", [
+                'journal',
+                'date',
+                'edition',
+                'path',
+                'rights'
+                ]
+        )
 
 EDITIONS_MAPPINGS = {
         1: 'a',
@@ -30,7 +38,7 @@ def dir2issues(path):
     
     edition = EDITIONS_MAPPINGS[int(edition)]
     
-    return IssueDir(journal=journal, date=date, edition=edition, path=path)
+    return Rero2IssueDir(journal=journal, date=date, edition=edition, path=path, rights='open_public')
 
 
 def detect_issues(base_dir, data_dir='data'):

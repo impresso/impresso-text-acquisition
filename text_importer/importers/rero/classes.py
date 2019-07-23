@@ -1,16 +1,13 @@
-import codecs
 import logging
 import os
 from time import strftime
 from typing import Dict, List
 
-from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
-from impresso_commons.path.path_fs import IssueDir
 
 from text_importer.helpers import get_issue_schema, get_page_schema
 from text_importer.importers import *
-from text_importer.importers.lux import alto
+from text_importer.importers.mets_alto import MetsAltoNewPaperIssue, MetsAltoNewspaperPage, parse_mets_amdsec
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -20,86 +17,22 @@ logger = logging.getLogger(__name__)
 IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
 
 
-class ReroNewspaperPage(object):
-    def __init__(self, n, _id, filename, basedir):
-        self.number = n
-        self.id = _id
-        self.filename = filename
-        self.basedir = basedir
-        self.issue = None
-        self.data = {
-                'id': _id,
-                'cdt': strftime("%Y-%m-%d %H:%M:%S"),
-                'r': []  # here go the page regions
-                }
+class ReroNewspaperPage(MetsAltoNewspaperPage):
     
     def add_issue(self, issue):
         self.issue = issue
         self.data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
     
-    def parse(self):
-        
-        doc = self.xml
-        
-        mappings = {}
-        for ci in self.issue._issue_data['i']:
-            ci_id = ci['m']['id']
-            if 'parts' in ci['l']:
-                for part in ci['l']['parts']:
-                    mappings[part['comp_id']] = ci_id
-        
-        pselement = doc.find('PrintSpace')
-        page_data = alto.parse_printspace(pselement, mappings)
-        self.data['cc'], self.data["r"] = False, page_data
-        return
-    
-    @property
-    def xml(self):
-        """Returns a BeautifulSoup object with Alto XML of the page."""
-        alto_xml_path = os.path.join(self.basedir, self.filename)
-        
-        with codecs.open(alto_xml_path, 'r', "utf-8") as f:
-            raw_xml = f.read()
-        
-        alto_doc = BeautifulSoup(raw_xml, 'xml')
-        return alto_doc
-    
-    def to_json(self):
-        """Validates `page.data` against PageSchema & serializes to string.
-
-        ..note::
-            Validation adds a substantial overhead to computing time. For
-            serialization of lots of pages it is recommendable to bypass
-            schema validation.
+    def _convert_coordinates(self, page_data):
         """
-        page = Pageschema(**self.data)
-        return page.serialize()
+         no conversion of coordinates
+        :param page_data:
+        :return:
+        """
+        return False, page_data
 
 
-class ReroNewspaperIssue(object):
-    def __init__(self, issue_dir):
-        self.id = "{}-{}-{}".format(
-                issue_dir.journal,
-                "{}-{}-{}".format(
-                        issue_dir.date.year,
-                        str(issue_dir.date.month).zfill(2),
-                        str(issue_dir.date.day).zfill(2)
-                        ),
-                issue_dir.edition
-                )
-        
-        self.edition = issue_dir.edition
-        self.journal = issue_dir.journal
-        self.path = issue_dir.path
-        self.date = issue_dir.date
-        self._issue_data = {}
-        self._notes = []
-        self.image_properties = {}
-        self.ark_id = None
-        self.rights = None
-        
-        self._find_pages()
-        self._parse_mets()
+class ReroNewspaperIssue(MetsAltoNewPaperIssue):
     
     def _find_pages(self):
         """
@@ -137,45 +70,6 @@ class ReroNewspaperIssue(object):
                         f'raised following exception: {e}'
                         )
                 raise e
-    
-    def _parse_mets_filegroup(self, element) -> Dict:  # TODO: make this function generic
-        # return a list of page image ids
-        
-        return {
-                int(child.get("SEQ")): child.get("ADMID")
-                for child in element.findAll('file')
-                }
-    
-    def _parse_mets_amdsec(self, mets_doc) -> Dict:  # TODO : make this generic
-        """
-        Gathers information about each page (size of image)
-        :param mets_doc:  BeautifulSoup document of METS.xml
-        :return: dict, containing the resolution for each image
-        """
-        image_filegroup = mets_doc.findAll('fileGrp', {'USE': 'Images'})[0]
-        page_image_ids = self._parse_mets_filegroup(image_filegroup)  # Returns {page: im_id}
-        
-        amd_sections = {
-                image_id: mets_doc.findAll('amdSec', {'ID': image_id})[0]  # Returns {page_id: amdsec}
-                for image_id in page_image_ids.values()
-                }
-        
-        image_properties_dict = {}
-        for image_no, image_id in page_image_ids.items():
-            amd_sect = amd_sections[image_id]
-            try:
-                image_properties_dict[image_no] = {
-                        'x_resolution': int(amd_sect.find('XphysScanResolution').text),
-                        'y_resolution': int(amd_sect.find('YphysScanResolution').text)
-                        }
-            # if it fails it's because of value < 1
-            except Exception as e:
-                logger.debug(f'Error occured when parsing {e}')
-                image_properties_dict[image_no] = {
-                        'x_resolution': 300,
-                        'y_resolution': 300
-                        }
-        return image_properties_dict
     
     def _parse_content_parts(self, content_div) -> List[Dict[str, str]]:
         """
@@ -267,7 +161,8 @@ class ReroNewspaperIssue(object):
         
         mets_doc = self.xml
         
-        self.image_properties = self._parse_mets_amdsec(mets_doc)  # Parse the resolution of page images
+        self.image_properties = parse_mets_amdsec(mets_doc, x_res='XphysScanResolution',
+                                                  y_res='YphysScanResolution')  # Parse the resolution of page images
         
         content_items = self._parse_content_items(mets_doc)  # Parse all the content items
         
@@ -275,29 +170,6 @@ class ReroNewspaperIssue(object):
                 "cdt": strftime("%Y-%m-%d %H:%M:%S"),
                 "i": content_items,
                 "id": self.id,
-                "ar": "open_public",  # TODO : change this
+                "ar": self.rights,
                 "pp": [p.id for p in self.pages]
                 }
-    
-    @property
-    def xml(self):
-        mets_file = [os.path.join(self.path, f) for f in os.listdir(self.path) if 'mets.xml' in f.lower()]
-        if len(mets_file) == 0:
-            logger.critical(f"Could not find METS file in {self.path}")
-            return
-        
-        mets_file = mets_file[0]
-        
-        with codecs.open(mets_file, 'r', "utf-8") as f:
-            raw_xml = f.read()
-        
-        mets_doc = BeautifulSoup(raw_xml, 'xml')
-        return mets_doc
-    
-    @property
-    def issuedir(self) -> IssueDir:
-        return IssueDir(self.journal, self.date, self.edition, self.path)
-    
-    def to_json(self):
-        issue = IssueSchema(**self._issue_data)
-        return issue.serialize()
