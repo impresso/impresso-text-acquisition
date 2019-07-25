@@ -3,6 +3,7 @@ import logging
 import os
 import re
 from time import strftime
+from typing import List, Tuple
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
@@ -32,7 +33,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
         self.data['iiif'] = iiif_link
         return
     
-    def _convert_coordinates(self, page_data):
+    def _convert_coordinates(self, page_data: List[dict]) -> Tuple[bool, List[dict]]:
         # TODO: move this to a separate method ?
         success = False
         try:
@@ -79,7 +80,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
         except Exception as e:
             pass
         finally:
-            return (success, page_data)
+            return success, page_data
 
 
 class LuxNewspaperIssue(MetsAltoNewPaperIssue):
