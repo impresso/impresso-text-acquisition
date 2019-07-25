@@ -114,7 +114,7 @@ class ReroNewspaperIssue(MetsAltoNewPaperIssue):
             div_type = CONTENTITEM_TYPE_IMAGE
         
         if div_type not in CONTENTITEM_TYPES:  # Check if new content item is found (or if we need more translation)
-            logger.debug(f"Found new content item type: {div_type}")
+            logger.warning(f"Found new content item type: {div_type}")
         
         metadata = {
                 'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
