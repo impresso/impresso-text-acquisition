@@ -2,8 +2,8 @@
 Functions and CLI script to convert BNL's Mets/Alto OCR data into Impresso's format.
 
 Usage:
-    luximporter.py --input-dir=<id> (--clear | --incremental) [--output-dir==<od> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch>]
-    luximporter.py --version
+    metsalto_importer.py --input-dir=<id> (--clear | --incremental) [--output-dir==<od> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<f>]
+    metsalto_importer.py --version
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal
