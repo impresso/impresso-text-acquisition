@@ -38,7 +38,7 @@ def dir2issues(path):
     
     edition = EDITIONS_MAPPINGS[int(edition)]
     
-    return Rero2IssueDir(journal=journal, date=date, edition=edition, path=path, rights='open_public')
+    return Rero2IssueDir(journal=journal, date=date, edition=edition, path=path, rights='open_public') # TODO: change access rights when available
 
 
 def detect_issues(base_dir, data_dir='data'):
