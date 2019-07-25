@@ -43,7 +43,7 @@ def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = ""
     prefix_string = "" if prefix == "" else f"-{prefix}"
     filename = f'{newspaper}-{year}-{month}-{day}-{edition}{prefix_string}.jsonl.bz2'
     filepath = os.path.join(output_dir, filename)
-    print(f'Compressing {len(json_files)} JSON files into {filepath}')
+    logger.info(f'Compressing {len(json_files)} JSON files into {filepath}')
     
     with smart_open_function(filepath, 'wb') as fout:
         writer = jsonlines.Writer(fout)
@@ -61,7 +61,7 @@ def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = ""
                             f'Reading data from {json_file} failed'
                             )
                     logger.exception(e)
-        print(
+        logger.info(
                 f'Written {items_count} docs from {json_file} to {filepath}'
                 )
         
@@ -91,8 +91,8 @@ def compress_issues(key: Tuple[str, int], issues: List[MetsAltoNewPaperIssue], o
                 for issue in issues
                 ]
         writer.write_all(items)
-        print(
-                f'Written {len(items)} docs from to {filepath}'
+        logger.info(
+                f'Written {len(items)} issues to {filepath}'
                 )
         writer.close()
     
@@ -153,16 +153,21 @@ def upload_pages(sort_key: str, filepath: str, bucket_name: str = None) -> Tuple
     try:
         bucket = s3.Bucket(bucket_name)
         bucket.upload_file(filepath, key_name)
-        print(f'Uploaded {filepath} to {key_name}')
+        logger.info(f'Uploaded {filepath} to {key_name}')
         return True, filepath
     except Exception as e:
-        print(f'The upload of {filepath} failed with error {e}')
+        logger.error(f'The upload of {filepath} failed with error {e}')
         return False, filepath
 
 
 def mets2issue(issue: IssueDir, issue_class: Type[MetsAltoNewPaperIssue]) -> Optional[MetsAltoNewPaperIssue]:
     """Instantiates a LuxNewspaperIssue instance from an IssueDir."""
     try:
+        issue = issue_class(issue)
+        try:
+            issue.to_json()
+        except Exception as e:
+            logger.warning(f"Error in Issue schema for  {issue.id}")
         return issue_class(issue)
     except Exception as e:
         logger.error(f'Error when processing issue {issue}')
@@ -175,29 +180,33 @@ def issue2pages(issue: MetsAltoNewPaperIssue) -> List[MetsAltoNewspaperPage]:
     pages = []
     for page in issue.pages:
         page.add_issue(issue)
+        try:
+            page.to_json()
+        except Exception as e:
+            logger.warning(f"Error in Page schema for issue {issue.id}")
         pages.append(page)
     return pages
 
 
 def serialize_page(luxpage: MetsAltoNewspaperPage, output_dir: str = None) -> Tuple[IssueDir, str]:
     issue_dir = luxpage.issue.issuedir
-
+    
     out_dir = os.path.join(
             output_dir,
             canonical_path(issue_dir, path_type="dir")
             )
-
+    
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-
+    
     canonical_filename = canonical_path(
             issue_dir,
             "p" + str(luxpage.number).zfill(4),
             ".json"
             )
-
+    
     out_file = os.path.join(out_dir, canonical_filename)
-
+    
     with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
         json.dump(luxpage.data, jsonfile)
         print(
@@ -233,7 +242,7 @@ def serialize_pages(pages: List[MetsAltoNewspaperPage], output_dir: str = None) 
         
         with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
             json.dump(luxpage.data, jsonfile)
-            print(
+            logger.info(
                     "Written page \'{}\' to {}".format(luxpage.number, out_file)
                     )
         result.append((issue_dir, out_file))
@@ -279,22 +288,22 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
     """
     msg = f'Issues to import: {len(issues)}'
     logger.info(msg)
-    print(msg)
+    # print(msg)
     
     issue_bag = db.from_sequence(issues, partition_size=60) \
-        .starmap(mets2issue, issue_class=issue_class) \
+        .map(mets2issue, issue_class=issue_class) \
         .filter(lambda i: i is not None) \
         .persist()
     
     # progress(issue_bag)
     
-    print('Start compressing and uploading issues')
+    logger.info('Start compressing and uploading issues')
     issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
         .starmap(compress_issues, output_dir=out_dir) \
         .starmap(upload_issues, bucket_name=s3_bucket) \
         .starmap(cleanup) \
         .compute()
-    print('...done.')
+    logger.info('Done compressing and uploading')
     
     processed_issues = list(issue_bag)
     random.shuffle(processed_issues)
@@ -302,7 +311,7 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
     chunks = chunk(processed_issues, 400)
     
     for chunk_n, chunk_of_issues in enumerate(chunks):
-        print(f'Processing chunk {chunk_n}')
+        logger.info(f'Processing chunk {chunk_n}')
         
         pages_bag = db.from_sequence(chunk_of_issues, partition_size=2) \
             .map(issue2pages) \
@@ -314,7 +323,7 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
         pages_out_dir = os.path.join(out_dir, 'pages')
         Path(pages_out_dir).mkdir(exist_ok=True)
         
-        print('Now compress and upload pages')
+        logger.info('Now compress and upload pages')
         pages_bag = pages_bag.groupby(
                 lambda x: canonical_path(
                         x[0], path_type='dir'
