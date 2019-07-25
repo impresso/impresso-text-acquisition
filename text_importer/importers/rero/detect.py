@@ -3,6 +3,7 @@ import logging
 import os
 from collections import namedtuple
 from datetime import datetime
+from typing import List, Optional
 
 from dask import bag as db
 
@@ -27,9 +28,18 @@ EDITIONS_MAPPINGS = {
         }
 
 
-def dir2issues(path):
+def get_access_right(journal: str, date, access_rights: dict) -> str:
+    rights = access_rights[journal]
+    if rights['time'] == 'all':
+        return rights['access-rights']
+    else:
+        logger.warning(f"Access right not defined for {journal}-{date}")
+
+
+def dir2issues(path: str, access_rights: dict) -> Rero2IssueDir:
     """ Creates an IssueDir from a directory (RERO format)
     :param path: Path of issue
+    :param access_rights: Dictionary for access rights
     :return: IssueDir
     """
     journal, issue = path.split('/')[-2:]
@@ -38,15 +48,16 @@ def dir2issues(path):
     
     edition = EDITIONS_MAPPINGS[int(edition)]
     
-    return Rero2IssueDir(journal=journal, date=date, edition=edition, path=path, rights='open_public') # TODO: change access rights when available
+    return Rero2IssueDir(journal=journal, date=date, edition=edition, path=path,
+                         rights=get_access_right(journal, date, access_rights))
 
 
-def detect_issues(base_dir, data_dir='data'):
+def detect_issues(base_dir: str, access_rights: str, data_dir: str = 'data') -> List[Rero2IssueDir]:
     """ Parse directory structure and detect newspaper issues to be imported (RERO format)
     :param base_dir: the root of the directory structure
-    :type base_dir: directory of RERO
+    :param access_rights: The file where access rights are stored
+    :param data_dir: Directory where data is stored (usually `data/`)
     :return: list of `IssueDir` instances
-    :rtype: list
     """
     
     dir_path, dirs, files = next(os.walk(base_dir))
@@ -61,14 +72,18 @@ def detect_issues(base_dir, data_dir='data'):
     
     issues_dirs = [os.path.join(j_dir, l) for j_dir in journal_dirs for l in os.listdir(j_dir)]
     
-    return [dir2issues(_dir) for _dir in issues_dirs]
+    with open(access_rights, 'r') as f:
+        access_rights_dict = json.load(access_rights)
+    
+    return [dir2issues(_dir, access_rights_dict) for _dir in issues_dirs]
 
 
-def select_issues(cfg_file, input_dir):
+def select_issues(cfg_file, input_dir, access_rights: str) -> Optional[List[Rero2IssueDir]]:
     """
     
     :param cfg_file:
     :param input_dir:
+    :param access_rights:
     :return:
     """
     
@@ -90,7 +105,7 @@ def select_issues(cfg_file, input_dir):
         logger.critical(f"The key [newspapers|exclude_newspapers|year_only] is missing in the config file.")
         return
     
-    issues = detect_issues(input_dir)
+    issues = detect_issues(input_dir, access_rights)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag \
         .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \

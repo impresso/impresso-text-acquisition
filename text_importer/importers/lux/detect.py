@@ -51,7 +51,7 @@ def dir2issue(path: str) -> LuxIssueDir:
             )
 
 
-def detect_issues(base_dir: str) -> List[LuxIssueDir]:
+def detect_issues(base_dir: str, access_rights: str) -> List[LuxIssueDir]:
     """Parse a directory structure and detect newspaper issues to be imported.
 
     :param base_dir: the root of the directory structure
@@ -73,7 +73,7 @@ def detect_issues(base_dir: str) -> List[LuxIssueDir]:
             ]
 
 
-def select_issues(cfg_file: str, input_dir: str) -> List[LuxIssueDir]:
+def select_issues(cfg_file: str, input_dir: str, access_rights: str) -> List[LuxIssueDir]:
     # detect/select issues
     if cfg_file and os.path.isfile(cfg_file):
         logger.info(f"Found config file: {os.path.realpath(cfg_file)}")
