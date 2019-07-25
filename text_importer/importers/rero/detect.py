@@ -31,7 +31,7 @@ EDITIONS_MAPPINGS = {
 def get_access_right(journal: str, date, access_rights: dict) -> str:
     rights = access_rights[journal]
     if rights['time'] == 'all':
-        return rights['access-rights']
+        return rights['access-right'].replace('-', '_')
     else:
         logger.warning(f"Access right not defined for {journal}-{date}")
 
@@ -73,7 +73,7 @@ def detect_issues(base_dir: str, access_rights: str, data_dir: str = 'data') -> 
     issues_dirs = [os.path.join(j_dir, l) for j_dir in journal_dirs for l in os.listdir(j_dir)]
     
     with open(access_rights, 'r') as f:
-        access_rights_dict = json.load(access_rights)
+        access_rights_dict = json.load(f)
     
     return [dir2issues(_dir, access_rights_dict) for _dir in issues_dirs]
 
