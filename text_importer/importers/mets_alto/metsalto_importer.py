@@ -12,6 +12,7 @@ Options:
     --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket
     --scheduler=<sch>  Tell dask to use an existing scheduler (otherwise it'll create one)
     --log-file=<f>      Log file; when missing print log to stdout
+    --access-rights=<f> Access right file if relevant (usually just for RERO2)
     --verbose           Verbose log messages (good for debugging)
     --clear             Removes the output folder (if already existing)
     --version
@@ -68,6 +69,7 @@ def main(issue_class: Type[MetsAltoNewPaperIssue], detect_func, select_func):
     outp_dir = args["--output-dir"]
     out_bucket = args["--s3-bucket"]
     log_file = args["--log-file"]
+    access_rights_file = args['--access-rights']
     scheduler = args["--scheduler"]
     clear_output = args["--clear"]
     incremental_output = args["--incremental"]
@@ -97,7 +99,7 @@ def main(issue_class: Type[MetsAltoNewPaperIssue], detect_func, select_func):
     # detect/select issues
     if config_file:
         logger.info(f"Found config file: {os.path.realpath(config_file)}")
-        issues = select_func(config_file, inp_dir)
+        issues = select_func(config_file, inp_dir, access_rights=access_rights_file)
         
         logger.info(
                 "{} newspaper remained after applying filter: {}".format(
@@ -107,7 +109,7 @@ def main(issue_class: Type[MetsAltoNewPaperIssue], detect_func, select_func):
                 )
     else:
         logger.info("No config file found.")
-        issues = detect_func(inp_dir)
+        issues = detect_func(inp_dir, access_rights=access_rights_file)
         logger.info(f'{len(issues)} newspaper issues detected')
     
     if os.path.exists(outp_dir) and incremental_output:
