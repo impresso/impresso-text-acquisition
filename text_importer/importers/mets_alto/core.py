@@ -9,7 +9,7 @@ import random
 from copy import copy
 from json.decoder import JSONDecodeError
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Type
 
 import jsonlines
 from dask import bag as db
@@ -30,6 +30,7 @@ def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = ""
     :param key: signature of the newspaper issue (e.g. GDL-1900)
     :param json_files: input JSON line files
     :param output_dir: directory where to write the output file
+    :param prefix:
     :return: a tuple with: sorting key [0] and path to serialized file [1].
 
     .. note::
@@ -159,7 +160,7 @@ def upload_pages(sort_key: str, filepath: str, bucket_name: str = None) -> Tuple
         return False, filepath
 
 
-def mets2issue(issue: IssueDir, issue_class: MetsAltoNewPaperIssue) -> Optional[MetsAltoNewPaperIssue]:
+def mets2issue(issue: IssueDir, issue_class: Type[MetsAltoNewPaperIssue]) -> Optional[MetsAltoNewPaperIssue]:
     """Instantiates a LuxNewspaperIssue instance from an IssueDir."""
     try:
         return issue_class(issue)
@@ -178,33 +179,33 @@ def issue2pages(issue: MetsAltoNewPaperIssue) -> List[MetsAltoNewspaperPage]:
     return pages
 
 
-# def serialize_page(luxpage: MetsAltoNewspaperPage, output_dir: str = None) -> Tuple[IssueDir, str]:  # TODO: remove this method ?
-#     issue_dir = luxpage.issue.issuedir
-#
-#     out_dir = os.path.join(
-#             output_dir,
-#             canonical_path(issue_dir, path_type="dir")
-#             )
-#
-#     if not os.path.exists(out_dir):
-#         os.makedirs(out_dir)
-#
-#     canonical_filename = canonical_path(
-#             issue_dir,
-#             "p" + str(luxpage.number).zfill(4),
-#             ".json"
-#             )
-#
-#     out_file = os.path.join(out_dir, canonical_filename)
-#
-#     with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
-#         json.dump(luxpage.data, jsonfile)
-#         print(
-#                 "Written page \'{}\' to {}".format(luxpage.number, out_file)
-#                 )
-#     del luxpage
-#     del jsonfile
-#     return issue_dir, out_file
+def serialize_page(luxpage: MetsAltoNewspaperPage, output_dir: str = None) -> Tuple[IssueDir, str]:
+    issue_dir = luxpage.issue.issuedir
+
+    out_dir = os.path.join(
+            output_dir,
+            canonical_path(issue_dir, path_type="dir")
+            )
+
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+
+    canonical_filename = canonical_path(
+            issue_dir,
+            "p" + str(luxpage.number).zfill(4),
+            ".json"
+            )
+
+    out_file = os.path.join(out_dir, canonical_filename)
+
+    with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
+        json.dump(luxpage.data, jsonfile)
+        print(
+                "Written page \'{}\' to {}".format(luxpage.number, out_file)
+                )
+    del luxpage
+    del jsonfile
+    return issue_dir, out_file
 
 
 def serialize_pages(pages: List[MetsAltoNewspaperPage], output_dir: str = None) -> List[Tuple[IssueDir, str]]:
@@ -243,14 +244,14 @@ def serialize_pages(pages: List[MetsAltoNewspaperPage], output_dir: str = None) 
     return result
 
 
-# def process_page(page: MetsAltoNewspaperPage) -> Optional[MetsAltoNewspaperPage]:
-#     try:
-#         page.parse()
-#         return page
-#     except Exception as e:
-#         logger.error(f'Error when processing page {page}')
-#         logger.exception(e)
-#         return None
+def process_page(page: MetsAltoNewspaperPage) -> Optional[MetsAltoNewspaperPage]:
+    try:
+        page.parse()
+        return page
+    except Exception as e:
+        logger.error(f'Error when processing page {page}')
+        logger.exception(e)
+        return None
 
 
 def process_pages(pages: List[MetsAltoNewspaperPage]) -> List[MetsAltoNewspaperPage]:
@@ -265,7 +266,7 @@ def process_pages(pages: List[MetsAltoNewspaperPage]) -> List[MetsAltoNewspaperP
     return result
 
 
-def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_class: MetsAltoNewPaperIssue):
+def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_class: Type[MetsAltoNewPaperIssue]):
     """Imports a bunch of newspaper issues in Mets/Alto format.
 
     :param list issues: Description of parameter `issues`.
