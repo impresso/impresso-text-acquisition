@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 from impresso_commons.path.path_fs import IssueDir
 
-from text_importer.helpers import get_issue_schema, get_page_schema
+from text_importer.utils import get_page_schema, get_issue_schema
 from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT, CONTENTITEM_TYPE_ARTICLE, CONTENTITEM_TYPE_IMAGE, \
     CONTENTITEM_TYPE_OBITUARY, CONTENTITEM_TYPE_TABLE, CONTENTITEM_TYPE_WEATHER
 from text_importer.importers.lux.helpers import convert_coordinates, encode_ark

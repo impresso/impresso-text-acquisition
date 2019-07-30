@@ -9,7 +9,7 @@ from impresso_commons.path.path_fs import IssueDir
 
 from typing import Tuple, List
 
-from text_importer.helpers import get_issue_schema, get_page_schema
+from text_importer.utils import get_page_schema, get_issue_schema
 from text_importer.importers.mets_alto import alto
 
 IssueSchema = get_issue_schema()

@@ -5,7 +5,7 @@ from typing import Dict, List
 
 from bs4.element import NavigableString, Tag
 
-from text_importer.helpers import get_issue_schema, get_page_schema
+from text_importer.utils import get_page_schema, get_issue_schema
 from text_importer.importers import *
 from text_importer.importers.mets_alto import MetsAltoNewPaperIssue, MetsAltoNewspaperPage, parse_mets_amdsec
 
@@ -29,7 +29,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         :param page_data:
         :return:
         """
-        return False, page_data
+        return False, page_data  # TODO: Check if conversion of coordinates is needed
 
 
 class ReroNewspaperIssue(MetsAltoNewPaperIssue):
