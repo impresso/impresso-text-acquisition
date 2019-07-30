@@ -164,10 +164,10 @@ def mets2issue(issue: IssueDir, issue_class: Type[MetsAltoNewPaperIssue]) -> Opt
     """Instantiates a LuxNewspaperIssue instance from an IssueDir."""
     try:
         issue = issue_class(issue)
-        try:
-            issue.to_json()
-        except Exception as e:
-            logger.warning(f"Error in Issue schema for  {issue.id}")
+        # try:
+        #     issue.to_json()  # TODO: remove this
+        # except Exception as e:
+        #     logger.warning(f"Error in Issue schema for  {issue.id}")
         return issue_class(issue)
     except Exception as e:
         logger.error(f'Error when processing issue {issue}')
@@ -180,10 +180,10 @@ def issue2pages(issue: MetsAltoNewPaperIssue) -> List[MetsAltoNewspaperPage]:
     pages = []
     for page in issue.pages:
         page.add_issue(issue)
-        try:
-            page.to_json()
-        except Exception as e:
-            logger.warning(f"Error in Page schema for issue {issue.id}")
+        # try:
+        #     page.to_json()  # TODO: remove this
+        # except Exception as e:
+        #     logger.warning(f"Error in Page schema for issue {issue.id}")
         pages.append(page)
     return pages
 
@@ -334,5 +334,5 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
             .starmap(cleanup)
         
         pages_bag.compute()
-    
+    logger.info("---------- Done ----------")
     return
