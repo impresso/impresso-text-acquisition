@@ -29,6 +29,7 @@ from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
                                            detect_canonical_issues)
 
 from text_importer import __version__
+from text_importer.utils import init_logger
 from text_importer.importers.mets_alto.classes import MetsAltoNewPaperIssue
 from text_importer.importers.mets_alto.core import import_issues
 
@@ -39,25 +40,6 @@ __copyright__ = "EPFL, 2017"
 __status__ = "development"
 
 logger = logging.getLogger()
-
-
-def init_logger(log_level, log_file):
-    # Initialise the logger
-    global logger
-    logger.setLevel(log_level)
-    
-    if log_file is not None:
-        handler = logging.FileHandler(filename=log_file, mode='w')
-    else:
-        handler = logging.StreamHandler()
-    
-    formatter = logging.Formatter(
-            '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-            )
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-    
-    logger.info("Logger successfully initialised")
 
 
 def main(issue_class: Type[MetsAltoNewPaperIssue], detect_func, select_func):
@@ -81,7 +63,7 @@ def main(issue_class: Type[MetsAltoNewPaperIssue], detect_func, select_func):
         print(f'impresso-txt-importer v{__version__}')
         return
     
-    init_logger(log_level, log_file)
+    init_logger(logger, log_level, log_file)
     logger.debug("CLI arguments received: {}".format(args))
     
     # start the dask local cluster
