@@ -4,7 +4,7 @@ import pkg_resources
 from impresso_commons.path.path_fs import detect_issues
 
 from text_importer.importer import import_issues
-from text_importer.importers.olive import olive_import_issue
+from text_importer.importers.olive_old import olive_import_issue
 from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
                                            detect_canonical_issues)
 from text_importer.importers.lux.core import import_issues as lux_import_issues
