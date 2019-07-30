@@ -14,11 +14,11 @@ from time import strftime
 from bs4 import BeautifulSoup
 
 from impresso_commons.path.path_fs import canonical_path
-from text_importer.helpers import (convert_page_coordinates, get_image_info,
-                                   get_issue_schema, get_page_schema,
-                                   keep_title, normalize_language,
-                                   serialize_issue, serialize_page,
-                                   convert_image_coordinates)
+from text_importer.helpers import (normalize_language,
+                                   serialize_issue, serialize_page)
+from text_importer.importers.olive.helpers import get_image_info, keep_title, convert_page_coordinates, \
+    convert_image_coordinates
+from text_importer.utils import get_page_schema, get_issue_schema
 from text_importer.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
@@ -855,6 +855,8 @@ def olive_import_issue(
             working_archive,
             items
         ))
+        
+        ####################################################################################################################
         articles = []
         all_element_ids = []
 
@@ -925,7 +927,8 @@ def olive_import_issue(
                 return
                 """
                 raise e
-
+        
+        ########################################################################## Page reconstruction starts here
         # at this point the articles have been recomposed
         # but we still need to recompose pages
         for page_no in toc_data:

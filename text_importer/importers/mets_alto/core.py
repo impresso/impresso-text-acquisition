@@ -168,7 +168,7 @@ def mets2issue(issue: IssueDir, issue_class: Type[MetsAltoNewPaperIssue]) -> Opt
         #     issue.to_json()  # TODO: remove this
         # except Exception as e:
         #     logger.warning(f"Error in Issue schema for  {issue.id}")
-        return issue_class(issue)
+        return issue
     except Exception as e:
         logger.error(f'Error when processing issue {issue}')
         logger.exception(e)
@@ -188,7 +188,7 @@ def issue2pages(issue: MetsAltoNewPaperIssue) -> List[MetsAltoNewspaperPage]:
     return pages
 
 
-def serialize_page(luxpage: MetsAltoNewspaperPage, output_dir: str = None) -> Tuple[IssueDir, str]:
+def serialize_page(luxpage: MetsAltoNewspaperPage, output_dir: str = None) -> Tuple[IssueDir, str]:  # TODO: not used
     issue_dir = luxpage.issue.issuedir
     
     out_dir = os.path.join(
