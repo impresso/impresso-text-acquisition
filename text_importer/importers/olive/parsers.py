@@ -1,36 +1,15 @@
 import codecs
 import copy
-import logging
-import os
 import re
-import zipfile
+from typing import List, Optional
 
 from bs4 import BeautifulSoup
 from impresso_commons.path.path_fs import canonical_path
 
-from text_importer.importers.olive.helpers import normalize_language, normalize_line
-
-logger = logging.getLogger(__name__)
+from text_importer.importers.olive.helpers import normalize_line, normalize_language
 
 
-def parse_archive(path: str) -> zipfile.ZipFile:
-    """
-    Tries to parse the archive path given
-    :param path: Path to archive
-    :return:
-    """
-    if os.path.isfile(path):
-        try:
-            archive = zipfile.ZipFile(path)
-            logger.debug("Contents: {}".format(archive.namelist()))
-            return archive
-        except Exception as e:
-            raise ValueError(f"Could not parse archive {path}")
-    else:
-        raise ValueError(f"Archive path {path} does not exist")
-
-
-def parse_styles(text):
+def parse_styles(text: str) -> List[dict]:
     """Turn Olive style file into a dictionary.
 
     :param text: textual content of file `styleGallery.txt`
@@ -41,7 +20,6 @@ def parse_styles(text):
     regex = r'(\d{3})=(".*?"),(\d+\.?\d+),(\(.*?\))'
     
     for line in text.split("\r\n"):
-        
         if line == "":
             continue
         
@@ -51,14 +29,29 @@ def parse_styles(text):
                         "id": int(n),
                         "f": font.replace('"', ""),
                         "fs": float(font_size),
-                        "rgb": [
-                                int(i)
-                                for i in color.replace("(", "").replace(")", "").split(",")
-                                ]
+                        "rgb": [int(i) for i in color.replace("(", "").replace(")", "").split(",")]
                         }
                 )
     
     return styles
+
+
+def olive_image_parser(text: str) -> Optional[dict]:
+    soup = BeautifulSoup(text, "lxml")
+    root = soup.find("xmd-entity")
+    
+    try:
+        assert root is not None
+        img = {
+                'id': root.get('id'),
+                'coords': root.img.get('box').split(),
+                'name': root.meta.get('name'),
+                'resolution': root.meta.get('images_resolution'),
+                'filepath': root.img.get('href')
+                }
+        return img
+    except AssertionError as e:
+        return None
 
 
 def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
@@ -112,26 +105,7 @@ def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252"):
     return toc_data
 
 
-def olive_image_parser(text):
-    soup = BeautifulSoup(text, "lxml")
-    root = soup.find("xmd-entity")
-    
-    try:
-        assert root is not None
-        img = {
-                'id': root.get('id'),
-                'coords': root.img.get('box').split(),
-                'name': root.meta.get('name'),
-                'resolution': root.meta.get('images_resolution'),
-                'filepath': root.img.get('href')
-                }
-        return img
-    except AssertionError:
-        logger.error("")
-        return None
-
-
-def olive_parser(text):
+def olive_parser(text: str) -> dict:
     u"""Parse an Olive XML file (e.g. from Le Temps corpus).
 
     The main logic implemented here was derived from

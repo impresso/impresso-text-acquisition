@@ -1,156 +1,40 @@
-import json
-import os
+import copy
+import logging
 import time
 from operator import itemgetter
 from time import strftime
-from impresso_commons.images.olive_boxes import compute_box, get_scale_factor
-from impresso_commons.path import IssueDir
-from impresso_commons.path.path_fs import canonical_path
+from typing import List
 
-from text_importer.helpers import logger
+from impresso_commons.images.olive_boxes import compute_box, get_scale_factor
+
 from text_importer.tokenization import insert_whitespace
 
-
-def get_image_info(issue, data_dir):
-    """
-    Get the contents of the `image-info.json` file for a given issue.
-
-    :param issue: a newspaper issue
-    :type issue: `IssueDir`
-    :param data_dir: the path to the directory with the images
-    :type data_dir: string
-    :return: the content of the `image-info.json` file
-    :rtype: dict
-    """
-    
-    issue_dir = os.path.join(
-            data_dir,
-            issue.journal,
-            str(issue.date).replace("-", "/"),
-            issue.edition
-            )
-    
-    issue_w_images = IssueDir(
-            journal=issue.journal,
-            date=issue.date,
-            edition=issue.edition,
-            path=issue_dir
-            )
-    
-    image_info_name = canonical_path(
-            issue_w_images,
-            name="image-info",
-            extension=".json"
-            )
-    
-    image_info_path = os.path.join(issue_w_images.path, image_info_name)
-    
-    with open(image_info_path, 'r') as inp_file:
-        try:
-            json_data = json.load(inp_file)
-            return json_data
-        except Exception as e:
-            logger.error(f"Decoding file {image_info_path} failed with '{e}'")
-            raise e
+logger = logging.getLogger(__name__)
 
 
-def keep_title(title):
-    black_list = [
-            "untitled article",
-            "untitled ad",
-            "untitled picture"
-            ]
-    if title.lower() in black_list:
-        return False
-    else:
-        return True
+def merge_tokens(tokens, line):
+    merged_token = {
+            "tx": "".join([token["tx"] for token in tokens]),
+            "c": tokens[0]["c"][:2] + tokens[-1]["c"][2:],
+            "s": tokens[0]["s"]
+            }
+    logger.debug("(In-line pseudo tokens) Merged {} => {} in line \"{}\"".format("".join([t["tx"] for t in tokens]),
+                                                                                 merged_token["tx"], line))
+    return merged_token
 
 
-def convert_box(coords, scale_factor):
-    box = " ".join([str(coord) for coord in coords])
-    converted_box = compute_box(scale_factor, box)
-    new_box = [int(c) for c in converted_box.split()]
-    logger.debug(f'Converted box coordinates: {box} => {converted_box}')
-    return new_box
-
-
-def convert_page_coordinates(page, page_xml, page_image_name, zip_archive, box_strategy, issue):
-    """
-    Logic:
-        - get scale factor (passing strategy)
-        - for each element with coordinates recompute box
-
-    Returns the same page, with converted boxes.
-    """
-    start_t = time.clock()
-    scale_factor = get_scale_factor(
-            issue.path,
-            zip_archive,
-            page_xml,
-            box_strategy,
-            page_image_name
-            )
-    for region in page['r']:
-        region['c'] = convert_box(region['c'], scale_factor)
-        for paragraph in region['p']:
-            for line in paragraph['l']:
-                line['c'] = convert_box(line['c'], scale_factor)
-                for token in line['t']:
-                    token['c'] = convert_box(token['c'], scale_factor)
-    end_t = time.clock()
-    t = end_t - start_t
-    logger.info(
-            f'Converted coordinates {page_image_name} in {issue.path} (took {t}s)'
-            )
-    return page
-
-
-def convert_image_coordinates(image, page_xml, page_image_name, zip_archive, box_strategy, issue):
-    """
-    Logic:
-        - get scale factor (passing strategy)
-        - for each element with coordinates recompute box
-
-    Returns the same page, with converted boxes.
-    """
-    try:
-        scale_factor = get_scale_factor(
-                issue.path,
-                zip_archive,
-                page_xml,
-                box_strategy,
-                page_image_name
-                )
-        image.c = convert_box(image.c, scale_factor)
-        image.cc = True
-    except Exception as e:
-        image.cc = False
-        # pass
-    return image
-
-
-def merge_pseudo_tokens(line):
+def merge_pseudo_tokens(line: dict) -> dict:
     """Remove pseudo tokens from a line.
 
     :param line: a line of OCR in JSON format
-    :type line: dict (keys: coords, tokens)
-    :rtype: dict (keys: coords, tokens)
     """
     original_line = " ".join([t["tx"] for t in line["t"]])
-    qids = set([
-            token["qid"]
-            for token in line["t"]
-            if "qid" in token
-            ])
+    qids = set([token["qid"] for token in line["t"] if "qid" in token])
     
     inline_qids = []
     
     for qid in qids:
-        tokens = [
-                (i, token)
-                for i, token in enumerate(line["t"])
-                if "qid" in token and token["qid"] == qid
-                ]
+        tokens = [(i, token) for i, token in enumerate(line["t"]) if "qid" in token and token["qid"] == qid]
         if len(tokens) > 1:
             inline_qids.append(qid)
     
@@ -159,19 +43,10 @@ def merge_pseudo_tokens(line):
     
     for qid in inline_qids:
         # identify tokens to merge
-        tokens = [
-                (i, token)
-                for i, token in enumerate(line["t"])
-                if "qid" in token and token["qid"] == qid
-                ]
+        tokens = [(i, token) for i, token in enumerate(line["t"]) if "qid" in token and token["qid"] == qid]
         
         # remove tokens to merge from the line
-        tokens_to_merge = [
-                line["t"].pop(
-                        line["t"].index(token)
-                        )
-                for i, token in tokens
-                ]
+        tokens_to_merge = [line["t"].pop(line["t"].index(token)) for i, token in tokens]
         
         if len(tokens_to_merge) >= 2:
             insertion_point = tokens[0][0]
@@ -181,28 +56,7 @@ def merge_pseudo_tokens(line):
     return line
 
 
-def merge_tokens(tokens, line):
-    merged_token = {
-            "tx": "".join(
-                    [
-                            token["tx"]
-                            for token in tokens
-                            ]
-                    ),
-            "c": tokens[0]["c"][:2] + tokens[-1]["c"][2:],
-            "s": tokens[0]["s"]
-            }
-    logger.debug(
-            "(In-line pseudo tokens) Merged {} => {} in line \"{}\"".format(
-                    "".join([t["tx"] for t in tokens]),
-                    merged_token["tx"],
-                    line
-                    )
-            )
-    return merged_token
-
-
-def normalize_hyphenation(line):
+def normalize_hyphenation(line: dict) -> dict:
     """Normalize end-of-line hyphenated words.
 
     :param line: a line of OCR in JSON format
@@ -231,6 +85,58 @@ def normalize_hyphenation(line):
                         )
                 line["t"].append(merged_token)
     return line
+
+
+def combine_article_parts(article_parts: List[dict]) -> dict:
+    """TODO.
+
+    :param article_parts: one or more article parts
+    :type article_parts: list of dict
+    :rtype: a dictionary, with keys "meta", "fulltext", "stats", "legacy"
+    """
+    if len(article_parts) > 1:
+        # if an article has >1 part, retain the metadata
+        # from the first item in the list
+        article_dict = {
+                "meta": {},
+                "fulltext": "",
+                "stats": {},
+                "legacy": {}
+                }
+        article_dict["legacy"]["id"] = [
+                ar["legacy"]["id"]
+                for ar in article_parts
+                ]
+        article_dict["legacy"]["source"] = [
+                ar["legacy"]["source"]
+                for ar in article_parts
+                ]
+        article_dict["meta"]["type"] = {}
+        article_dict["meta"]["type"]["raw"] = \
+            article_parts[0]["meta"]["type"]["raw"]
+        
+        article_dict["meta"]["title"] = article_parts[0]["meta"]["title"]
+        article_dict["meta"]["page_no"] = [
+                int(n)
+                for ar in article_parts
+                for n in ar["meta"]["page_no"]
+                ]
+        
+        # TODO: remove from production
+        if len(article_dict["meta"]["page_no"]) > 1:
+            # pdb.set_trace()
+            pass
+        
+        article_dict["meta"]["language"] = {}
+        article_dict["meta"]["language"] = \
+            article_parts[0]["meta"]["language"]
+        article_dict["meta"]["issue_date"] = \
+            article_parts[0]["meta"]["issue_date"]
+    elif len(article_parts) == 1:
+        article_dict = next(iter(article_parts))
+    else:
+        article_dict = None
+    return article_dict
 
 
 def normalize_line(line, lang):
@@ -295,8 +201,21 @@ def normalize_line(line, lang):
     return line
 
 
-def recompose_ToC(toc_data, articles, images):
+def keep_title(title):
+    black_list = [
+            "untitled article",
+            "untitled ad",
+            "untitled picture"
+            ]
+    if title.lower() in black_list:
+        return False
+    else:
+        return True
+
+
+def recompose_ToC(original_toc_data, articles, images):
     """TODO."""
+    toc_data = copy.deepcopy(original_toc_data)  # Added deep copy because function changes toc_data
     # concate content items from all pages into a single flat list
     content_items = [
             toc_data[pn][elid]
@@ -311,7 +230,7 @@ def recompose_ToC(toc_data, articles, images):
         item['m'] = {}
         item["l"] = {}
         
-        if (item["type"] == "Article" or item["type"] == "Ad"):
+        if item["type"] == "Article" or item["type"] == "Ad":
             
             # find the corresponding item in `articles`
             # by using `legacy_id` as the search key
@@ -343,7 +262,7 @@ def recompose_ToC(toc_data, articles, images):
             item["l"]["id"] = article["legacy"]["id"]
             item["l"]["source"] = article["legacy"]["source"]
         
-        elif (item["type"] == "Picture"):
+        elif item["type"] == "Picture":
             
             # find in which page the image is
             page_no = [
@@ -411,20 +330,16 @@ def recompose_ToC(toc_data, articles, images):
     return contents
 
 
-def recompose_page(page_number, info_from_toc, page_elements, clusters):
+def recompose_page(page_id: str, info_from_toc: dict, page_elements: dict, clusters: dict) -> dict:
     """Create a page document starting from a list of page documents.
 
-    :param page_number: page number
-    :type page_number: int
+    :param page_id: page id
     :param info_from_toc: a dictionary with page element IDs (articles, ads.)
         as keys, and dictionaries as values
-    :type info_from_toc:
     :param page_elements: articles or advertisements
-    :type page_elements: dict
     :param clusters: an inverted index of legacy ids; if an id is part of
         multipart article, the id is found not as a key but in one of the
         values.
-    :type clusters: dict of lists
 
     It's here that `n` attributes are assigned to each region/para/line/token.
     """
@@ -434,13 +349,12 @@ def recompose_page(page_number, info_from_toc, page_elements, clusters):
             "cdt": strftime("%Y-%m-%d %H:%M:%S")
             }
     ordered_elements = sorted(
-            list(info_from_toc[page_number].values()), key=itemgetter('seq')
+            list(info_from_toc.values()), key=itemgetter('seq')
             )
     
     id_mappings = {
-            legacy_id: info_from_toc[page][legacy_id]['id']
-            for page in info_from_toc
-            for legacy_id in info_from_toc[page]
+            legacy_id: info_from_toc[legacy_id]['id']
+            for legacy_id in info_from_toc
             }
     
     # put together the regions while keeping the order in the page
@@ -448,7 +362,7 @@ def recompose_page(page_number, info_from_toc, page_elements, clusters):
         
         # keep only IDS of content items that are Ads or Articles
         # but escluding various other files in the archive
-        if ("Ar" not in el["legacy_id"] and "Ad" not in el["legacy_id"]):
+        if "Ar" not in el["legacy_id"] and "Ad" not in el["legacy_id"]:
             continue
         
         # this is to manage the situation of a multi-part article
@@ -464,7 +378,7 @@ def recompose_page(page_number, info_from_toc, page_elements, clusters):
         if el["legacy_id"] in page_elements:
             element = page_elements[el["legacy_id"]]
         else:
-            logger.error(f"{el['id']}: {el['legacy_id']} not found in page {page_number}")
+            logger.error(f"{el['id']}: {el['legacy_id']} not found in page {page_id}")
             continue
         mapped_id = id_mappings[part_of] if part_of in id_mappings else None
         
@@ -474,6 +388,69 @@ def recompose_page(page_number, info_from_toc, page_elements, clusters):
         page["r"] += element["r"]
     
     return page
+
+
+def convert_box(coords, scale_factor):
+    box = " ".join([str(coord) for coord in coords])
+    converted_box = compute_box(scale_factor, box)
+    new_box = [int(c) for c in converted_box.split()]
+    logger.debug(f'Converted box coordinates: {box} => {converted_box}')
+    return new_box
+
+
+def convert_page_coordinates(page, page_xml, page_image_name, zip_archive, box_strategy, issue):
+    """
+    Logic:
+        - get scale factor (passing strategy)
+        - for each element with coordinates recompute box
+
+    Returns the same page, with converted boxes.
+    """
+    start_t = time.clock()
+    scale_factor = get_scale_factor(
+            issue.path,
+            zip_archive,
+            page_xml,
+            box_strategy,
+            page_image_name
+            )
+    for region in page['r']:
+        region['c'] = convert_box(region['c'], scale_factor)
+        for paragraph in region['p']:
+            for line in paragraph['l']:
+                line['c'] = convert_box(line['c'], scale_factor)
+                for token in line['t']:
+                    token['c'] = convert_box(token['c'], scale_factor)
+    end_t = time.clock()
+    t = end_t - start_t
+    logger.debug(
+            f'Converted coordinates {page_image_name} in {issue.id} (took {t}s)'
+            )
+    return page
+
+
+def convert_image_coordinates(image, page_xml, page_image_name, zip_archive, box_strategy, issue):
+    """
+    Logic:
+        - get scale factor (passing strategy)
+        - for each element with coordinates recompute box
+
+    Returns the same page, with converted boxes.
+    """
+    try:
+        scale_factor = get_scale_factor(
+                issue.path,
+                zip_archive,
+                page_xml,
+                box_strategy,
+                page_image_name
+                )
+        image['c'] = convert_box(image['c'], scale_factor)
+        image['cc'] = True
+    except Exception as e:
+        image['cc'] = False
+        # pass
+    return image
 
 
 def normalize_language(language):
