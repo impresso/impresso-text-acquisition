@@ -87,7 +87,7 @@ def compress_issues(key: Tuple[str, int], issues: List[MetsAltoNewPaperIssue], o
     with smart_open_function(filepath, 'wb') as fout:
         writer = jsonlines.Writer(fout)
         items = [
-                issue._issue_data
+                issue.issue_data
                 for issue in issues
                 ]
         writer.write_all(items)
@@ -208,7 +208,7 @@ def serialize_page(luxpage: MetsAltoNewspaperPage, output_dir: str = None) -> Tu
     out_file = os.path.join(out_dir, canonical_filename)
     
     with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
-        json.dump(luxpage.data, jsonfile)
+        json.dump(luxpage.page_data, jsonfile)
         print(
                 "Written page \'{}\' to {}".format(luxpage.number, out_file)
                 )
@@ -241,7 +241,7 @@ def serialize_pages(pages: List[MetsAltoNewspaperPage], output_dir: str = None) 
         out_file = os.path.join(out_dir, canonical_filename)
         
         with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
-            json.dump(luxpage.data, jsonfile)
+            json.dump(luxpage.page_data, jsonfile)
             logger.info(
                     "Written page \'{}\' to {}".format(luxpage.number, out_file)
                     )
