@@ -5,10 +5,12 @@ import os
 import pkg_resources
 import python_jsonschema_objects as pjs
 
+logger = logging.getLogger(__name__)
 
-def init_logger(logger, log_level, log_file):
+
+def init_logger(_logger, log_level, log_file):
     # Initialise the logger
-    logger.setLevel(log_level)
+    _logger.setLevel(log_level)
     
     if log_file is not None:
         handler = logging.FileHandler(filename=log_file, mode='w')
@@ -19,9 +21,9 @@ def init_logger(logger, log_level, log_file):
             '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
             )
     handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    _logger.addHandler(handler)
     
-    logger.info("Logger successfully initialised")
+    _logger.info("Logger successfully initialised")
 
 
 def get_page_schema(schema_folder: str = 'impresso-schemas/json/newspaper/page.schema.json'):
@@ -57,3 +59,11 @@ def get_issue_schema(schema_folder: str = 'impresso-schemas/json/newspaper/issue
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().NewspaperIssue
     return ns
+
+
+def get_access_right(journal: str, date, access_rights: dict) -> str:
+    rights = access_rights[journal]
+    if rights['time'] == 'all':
+        return rights['access-right'].replace('-', '_')
+    else:
+        logger.warning(f"Access right not defined for {journal}-{date}")

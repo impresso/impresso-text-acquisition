@@ -7,6 +7,8 @@ from typing import List, Optional
 
 from dask import bag as db
 
+from text_importer.utils import get_access_right
+
 logger = logging.getLogger(__name__)
 
 Rero2IssueDir = namedtuple(
@@ -26,14 +28,6 @@ EDITIONS_MAPPINGS = {
         4: 'd',
         5: 'e'
         }
-
-
-def get_access_right(journal: str, date, access_rights: dict) -> str:
-    rights = access_rights[journal]
-    if rights['time'] == 'all':
-        return rights['access-right'].replace('-', '_')
-    else:
-        logger.warning(f"Access right not defined for {journal}-{date}")
 
 
 def dir2issues(path: str, access_rights: dict) -> Rero2IssueDir:
