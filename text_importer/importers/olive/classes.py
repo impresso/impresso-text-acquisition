@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from collections import deque
@@ -7,93 +8,101 @@ from zipfile import ZipFile
 
 from impresso_commons.path import IssueDir
 from impresso_commons.path.path_fs import canonical_path
-import json
-from text_importer.importers.olive.helpers import combine_article_parts, recompose_ToC, recompose_page, \
-    convert_page_coordinates, convert_image_coordinates
+
+from text_importer.importers.classes import NewspaperIssue, NewspaperPage
+from text_importer.importers.olive.helpers import combine_article_parts, convert_image_coordinates, convert_page_coordinates, \
+    recompose_ToC, recompose_page
 from text_importer.importers.olive.parsers import olive_image_parser, olive_parser, olive_toc_parser, parse_styles
+from text_importer.utils import get_issue_schema, get_page_schema
 
 logger = logging.getLogger(__name__)
-
+IssueSchema = get_issue_schema()
+Pageschema = get_page_schema()
 IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
-class OliveNewspaperPage(object):
-    def __init__(self, can_id, toc_data, issue, image_info, page_xml):
-        self.id = can_id
+class OliveNewspaperPage(NewspaperPage):
+    def __init__(self, _id, n, toc_data, image_info, page_xml):
+        super().__init__(_id, n)
         self.toc_data = toc_data
-        self.np_issue = issue
-        self.page_dict = {}
+        self.page_data = {}
         self.image_info = image_info
         self.page_xml = page_xml
     
     def parse(self):
+        if self.issue is None:
+            raise ValueError(f"No NewspaperIssue for {self.id}")
+        
         element_ids = self.toc_data.keys()
         # all_element_ids = [el_id for el_id in element_ids if "Ar" in el_id or "Ad" in el_id]
-        elements = {el["legacy"]["id"]: el for el in self.np_issue.content_elements if (el["legacy"]["id"] in element_ids)}
+        elements = {el["legacy"]["id"]: el for el in self.issue.content_elements if (el["legacy"]["id"] in element_ids)}
         
         clusters = {}
-        for ar in self.np_issue.articles:
+        for ar in self.issue.articles:
             legacy_id = ar["legacy"]["id"]
             if isinstance(legacy_id, list):
                 clusters[legacy_id[0]] = legacy_id
             else:
                 clusters[legacy_id] = [legacy_id]
         
-        self.page_dict = recompose_page(self.id, self.toc_data, elements, clusters)
+        self.page_data = recompose_page(self.id, self.toc_data, elements, clusters)
         
-        self.page_dict['id'] = self.id
-        self.page_dict['iiif'] = os.path.join(IMPRESSO_IIIF_BASEURI, self.id)
+        self.page_data['id'] = self.id
+        self.page_data['iiif'] = os.path.join(IMPRESSO_IIIF_BASEURI, self.id)
         
-        if len(self.page_dict['r']) == 0:
+        if len(self.page_data['r']) == 0:
             logger.warning(f"Page {self.id} has not OCR text")
+        
+        self._convert_page_coords()
     
-    def convert_page_coords(self):
-        try:
-            box_strategy = self.image_info['strat']
-            image_name = self.image_info['s']
-            convert_page_coordinates(self.page_dict, self.np_issue.archive.read(self.page_xml), image_name,
-                                     self.np_issue.archive, box_strategy, self.np_issue)
-            self.page_dict['cc'] = True
-        except Exception as e:
-            logger.error("Page {} raised error: {}".format(self.id, e))
-            logger.error("Couldn't convert coordinates in p. {}".format(self.id))
-            self.page_dict['cc'] = False
+    def _convert_page_coords(self):
+        self.page_data['cc'] = False
+        if self.image_info is not None:
+            try:
+                box_strategy = self.image_info['strat']
+                image_name = self.image_info['s']
+                convert_page_coordinates(self.page_data, self.issue.archive.read(self.page_xml), image_name,
+                                         self.issue.archive, box_strategy, self.issue)
+                self.page_data['cc'] = True
+            except Exception as e:
+                logger.error("Page {} raised error: {}".format(self.id, e))
+                logger.error("Couldn't convert coordinates in p. {}".format(self.id))
+        else:
+            logger.debug(f"Image {self.id} does not have image info")
+    
+    def add_issue(self, issue):
+        self.issue = issue
 
 
-class OliveNewspaperIssue(object):
+class OliveNewspaperIssue(NewspaperIssue):
     
     def __init__(self, issue_dir, image_dir):  # TODO: add temp dir to save item_xml
+        super().__init__(issue_dir)
         self.issue_dir = issue_dir
-        self.id = canonical_path(issue_dir, path_type="dir").replace("/", "-")
-        self.edition = issue_dir.edition
-        self.journal = issue_dir.journal
-        self.path = issue_dir.path
-        self.date = issue_dir.date
-        self._notes = []
-        self.pages = []  # TODO : ask about access_rights
         self.image_dir = image_dir
         
-        self.archive = self.parse_archive()
-        self.styles = self.parse_styles_gallery()
-        self.images = self.parse_image_xml_files()
-        self.toc_data = self.parse_toc()
-        self.image_info = self.get_image_info()
+        self.archive = self._parse_archive()  # First parse the archive and return it
+        self.styles = self._parse_styles_gallery()  # Then parse the styles
+        self.images = self._parse_image_xml_files()  # Parse image xml files with olive_image_parser
+        self.toc_data = self._parse_toc()  # Parse ToC
+        self.image_info = self._get_image_info()
         
-        self.page_xml = self.get_xml_files()
+        self.page_xml = self._get_page_xml_files()
         
-        self.articles, self.content_elements = self.parse_articles()
+        self.articles, self.content_elements = self._parse_articles()
         self.content_items = recompose_ToC(self.toc_data, self.articles, self.images)
         
-        self.find_pages()
-        self._issue_data = {
+        self._find_pages()
+        self.issue_data = {
                 "id": self.id,
                 "cdt": strftime("%Y-%m-%d %H:%M:%S"),
                 "s": self.styles,
                 "i": self.content_items,
-                "pp": [p.id for p in self.pages]
+                "pp": [p.id for p in self.pages],
+                "ar": self.rights
                 }
     
-    def parse_archive(self, file: str = "Document.zip") -> ZipFile:
+    def _parse_archive(self, file: str = "Document.zip") -> ZipFile:
         """
         Parses the archive for this issue. Fails if archive could not be parsed
         :param file: The archive file to parse
@@ -110,10 +119,10 @@ class OliveNewspaperIssue(object):
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
                 raise ValueError(msg)
         else:
-            msg = f"Could not find {file} for {self.id}"
+            msg = f"Could not find archive {file} for {self.id}"
             raise ValueError(msg)
     
-    def get_xml_files(self) -> dict:
+    def _get_page_xml_files(self) -> dict:
         page_xml = None
         if self.archive is not None:
             page_xml = {int(item.split("/")[0]): item for item in self.archive.namelist() if
@@ -121,7 +130,7 @@ class OliveNewspaperIssue(object):
         
         return page_xml
     
-    def parse_toc(self, file: str = "TOC.xml"):
+    def _parse_toc(self, file: str = "TOC.xml"):
         toc_path = os.path.join(self.path, file)
         try:
             toc_data = olive_toc_parser(toc_path, self.issue_dir)
@@ -133,7 +142,7 @@ class OliveNewspaperIssue(object):
             raise e
         return toc_data
     
-    def parse_image_xml_files(self):
+    def _parse_image_xml_files(self):
         image_xml_files = [item for item in self.archive.namelist() if
                            ".xml" in item and not item.startswith("._") and "/Pc" in item]
         
@@ -151,7 +160,7 @@ class OliveNewspaperIssue(object):
                 logger.error(e)
         return images
     
-    def parse_styles_gallery(self, file: str = 'styleGallery.txt') -> List[dict]:
+    def _parse_styles_gallery(self, file: str = 'styleGallery.txt') -> List[dict]:
         styles = []
         if file in self.archive.namelist():
             try:
@@ -164,7 +173,7 @@ class OliveNewspaperIssue(object):
             logger.warning(msg)
         return styles
     
-    def parse_articles(self):
+    def _parse_articles(self):
         articles = []
         content_elements = []
         counter = 0
@@ -231,7 +240,7 @@ class OliveNewspaperIssue(object):
                 raise e
         return articles, content_elements
     
-    def get_image_info(self):
+    def _get_image_info(self):
         """
         Get the contents of the `image-info.json` file for a given issue.
         :return: the content of the `image-info.json` file
@@ -263,18 +272,19 @@ class OliveNewspaperIssue(object):
         with open(image_info_path, 'r') as inp_file:
             try:
                 json_data = json.load(inp_file)
+                if len(json_data) == 0:
+                    logger.info(f"No image info for {self.id}")
                 return json_data
             except Exception as e:
                 logger.error(f"Decoding file {image_info_path} failed with '{e}'")
                 raise e
     
-    def find_pages(self):
+    def _find_pages(self):
         if self.toc_data is not None:
             for page_n, data in self.toc_data.items():
                 can_id = "{}-p{}".format(self.id, str(page_n).zfill(4))
                 image_info_records = [p for p in self.image_info if int(p['pg']) == page_n]
                 if len(image_info_records) == 0:
-                    logger.warning(f"Could not find image info for page {can_id}")
                     image_info_record = None
                 else:
                     image_info_record = image_info_records[0]
@@ -283,12 +293,12 @@ class OliveNewspaperIssue(object):
                     page_xml = self.page_xml[page_n]
                 except Exception as e:
                     raise ValueError(f"Could not find page xml for {can_id}")
-
-                self.convert_images(image_info_record, page_n, page_xml)
                 
-                self.pages.append(OliveNewspaperPage(can_id, data, self, image_info_record, page_xml))
-
-    def convert_images(self, image_info_record, page_n, page_xml):
+                self._convert_images(image_info_record, page_n, page_xml)
+                
+                self.pages.append(OliveNewspaperPage(can_id, page_n, data, image_info_record, page_xml))
+    
+    def _convert_images(self, image_info_record, page_n, page_xml):
         if image_info_record is not None:
             box_strategy = image_info_record['strat']
             image_name = image_info_record['s']

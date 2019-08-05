@@ -21,7 +21,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
     
     def add_issue(self, issue):
         self.issue = issue
-        self.data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
+        self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
     
     def _convert_coordinates(self, page_data):
         """
@@ -62,7 +62,7 @@ class ReroNewspaperIssue(MetsAltoNewPaperIssue):
                 ):
             try:
                 self.pages.append(
-                        ReroNewspaperPage(page_no, page_id, filename, alto_path)
+                        ReroNewspaperPage(page_id, page_no, filename, alto_path)
                         )
             except Exception as e:
                 logger.error(
@@ -166,7 +166,7 @@ class ReroNewspaperIssue(MetsAltoNewPaperIssue):
         
         content_items = self._parse_content_items(mets_doc)  # Parse all the content items
         
-        self._issue_data = {
+        self.issue_data = {
                 "cdt": strftime("%Y-%m-%d %H:%M:%S"),
                 "i": content_items,
                 "id": self.id,

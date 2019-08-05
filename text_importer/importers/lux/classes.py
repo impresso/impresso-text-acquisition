@@ -7,13 +7,12 @@ from typing import List, Tuple
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
-from impresso_commons.path.path_fs import IssueDir
 
-from text_importer.utils import get_page_schema, get_issue_schema
 from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT, CONTENTITEM_TYPE_ARTICLE, CONTENTITEM_TYPE_IMAGE, \
     CONTENTITEM_TYPE_OBITUARY, CONTENTITEM_TYPE_TABLE, CONTENTITEM_TYPE_WEATHER
 from text_importer.importers.lux.helpers import convert_coordinates, encode_ark
 from text_importer.importers.mets_alto import MetsAltoNewPaperIssue, MetsAltoNewspaperPage, parse_mets_amdsec
+from text_importer.utils import get_issue_schema, get_page_schema
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -25,16 +24,14 @@ IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/iiif/2"
 class LuxNewspaperPage(MetsAltoNewspaperPage):
     """Class representing a page in BNL data."""
     
-    def add_issue(self, issue: IssueDir):
+    def add_issue(self, issue: MetsAltoNewPaperIssue):
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
         iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
         iiif_link = f'{iiif_base_link}%2fpages%2f{self.number}/info.json'
-        self.data['iiif'] = iiif_link
-        return
+        self.page_data['iiif'] = iiif_link
     
     def _convert_coordinates(self, page_data: List[dict]) -> Tuple[bool, List[dict]]:
-        # TODO: move this to a separate method ?
         success = False
         try:
             img_props = self.issue.image_properties[self.number]
@@ -46,45 +43,34 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
                 x, y, w, h = region['c']
                 region['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
                 
-                logger.debug(
-                        f"Page {self.number}: {x},{y},{w},{h} => {region['c']}"
-                        )
+                logger.debug(f"Page {self.number}: {x},{y},{w},{h} => {region['c']}")
                 
                 for paragraph in region['p']:
                     
                     x, y, w, h = paragraph['c']
                     paragraph['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
                     
-                    logger.debug(
-                            f"(para) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}"
-                            )
+                    logger.debug(f"(para) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}")
                     
                     for line in paragraph['l']:
                         
                         x, y, w, h = line['c']
                         line['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
                         
-                        logger.debug(
-                                f"(line) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}"
-                                )
+                        logger.debug(f"(line) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}")
                         
                         for token in line['t']:
                             x, y, w, h = token['c']
-                            token['c'] = convert_coordinates(
-                                    x, y, w, h, x_res, y_res
-                                    )
-                            logger.debug(
-                                    f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}"
-                                    )
+                            token['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
+                            logger.debug(f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}")
             success = True
         except Exception as e:
-            pass
+            logger.error(f"Error {e} occurred when converting coordinates for {self.id}")
         finally:
             return success, page_data
 
 
 class LuxNewspaperIssue(MetsAltoNewPaperIssue):
-    """docstring for MetsNewspaperIssue."""
     
     def _find_pages(self):
         """Detects the Alto XML page files for a newspaper issue."""
@@ -106,19 +92,12 @@ class LuxNewspaperIssue(MetsAltoNewPaperIssue):
             page_no = g.group(2)
             page_numbers.append(int(page_no))
         
-        page_canonical_names = [
-                "{}-p{}".format(self.id, str(page_n).zfill(4))
-                for page_n in page_numbers
-                ]
+        page_canonical_names = ["{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers]
         
         self.pages = []
-        for filename, page_no, page_id in zip(
-                page_file_names, page_numbers, page_canonical_names
-                ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
-                self.pages.append(
-                        LuxNewspaperPage(page_no, page_id, filename, text_path)
-                        )
+                self.pages.append(LuxNewspaperPage(page_id, page_no, filename, text_path))
             except Exception as e:
                 logger.error(
                         f'Adding page {page_no} {page_id} {filename}',
@@ -426,7 +405,7 @@ class LuxNewspaperIssue(MetsAltoNewPaperIssue):
                     if page_no not in ci['m']['pp']:
                         ci['m']['pp'].append(page_no)
         
-        self._issue_data = {
+        self.issue_data = {
                 "cdt": strftime("%Y-%m-%d %H:%M:%S"),
                 "i": content_items,
                 "id": self.id,
@@ -435,4 +414,4 @@ class LuxNewspaperIssue(MetsAltoNewPaperIssue):
                 }
         
         if self._notes:
-            self._issue_data["n"] = "\n".join(self._notes)
+            self.issue_data["n"] = "\n".join(self._notes)
