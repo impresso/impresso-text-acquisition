@@ -414,18 +414,21 @@ def convert_page_coordinates(page, page_xml, page_image_name, zip_archive, box_s
             box_strategy,
             page_image_name
             )
-    for region in page['r']:
-        region['c'] = convert_box(region['c'], scale_factor)
-        for paragraph in region['p']:
-            for line in paragraph['l']:
-                line['c'] = convert_box(line['c'], scale_factor)
-                for token in line['t']:
-                    token['c'] = convert_box(token['c'], scale_factor)
-    end_t = time.clock()
-    t = end_t - start_t
-    logger.debug(
-            f'Converted coordinates {page_image_name} in {issue.id} (took {t}s)'
-            )
+    if scale_factor is not None:
+        for region in page['r']:
+            region['c'] = convert_box(region['c'], scale_factor)
+            for paragraph in region['p']:
+                for line in paragraph['l']:
+                    line['c'] = convert_box(line['c'], scale_factor)
+                    for token in line['t']:
+                        token['c'] = convert_box(token['c'], scale_factor)
+        end_t = time.clock()
+        t = end_t - start_t
+        logger.debug(
+                f'Converted coordinates {page_image_name} in {issue.id} (took {t}s)'
+                )
+    else:
+        logger.info(f"Could not find scale factor for {page['id']}")
     return page
 
 

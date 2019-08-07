@@ -36,7 +36,7 @@ def parse_styles(text: str) -> List[dict]:
     return styles
 
 
-def olive_image_parser(text: str) -> Optional[dict]:
+def olive_image_parser(text: bytes) -> Optional[dict]:
     soup = BeautifulSoup(text, "lxml")
     root = soup.find("xmd-entity")
     

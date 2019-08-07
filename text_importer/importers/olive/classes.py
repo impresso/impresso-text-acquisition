@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import shutil
 from collections import deque
 from time import strftime
 from typing import List
@@ -21,11 +22,45 @@ Pageschema = get_page_schema()
 IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
+class OliveArchive(object):
+    def __init__(self, archive: ZipFile, temp_dir: str):
+        logger.debug(f"Extracting archive in {temp_dir}")
+        self.name_list = archive.namelist()
+        self.dir = temp_dir
+        self.extract_archive(archive)
+    
+    def extract_archive(self, archive: ZipFile):
+        if not os.path.exists(self.dir):
+            logger.debug(f"Creating {self.dir}")
+            os.makedirs(self.dir)
+        for f in archive.filelist:
+            if f.file_size > 0:
+                archive.extract(f.filename, path=self.dir)
+    
+    def namelist(self):
+        return self.name_list
+    
+    def read(self, file):
+        path = os.path.join(self.dir, file)
+        with open(path, 'rb') as f:
+            f_bytes = f.read()
+        return f_bytes
+    
+    def cleanup(self):
+        logging.info(f"Deleting archive {self.dir}")
+        shutil.rmtree(self.dir)
+        prev_dir = os.path.split(self.dir)[0]
+        while len(os.listdir(prev_dir)) == 0:
+            logging.info(f"Deleting {prev_dir}")
+            os.rmdir(prev_dir)
+            prev_dir = os.path.split(prev_dir)[0]
+
+
 class OliveNewspaperPage(NewspaperPage):
     def __init__(self, _id, n, toc_data, image_info, page_xml):
         super().__init__(_id, n)
         self.toc_data = toc_data
-        self.page_data = {}
+        self.page_data = None
         self.image_info = image_info
         self.page_xml = page_xml
     
@@ -54,6 +89,9 @@ class OliveNewspaperPage(NewspaperPage):
             logger.warning(f"Page {self.id} has not OCR text")
         
         self._convert_page_coords()
+        
+        if all(p.page_data is not None for p in self.issue.pages):
+            self.issue.archive.cleanup()
     
     def _convert_page_coords(self):
         self.page_data['cc'] = False
@@ -76,12 +114,12 @@ class OliveNewspaperPage(NewspaperPage):
 
 class OliveNewspaperIssue(NewspaperIssue):
     
-    def __init__(self, issue_dir, image_dir):  # TODO: add temp dir to save item_xml
+    def __init__(self, issue_dir, image_dir, temp_dir):
         super().__init__(issue_dir)
         self.issue_dir = issue_dir
         self.image_dir = image_dir
         
-        self.archive = self._parse_archive()  # First parse the archive and return it
+        self.archive = self._parse_archive(temp_dir)  # First parse the archive and return it
         self.styles = self._parse_styles_gallery()  # Then parse the styles
         self.images = self._parse_image_xml_files()  # Parse image xml files with olive_image_parser
         self.toc_data = self._parse_toc()  # Parse ToC
@@ -102,7 +140,7 @@ class OliveNewspaperIssue(NewspaperIssue):
                 "ar": self.rights
                 }
     
-    def _parse_archive(self, file: str = "Document.zip") -> ZipFile:
+    def _parse_archive(self, temp_dir: str, file: str = "Document.zip") -> OliveArchive:
         """
         Parses the archive for this issue. Fails if archive could not be parsed
         :param file: The archive file to parse
@@ -112,9 +150,9 @@ class OliveNewspaperIssue(NewspaperIssue):
         if os.path.isfile(archive_path):
             try:
                 archive = ZipFile(archive_path)
-                
                 logger.debug(f"Contents of archive for {self.id}: {archive.namelist()}")
-                return archive
+                archive_tmp_path = os.path.join(temp_dir, canonical_path(self.issue_dir, path_type='dir'))
+                return OliveArchive(archive, archive_tmp_path)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
                 raise ValueError(msg)
@@ -269,15 +307,19 @@ class OliveNewspaperIssue(NewspaperIssue):
         
         image_info_path = os.path.join(issue_w_images.path, image_info_name)
         
-        with open(image_info_path, 'r') as inp_file:
-            try:
-                json_data = json.load(inp_file)
-                if len(json_data) == 0:
-                    logger.info(f"No image info for {self.id}")
-                return json_data
-            except Exception as e:
-                logger.error(f"Decoding file {image_info_path} failed with '{e}'")
-                raise e
+        if os.path.exists(image_info_path):
+            with open(image_info_path, 'r') as inp_file:
+                try:
+                    json_data = json.load(inp_file)
+                    if len(json_data) == 0:
+                        logger.info(f"Empty image info for {self.id}")
+                    return json_data
+                except Exception as e:
+                    logger.error(f"Decoding file {image_info_path} failed with '{e}'")
+                    raise e
+        else:
+            logger.info(f"No image info for {self.id}")
+            return []
     
     def _find_pages(self):
         if self.toc_data is not None:
