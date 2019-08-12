@@ -2,16 +2,24 @@ import os
 import json
 import pkg_resources
 from impresso_commons.path.path_fs import detect_issues
+
 from text_importer.importer import import_issues
 from text_importer.importers.olive import olive_import_issue
 from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
                                            detect_canonical_issues)
+from text_importer.importers.lux.core import import_issues as lux_import_issues
+from text_importer.importers.lux.detect import \
+    detect_issues as lux_detect_issues, select_issues as lux_select_issues
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def test_olive_import_issues():
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
-        'data/sample_data/'
+        'data/sample_data/Olive/'
     )
     """
     issues = [
@@ -88,3 +96,52 @@ def test_imported_data():
         actual_ids = set([i['m']['id'] for i in actual_json['i']])
         expected_ids = set([i['m']['id'] for i in expected_json['i']])
         assert expected_ids.difference(actual_ids) == set()
+
+
+def test_lux_importer():
+    inp_dir = pkg_resources.resource_filename(
+        'text_importer',
+        'data/sample_data/Luxembourg/'
+    )
+    out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
+    output_bucket = None  # this disables the s3 upload
+
+    issues = lux_detect_issues(inp_dir)
+    assert issues is not None
+    lux_import_issues(issues, out_dir, s3_bucket=output_bucket)
+
+    # TODO verify that issues processed are actually in the output folder
+    # try to validate the JSON documents (pages and issues)
+
+
+def test_lux_select():
+    """Tests selective ingestion of BNL data.
+
+    What to ingest is specified in a JSON configuration file.
+
+    ..todo::
+
+        - add support filtering/selection based on dates and date-ranges;
+        - add support for exclusion of newspapers
+    """
+    cfg_file = pkg_resources.resource_filename(
+        'text_importer',
+        'config/import_BNL.json'
+    )
+
+    inp_dir = pkg_resources.resource_filename(
+        'text_importer',
+        'data/sample_data/Luxembourg/'
+    )
+    out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
+    """
+    inp_dir = "/mnt/project_impresso/original/BNL/"
+    out_dir = pkg_resources.resource_filename(
+        'text_importer',
+        'data/out/debug/'
+    )
+    """
+    issues = lux_select_issues(cfg_file, inp_dir)
+    assert issues
+    logger.info(f'There are {len(issues)} to ingest')
+    lux_import_issues(issues, out_dir, s3_bucket=None)

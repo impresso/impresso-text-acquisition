@@ -5,10 +5,10 @@ import json
 import logging
 import os
 import time
+from pathlib import Path
 
 import boto
 import boto.s3.connection
-import ipdb as pdb
 import pkg_resources
 import python_jsonschema_objects as pjs
 from boto.s3.key import Key
@@ -28,12 +28,12 @@ def get_page_schema():
     """
     schema_path = pkg_resources.resource_filename(
         'text_importer',
-        'schemas/page.schema'
+        'impresso-schemas/json/newspaper/page.schema.json'
     )
     with open(os.path.join(schema_path), 'r') as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
-    ns = builder.build_classes().Pageschema
+    ns = builder.build_classes().NewspaperPage
     return ns
 
 
@@ -46,12 +46,12 @@ def get_issue_schema():
     """
     schema_path = pkg_resources.resource_filename(
         'text_importer',
-        'schemas/issue.schema'
+        'impresso-schemas/json/newspaper/issue.schema.json'
     )
     with open(os.path.join(schema_path), 'r') as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
-    ns = builder.build_classes().Issueschema
+    ns = builder.build_classes().NewspaperIssue
     return ns
 
 
@@ -131,6 +131,7 @@ def serialize_issue(issue, issue_dir, out_dir=None, s3_bucket=None):
     canonical_filename = canonical_path(issue_dir, "issue", extension=".json")
 
     if out_dir is not None and s3_bucket is None:
+        Path(out_dir).mkdir(exist_ok=True)
         out_file = os.path.join(
             out_dir,
             canonical_filename
