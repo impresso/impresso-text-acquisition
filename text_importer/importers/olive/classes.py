@@ -11,9 +11,15 @@ from impresso_commons.path import IssueDir
 from impresso_commons.path.path_fs import canonical_path
 
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
-from text_importer.importers.olive.helpers import combine_article_parts, convert_image_coordinates, convert_page_coordinates, \
-    recompose_ToC, recompose_page
-from text_importer.importers.olive.parsers import olive_image_parser, olive_parser, olive_toc_parser, parse_styles
+from text_importer.importers.olive.helpers import (combine_article_parts,
+                                                   convert_image_coordinates,
+                                                   convert_page_coordinates,
+                                                   recompose_page,
+                                                   recompose_ToC)
+from text_importer.importers.olive.parsers import (olive_image_parser,
+                                                   olive_parser,
+                                                   olive_toc_parser,
+                                                   parse_styles)
 from text_importer.utils import get_issue_schema, get_page_schema
 
 logger = logging.getLogger(__name__)
@@ -76,7 +82,11 @@ class OliveNewspaperPage(NewspaperPage):
         
         element_ids = self.toc_data.keys()
         # all_element_ids = [el_id for el_id in element_ids if "Ar" in el_id or "Ad" in el_id]
-        elements = {el["legacy"]["id"]: el for el in self.issue.content_elements if (el["legacy"]["id"] in element_ids)}
+        elements = {
+                el["legacy"]["id"]: el
+                for el in self.issue.content_elements
+                if (el["legacy"]["id"] in element_ids)
+                }
         
         clusters = {}
         for ar in self.issue.articles:
@@ -86,7 +96,12 @@ class OliveNewspaperPage(NewspaperPage):
             else:
                 clusters[legacy_id] = [legacy_id]
         
-        self.page_data = recompose_page(self.id, self.toc_data, elements, clusters)
+        self.page_data = recompose_page(
+                self.id,
+                self.toc_data,
+                elements,
+                clusters
+                )
         
         self.page_data['id'] = self.id
         self.page_data['iiif'] = os.path.join(IMPRESSO_IIIF_BASEURI, self.id)
@@ -328,7 +343,6 @@ class OliveNewspaperIssue(NewspaperIssue):
                         raise e
         if len(json_data) == 0:
             msg = f"Could not find image info for {self.id}"
-            raise ValueError(msg)
     
     def _find_pages(self):
         if self.toc_data is not None:

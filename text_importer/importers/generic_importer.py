@@ -2,8 +2,14 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
+<<<<<<< HEAD
     metsalto_importer.py --input-dir=<id> (--clear | --incremental) [--output-dir==<od> --image-dirs=<imd> --temp-dir=<td> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<f>]
     metsalto_importer.py --version
+=======
+    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir==<od> --image-dir=<imd> --temp-dir=<td> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar>]
+
+    <importer-name>importer.py --version
+>>>>>>> aea5d7d66a9b042820ad9e5bc39ef6d598e575df
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal
@@ -14,10 +20,11 @@ Options:
     --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket
     --scheduler=<sch>  Tell dask to use an existing scheduler (otherwise it'll create one)
     --log-file=<f>      Log file; when missing print log to stdout
-    --access-rights=<f> Access right file if relevant (usually just for RERO 1 and 2)
-    --verbose           Verbose log messages (good for debugging)
-    --clear             Removes the output folder (if already existing)
-    --version
+    --access-rights=<ar>  Access right file if relevant (only for ``olive`` and ``rero`` importers)
+    --verbose   Verbose log messages (good for debugging)
+    --clear    Removes the output folder (if already existing)
+    --version    Prints version and exits.
+
 """  # noqa: E501
 
 import json
@@ -91,7 +98,6 @@ def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
         with open(config_file, 'r') as f:
             config = json.load(f)
         issues = select_func(inp_dir, config, access_rights=access_rights_file)
-        
         logger.info(
                 "{} newspaper remained after applying filter: {}".format(
                         len(issues),
