@@ -1,0 +1,65 @@
+{
+	"BDC":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"CDV":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"DLE":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"EDA":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"EXP":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"GDL":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"IMP":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"JDF":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"JDG":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"JDV":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"LBP":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"LCE":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"LCG":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"LCR":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"LCS":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"LES":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"LNF":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"LSE":
+		{"access-right": "open-private",
+		 "time": "all"},
+	"LSR":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"LTF":
+		{"access-right": "open-public",
+		 "time": "all"},
+	"LVE":
+		{"access-right": "open-public",
+		 "time": "all"}
+}
