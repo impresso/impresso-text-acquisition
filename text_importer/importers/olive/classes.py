@@ -32,10 +32,16 @@ class OliveArchive(object):
     def extract_archive(self, archive: ZipFile):
         if not os.path.exists(self.dir):
             logger.debug(f"Creating {self.dir}")
-            os.makedirs(self.dir)
+            try:
+                os.makedirs(self.dir)
+            except FileExistsError as e:
+                pass
         for f in archive.filelist:
             if f.file_size > 0:
-                archive.extract(f.filename, path=self.dir)
+                try:
+                    archive.extract(f.filename, path=self.dir)
+                except FileExistsError as e:
+                    pass
     
     def namelist(self):
         return self.name_list
@@ -99,9 +105,10 @@ class OliveNewspaperPage(NewspaperPage):
             try:
                 box_strategy = self.image_info['strat']
                 image_name = self.image_info['s']
-                convert_page_coordinates(self.page_data, self.issue.archive.read(self.page_xml), image_name,
-                                         self.issue.archive, box_strategy, self.issue)
-                self.page_data['cc'] = True
+                was_converted = convert_page_coordinates(self.page_data, self.issue.archive.read(self.page_xml), image_name,
+                                                         self.issue.archive, box_strategy, self.issue)
+                if was_converted:
+                    self.page_data['cc'] = True
             except Exception as e:
                 logger.error("Page {} raised error: {}".format(self.id, e))
                 logger.error("Couldn't convert coordinates in p. {}".format(self.id))
@@ -114,10 +121,10 @@ class OliveNewspaperPage(NewspaperPage):
 
 class OliveNewspaperIssue(NewspaperIssue):
     
-    def __init__(self, issue_dir, image_dir, temp_dir):
+    def __init__(self, issue_dir, image_dirs, temp_dir):
         super().__init__(issue_dir)
         self.issue_dir = issue_dir
-        self.image_dir = image_dir
+        self.image_dirs = image_dirs
         
         self.archive = self._parse_archive(temp_dir)  # First parse the archive and return it
         self.styles = self._parse_styles_gallery()  # Then parse the styles
@@ -284,42 +291,44 @@ class OliveNewspaperIssue(NewspaperIssue):
         :return: the content of the `image-info.json` file
         :rtype: dict
         """
-        
-        issue_dir = os.path.join(
-                self.image_dir,
-                self.journal,
-                str(self.date).replace("-", "/"),
-                self.edition
-                )
-        
-        issue_w_images = IssueDir(
-                journal=self.journal,
-                date=self.date,
-                edition=self.edition,
-                path=issue_dir
-                )
-        
-        image_info_name = canonical_path(
-                issue_w_images,
-                name="image-info",
-                extension=".json"
-                )
-        
-        image_info_path = os.path.join(issue_w_images.path, image_info_name)
-        
-        if os.path.exists(image_info_path):
-            with open(image_info_path, 'r') as inp_file:
-                try:
-                    json_data = json.load(inp_file)
-                    if len(json_data) == 0:
-                        logger.info(f"Empty image info for {self.id}")
-                    return json_data
-                except Exception as e:
-                    logger.error(f"Decoding file {image_info_path} failed with '{e}'")
-                    raise e
-        else:
-            logger.info(f"No image info for {self.id}")
-            return []
+        json_data = []
+        for im_dir in self.image_dirs.split(','):
+            issue_dir = os.path.join(
+                    im_dir,
+                    self.journal,
+                    str(self.date).replace("-", "/"),
+                    self.edition
+                    )
+            
+            issue_w_images = IssueDir(
+                    journal=self.journal,
+                    date=self.date,
+                    edition=self.edition,
+                    path=issue_dir
+                    )
+            
+            image_info_name = canonical_path(
+                    issue_w_images,
+                    name="image-info",
+                    extension=".json"
+                    )
+            
+            image_info_path = os.path.join(issue_w_images.path, image_info_name)
+            
+            if os.path.exists(image_info_path):
+                with open(image_info_path, 'r') as inp_file:
+                    try:
+                        json_data = json.load(inp_file)
+                        if len(json_data) == 0:
+                            logger.debug(f"Empty image info for {self.id} at {image_info_path}")
+                        else:
+                            return json_data
+                    except Exception as e:
+                        logger.error(f"Decoding file {image_info_path} failed with '{e}'")
+                        raise e
+        if len(json_data) == 0:
+            msg = f"Could not find image info for {self.id}"
+            raise ValueError(msg)
     
     def _find_pages(self):
         if self.toc_data is not None:

@@ -30,7 +30,9 @@ def olive_detect_issues(base_dir: str, access_rights: str, journal_filter: set =
     return [dir2olivedir(x, access_rights_dict) for x in issues]
 
 
-def olive_select_issues(base_dir: str, config: dict, access_rights_dict: dict) -> List[OliveIssueDir]:
+def olive_select_issues(base_dir: str, config: dict, access_rights: str) -> List[OliveIssueDir]:
+    with open(access_rights, 'r') as f:
+        access_rights_dict = json.load(f)
     issues = select_issues(config, base_dir)
     
     return [dir2olivedir(x, access_rights_dict) for x in issues]
