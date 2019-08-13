@@ -398,7 +398,7 @@ def convert_box(coords, scale_factor):
     return new_box
 
 
-def convert_page_coordinates(page, page_xml, page_image_name, zip_archive, box_strategy, issue):
+def convert_page_coordinates(page, page_xml, page_image_name, zip_archive, box_strategy, issue) -> bool:
     """
     Logic:
         - get scale factor (passing strategy)
@@ -427,9 +427,10 @@ def convert_page_coordinates(page, page_xml, page_image_name, zip_archive, box_s
         logger.debug(
                 f'Converted coordinates {page_image_name} in {issue.id} (took {t}s)'
                 )
+        return True
     else:
         logger.info(f"Could not find scale factor for {page['id']}")
-    return page
+        return False
 
 
 def convert_image_coordinates(image, page_xml, page_image_name, zip_archive, box_strategy, issue):
