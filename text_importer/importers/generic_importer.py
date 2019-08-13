@@ -2,14 +2,9 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
-<<<<<<< HEAD
-    metsalto_importer.py --input-dir=<id> (--clear | --incremental) [--output-dir==<od> --image-dirs=<imd> --temp-dir=<td> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<f>]
-    metsalto_importer.py --version
-=======
     <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir==<od> --image-dir=<imd> --temp-dir=<td> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar>]
 
     <importer-name>importer.py --version
->>>>>>> aea5d7d66a9b042820ad9e5bc39ef6d598e575df
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal
