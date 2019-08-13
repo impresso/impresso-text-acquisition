@@ -2,13 +2,12 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
-    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir==<od> --image-dir=<imd> --temp-dir=<td> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar>]
-
+    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar>]
     <importer-name>importer.py --version
 
 Options:
     --input-dir=<id>    Base directory containing one sub-directory for each journal
-    --image-dirs=<imgd>  Directory containing (canonical) images and their metadata (use `,` to separate multiple dirs)
+    --image-dirs=<imd>  Directory containing (canonical) images and their metadata (use `,` to separate multiple dirs)
     --output-dir=<od>   Base directory where to write the output files
     --temp-dir=<td>     Temporary directory to extract .zip archives
     --config-file=<cf>  configuration file for selective import
