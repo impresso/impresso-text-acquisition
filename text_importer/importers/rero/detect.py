@@ -72,28 +72,20 @@ def detect_issues(base_dir: str, access_rights: str, data_dir: str = 'data') -> 
     return [dir2issues(_dir, access_rights_dict) for _dir in issues_dirs]
 
 
-def select_issues(cfg_file, input_dir, access_rights: str) -> Optional[List[Rero2IssueDir]]:
+def select_issues(input_dir: str, config: dict, access_rights: str) -> Optional[List[Rero2IssueDir]]:
     """
     
-    :param cfg_file:
     :param input_dir:
+    :param config:
     :param access_rights:
     :return:
     """
     
-    if cfg_file and os.path.isfile(cfg_file):
-        logger.info(f"Found config file: {os.path.realpath(cfg_file)}")
-        with open(cfg_file, 'r') as f:
-            config_dict = json.load(f)
-    else:
-        logger.info(f"Could not load config file: {os.path.realpath(cfg_file)}")
-        return
-    
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config_dict["newspapers"]
-        exclude_list = config_dict["exclude_newspapers"]
-        year_flag = config_dict["year_only"]
+        filter_dict = config["newspapers"]
+        exclude_list = config["exclude_newspapers"]
+        year_flag = config["year_only"]
     
     except KeyError:
         logger.critical(f"The key [newspapers|exclude_newspapers|year_only] is missing in the config file.")

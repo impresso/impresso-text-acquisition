@@ -87,7 +87,7 @@ def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
             shutil.rmtree(outp_dir)
     
     # detect/select issues
-    if config_file:
+    if config_file and os.path.isfile(config_file):
         logger.info(f"Found config file: {os.path.realpath(config_file)}")
         with open(config_file, 'r') as f:
             config = json.load(f)

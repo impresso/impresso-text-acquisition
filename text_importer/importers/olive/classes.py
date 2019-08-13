@@ -343,6 +343,7 @@ class OliveNewspaperIssue(NewspaperIssue):
                         raise e
         if len(json_data) == 0:
             msg = f"Could not find image info for {self.id}"
+            raise ValueError(msg)
     
     def _find_pages(self):
         if self.toc_data is not None:
