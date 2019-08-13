@@ -1,17 +1,15 @@
-import os
 import json
-import pkg_resources
-from impresso_commons.path.path_fs import detect_issues
+import logging
+import os
 
-from text_importer.importer import import_issues
-from text_importer.importers.olive_old import olive_import_issue
-from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
-                                           detect_canonical_issues)
+import pkg_resources
+from impresso_commons.path.path_fs import detect_canonical_issues
+
 from text_importer.importers.lux.core import import_issues as lux_import_issues
 from text_importer.importers.lux.detect import \
-    detect_issues as lux_detect_issues, select_issues as lux_select_issues
-
-import logging
+    detect_issues as lux_detect_issues
+from text_importer.importers.lux.detect import \
+    select_issues as lux_select_issues
 
 logger = logging.getLogger(__name__)
 
