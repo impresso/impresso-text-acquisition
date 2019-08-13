@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Write your own importer &mdash; Impresso TextImporter  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Available importers" href="importers.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Impresso TextImporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logic.html">Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers.html">Available importers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Write your own importer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tldr">TLDR;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detecting-data-to-import">Detecting data to import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subclassing-abstract-classes">Subclassing abstract classes</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Impresso TextImporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Write your own importer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/custom_importer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="write-your-own-importer">
+<h1>Write your own importer<a class="headerlink" href="#write-your-own-importer" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="tldr">
+<h2>TLDR;<a class="headerlink" href="#tldr" title="Permalink to this headline">¶</a></h2>
+<p>To write a custom importer is easy and entails implementing two
+pieces of code:</p>
+<ol class="arabic simple">
+<li><p>implementing functions to find the data that should be imported.</p></li>
+<li><p>implementing classes that handle the data format you’d like to import.</p></li>
+</ol>
+<p><strong>TODO</strong>: Given an example.</p>
+<p><strong>TODO</strong>: How to structure the code.</p>
+</div>
+<div class="section" id="detecting-data-to-import">
+<h2>Detecting data to import<a class="headerlink" href="#detecting-data-to-import" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="subclassing-abstract-classes">
+<h2>Subclassing abstract classes<a class="headerlink" href="#subclassing-abstract-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="text_importer.importers.classes.NewspaperIssue">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.classes.</code><code class="sig-name descname">NewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class representing a newspaper issue.</p>
+<p>Each text importer needs to define a subclass of <cite>NewspaperIssue</cite> which
+specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
+<dl class="method">
+<dt id="text_importer.importers.classes.NewspaperIssue.to_json">
+<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Validates <code class="docutils literal notranslate"><span class="pre">self.issue_data</span></code> against <code class="docutils literal notranslate"><span class="pre">IssueSchema</span></code> &amp; serializes it</dt><dd><p>to string.</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Validation adds a substantial overhead to computing time. For
+serialization of large amounts of issues it is recommendable to
+bypass schema validation.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="text_importer.importers.classes.NewspaperPage">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.classes.</code><code class="sig-name descname">NewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">number: int</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abstract class representing a newspaper page.</p>
+<p>Each text importer needs to define a subclass of <code class="docutils literal notranslate"><span class="pre">NewspaperPage</span></code> which
+specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
+<dl class="method">
+<dt id="text_importer.importers.classes.NewspaperPage.add_issue">
+<em class="property">abstract </em><code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds to a page object its parent, i.e. the newspaper issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the newspaper issue.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="text_importer.importers.classes.NewspaperPage.to_json">
+<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.to_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validates <code class="docutils literal notranslate"><span class="pre">self.page.data</span></code> &amp; serializes it to string.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Validation adds a substantial overhead to computing time. For
+serialization of large amounts of pages it is recommendable to
+bypass schema validation.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="importers.html" class="btn btn-neutral float-left" title="Available importers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Matteo Romanello &amp; Impresso team
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
