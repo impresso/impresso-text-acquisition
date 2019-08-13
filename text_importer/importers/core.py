@@ -23,22 +23,20 @@ from text_importer.importers.olive.classes import OliveNewspaperIssue
 logger = logging.getLogger(__name__)
 
 
-def dir2issue(issue: IssueDir, issue_class: Type[NewspaperIssue], image_dir=None, temp_dir=None) -> Optional[NewspaperIssue]:
+def dir2issue(issue: IssueDir, issue_class: Type[NewspaperIssue], image_dirs=None, temp_dir=None) -> \
+        Tuple[Optional[NewspaperIssue], Optional[str]]:
     """Instantiates a NewspaperIssue instance from an IssueDir."""
     try:
         if issue_class is OliveNewspaperIssue:
-            issue = OliveNewspaperIssue(issue, image_dir=image_dir, temp_dir=temp_dir)
+            np_issue = OliveNewspaperIssue(issue, image_dirs=image_dirs, temp_dir=temp_dir)
         else:
-            issue = issue_class(issue)
-        # try:
-        #     issue.to_json()  # TODO: remove this
-        # except Exception as e:
-        #     logger.warning(f"Error in Issue schema for  {issue.id}")
-        return issue
+            np_issue = issue_class(issue)
+        return np_issue, None
     except Exception as e:
         logger.error(f'Error when processing issue {issue}: {e}')
-        # logger.exception(e)
-        return None
+        logger.exception(e)
+        note = f"{canonical_path(issue, path_type='dir').replace('/', '-')}: {e}"
+        return None, note
 
 
 def issue2pages(issue: NewspaperIssue) -> List[NewspaperPage]:
@@ -46,10 +44,6 @@ def issue2pages(issue: NewspaperIssue) -> List[NewspaperPage]:
     pages = []
     for page in issue.pages:
         page.add_issue(issue)
-        # try:
-        #     page.to_json()  # TODO: remove this
-        # except Exception as e:
-        #     logger.warning(f"Error in Page schema for issue {issue.id}")
         pages.append(page)
     return pages
 
@@ -102,15 +96,15 @@ def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
     return result
 
 
-def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_class: Type[NewspaperIssue], image_dir: str,
-                  temp_dir: str):
+def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_class: Type[NewspaperIssue],
+                  image_dirs: List[str], temp_dir: str):
     """Imports a bunch of newspaper issues.
 
     :param list issues: Description of parameter `issues`.
     :param str out_dir: Description of parameter `out_dir`.
     :param str s3_bucket: Description of parameter `s3_bucket`.
     :param issue_class: The newspaper issue class to import (Child of NewspaperIssue)
-    :param image_dir: Directory of images
+    :param image_dirs: Directory of images (can be multiple)
     :param temp_dir: Temporary directory for extracting archives (For Olive format)
     :return: Description of returned object.
     :rtype: tuple
@@ -118,14 +112,12 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
     """
     msg = f'Issues to import: {len(issues)}'
     logger.info(msg)
-    # print(msg)
     
     issue_bag = db.from_sequence(issues, partition_size=60) \
-        .map(dir2issue, issue_class=issue_class, image_dir=image_dir, temp_dir=temp_dir) \
-        .filter(lambda i: i is not None) \
-        .persist()
+        .map(dir2issue, issue_class=issue_class, image_dirs=image_dirs, temp_dir=temp_dir)
     
-    # progress(issue_bag)
+    failed_log = issue_bag.filter(lambda x: x[0] is None).map(lambda x: x[1]).persist()
+    issue_bag = issue_bag.filter(lambda x: x[0] is not None).map(lambda x: x[0]).persist()
     
     logger.info('Start compressing and uploading issues')
     issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
@@ -148,7 +140,6 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
             .flatten() \
             .map_partitions(process_pages) \
             .map_partitions(serialize_pages, output_dir=out_dir)
-        # print(f'Pages to process: {pages_bag.count().compute()}\n')
         
         pages_out_dir = os.path.join(out_dir, 'pages')
         Path(pages_out_dir).mkdir(exist_ok=True)
@@ -164,8 +155,15 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
             .starmap(cleanup)
         
         pages_bag.compute()
+
+    log_path = os.path.join(out_dir, 'failed.log')
+    failed_log = failed_log.compute()
+    
+    with open(log_path, 'w') as f:
+        f.writelines(failed_log)
+        logger.info(f"Dumped {len(failed_log)} failed issues with errors in {log_path}")
+    
     logger.info("---------- Done ----------")
-    return
 
 
 def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = "") -> Tuple[str, str]:
