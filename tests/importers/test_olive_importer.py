@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_import_issues():
-    """Test the Olive XML importer."""
+    """Test the Olive XML importer with sample data."""
 
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
@@ -56,6 +56,7 @@ def test_imported_data():
         'data/expected/Olive'
     )
 
+    # TODO: read issues JSON from bz2 archives
     ingested_issues = detect_canonical_issues(inp_dir, ["GDL", "JDG", "IMP"])
 
     for issue in ingested_issues:
@@ -84,3 +85,5 @@ def test_imported_data():
         actual_ids = set([i['m']['id'] for i in actual_json['i']])
         expected_ids = set([i['m']['id'] for i in expected_json['i']])
         assert expected_ids.difference(actual_ids) == set()
+
+        # TODO: add an identity check based on legacy metadata

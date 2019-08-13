@@ -4,7 +4,7 @@ Write your own importer
 TLDR;
 -----
 
-To write a custom importer is easy and entails implementing two
+Writing a custom importer is easy and entails implementing two
 pieces of code:
 
 1. implementing functions to find the data that should be imported.
