@@ -51,9 +51,10 @@ def dir2issue(path: str) -> LuxIssueDir:
             )
 
 
-def detect_issues(base_dir: str, access_rights: str) -> List[LuxIssueDir]:
+def detect_issues(base_dir: str, access_rights: str = None) -> List[LuxIssueDir]:
     """Parse a directory structure and detect newspaper issues to be imported.
 
+    :param access_rights:
     :param base_dir: the root of the directory structure
     :type base_dir: LuxIssueDir
     :return: list of `LuxIssueDir` instances
@@ -73,23 +74,24 @@ def detect_issues(base_dir: str, access_rights: str) -> List[LuxIssueDir]:
             ]
 
 
-def select_issues(cfg_file: str, input_dir: str, access_rights: str) -> List[LuxIssueDir]:
-    # detect/select issues
-    if cfg_file and os.path.isfile(cfg_file):
-        logger.info(f"Found config file: {os.path.realpath(cfg_file)}")
-        with open(cfg_file, 'r') as f:
-            config = json.load(f)
-        
-        issues = detect_issues(input_dir)
-        issue_bag = db.from_sequence(issues)
-        selected_issues = issue_bag \
-            .filter(lambda i: i.journal in config['newspapers'].keys()) \
-            .compute()
-        
-        logger.info(
-                "{} newspaper issues remained after applying filter: {}".format(
-                        len(selected_issues),
-                        selected_issues
-                        )
-                )
+def select_issues(input_dir: str, config: dict, access_rights: str) -> List[LuxIssueDir]:
+    """
+    
+    :param input_dir:
+    :param config:
+    :param access_rights:
+    :return:
+    """
+    issues = detect_issues(input_dir)
+    issue_bag = db.from_sequence(issues)
+    selected_issues = issue_bag \
+        .filter(lambda i: i.journal in config['newspapers'].keys()) \
+        .compute()
+    
+    logger.info(
+            "{} newspaper issues remained after applying filter: {}".format(
+                    len(selected_issues),
+                    selected_issues
+                    )
+            )
     return selected_issues
