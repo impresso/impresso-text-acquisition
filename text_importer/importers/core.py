@@ -96,8 +96,8 @@ def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
     return result
 
 
-def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_class: Type[NewspaperIssue],
-                  image_dirs: List[str], temp_dir: str):
+def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str], issue_class: Type[NewspaperIssue],
+                  image_dirs: str, temp_dir: str):
     """Imports a bunch of newspaper issues.
 
     :param list issues: Description of parameter `issues`.
@@ -117,7 +117,7 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
         .map(dir2issue, issue_class=issue_class, image_dirs=image_dirs, temp_dir=temp_dir)
     
     failed_log = issue_bag.filter(lambda x: x[0] is None).map(lambda x: x[1]).persist()
-    issue_bag = issue_bag.filter(lambda x: x[0] is not None).map(lambda x: x[0]).persist()
+    issue_bag = issue_bag.filter(lambda x: x[0] is not None).map(lambda x: x[0])
     
     logger.info('Start compressing and uploading issues')
     issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
@@ -155,12 +155,12 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: str, issue_cl
             .starmap(cleanup)
         
         pages_bag.compute()
-
+    
     log_path = os.path.join(out_dir, 'failed.log')
     failed_log = failed_log.compute()
     
     with open(log_path, 'w') as f:
-        f.writelines(failed_log)
+        f.write("\n".join(failed_log))
         logger.info(f"Dumped {len(failed_log)} failed issues with errors in {log_path}")
     
     logger.info("---------- Done ----------")
@@ -300,3 +300,4 @@ def upload_pages(sort_key: str, filepath: str, bucket_name: str = None) -> Tuple
     except Exception as e:
         logger.error(f'The upload of {filepath} failed with error {e}')
         return False, filepath
+

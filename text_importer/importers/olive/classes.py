@@ -11,11 +11,8 @@ from impresso_commons.path import IssueDir
 from impresso_commons.path.path_fs import canonical_path
 
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
-from text_importer.importers.olive.helpers import (combine_article_parts,
-                                                   convert_image_coordinates,
-                                                   convert_page_coordinates,
-                                                   recompose_page,
-                                                   recompose_ToC)
+from text_importer.importers.olive.helpers import (combine_article_parts, convert_image_coordinates,
+                                                   convert_page_coordinates, recompose_ToC, recompose_page, get_clusters)
 from text_importer.importers.olive.parsers import (olive_image_parser,
                                                    olive_parser,
                                                    olive_toc_parser,
@@ -34,6 +31,7 @@ class OliveArchive(object):
         self.name_list = archive.namelist()
         self.dir = temp_dir
         self.extract_archive(archive)
+        archive.close()
     
     def extract_archive(self, archive: ZipFile):
         if not os.path.exists(self.dir):
@@ -75,6 +73,7 @@ class OliveNewspaperPage(NewspaperPage):
         self.page_data = None
         self.image_info = image_info
         self.page_xml = page_xml
+        self.archive = None
     
     def parse(self):
         if self.issue is None:
@@ -84,23 +83,15 @@ class OliveNewspaperPage(NewspaperPage):
         # all_element_ids = [el_id for el_id in element_ids if "Ar" in el_id or "Ad" in el_id]
         elements = {
                 el["legacy"]["id"]: el
-                for el in self.issue.content_elements
+                for el in json.loads(self.issue.content_elements)
                 if (el["legacy"]["id"] in element_ids)
                 }
-        
-        clusters = {}
-        for ar in self.issue.articles:
-            legacy_id = ar["legacy"]["id"]
-            if isinstance(legacy_id, list):
-                clusters[legacy_id[0]] = legacy_id
-            else:
-                clusters[legacy_id] = [legacy_id]
         
         self.page_data = recompose_page(
                 self.id,
                 self.toc_data,
                 elements,
-                clusters
+                self.issue.clusters
                 )
         
         self.page_data['id'] = self.id
@@ -111,8 +102,8 @@ class OliveNewspaperPage(NewspaperPage):
         
         self._convert_page_coords()
         
-        if all(p.page_data is not None for p in self.issue.pages):
-            self.issue.archive.cleanup()
+        if all(p.page_data is not None for p in self.issue.pages):  # Means issue has been fully processed, can cleanup
+            self.archive.cleanup()
     
     def _convert_page_coords(self):
         self.page_data['cc'] = False
@@ -120,8 +111,8 @@ class OliveNewspaperPage(NewspaperPage):
             try:
                 box_strategy = self.image_info['strat']
                 image_name = self.image_info['s']
-                was_converted = convert_page_coordinates(self.page_data, self.issue.archive.read(self.page_xml), image_name,
-                                                         self.issue.archive, box_strategy, self.issue)
+                was_converted = convert_page_coordinates(self.page_data, self.archive.read(self.page_xml), image_name,
+                                                         self.archive, box_strategy, self.issue)
                 if was_converted:
                     self.page_data['cc'] = True
             except Exception as e:
@@ -132,31 +123,33 @@ class OliveNewspaperPage(NewspaperPage):
     
     def add_issue(self, issue):
         self.issue = issue
+        self.archive = issue.archive
 
 
 class OliveNewspaperIssue(NewspaperIssue):
     
-    def __init__(self, issue_dir, image_dirs, temp_dir):
+    def __init__(self, issue_dir: IssueDir, image_dirs: str, temp_dir: str):
         super().__init__(issue_dir)
         self.issue_dir = issue_dir
         self.image_dirs = image_dirs
         
         self.archive = self._parse_archive(temp_dir)  # First parse the archive and return it
-        self.styles = self._parse_styles_gallery()  # Then parse the styles
-        self.images = self._parse_image_xml_files()  # Parse image xml files with olive_image_parser
         self.toc_data = self._parse_toc()  # Parse ToC
-        self.image_info = self._get_image_info()
         
-        self.page_xml = self._get_page_xml_files()
+        images = self._parse_image_xml_files()  # Parse image xml files with olive_image_parser
+        articles, self.content_elements = self._parse_articles()
+        self.content_items = recompose_ToC(self.toc_data, articles, images)
         
-        self.articles, self.content_elements = self._parse_articles()
-        self.content_items = recompose_ToC(self.toc_data, self.articles, self.images)
-        
+        self.clusters = get_clusters(articles)
+        self.content_elements = json.dumps(self.content_elements)  # To avoid non-pickle-able objects
         self._find_pages()
+        
+        styles = self._parse_styles_gallery()  # Then parse the styles
+        
         self.issue_data = {
                 "id": self.id,
                 "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-                "s": self.styles,
+                "s": styles,
                 "i": self.content_items,
                 "pp": [p.id for p in self.pages],
                 "ar": self.rights
@@ -170,10 +163,10 @@ class OliveNewspaperIssue(NewspaperIssue):
         """
         archive_path = os.path.join(self.path, file)
         if os.path.isfile(archive_path):
+            archive_tmp_path = os.path.join(temp_dir, canonical_path(self.issue_dir, path_type='dir'))
             try:
                 archive = ZipFile(archive_path)
                 logger.debug(f"Contents of archive for {self.id}: {archive.namelist()}")
-                archive_tmp_path = os.path.join(temp_dir, canonical_path(self.issue_dir, path_type='dir'))
                 return OliveArchive(archive, archive_tmp_path)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
@@ -347,16 +340,18 @@ class OliveNewspaperIssue(NewspaperIssue):
     
     def _find_pages(self):
         if self.toc_data is not None:
+            image_info = self._get_image_info()
+            pages_xml = self._get_page_xml_files()
             for page_n, data in self.toc_data.items():
                 can_id = "{}-p{}".format(self.id, str(page_n).zfill(4))
-                image_info_records = [p for p in self.image_info if int(p['pg']) == page_n]
+                image_info_records = [p for p in image_info if int(p['pg']) == page_n]
                 if len(image_info_records) == 0:
                     image_info_record = None
                 else:
                     image_info_record = image_info_records[0]
                 
                 try:
-                    page_xml = self.page_xml[page_n]
+                    page_xml = pages_xml[page_n]
                 except Exception as e:
                     raise ValueError(f"Could not find page xml for {can_id}")
                 
@@ -380,3 +375,4 @@ class OliveNewspaperIssue(NewspaperIssue):
                         self.issue_dir
                         )
                 image['m']['tp'] = 'image'
+

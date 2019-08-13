@@ -464,3 +464,14 @@ def normalize_language(language):
             "german": "de"
             }
     return mappings[language.lower()]
+
+
+def get_clusters(articles):
+    clusters = {}
+    for ar in articles:
+        legacy_id = ar["legacy"]["id"]
+        if isinstance(legacy_id, list):
+            clusters[legacy_id[0]] = legacy_id
+        else:
+            clusters[legacy_id] = [legacy_id]
+    return clusters
