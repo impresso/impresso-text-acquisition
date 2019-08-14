@@ -14,14 +14,28 @@ from text_importer.tokenization import insert_whitespace
 logger = logging.getLogger(__name__)
 
 
-def merge_tokens(tokens, line):
+def merge_tokens(tokens: List[dict], line: str) -> dict:
+    """Merge two or more tokens into one.
+
+    The resulting (merged) token will have new coordinates corresponding
+    to the combination of coordinates of the input tokens.
+
+    :param List[dict] tokens: Tokens to merge.
+    :param str line: The line of text to which the input tokens belong.
+    :return: The new (merged) token.
+    :rtype: dict
+
+    """
     merged_token = {
             "tx": "".join([token["tx"] for token in tokens]),
             "c": tokens[0]["c"][:2] + tokens[-1]["c"][2:],
             "s": tokens[0]["s"]
             }
-    logger.debug("(In-line pseudo tokens) Merged {} => {} in line \"{}\"".format("".join([t["tx"] for t in tokens]),
-                                                                                 merged_token["tx"], line))
+    logger.debug(
+        "(In-line pseudo tokens) Merged {} => {} in line \"{}\"".format(
+            "".join([t["tx"] for t in tokens]),
+            merged_token["tx"], line)
+        )
     return merged_token
 
 
@@ -36,7 +50,11 @@ def merge_pseudo_tokens(line: dict) -> dict:
     inline_qids = []
 
     for qid in qids:
-        tokens = [(i, token) for i, token in enumerate(line["t"]) if "qid" in token and token["qid"] == qid]
+        tokens = [
+            (i, token)
+            for i, token in enumerate(line["t"])
+            if "qid" in token and token["qid"] == qid
+        ]
         if len(tokens) > 1:
             inline_qids.append(qid)
 
@@ -45,10 +63,17 @@ def merge_pseudo_tokens(line: dict) -> dict:
 
     for qid in inline_qids:
         # identify tokens to merge
-        tokens = [(i, token) for i, token in enumerate(line["t"]) if "qid" in token and token["qid"] == qid]
+        tokens = [
+            (i, token)
+            for i, token in enumerate(line["t"])
+            if "qid" in token and token["qid"] == qid
+        ]
 
         # remove tokens to merge from the line
-        tokens_to_merge = [line["t"].pop(line["t"].index(token)) for i, token in tokens]
+        tokens_to_merge = [
+            line["t"].pop(line["t"].index(token))
+            for i, token in tokens
+        ]
 
         if len(tokens_to_merge) >= 2:
             insertion_point = tokens[0][0]
@@ -217,7 +242,8 @@ def keep_title(title):
 
 def recompose_ToC(original_toc_data, articles, images):
     """TODO."""
-    toc_data = copy.deepcopy(original_toc_data)  # Added deep copy because function changes toc_data
+    # Added deep copy because function changes toc_data
+    toc_data = copy.deepcopy(original_toc_data)
     # concate content items from all pages into a single flat list
     content_items = [
             toc_data[pn][elid]
@@ -316,9 +342,10 @@ def recompose_ToC(original_toc_data, articles, images):
                     else:
                         item['pOf'] = containing_article['id']
                 except Exception as e:
-                    logger.error(
-                            f"Containing article for {item['m']['id']} not found (error = {e})"
-                            )
+                    logger.error((
+                        f"Containing article for {item['m']['id']}"
+                        f" not found (error = {e})"
+                    ))
 
         # delete redundant fields
         if "embedded_into" in item:
@@ -332,7 +359,12 @@ def recompose_ToC(original_toc_data, articles, images):
     return contents
 
 
-def recompose_page(page_id: str, info_from_toc: dict, page_elements: dict, clusters: dict) -> dict:
+def recompose_page(
+    page_id: str,
+    info_from_toc: dict,
+    page_elements: dict,
+    clusters: dict
+) -> dict:
     """Create a page document starting from a list of page documents.
 
     :param page_id: page id
@@ -380,7 +412,10 @@ def recompose_page(page_id: str, info_from_toc: dict, page_elements: dict, clust
         if el["legacy_id"] in page_elements:
             element = page_elements[el["legacy_id"]]
         else:
-            logger.error(f"{el['id']}: {el['legacy_id']} not found in page {page_id}")
+            logger.error((
+                f"{el['id']}: {el['legacy_id']}"
+                f" not found in page {page_id}"
+            ))
             continue
         mapped_id = id_mappings[part_of] if part_of in id_mappings else None
 
@@ -400,7 +435,14 @@ def convert_box(coords, scale_factor):
     return new_box
 
 
-def convert_page_coordinates(page, page_xml, page_image_name, zip_archive, box_strategy, issue) -> bool:
+def convert_page_coordinates(
+    page,
+    page_xml,
+    page_image_name,
+    zip_archive,
+    box_strategy,
+    issue
+) -> bool:
     """
     Logic:
         - get scale factor (passing strategy)
@@ -426,16 +468,24 @@ def convert_page_coordinates(page, page_xml, page_image_name, zip_archive, box_s
                         token['c'] = convert_box(token['c'], scale_factor)
         end_t = time.clock()
         t = end_t - start_t
-        logger.debug(
-                f'Converted coordinates {page_image_name} in {issue.id} (took {t}s)'
-                )
+        logger.debug((
+                f"Converted coordinates {page_image_name}"
+                f" in {issue.id} (took {t}s)"
+                ))
         return True
     else:
         logger.info(f"Could not find scale factor for {page['id']}")
         return False
 
 
-def convert_image_coordinates(image, page_xml, page_image_name, zip_archive, box_strategy, issue):
+def convert_image_coordinates(
+    image,
+    page_xml,
+    page_image_name,
+    zip_archive,
+    box_strategy,
+    issue
+):
     """
     Logic:
         - get scale factor (passing strategy)
@@ -453,9 +503,9 @@ def convert_image_coordinates(image, page_xml, page_image_name, zip_archive, box
                 )
         image['c'] = convert_box(image['c'], scale_factor)
         image['cc'] = True
-    except Exception as e:
+    except Exception:
         image['cc'] = False
-        # pass
+
     return image
 
 

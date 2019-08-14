@@ -66,7 +66,7 @@ class NewspaperPage(ABC):
         self.issue = None
 
     def to_json(self) -> str:
-        """Validates ``self.page.data`` & serializes it to string.
+        """Validate ``self.page.data`` & serializes it to string.
 
         .. note ::
             Validation adds a substantial overhead to computing time. For
@@ -78,7 +78,7 @@ class NewspaperPage(ABC):
 
     @abstractmethod
     def add_issue(self, issue: NewspaperIssue):
-        """Adds to a page object its parent, i.e. the newspaper issue.
+        """Add to a page object its parent, i.e. the newspaper issue.
 
         This allows each page to preserve contextual information coming from
         the newspaper issue.
@@ -89,4 +89,12 @@ class NewspaperPage(ABC):
 
     @abstractmethod
     def parse(self):
+        """Process the page file and transform into canonical format.
+
+        .. note ::
+
+            This lazy behavior means that the page contents are not processed
+            upon creation of the page object, but only once the ``parse()``
+            method is called.
+        """
         pass

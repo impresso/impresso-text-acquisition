@@ -32,7 +32,7 @@ IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
 class OliveArchive(object):
-    """Short summary.
+    """Class representing a Zip archive of Olive XML data.
 
     :param ZipFile archive: Zip archive containing Olive XML data.
     :param str temp_dir: A temporary directory to store uncompressed data.
@@ -73,10 +73,10 @@ class OliveArchive(object):
         return self.name_list
 
     def read(self, file: str) -> bytes:
-        """Short summary.
+        """Read one of the files in the archive from the temporary directory.
 
-        :param str file: Description of parameter `file`.
-        :return: Description of returned object.
+        :param str file: Name of the file to read.
+        :return: The file's content (in bytes format).
         :rtype: bytes
 
         """
@@ -86,8 +86,7 @@ class OliveArchive(object):
         return f_bytes
 
     def cleanup(self):
-        """Short summary.
-        """
+        """Remove the temporary directory with uncompressed data."""
         logging.info(f"Deleting archive {self.dir}")
         shutil.rmtree(self.dir)
         prev_dir = os.path.split(self.dir)[0]
@@ -99,16 +98,23 @@ class OliveArchive(object):
 
 
 class OliveNewspaperPage(NewspaperPage):
-    """Short summary.
+    """Class representing a page in Olive format.
 
-    :param type _id: Description of parameter `_id`.
-    :param type n: Description of parameter `n`.
-    :param type toc_data: Description of parameter `toc_data`.
-    :param type image_info: Description of parameter `image_info`.
-    :param type page_xml: Description of parameter `page_xml`.
+    :param str _id: Canonical page ID.
+    :param int n: Page number.
+    :param dict toc_data: Metadata about content items in the newspaper issue.
+    :param dict image_info: Metadata about the page image.
+    :param str page_xml: Path to the Olive XML file of the page.
 
     """
-    def __init__(self, _id, n, toc_data, image_info, page_xml):
+    def __init__(
+        self,
+        _id: str,
+        n: int,
+        toc_data: dict,
+        image_info,
+        page_xml
+    ):
         super().__init__(_id, n)
         self.toc_data = toc_data
         self.page_data = None
@@ -117,6 +123,7 @@ class OliveNewspaperPage(NewspaperPage):
         self.archive = None
 
     def parse(self):
+
         if self.issue is None:
             raise ValueError(f"No NewspaperIssue for {self.id}")
 
@@ -170,24 +177,23 @@ class OliveNewspaperPage(NewspaperPage):
         else:
             logger.debug(f"Image {self.id} does not have image info")
 
-    def add_issue(self, issue):
+    def add_issue(self, issue: NewspaperIssue):
         self.issue = issue
         self.archive = issue.archive
-    """Short summary.
-
-    :param type _id: Description of parameter `_id`.
-    :param type n: Description of parameter `n`.
-    :param type toc_data: Description of parameter `toc_data`.
-    :param type image_info: Description of parameter `image_info`.
-    :param type page_xml: Description of parameter `page_xml`.
-    """
 
 
 class OliveNewspaperIssue(NewspaperIssue):
-    """Short summary.
+    """Class representing a newspaper issue in Olive format.
+
+    Upon object initialization the following things happen:
+
+    - the Zip archive containing the issue is uncompressed
+    - the ToC file is parsed to determine the logical structure of the issue
+    - page objects (instances of ``OliveNewspaperPage``) are initialised.
 
     :param IssueDir issue_dir: Description of parameter `issue_dir`.
-    :param str image_dirs: Description of parameter `image_dirs`.
+    :param str image_dirs: Path to the directory with the page images. Multiple
+        paths should be separated by comma (",").
     :param str temp_dir: Description of parameter `temp_dir`.
 
     """
@@ -259,6 +265,7 @@ class OliveNewspaperIssue(NewspaperIssue):
             raise ValueError(msg)
 
     def _get_page_xml_files(self) -> dict:
+        """Get the list of page XML files in the Zip archive."""
         page_xml = None
         if self.archive is not None:
             page_xml = {
@@ -270,7 +277,14 @@ class OliveNewspaperIssue(NewspaperIssue):
 
         return page_xml
 
-    def _parse_toc(self, file: str = "TOC.xml"):
+    def _parse_toc(self, file: str = "TOC.xml") -> dict:
+        """Parse the XML file containing the issue's ToC.
+
+        :param str file: Name of the ToC file.
+        :return: ToC data.
+        :rtype: dict
+
+        """
         toc_path = os.path.join(self.path, file)
         try:
             toc_data = olive_toc_parser(toc_path, self.issue_dir)
@@ -283,6 +297,7 @@ class OliveNewspaperIssue(NewspaperIssue):
         return toc_data
 
     def _parse_image_xml_files(self):
+        """Extract image metadata from XML files."""
         image_xml_files = [
             item
             for item in self.archive.namelist()
@@ -307,8 +322,12 @@ class OliveNewspaperIssue(NewspaperIssue):
             self,
             file: str = 'styleGallery.txt'
     ) -> List[dict]:
-        """
-        TODO
+        """Parse the style file (plain text).
+
+        :param str file: File containing text styles (produced by Olive OCR).
+        :return: A list of styles.
+        :rtype: List[dict]
+
         """
         styles = []
         if file in self.archive.namelist():
@@ -397,10 +416,10 @@ class OliveNewspaperIssue(NewspaperIssue):
                 raise e
         return articles, content_elements
 
-    def _get_image_info(self):
-        """
-        Get the contents of the `image-info.json` file for a given issue.
-        :return: the content of the `image-info.json` file
+    def _get_image_info(self) -> dict:
+        """Read `image-info.json` file for a given issue.
+
+        :return: Content of the `image-info.json` file
         :rtype: dict
         """
         json_data = []
@@ -452,6 +471,7 @@ class OliveNewspaperIssue(NewspaperIssue):
             raise ValueError(msg)
 
     def _find_pages(self):
+        """Find page XML files and initialize page objects."""
         if self.toc_data is not None:
             image_info = self._get_image_info()
             pages_xml = self._get_page_xml_files()

@@ -219,7 +219,7 @@ specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
 <dl class="method">
 <dt id="text_importer.importers.classes.NewspaperPage.add_issue">
 <em class="property">abstract </em><code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds to a page object its parent, i.e. the newspaper issue.</p>
+<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the newspaper issue.</p>
 <dl class="field-list simple">
@@ -230,9 +230,21 @@ the newspaper issue.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="text_importer.importers.classes.NewspaperPage.parse">
+<em class="property">abstract </em><code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process the page file and transform into canonical format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This lazy behavior means that the page contents are not processed
+upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
+method is called.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
 <dt id="text_importer.importers.classes.NewspaperPage.to_json">
 <code class="sig-name descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.to_json" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validates <code class="docutils literal notranslate"><span class="pre">self.page.data</span></code> &amp; serializes it to string.</p>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.page.data</span></code> &amp; serializes it to string.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Validation adds a substantial overhead to computing time. For
