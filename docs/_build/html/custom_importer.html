@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Available importers" href="importers.html" /> 
+    <link rel="prev" title="Olive XML importer" href="importers/olive.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -82,10 +82,11 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logic.html">Logic</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importers.html">Available importers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Write your own importer</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tldr">TLDR;</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#minting-canonical-ids">Minting canonical IDs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#detecting-data-to-import">Detecting data to import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#subclassing-abstract-classes">Subclassing abstract classes</a></li>
 </ul>
@@ -158,7 +159,7 @@
 <h1>Write your own importer<a class="headerlink" href="#write-your-own-importer" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="tldr">
 <h2>TLDR;<a class="headerlink" href="#tldr" title="Permalink to this headline">¶</a></h2>
-<p>To write a custom importer is easy and entails implementing two
+<p>Writing a custom importer is easy and entails implementing two
 pieces of code:</p>
 <ol class="arabic simple">
 <li><p>implementing functions to find the data that should be imported.</p></li>
@@ -167,8 +168,17 @@ pieces of code:</p>
 <p><strong>TODO</strong>: Given an example.</p>
 <p><strong>TODO</strong>: How to structure the code.</p>
 </div>
+<div class="section" id="minting-canonical-ids">
+<h2>Minting canonical IDs<a class="headerlink" href="#minting-canonical-ids" title="Permalink to this headline">¶</a></h2>
+<p>TBD</p>
+</div>
 <div class="section" id="detecting-data-to-import">
 <h2>Detecting data to import<a class="headerlink" href="#detecting-data-to-import" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>the importer needs to know which data should be imported</p></li>
+<li><p>information about the newspaper contents is often encoded as part of
+folder names etc., thus it needs to be extracted and made explicit</p></li>
+</ul>
 </div>
 <div class="section" id="subclassing-abstract-classes">
 <h2>Subclassing abstract classes<a class="headerlink" href="#subclassing-abstract-classes" title="Permalink to this headline">¶</a></h2>
@@ -181,10 +191,7 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 <dl class="method">
 <dt id="text_importer.importers.classes.NewspaperIssue.to_json">
 <code class="sig-name descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue.to_json" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Validates <code class="docutils literal notranslate"><span class="pre">self.issue_data</span></code> against <code class="docutils literal notranslate"><span class="pre">IssueSchema</span></code> &amp; serializes it</dt><dd><p>to string.</p>
-</dd>
-</dl>
+<dd><p>Validates <code class="docutils literal notranslate"><span class="pre">self.issue_data</span></code> &amp; serializes it to string.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Validation adds a substantial overhead to computing time. For
@@ -201,12 +208,25 @@ bypass schema validation.</p>
 <dd><p>Abstract class representing a newspaper page.</p>
 <p>Each text importer needs to define a subclass of <code class="docutils literal notranslate"><span class="pre">NewspaperPage</span></code> which
 specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="text_importer.importers.classes.NewspaperPage.add_issue">
 <em class="property">abstract </em><code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds to a page object its parent, i.e. the newspaper issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the newspaper issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Description of parameter <cite>issue</cite>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -235,7 +255,7 @@ bypass schema validation.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="importers.html" class="btn btn-neutral float-left" title="Available importers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="importers/olive.html" class="btn btn-neutral float-left" title="Olive XML importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

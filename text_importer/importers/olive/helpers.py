@@ -1,3 +1,5 @@
+"""Helper functions used by the Olive Importer."""
+
 import copy
 import logging
 import time
@@ -30,29 +32,29 @@ def merge_pseudo_tokens(line: dict) -> dict:
     """
     original_line = " ".join([t["tx"] for t in line["t"]])
     qids = set([token["qid"] for token in line["t"] if "qid" in token])
-    
+
     inline_qids = []
-    
+
     for qid in qids:
         tokens = [(i, token) for i, token in enumerate(line["t"]) if "qid" in token and token["qid"] == qid]
         if len(tokens) > 1:
             inline_qids.append(qid)
-    
+
     if len(inline_qids) == 0:
         return line
-    
+
     for qid in inline_qids:
         # identify tokens to merge
         tokens = [(i, token) for i, token in enumerate(line["t"]) if "qid" in token and token["qid"] == qid]
-        
+
         # remove tokens to merge from the line
         tokens_to_merge = [line["t"].pop(line["t"].index(token)) for i, token in tokens]
-        
+
         if len(tokens_to_merge) >= 2:
             insertion_point = tokens[0][0]
             merged_token = merge_tokens(tokens_to_merge, original_line)
             line["t"].insert(insertion_point, merged_token)
-    
+
     return line
 
 
@@ -114,19 +116,19 @@ def combine_article_parts(article_parts: List[dict]) -> dict:
         article_dict["meta"]["type"] = {}
         article_dict["meta"]["type"]["raw"] = \
             article_parts[0]["meta"]["type"]["raw"]
-        
+
         article_dict["meta"]["title"] = article_parts[0]["meta"]["title"]
         article_dict["meta"]["page_no"] = [
                 int(n)
                 for ar in article_parts
                 for n in ar["meta"]["page_no"]
                 ]
-        
+
         # TODO: remove from production
         if len(article_dict["meta"]["page_no"]) > 1:
             # pdb.set_trace()
             pass
-        
+
         article_dict["meta"]["language"] = {}
         article_dict["meta"]["language"] = \
             article_parts[0]["meta"]["language"]
@@ -156,14 +158,14 @@ def normalize_line(line, lang):
     if len(mw_tokens) > 0:
         line = merge_pseudo_tokens(line)
         line = normalize_hyphenation(line)
-    
+
     for i, token in enumerate(line["t"]):
         if "qid" not in token and "nf" in token:
             del token["nf"]
-        
+
         if "qid" in token:
             del token["qid"]
-        
+
         if i == 0 and i != len(line["t"]) - 1:
             insert_ws = insert_whitespace(
                     token["tx"],
@@ -171,7 +173,7 @@ def normalize_line(line, lang):
                     None,
                     lang
                     )
-        
+
         elif i == 0 and i == len(line["t"]) - 1:
             insert_ws = insert_whitespace(
                     token["tx"],
@@ -179,7 +181,7 @@ def normalize_line(line, lang):
                     None,
                     lang
                     )
-        
+
         elif i == len(line["t"]) - 1:
             insert_ws = insert_whitespace(
                     token["tx"],
@@ -187,7 +189,7 @@ def normalize_line(line, lang):
                     line["t"][i - 1]["tx"],
                     lang
                     )
-        
+
         else:
             insert_ws = insert_whitespace(
                     token["tx"],
@@ -197,7 +199,7 @@ def normalize_line(line, lang):
                     )
         if not insert_ws:
             token["gn"] = True
-    
+
     return line
 
 
@@ -221,17 +223,17 @@ def recompose_ToC(original_toc_data, articles, images):
             toc_data[pn][elid]
             for pn in toc_data.keys() for elid in toc_data[pn].keys()
             ]
-    
+
     # filter out those items that are part of a multipart article
     contents = []
     sorted_content_items = sorted(content_items, key=itemgetter('seq'))
     for item in sorted_content_items:
-        
+
         item['m'] = {}
         item["l"] = {}
-        
+
         if item["type"] == "Article" or item["type"] == "Ad":
-            
+
             # find the corresponding item in `articles`
             # by using `legacy_id` as the search key
             # if not found (raises exception) means that it's one of the
@@ -245,37 +247,37 @@ def recompose_ToC(original_toc_data, articles, images):
                 else:
                     if ar["legacy"]["id"] == legacy_id:
                         article = ar
-            
+
             try:
                 assert article is not None
             except Exception:
                 continue
-            
+
             item['m']["id"] = item["id"]
             item['m']['pp'] = article["meta"]["page_no"]
             item['m']['l'] = article["meta"]["language"]
             item['m']['tp'] = article["meta"]["type"]["raw"].lower()
-            
+
             if keep_title(article["meta"]["title"]):
                 item['m']['t'] = article["meta"]["title"]
-            
+
             item["l"]["id"] = article["legacy"]["id"]
             item["l"]["source"] = article["legacy"]["source"]
-        
+
         elif item["type"] == "Picture":
-            
+
             # find in which page the image is
             page_no = [
                     page_no
                     for page_no in toc_data
                     if item['legacy_id'] in toc_data[page_no]
                     ]
-            
+
             # get the new canonical id via the legacy id
             item['m']['id'] = item['id']
             item['m']['tp'] = item['type'].lower()
             item['m']['pp'] = page_no
-            
+
             try:
                 image = [
                         image
@@ -287,22 +289,22 @@ def recompose_ToC(original_toc_data, articles, images):
                 # coords, it won't find a corresping image item
                 logger.info(f"Image {item['legacy_id']} will be skipped")
                 continue
-            
+
             if keep_title(image["name"]):
                 item['m']['t'] = image["name"]
-            
+
             item['l']['id'] = item['legacy_id']
             item['l']['res'] = image['resolution']
             item['l']['path'] = image['filepath']
-            
+
             item['c'] = image['coords']
             toc_item = toc_data[page_no[0]][item['legacy_id']]
-            
+
             if "embedded_into" in item:
                 cont_article_id = toc_item['embedded_into']
                 try:
                     containing_article = toc_data[page_no[0]][cont_article_id]
-                    
+
                     # content item entries exists in different shapes within
                     # the `toc_data` dict, depending on whether they have
                     # already been processed in this `for` loop or not
@@ -317,7 +319,7 @@ def recompose_ToC(original_toc_data, articles, images):
                     logger.error(
                             f"Containing article for {item['m']['id']} not found (error = {e})"
                             )
-        
+
         # delete redundant fields
         if "embedded_into" in item:
             del item['embedded_into']
@@ -325,7 +327,7 @@ def recompose_ToC(original_toc_data, articles, images):
         del item['legacy_id']
         del item['type']
         del item['id']
-        
+
         contents.append(item)
     return contents
 
@@ -343,7 +345,7 @@ def recompose_page(page_id: str, info_from_toc: dict, page_elements: dict, clust
 
     It's here that `n` attributes are assigned to each region/para/line/token.
     """
-    
+
     page = {
             "r": [],
             "cdt": strftime("%Y-%m-%d %H:%M:%S")
@@ -351,20 +353,20 @@ def recompose_page(page_id: str, info_from_toc: dict, page_elements: dict, clust
     ordered_elements = sorted(
             list(info_from_toc.values()), key=itemgetter('seq')
             )
-    
+
     id_mappings = {
             legacy_id: info_from_toc[legacy_id]['id']
             for legacy_id in info_from_toc
             }
-    
+
     # put together the regions while keeping the order in the page
     for el in ordered_elements:
-        
+
         # keep only IDS of content items that are Ads or Articles
         # but escluding various other files in the archive
         if "Ar" not in el["legacy_id"] and "Ad" not in el["legacy_id"]:
             continue
-        
+
         # this is to manage the situation of a multi-part article
         part_of = None
         if el['legacy_id'] in clusters:
@@ -374,19 +376,19 @@ def recompose_page(page_id: str, info_from_toc: dict, page_elements: dict, clust
                 if el['legacy_id'] in clusters[key]:
                     part_of = key
                     break
-        
+
         if el["legacy_id"] in page_elements:
             element = page_elements[el["legacy_id"]]
         else:
             logger.error(f"{el['id']}: {el['legacy_id']} not found in page {page_id}")
             continue
         mapped_id = id_mappings[part_of] if part_of in id_mappings else None
-        
+
         for i, region in enumerate(element["r"]):
             region["pOf"] = mapped_id
-        
+
         page["r"] += element["r"]
-    
+
     return page
 
 

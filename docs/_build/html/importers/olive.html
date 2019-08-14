@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Write your own importer" href="../custom_importer.html" />
+    <link rel="prev" title="TextImporter" href="../importers.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -79,10 +81,24 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../logic.html">Logic</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../importers.html">Available importers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">TextImporter</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Olive XML importer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.olive.classes">Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.olive.detect">Detect functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.olive.parsers">Olive parsers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.olive.helpers">Helper methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-files">Configuration files</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Write your own importer</a></li>
 </ul>
 
@@ -129,6 +145,8 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../importers.html">TextImporter</a> &raquo;</li>
+        
       <li>Olive XML importer</li>
     
     
@@ -150,7 +168,373 @@
             
   <div class="section" id="olive-xml-importer">
 <h1>Olive XML importer<a class="headerlink" href="#olive-xml-importer" title="Permalink to this headline">¶</a></h1>
-<p>TBD</p>
+<div class="section" id="module-text_importer.importers.olive.classes">
+<span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.olive.classes" title="Permalink to this headline">¶</a></h2>
+<p>Classes to handle the Olive XML OCR format.</p>
+<dl class="class">
+<dt id="text_importer.importers.olive.classes.OliveArchive">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.olive.classes.</code><code class="sig-name descname">OliveArchive</code><span class="sig-paren">(</span><em class="sig-param">archive: zipfile.ZipFile</em>, <em class="sig-param">temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>archive</strong> (<em>ZipFile</em>) – Zip archive containing Olive XML data.</p></li>
+<li><p><strong>temp_dir</strong> (<em>str</em>) – A temporary directory to store uncompressed data.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="text_importer.importers.olive.classes.OliveArchive.cleanup">
+<code class="sig-name descname">cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive.cleanup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="text_importer.importers.olive.classes.OliveArchive.extract_archive">
+<code class="sig-name descname">extract_archive</code><span class="sig-paren">(</span><em class="sig-param">archive: zipfile.ZipFile</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive.extract_archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the Olive Zip archive into a temporary directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>archive</strong> (<em>ZipFile</em>) – The Zip archive to extract.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="text_importer.importers.olive.classes.OliveArchive.namelist">
+<code class="sig-name descname">namelist</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive.namelist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the list of file names in the archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The name of files in the Zip archive.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="text_importer.importers.olive.classes.OliveArchive.read">
+<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">file: str</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file</strong> (<em>str</em>) – Description of parameter <cite>file</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bytes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="text_importer.importers.olive.classes.OliveNewspaperIssue">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.olive.classes.</code><code class="sig-name descname">OliveNewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em class="sig-param">image_dirs: str</em>, <em class="sig-param">temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Description of parameter <cite>issue_dir</cite>.</p></li>
+<li><p><strong>image_dirs</strong> (<em>str</em>) – Description of parameter <cite>image_dirs</cite>.</p></li>
+<li><p><strong>temp_dir</strong> (<em>str</em>) – Description of parameter <cite>temp_dir</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="text_importer.importers.olive.classes.OliveNewspaperPage">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.olive.classes.</code><code class="sig-name descname">OliveNewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id</em>, <em class="sig-param">n</em>, <em class="sig-param">toc_data</em>, <em class="sig-param">image_info</em>, <em class="sig-param">page_xml</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>type</em>) – Description of parameter <cite>_id</cite>.</p></li>
+<li><p><strong>n</strong> (<em>type</em>) – Description of parameter <cite>n</cite>.</p></li>
+<li><p><strong>toc_data</strong> (<em>type</em>) – Description of parameter <cite>toc_data</cite>.</p></li>
+<li><p><strong>image_info</strong> (<em>type</em>) – Description of parameter <cite>image_info</cite>.</p></li>
+<li><p><strong>page_xml</strong> (<em>type</em>) – Description of parameter <cite>page_xml</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
+<dt id="text_importer.importers.olive.classes.OliveNewspaperPage.add_issue">
+<code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds to a page object its parent, i.e. the newspaper issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the newspaper issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Description of parameter <cite>issue</cite>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-text_importer.importers.olive.detect">
+<span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.olive.detect" title="Permalink to this headline">¶</a></h2>
+<p>Objects and functions to detect Olive data in the RERO dump.</p>
+<dl class="attribute">
+<dt id="text_importer.importers.olive.detect.OliveIssueDir">
+<code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">OliveIssueDir</code><a class="headerlink" href="#text_importer.importers.olive.detect.OliveIssueDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>test</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.olive.detect.IssueDirectory</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.detect.dir2olivedir">
+<code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">dir2olivedir</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em class="sig-param">access_rights: dict</em><span class="sig-paren">)</span> &#x2192; text_importer.importers.olive.detect.IssueDirectory<a class="headerlink" href="#text_importer.importers.olive.detect.dir2olivedir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Description of parameter <cite>issue_dir</cite>.</p></li>
+<li><p><strong>access_rights</strong> (<em>dict</em>) – Description of parameter <cite>access_rights</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>OliveIssueDir</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.detect.olive_detect_issues">
+<code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">olive_detect_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">access_rights: str</em>, <em class="sig-param">journal_filter: set = None</em>, <em class="sig-param">exclude: bool = False</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.olive.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.olive.detect.olive_detect_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Description of parameter <cite>base_dir</cite>.</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Description of parameter <cite>access_rights</cite>.</p></li>
+<li><p><strong>journal_filter</strong> (<em>set</em>) – Description of parameter <cite>journal_filter</cite>.</p></li>
+<li><p><strong>exclude</strong> (<em>bool</em>) – Description of parameter <cite>exclude</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[OliveIssueDir]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.detect.olive_select_issues">
+<code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">olive_select_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.olive.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.olive.detect.olive_select_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Description of parameter <cite>base_dir</cite>.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Description of parameter <cite>config</cite>.</p></li>
+<li><p><strong>access_rights</strong> (<em>dict</em>) – Description of parameter <cite>access_rights_dict</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[OliveIssueDir]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-text_importer.importers.olive.parsers">
+<span id="olive-parsers"></span><h2>Olive parsers<a class="headerlink" href="#module-text_importer.importers.olive.parsers" title="Permalink to this headline">¶</a></h2>
+<p>Functions to parse Olive XML data.</p>
+<dl class="function">
+<dt id="text_importer.importers.olive.parsers.olive_image_parser">
+<code class="sig-prename descclassname">text_importer.importers.olive.parsers.</code><code class="sig-name descname">olive_image_parser</code><span class="sig-paren">(</span><em class="sig-param">text: bytes</em><span class="sig-paren">)</span> &#x2192; Optional[dict]<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_image_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>bytes</em>) – Description of parameter <cite>text</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Optional[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.parsers.olive_parser">
+<code class="sig-prename descclassname">text_importer.importers.olive.parsers.</code><code class="sig-name descname">olive_parser</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse an Olive XML file (e.g. from Le Temps corpus).</p>
+<p>The main logic implemented here was derived from
+&lt;<a class="reference external" href="https://github.com/dhlab-epfl/LeTemps-preprocessing/">https://github.com/dhlab-epfl/LeTemps-preprocessing/</a>&gt;. Each XML file
+corresponds to one article, as detected by Olive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>string</em>) – a string with the textual xml file to parse</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>a dictionary, with keys “meta”, “stats”, “legacy”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.parsers.olive_toc_parser">
+<code class="sig-prename descclassname">text_importer.importers.olive.parsers.</code><code class="sig-name descname">olive_toc_parser</code><span class="sig-paren">(</span><em class="sig-param">toc_path</em>, <em class="sig-param">issue_dir</em>, <em class="sig-param">encoding='windows-1252'</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_toc_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the TOC.xml file (Olive format).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>toc_path</strong> (<em>type</em>) – Description of parameter <cite>toc_path</cite>.</p></li>
+<li><p><strong>issue_dir</strong> (<em>type</em>) – Description of parameter <cite>issue_dir</cite>.</p></li>
+<li><p><strong>encoding</strong> (<em>type</em>) – Description of parameter <cite>encoding</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.parsers.parse_styles">
+<code class="sig-prename descclassname">text_importer.importers.olive.parsers.</code><code class="sig-name descname">parse_styles</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="headerlink" href="#text_importer.importers.olive.parsers.parse_styles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn Olive style file into a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – textual content of file <cite>styleGallery.txt</cite></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of dicts</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-text_importer.importers.olive.helpers">
+<span id="helper-methods"></span><h2>Helper methods<a class="headerlink" href="#module-text_importer.importers.olive.helpers" title="Permalink to this headline">¶</a></h2>
+<p>Helper functions used by the Olive Importer.</p>
+<dl class="function">
+<dt id="text_importer.importers.olive.helpers.combine_article_parts">
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">combine_article_parts</code><span class="sig-paren">(</span><em class="sig-param">article_parts: List[dict]</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.combine_article_parts" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>article_parts</strong> (<em>list of dict</em>) – one or more article parts</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>a dictionary, with keys “meta”, “fulltext”, “stats”, “legacy”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.helpers.convert_image_coordinates">
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">convert_image_coordinates</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">page_xml</em>, <em class="sig-param">page_image_name</em>, <em class="sig-param">zip_archive</em>, <em class="sig-param">box_strategy</em>, <em class="sig-param">issue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.convert_image_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Logic:</dt><dd><ul class="simple">
+<li><p>get scale factor (passing strategy)</p></li>
+<li><p>for each element with coordinates recompute box</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns the same page, with converted boxes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.helpers.convert_page_coordinates">
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">convert_page_coordinates</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">page_xml</em>, <em class="sig-param">page_image_name</em>, <em class="sig-param">zip_archive</em>, <em class="sig-param">box_strategy</em>, <em class="sig-param">issue</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#text_importer.importers.olive.helpers.convert_page_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Logic:</dt><dd><ul class="simple">
+<li><p>get scale factor (passing strategy)</p></li>
+<li><p>for each element with coordinates recompute box</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns the same page, with converted boxes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.helpers.merge_pseudo_tokens">
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">merge_pseudo_tokens</code><span class="sig-paren">(</span><em class="sig-param">line: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.merge_pseudo_tokens" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove pseudo tokens from a line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> – a line of OCR in JSON format</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.helpers.normalize_hyphenation">
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">normalize_hyphenation</code><span class="sig-paren">(</span><em class="sig-param">line: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.normalize_hyphenation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize end-of-line hyphenated words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<em>dict</em><em> (</em><em>keys: coords</em><em>, </em><em>tokens</em><em>)</em>) – a line of OCR in JSON format</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict (keys: coords, tokens)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.helpers.normalize_line">
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">normalize_line</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">lang</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.normalize_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply normalization to a line of OCR.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<em>dict</em><em> (</em><em>keys: coords</em><em>, </em><em>tokens</em><em>)</em>) – a line of OCR text</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict (keys: coords, tokens)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.helpers.recompose_ToC">
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">recompose_ToC</code><span class="sig-paren">(</span><em class="sig-param">original_toc_data</em>, <em class="sig-param">articles</em>, <em class="sig-param">images</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_ToC" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.olive.helpers.recompose_page">
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">recompose_page</code><span class="sig-paren">(</span><em class="sig-param">page_id: str</em>, <em class="sig-param">info_from_toc: dict</em>, <em class="sig-param">page_elements: dict</em>, <em class="sig-param">clusters: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a page document starting from a list of page documents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page_id</strong> – page id</p></li>
+<li><p><strong>info_from_toc</strong> – a dictionary with page element IDs (articles, ads.)
+as keys, and dictionaries as values</p></li>
+<li><p><strong>page_elements</strong> – articles or advertisements</p></li>
+<li><p><strong>clusters</strong> – an inverted index of legacy ids; if an id is part of
+multipart article, the id is found not as a key but in one of the
+values.</p></li>
+</ul>
+</dd>
+</dl>
+<p>It’s here that <cite>n</cite> attributes are assigned to each region/para/line/token.</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -158,6 +542,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../custom_importer.html" class="btn btn-neutral float-right" title="Write your own importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../importers.html" class="btn btn-neutral float-left" title="TextImporter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

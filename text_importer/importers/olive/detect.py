@@ -1,8 +1,11 @@
+"""Objects and functions to detect Olive data in the RERO dump."""
+
 import json
 from collections import namedtuple
 from typing import List
 
-from impresso_commons.path.path_fs import IssueDir, detect_issues, select_issues
+from impresso_commons.path.path_fs import (IssueDir, detect_issues,
+                                           select_issues)
 
 from text_importer.utils import get_access_right
 
@@ -15,6 +18,7 @@ OliveIssueDir = namedtuple(
                 'rights'
                 ]
         )
+"""test"""
 
 
 def dir2olivedir(issue_dir: IssueDir, access_rights: dict) -> OliveIssueDir:
@@ -52,16 +56,16 @@ def olive_detect_issues(
     :rtype: List[OliveIssueDir]
 
     """
-    
+
     with open(access_rights, 'r') as f:
         access_rights_dict = json.load(f)
-    
+
     issues = detect_issues(
             base_dir,
             journal_filter=journal_filter,
             exclude=exclude
             )
-    
+
     return [dir2olivedir(x, access_rights_dict) for x in issues]
 
 
@@ -81,7 +85,7 @@ def olive_select_issues(
     """
     with open(access_rights, 'r') as f:
         access_rights_dict = json.load(f)
-    
+
     issues = select_issues(config, base_dir)
-    
+
     return [dir2olivedir(x, access_rights_dict) for x in issues]

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Available importers &mdash; Impresso TextImporter  documentation</title>
+  <title>TextImporter &mdash; Impresso TextImporter  documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Write your own importer" href="custom_importer.html" />
-    <link rel="prev" title="Logic" href="logic.html" /> 
+    <link rel="next" title="Olive XML importer" href="importers/olive.html" />
+    <link rel="prev" title="Architecture" href="architecture.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,9 +83,14 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logic.html">Logic</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Available importers</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TextImporter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#available-importers">Available importers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="importers/olive.html">Olive XML importer</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-files">Configuration files</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Write your own importer</a></li>
@@ -134,7 +139,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Available importers</li>
+      <li>TextImporter</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,19 +158,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="available-importers">
-<h1>Available importers<a class="headerlink" href="#available-importers" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="textimporter">
+<h1>TextImporter<a class="headerlink" href="#textimporter" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="available-importers">
+<h2>Available importers<a class="headerlink" href="#available-importers" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>: Olive XML OCR of <a class="reference external" href="https://www.rero.ch/">RERO</a></p></li>
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">reroimporter.py</span></code>: Mets/ALTO flavor of <a class="reference external" href="https://www.rero.ch/">RERO</a></p></li>
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">luximporter.py</span></code>: Mets/ALTO flavor of the Bibliotheque National du Luxembourg</p></li>
 </ul>
-<p>Importers’ APIs:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="importers/olive.html"><span class="doc">Olive XML importer</span></a></p></li>
-<li><p><a class="reference internal" href="importers/rero.html"><span class="doc">RERO Mets/Alto importer</span></a></p></li>
-<li><p><a class="reference internal" href="importers/lux.html"><span class="doc">BNL Mets/Alto importer</span></a></p></li>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Importers' APIs:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="importers/olive.html">Olive XML importer</a></li>
 </ul>
+</div>
+</div>
 <div class="section" id="command-line-interface">
 <h2>Command-line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
@@ -175,15 +183,15 @@ are import-specific (see documentation below).</p>
 </div>
 <span class="target" id="module-text_importer.importers.generic_importer"></span><p>Functions and CLI script to convert any OCR data into Impresso’s format.</p>
 <dl>
-<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir==&lt;od&gt; –image-dir=&lt;imd&gt; –temp-dir=&lt;td&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –access-rights=&lt;ar&gt;]</p>
-<p>&lt;importer-name&gt;importer.py –version</p>
+<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –access-rights=&lt;ar&gt;]
+&lt;importer-name&gt;importer.py –version</p>
 </dd>
 <dt>Options:</dt><dd><dl class="option-list">
 <dt><kbd><span class="option">--input-dir=<var>&lt;id&gt;</var></span></kbd></dt>
 <dd><p>Base directory containing one sub-directory for each journal</p>
 </dd>
-<dt><kbd><span class="option">--image-dir=<var>&lt;imgd&gt;</var></span></kbd></dt>
-<dd><p>Directory containing (canonical) images and their metadata</p>
+<dt><kbd><span class="option">--image-dirs=<var>&lt;imd&gt;</var></span></kbd></dt>
+<dd><p>Directory containing (canonical) images and their metadata (use <cite>,</cite> to separate multiple dirs)</p>
 </dd>
 <dt><kbd><span class="option">--output-dir=<var>&lt;od&gt;</var></span></kbd></dt>
 <dd><p>Base directory where to write the output files</p>
@@ -219,6 +227,9 @@ are import-specific (see documentation below).</p>
 </dd>
 </dl>
 </div>
+<div class="section" id="configuration-files">
+<h2>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -229,10 +240,10 @@ are import-specific (see documentation below).</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="custom_importer.html" class="btn btn-neutral float-right" title="Write your own importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="importers/olive.html" class="btn btn-neutral float-right" title="Olive XML importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="logic.html" class="btn btn-neutral float-left" title="Logic" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="architecture.html" class="btn btn-neutral float-left" title="Architecture" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

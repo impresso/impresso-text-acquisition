@@ -15,7 +15,7 @@ into `Impresso's JSON format <https://github.com/impresso/impresso-schemas>`_.
    :caption: Contents:
 
    install
-   logic
+   architecture
    importers
    custom_importer
 

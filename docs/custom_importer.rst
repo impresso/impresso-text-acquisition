@@ -14,8 +14,17 @@ pieces of code:
 
 **TODO**: How to structure the code.
 
+Minting canonical IDs
+---------------------
+
+TBD
+
 Detecting data to import
 ------------------------
+
+- the importer needs to know which data should be imported
+- information about the newspaper contents is often encoded as part of
+  folder names etc., thus it needs to be extracted and made explicit
 
 Subclassing abstract classes
 ----------------------------

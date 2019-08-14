@@ -37,8 +37,7 @@ class NewspaperIssue(ABC):
 
     def to_json(self) -> str:
 
-        """Validates ``self.issue_data`` against ``IssueSchema`` & serializes it
-         to string.
+        """Validates ``self.issue_data`` & serializes it to string.
 
         .. note ::
             Validation adds a substantial overhead to computing time. For
@@ -56,10 +55,9 @@ class NewspaperPage(ABC):
     specifies the logic to handle OCR data in a given format (e.g. Alto).
     """
     def __init__(self, _id: str, number: int):
-        """Initializes a ``NewspaperPage`` object.
-
-        :param str _id: Description of parameter `_id`.
-        :param int number: Description of parameter `number`.
+        """
+        :param str _id: Canonical page ID (e.g. ``GDL-1900-01-02-a-p0004``).
+        :param int number: Page number.
 
         """
         self.id = _id
@@ -84,6 +82,8 @@ class NewspaperPage(ABC):
 
         This allows each page to preserve contextual information coming from
         the newspaper issue.
+
+        :param NewspaperIssue issue: Description of parameter `issue`.
         """
         pass
 
