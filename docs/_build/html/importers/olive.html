@@ -493,44 +493,80 @@ as defined in the impresso JSON schema for newspaper pages (see
 <div class="section" id="module-text_importer.importers.olive.helpers">
 <span id="helper-methods"></span><h2>Helper methods<a class="headerlink" href="#module-text_importer.importers.olive.helpers" title="Permalink to this headline">¶</a></h2>
 <p>Helper functions used by the Olive Importer.</p>
+<p>These functions are mainly used within (i.e. called by) the classes
+<code class="docutils literal notranslate"><span class="pre">OliveNewspaperIssue</span></code> and <code class="docutils literal notranslate"><span class="pre">OliveNewspaperPage</span></code>.</p>
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.combine_article_parts">
 <code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">combine_article_parts</code><span class="sig-paren">(</span><em class="sig-param">article_parts: List[dict]</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.combine_article_parts" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO.</p>
+<dd><p>Merge article parts into a single element.</p>
+<p>Olive format splits an article into multiple components whenever it spans
+over multiple pages. Thus, it is necessary to recompose multiple parts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>article_parts</strong> (<em>list of dict</em>) – one or more article parts</p>
+<dd class="field-odd"><p><strong>article_parts</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – one or more article parts</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>a dictionary, with keys “meta”, “fulltext”, “stats”, “legacy”</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary, with keys <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">fulltext</span></code>, <code class="docutils literal notranslate"><span class="pre">stats</span></code>,
+<code class="docutils literal notranslate"><span class="pre">legacy</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.convert_image_coordinates">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">convert_image_coordinates</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">page_xml</em>, <em class="sig-param">page_image_name</em>, <em class="sig-param">zip_archive</em>, <em class="sig-param">box_strategy</em>, <em class="sig-param">issue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.convert_image_coordinates" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Logic:</dt><dd><ul class="simple">
-<li><p>get scale factor (passing strategy)</p></li>
-<li><p>for each element with coordinates recompute box</p></li>
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">convert_image_coordinates</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">page_xml</em>, <em class="sig-param">page_image_name</em>, <em class="sig-param">zip_archive</em>, <em class="sig-param">box_strategy</em>, <em class="sig-param">issue</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#text_importer.importers.olive.helpers.convert_image_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert coordinates of an image.</p>
+<p><strong>NB</strong>: This conversions is necessary since the coordinates recorded in the
+XML file were computed on a different image than the one used for display
+in the impresso interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>dict</em>) – Image metadata.</p></li>
+<li><p><strong>page_xml</strong> (<em>str</em>) – Content of Olive page XML.</p></li>
+<li><p><strong>page_image_name</strong> (<em>str</em>) – Name of page image file.</p></li>
+<li><p><strong>zip_archive</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveArchive" title="text_importer.importers.olive.classes.OliveArchive"><em>OliveArchive</em></a>) – Olive Zip archive.</p></li>
+<li><p><strong>box_strategy</strong> (<em>str</em>) – Conversion strategy to apply.</p></li>
+<li><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><em>OliveNewspaperIssue</em></a>) – Newspaper issue the page belongs to.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the coordinate conversion was successful or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
 </dl>
-<p>Returns the same page, with converted boxes.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.convert_page_coordinates">
 <code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">convert_page_coordinates</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">page_xml</em>, <em class="sig-param">page_image_name</em>, <em class="sig-param">zip_archive</em>, <em class="sig-param">box_strategy</em>, <em class="sig-param">issue</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#text_importer.importers.olive.helpers.convert_page_coordinates" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Logic:</dt><dd><ul class="simple">
-<li><p>get scale factor (passing strategy)</p></li>
-<li><p>for each element with coordinates recompute box</p></li>
+<dd><p>Convert coordinates of all elements in a page that have coordinates.</p>
+<p><strong>NB</strong>: This conversions is necessary since the coordinates recorded in the XML
+file were computed on a different image than the one used for display in
+the impresso interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperPage" title="text_importer.importers.olive.classes.OliveNewspaperPage"><em>OliveNewspaperPage</em></a>) – Page whose coordinates should be converted.</p></li>
+<li><p><strong>page_xml</strong> (<em>str</em>) – Content of Olive page XML.</p></li>
+<li><p><strong>page_image_name</strong> (<em>type</em>) – Name of page image file.</p></li>
+<li><p><strong>zip_archive</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveArchive" title="text_importer.importers.olive.classes.OliveArchive"><em>OliveArchive</em></a>) – Olive Zip archive.</p></li>
+<li><p><strong>box_strategy</strong> (<em>str</em>) – Conversion strategy to apply.</p></li>
+<li><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><em>OliveNewspaperIssue</em></a>) – Newspaper issue the page belongs to.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the coordinate conversion was successful or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
 </dl>
-<p>Returns the same page, with converted boxes.</p>
 </dd></dl>
 
 <dl class="function">
@@ -539,7 +575,13 @@ as defined in the impresso JSON schema for newspaper pages (see
 <dd><p>Remove pseudo tokens from a line.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>line</strong> – a line of OCR in JSON format</p>
+<dd class="field-odd"><p><strong>line</strong> (<em>dict</em>) – a line of OCR in JSON format.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new line object (with different number of tokens).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -572,52 +614,91 @@ to the combination of coordinates of the input tokens.</p>
 <dd><p>Normalize end-of-line hyphenated words.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>line</strong> (<em>dict</em><em> (</em><em>keys: coords</em><em>, </em><em>tokens</em><em>)</em>) – a line of OCR in JSON format</p>
+<dd class="field-odd"><p><strong>line</strong> (<em>dict</em>) – A line of OCR.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict (keys: coords, tokens)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new line element.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.normalize_line">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">normalize_line</code><span class="sig-paren">(</span><em class="sig-param">line</em>, <em class="sig-param">lang</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.normalize_line" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">normalize_line</code><span class="sig-paren">(</span><em class="sig-param">line: dict</em>, <em class="sig-param">lang: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.normalize_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply normalization to a line of OCR.</p>
+<p>The normalization rules that are applied depend on the language in which
+the text is written. This normalization is necessary because Olive, unlike
+e.g. Mets, does not encode explicitly the presence/absence of whitespaces.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>line</strong> (<em>dict</em><em> (</em><em>keys: coords</em><em>, </em><em>tokens</em><em>)</em>) – a line of OCR text</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>dict</em>) – A line of OCR text.</p></li>
+<li><p><strong>lang</strong> (<em>str</em>) – Language of the text.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict (keys: coords, tokens)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new line of text.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.recompose_ToC">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">recompose_ToC</code><span class="sig-paren">(</span><em class="sig-param">original_toc_data</em>, <em class="sig-param">articles</em>, <em class="sig-param">images</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_ToC" title="Permalink to this definition">¶</a></dt>
-<dd><p>TODO.</p>
+<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">recompose_ToC</code><span class="sig-paren">(</span><em class="sig-param">original_toc_data: dict, articles: List[dict], images: List[dict]</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_ToC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recompose the ToC of a newspaper issue.</p>
+<p>Function used by
+<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">OliveNewspaperIssue</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_toc_data</strong> (<em>dict</em>) – ToC data.</p></li>
+<li><p><strong>articles</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – List of content items in the issue.</p></li>
+<li><p><strong>images</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – List of images in the issue.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new list of content items.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[dict]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.recompose_page">
 <code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">recompose_page</code><span class="sig-paren">(</span><em class="sig-param">page_id: str</em>, <em class="sig-param">info_from_toc: dict</em>, <em class="sig-param">page_elements: dict</em>, <em class="sig-param">clusters: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_page" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a page document starting from a list of page documents.</p>
+<dd><p>Merge a list of page elements into a single one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>page_id</strong> – page id</p></li>
-<li><p><strong>info_from_toc</strong> – a dictionary with page element IDs (articles, ads.)
-as keys, and dictionaries as values</p></li>
-<li><p><strong>page_elements</strong> – articles or advertisements</p></li>
-<li><p><strong>clusters</strong> – an inverted index of legacy ids; if an id is part of
+<li><p><strong>page_id</strong> (<em>str</em>) – page id</p></li>
+<li><p><strong>info_from_toc</strong> (<em>dict</em>) – a dictionary with page element IDs
+(articles, ads.) as keys, and dictionaries as values</p></li>
+<li><p><strong>page_elements</strong> (<em>dict</em>) – articles or advertisements</p></li>
+<li><p><strong>clusters</strong> (<em>dict</em>) – an inverted index of legacy ids; if an id is part of
 multipart article, the id is found not as a key but in one of the
 values.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A new page element.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
 </dl>
-<p>It’s here that <cite>n</cite> attributes are assigned to each region/para/line/token.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is here that an <code class="docutils literal notranslate"><span class="pre">n</span></code> attribute is assigned to each
+region/paragraph/line/token.</p>
+</div>
 </dd></dl>
 
 </div>

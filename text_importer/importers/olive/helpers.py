@@ -1,4 +1,8 @@
-"""Helper functions used by the Olive Importer."""
+"""Helper functions used by the Olive Importer.
+
+These functions are mainly used within (i.e. called by) the classes
+``OliveNewspaperIssue`` and ``OliveNewspaperPage``.
+"""
 
 import copy
 import logging
@@ -42,7 +46,10 @@ def merge_tokens(tokens: List[dict], line: str) -> dict:
 def merge_pseudo_tokens(line: dict) -> dict:
     """Remove pseudo tokens from a line.
 
-    :param line: a line of OCR in JSON format
+    :param dict line: a line of OCR in JSON format.
+    :return: A new line object (with different number of tokens).
+    :rtype: dict
+
     """
     original_line = " ".join([t["tx"] for t in line["t"]])
     qids = set([token["qid"] for token in line["t"] if "qid" in token])
@@ -86,9 +93,9 @@ def merge_pseudo_tokens(line: dict) -> dict:
 def normalize_hyphenation(line: dict) -> dict:
     """Normalize end-of-line hyphenated words.
 
-    :param line: a line of OCR in JSON format
-    :type line: dict (keys: coords, tokens)
-    :rtype: dict (keys: coords, tokens)
+    :param dict line: A line of OCR.
+    :return: A new line element.
+    :rtype: dict
     """
     for i, token in enumerate(line["t"]):
         if i == (len(line["t"]) - 1):
@@ -115,12 +122,15 @@ def normalize_hyphenation(line: dict) -> dict:
 
 
 def combine_article_parts(article_parts: List[dict]) -> dict:
-    """TODO.
+    """Merge article parts into a single element.
+
+    Olive format splits an article into multiple components whenever it spans
+    over multiple pages. Thus, it is necessary to recompose multiple parts.
 
     :param List[dict] article_parts: one or more article parts
-    :return:
-    :rtype: A dictionary, with keys ``meta``, ``fulltext``, ``stats``,
+    :return: A dictionary, with keys ``meta``, ``fulltext``, ``stats``,
         ``legacy``.
+    :rtype: dict
     """
     if len(article_parts) > 1:
         # if an article has >1 part, retain the metadata
@@ -167,12 +177,17 @@ def combine_article_parts(article_parts: List[dict]) -> dict:
     return article_dict
 
 
-def normalize_line(line, lang):
+def normalize_line(line: dict, lang: str):
     """Apply normalization to a line of OCR.
 
-    :param line: a line of OCR text
-    :type line: dict (keys: coords, tokens)
-    :rtype: dict (keys: coords, tokens)
+    The normalization rules that are applied depend on the language in which
+    the text is written. This normalization is necessary because Olive, unlike
+    e.g. Mets, does not encode explicitly the presence/absence of whitespaces.
+
+    :param dict line: A line of OCR text.
+    :param str lang: Language of the text.
+    :return: A new line of text.
+    :rtype: dict
     """
     mw_tokens = [
             token
@@ -241,8 +256,23 @@ def keep_title(title):
         return True
 
 
-def recompose_ToC(original_toc_data, articles, images):
-    """TODO."""
+def recompose_ToC(
+    original_toc_data: dict,
+    articles: List[dict],
+    images: List[dict],
+) -> List[dict]:
+    """Recompose the ToC of a newspaper issue.
+
+    Function used by
+    :class:`~text_importer.importers.olive.classes.OliveNewspaperIssue`.
+
+    :param dict original_toc_data: ToC data.
+    :param List[dict] articles: List of content items in the issue.
+    :param List[dict] images: List of images in the issue.
+    :return: A new list of content items.
+    :rtype: List[dict]
+
+    """
     # Added deep copy because function changes toc_data
     toc_data = copy.deepcopy(original_toc_data)
     # concate content items from all pages into a single flat list
@@ -366,17 +396,21 @@ def recompose_page(
     page_elements: dict,
     clusters: dict
 ) -> dict:
-    """Create a page document starting from a list of page documents.
+    """Merge a list of page elements into a single one.
 
-    :param page_id: page id
-    :param info_from_toc: a dictionary with page element IDs (articles, ads.)
-        as keys, and dictionaries as values
-    :param page_elements: articles or advertisements
-    :param clusters: an inverted index of legacy ids; if an id is part of
+    :param str page_id: page id
+    :param dict info_from_toc: a dictionary with page element IDs
+        (articles, ads.) as keys, and dictionaries as values
+    :param dict page_elements: articles or advertisements
+    :param dict clusters: an inverted index of legacy ids; if an id is part of
         multipart article, the id is found not as a key but in one of the
         values.
+    :return: A new page element.
+    :rtype: dict
 
-    It's here that `n` attributes are assigned to each region/para/line/token.
+    .. note ::
+        It is here that an ``n`` attribute is assigned to each
+        region/paragraph/line/token.
     """
 
     page = {
@@ -436,6 +470,9 @@ def convert_box(coords, scale_factor):
     return new_box
 
 
+# TODO: move to the OliveNewspaperPage class as a method?
+# I cannot document using type info because of circular imports, which is a
+# sign that perhaps this function should rather be a method.
 def convert_page_coordinates(
     page,
     page_xml,
@@ -444,12 +481,21 @@ def convert_page_coordinates(
     box_strategy,
     issue
 ) -> bool:
-    """
-    Logic:
-        - get scale factor (passing strategy)
-        - for each element with coordinates recompute box
+    """Convert coordinates of all elements in a page that have coordinates.
 
-    Returns the same page, with converted boxes.
+    **NB**: This conversions is necessary since the coordinates recorded in the XML
+    file were computed on a different image than the one used for display in
+    the impresso interface.
+
+    :param OliveNewspaperPage page: Page whose coordinates should be converted.
+    :param str page_xml: Content of Olive page XML.
+    :param type page_image_name: Name of page image file.
+    :param OliveArchive zip_archive: Olive Zip archive.
+    :param str box_strategy: Conversion strategy to apply.
+    :param OliveNewspaperIssue issue: Newspaper issue the page belongs to.
+    :return: Whether the coordinate conversion was successful or not.
+    :rtype: bool
+
     """
     start_t = time.clock()
     scale_factor = get_scale_factor(
@@ -486,13 +532,23 @@ def convert_image_coordinates(
     zip_archive,
     box_strategy,
     issue
-):
+) -> bool:
     """
-    Logic:
-        - get scale factor (passing strategy)
-        - for each element with coordinates recompute box
+    Convert coordinates of an image.
 
-    Returns the same page, with converted boxes.
+    **NB**: This conversions is necessary since the coordinates recorded in the
+    XML file were computed on a different image than the one used for display
+    in the impresso interface.
+
+    :param dict image: Image metadata.
+    :param str page_xml: Content of Olive page XML.
+    :param str page_image_name: Name of page image file.
+    :param OliveArchive zip_archive: Olive Zip archive.
+    :param str box_strategy: Conversion strategy to apply.
+    :param OliveNewspaperIssue issue: Newspaper issue the page belongs to.
+    :return: Whether the coordinate conversion was successful or not.
+    :rtype: bool
+
     """
     try:
         scale_factor = get_scale_factor(
