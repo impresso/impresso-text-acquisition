@@ -27,3 +27,11 @@ Command-line interface
 
 Configuration files
 -------------------
+
+todo
+
+Utilities
+---------
+
+.. automodule:: text_importer.utils
+  :members:

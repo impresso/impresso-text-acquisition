@@ -6,17 +6,22 @@ import re
 from typing import List, Optional
 
 from bs4 import BeautifulSoup
-from impresso_commons.path.path_fs import canonical_path
+from impresso_commons.path.path_fs import canonical_path, IssueDir
 
-from text_importer.importers.olive.helpers import normalize_line, normalize_language
+from text_importer.importers.olive.helpers import (normalize_language,
+                                                   normalize_line)
 
 
 def parse_styles(text: str) -> List[dict]:
     """Turn Olive style file into a dictionary.
 
-    :param text: textual content of file `styleGallery.txt`
-    :type text: str
-    :rtype: list of dicts
+    Style IDs may be referred to within the ``s`` property of token elements
+    as defined in the impresso JSON schema for newspaper pages (see
+    `documentation <https://github.com/impresso/impresso-schemas/blob/master/docs/page.schema.md>`__).
+
+    :param str text: textual content of file `styleGallery.txt`
+    :return: A list of styles; each style has ID, font, font size, color (rgb).
+    :rtype: List[dict]
     """
     styles = []
     regex = r'(\d{3})=(".*?"),(\d+\.?\d+),(\(.*?\))'
@@ -31,7 +36,10 @@ def parse_styles(text: str) -> List[dict]:
                         "id": int(n),
                         "f": font.replace('"', ""),
                         "fs": float(font_size),
-                        "rgb": [int(i) for i in color.replace("(", "").replace(")", "").split(",")]
+                        "rgb": [
+                            int(i)
+                            for i in color.replace("(", "")
+                            .replace(")", "").split(",")]
                         }
                 )
 
@@ -39,10 +47,10 @@ def parse_styles(text: str) -> List[dict]:
 
 
 def olive_image_parser(text: bytes) -> Optional[dict]:
-    """Short summary.
+    """Parse the Olive XML file contaning image metadata.
 
-    :param bytes text: Description of parameter `text`.
-    :return: Description of returned object.
+    :param bytes text: Content of the XML file to parse.
+    :return: A dictionary of image metadata.
     :rtype: Optional[dict]
 
     """
@@ -63,13 +71,18 @@ def olive_image_parser(text: bytes) -> Optional[dict]:
         return None
 
 
-def olive_toc_parser(toc_path, issue_dir, encoding="windows-1252") -> dict:
+def olive_toc_parser(
+    toc_path: str,
+    issue_dir: IssueDir,
+    encoding: str = "windows-1252"
+) -> dict:
     """Parse the TOC.xml file (Olive format).
 
-    :param type toc_path: Description of parameter `toc_path`.
-    :param type issue_dir: Description of parameter `issue_dir`.
-    :param type encoding: Description of parameter `encoding`.
-    :return: Description of returned object.
+    :param str toc_path: Path to the ToC XML file.
+    :param IssueDir issue_dir: Corresponding ``IssueDir`` object.
+    :param str encoding: XML file encoding.
+    :return: A dictionary where keys are content item IDs and values their
+        metadata.
     :rtype: dict
 
     """
@@ -129,9 +142,10 @@ def olive_parser(text: str) -> dict:
     <https://github.com/dhlab-epfl/LeTemps-preprocessing/>. Each XML file
     corresponds to one article, as detected by Olive.
 
-    :param text: a string with the textual xml file to parse
+    :param text: content of the xml file to parse
     :type text: string
-    :rtype: a dictionary, with keys "meta", "stats", "legacy"
+    :return: A dictionary with keys: ``meta``, ``r``, ``stats``, ``legacy``.
+    :rtype: dict
     """
     soup = BeautifulSoup(text, "lxml")
     root = soup.find("xmd-entity")

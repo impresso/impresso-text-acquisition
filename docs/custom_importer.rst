@@ -26,6 +26,9 @@ Detecting data to import
 - information about the newspaper contents is often encoded as part of
   folder names etc., thus it needs to be extracted and made explicit
 
+
+For example: :py:func:`~text_importer.importers.olive.detect.olive_detect_issues`
+
 Subclassing abstract classes
 ----------------------------
 

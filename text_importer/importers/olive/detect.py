@@ -10,7 +10,7 @@ from impresso_commons.path.path_fs import (IssueDir, detect_issues,
 from text_importer.utils import get_access_right
 
 OliveIssueDir = namedtuple(
-        "IssueDirectory", [
+        "OliveIssueDirectory", [
                 'journal',
                 'date',
                 'edition',
@@ -18,15 +18,38 @@ OliveIssueDir = namedtuple(
                 'rights'
                 ]
         )
-"""test"""
+"""A light-weight data strucuture to represent a newspaper issue.
+
+This named tuple contains basic metadata about a newspaper issue. They
+can then be used to locate the relevant data in the filesystem or to create
+canonical identifiers for the issue and its pages.
+
+.. note ::
+
+    In case of newspaper published multiple times per day, a lowercase letter
+    is used to indicate the edition number: 'a' for the first, 'b' for the
+    second, etc.
+
+:param str journal: Newspaper ID
+:param datetime.date date: Publication date
+:param str edition: Edition of the newspaper issue ('a', 'b', 'c', etc.)
+:param str path: Path to the directory containing OCR data
+:param str rights: Access rights on the data (open, closed, etc.)
+
+>>> from datetime import date
+>>> i = OliveIssueDir('GDL', date(1900,1,1), 'a', './GDL-1900-01-01/', 'open')
+"""
 
 
 def dir2olivedir(issue_dir: IssueDir, access_rights: dict) -> OliveIssueDir:
-    """Short summary.
+    """Helper function that injects access rights info into an ``IssueDir``.
 
-    :param IssueDir issue_dir: Description of parameter `issue_dir`.
-    :param dict access_rights: Description of parameter `access_rights`.
-    :return: Description of returned object.
+    .. note ::
+        This function is called internally by :func:`olive_select_issues`.
+
+    :param IssueDir issue_dir: Input ``IssueDir`` object.
+    :param dict access_rights: Access rights information.
+    :return: New ``OliveIssueDir`` object.
     :rtype: OliveIssueDir
 
     """
@@ -41,18 +64,21 @@ def dir2olivedir(issue_dir: IssueDir, access_rights: dict) -> OliveIssueDir:
 
 
 def olive_detect_issues(
-        base_dir: str,
-        access_rights: str,
-        journal_filter: set = None,
-        exclude: bool = False
-        ) -> List[OliveIssueDir]:
-    """Short summary.
+    base_dir: str,
+    access_rights: str,
+    journal_filter: set = None,
+    exclude: bool = False
+) -> List[OliveIssueDir]:
+    """Detect newspaper issues to import within the filesystem.
 
-    :param str base_dir: Description of parameter `base_dir`.
-    :param str access_rights: Description of parameter `access_rights`.
-    :param set journal_filter: Description of parameter `journal_filter`.
-    :param bool exclude: Description of parameter `exclude`.
-    :return: Description of returned object.
+    This function expects the directory structure that RERO used to
+    organize the dump of Olive OCR data.
+
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param str access_rights: Path to ``access_rights.json`` file.
+    :param set journal_filter: IDs of newspapers to consider.
+    :param bool exclude: Whether ``journal_filter`` should determine exclusion.
+    :return: A list of newspaper issues to be imported.
     :rtype: List[OliveIssueDir]
 
     """
@@ -70,11 +96,16 @@ def olive_detect_issues(
 
 
 def olive_select_issues(
-        base_dir: str,
-        config: dict,
-        access_rights: str
-        ) -> List[OliveIssueDir]:
-    """Short summary.
+    base_dir: str,
+    config: dict,
+    access_rights: str
+) -> List[OliveIssueDir]:
+    """Detect selectively newspaper issues to import.
+
+    The behavior is very similar to :func:`olive_select_issues` with the only
+    difference that ``config`` specifies some rules to filter the data to
+    import. See `this section <../importers.html#configuration-files>`__ for
+    further details on how to configure filtering.
 
     :param str base_dir: Description of parameter `base_dir`.
     :param dict config: Description of parameter `config`.

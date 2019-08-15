@@ -1,4 +1,4 @@
-"""Functions to perform large-scale import of OCR data.
+"""Core functions to perform large-scale import of OCR data.
 
 Add additional bla bla bla about parallel processing and dask.
 """

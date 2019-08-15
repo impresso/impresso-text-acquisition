@@ -11,18 +11,18 @@ logger = logging.getLogger(__name__)
 def init_logger(_logger, log_level, log_file):
     # Initialise the logger
     _logger.setLevel(log_level)
-    
+
     if log_file is not None:
         handler = logging.FileHandler(filename=log_file, mode='w')
     else:
         handler = logging.StreamHandler()
-    
+
     formatter = logging.Formatter(
             '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
             )
     handler.setFormatter(formatter)
     _logger.addHandler(handler)
-    
+
     _logger.info("Logger successfully initialised")
 
 
@@ -66,4 +66,5 @@ def get_access_right(journal: str, date, access_rights: dict) -> str:
     if rights['time'] == 'all':
         return rights['access-right'].replace('-', '_')
     else:
+        # TODO: this should rather be a custom exception
         logger.warning(f"Access right not defined for {journal}-{date}")
