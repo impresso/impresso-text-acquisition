@@ -108,6 +108,8 @@ class NewspaperPage(ABC):
 
 
 class Archive(object):
+    """ Class representing an archive document. Usually, we unpack them in a temp directory to avoid jamming the memory"""
+    
     def __init__(self, archive: ZipFile, temp_dir: str):
         logger.debug(f"Extracting archive in {temp_dir}")
         self.name_list = archive.namelist()
@@ -132,7 +134,7 @@ class Archive(object):
     def namelist(self):
         return self.name_list
     
-    def read(self, file):
+    def read(self, file: str) -> bytes:
         path = os.path.join(self.dir, file)
         with open(path, 'rb') as f:
             f_bytes = f.read()
