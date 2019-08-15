@@ -55,36 +55,36 @@ def issue2pages(issue: NewspaperIssue) -> List[NewspaperPage]:
 
 def serialize_pages(pages: List[NewspaperPage], output_dir: str = None) -> List[Tuple[IssueDir, str]]:
     result = []
-
+    
     for page in pages:
-
+        
         issue_dir = copy(page.issue.issuedir)
-
+        
         out_dir = os.path.join(
                 output_dir,
                 canonical_path(issue_dir, path_type="dir")
                 )
-
+        
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
-
+        
         canonical_filename = canonical_path(
                 issue_dir,
                 "p" + str(page.number).zfill(4),
                 ".json"
                 )
-
+        
         out_file = os.path.join(out_dir, canonical_filename)
-
+        
         with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
             json.dump(page.page_data, jsonfile)
             logger.info(
                     "Written page \'{}\' to {}".format(page.number, out_file)
                     )
         result.append((issue_dir, out_file))
-
+    
     # del pages
-
+    
     gc.collect()
     return result
 
@@ -117,13 +117,13 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str]
     """
     msg = f'Issues to import: {len(issues)}'
     logger.info(msg)
-
+    
     issue_bag = db.from_sequence(issues, partition_size=60) \
-        .map(dir2issue, issue_class=issue_class, image_dirs=image_dirs, temp_dir=temp_dir)
-
-    failed_log = issue_bag.filter(lambda x: x[0] is None).map(lambda x: x[1]).persist()
+        .map(dir2issue, issue_class=issue_class, image_dirs=image_dirs, temp_dir=temp_dir).persist()
+    
+    failed_log = issue_bag.filter(lambda x: x[0] is None).map(lambda x: x[1])
     issue_bag = issue_bag.filter(lambda x: x[0] is not None).map(lambda x: x[0])
-
+    
     logger.info('Start compressing and uploading issues')
     issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
         .starmap(compress_issues, output_dir=out_dir) \
@@ -131,24 +131,24 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str]
         .starmap(cleanup) \
         .compute()
     logger.info('Done compressing and uploading')
-
+    
     processed_issues = list(issue_bag)
     random.shuffle(processed_issues)
-
+    
     chunks = chunk(processed_issues, 400)
-
+    
     for chunk_n, chunk_of_issues in enumerate(chunks):
         logger.info(f'Processing chunk {chunk_n}')
-
+        
         pages_bag = db.from_sequence(chunk_of_issues, partition_size=2) \
             .map(issue2pages) \
             .flatten() \
             .map_partitions(process_pages) \
             .map_partitions(serialize_pages, output_dir=out_dir)
-
+        
         pages_out_dir = os.path.join(out_dir, 'pages')
         Path(pages_out_dir).mkdir(exist_ok=True)
-
+        
         logger.info('Now compress and upload pages')
         pages_bag = pages_bag.groupby(
                 lambda x: canonical_path(
@@ -158,16 +158,16 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str]
             .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir) \
             .starmap(upload_pages, bucket_name=s3_bucket) \
             .starmap(cleanup)
-
+        
         pages_bag.compute()
-
+    
     log_path = os.path.join(out_dir, 'failed.log')
     failed_log = failed_log.compute()
-
+    
     with open(log_path, 'w') as f:
         f.write("\n".join(failed_log))
         logger.info(f"Dumped {len(failed_log)} failed issues with errors in {log_path}")
-
+    
     logger.info("---------- Done ----------")
 
 
@@ -185,19 +185,19 @@ def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = ""
         `sort_key` is expected to be the concatenation of newspaper ID and year
         (e.g. GDL-1900).
     """
-
+    
     newspaper, year, month, day, edition = key.split('-')
     prefix_string = "" if prefix == "" else f"-{prefix}"
     filename = f'{newspaper}-{year}-{month}-{day}-{edition}{prefix_string}.jsonl.bz2'
     filepath = os.path.join(output_dir, filename)
     logger.info(f'Compressing {len(json_files)} JSON files into {filepath}')
-
+    
     with smart_open_function(filepath, 'wb') as fout:
         writer = jsonlines.Writer(fout)
-
+        
         items_count = 0
         for issue, json_file in json_files:
-
+            
             with open(json_file, 'r') as inpf:
                 try:
                     item = json.load(inpf)
@@ -211,9 +211,9 @@ def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = ""
         logger.info(
                 f'Written {items_count} docs from {json_file} to {filepath}'
                 )
-
+        
         writer.close()
-
+    
     return key, filepath
 
 
@@ -230,7 +230,7 @@ def compress_issues(key: Tuple[str, int], issues: List[NewspaperIssue], output_d
     filename = f'{newspaper}-{year}-issues.jsonl.bz2'
     filepath = os.path.join(output_dir, filename)
     logger.info(f'Compressing {len(issues)} JSON files into {filepath}')
-
+    
     with smart_open_function(filepath, 'wb') as fout:
         writer = jsonlines.Writer(fout)
         items = [
@@ -242,7 +242,7 @@ def compress_issues(key: Tuple[str, int], issues: List[NewspaperIssue], output_d
                 f'Written {len(items)} issues to {filepath}'
                 )
         writer.close()
-
+    
     return f'{newspaper}-{year}', filepath
 
 
