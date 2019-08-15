@@ -3,7 +3,6 @@
 import json
 import logging
 import os
-import shutil
 from collections import deque
 from time import strftime
 from typing import List
@@ -12,7 +11,7 @@ from zipfile import ZipFile
 from impresso_commons.path import IssueDir
 from impresso_commons.path.path_fs import canonical_path
 
-from text_importer.importers.classes import NewspaperIssue, NewspaperPage
+from text_importer.importers.classes import NewspaperIssue, NewspaperPage, Archive
 from text_importer.importers.olive.helpers import (combine_article_parts,
                                                    convert_image_coordinates,
                                                    convert_page_coordinates,
@@ -29,73 +28,6 @@ logger = logging.getLogger(__name__)
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
 IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
-
-
-class OliveArchive(object):
-    """Class representing a Zip archive of Olive XML data.
-
-    :param ZipFile archive: Zip archive containing Olive XML data.
-    :param str temp_dir: A temporary directory to store uncompressed data.
-
-    """
-    
-    def __init__(self, archive: ZipFile, temp_dir: str):
-        logger.debug(f"Extracting archive in {temp_dir}")
-        self.name_list = archive.namelist()
-        self.dir = temp_dir
-        self.extract_archive(archive)
-        archive.close()
-    
-    def extract_archive(self, archive: ZipFile):
-        """Extract the Olive Zip archive into a temporary directory.
-
-        :param ZipFile archive: The Zip archive to extract.
-        """
-        if not os.path.exists(self.dir):
-            logger.debug(f"Creating {self.dir}")
-            try:
-                os.makedirs(self.dir)
-            except FileExistsError:
-                pass
-        for f in archive.filelist:
-            if f.file_size > 0:
-                try:
-                    archive.extract(f.filename, path=self.dir)
-                except FileExistsError:
-                    pass
-    
-    def namelist(self) -> List[str]:
-        """Get the list of file names in the archive.
-
-        :return: The name of files in the Zip archive.
-        :rtype: List[str]
-
-        """
-        return self.name_list
-    
-    def read(self, file: str) -> bytes:
-        """Read one of the files in the archive from the temporary directory.
-
-        :param str file: Name of the file to read.
-        :return: The file's content (in bytes format).
-        :rtype: bytes
-
-        """
-        path = os.path.join(self.dir, file)
-        with open(path, 'rb') as f:
-            f_bytes = f.read()
-        return f_bytes
-    
-    def cleanup(self):
-        """Remove the temporary directory with uncompressed data."""
-        logging.info(f"Deleting archive {self.dir}")
-        shutil.rmtree(self.dir)
-        prev_dir = os.path.split(self.dir)[0]
-        
-        while len(os.listdir(prev_dir)) == 0:
-            logging.info(f"Deleting {prev_dir}")
-            os.rmdir(prev_dir)
-            prev_dir = os.path.split(prev_dir)[0]
 
 
 class OliveNewspaperPage(NewspaperPage):
@@ -260,7 +192,7 @@ class OliveNewspaperIssue(NewspaperIssue):
                         f"Contents of archive for {self.id}:"
                         f" {archive.namelist()}"
                 ))
-                return OliveArchive(archive, archive_tmp_path)
+                return Archive(archive, archive_tmp_path)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
                 raise ValueError(msg)
