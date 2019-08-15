@@ -117,9 +117,10 @@ def normalize_hyphenation(line: dict) -> dict:
 def combine_article_parts(article_parts: List[dict]) -> dict:
     """TODO.
 
-    :param article_parts: one or more article parts
-    :type article_parts: list of dict
-    :rtype: a dictionary, with keys "meta", "fulltext", "stats", "legacy"
+    :param List[dict] article_parts: one or more article parts
+    :return:
+    :rtype: A dictionary, with keys ``meta``, ``fulltext``, ``stats``,
+        ``legacy``.
     """
     if len(article_parts) > 1:
         # if an article has >1 part, retain the metadata
