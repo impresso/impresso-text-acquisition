@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Import the data from Olive OCR XML files into a canonical JSON format defined by the Impresso project (see [documentation of schemas](./README_schemata.md)).
+Import the data from various OCR formats (Olive XML, Mets/Alto, etc.) into a canonical JSON format defined by the Impresso project (see [documentation of schemas](https://github.com/impresso/impresso-schemas)).
 
 ## Input data
 
