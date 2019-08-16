@@ -15,6 +15,9 @@ Available importers
    :caption: Importers' APIs:
 
    importers/olive
+   importers/mets-alto
+   importers/lux
+   importers/rero
 
 Command-line interface
 ----------------------

@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Write your own importer" href="../custom_importer.html" />
+    <link rel="prev" title="BNL Mets/Alto importer" href="lux.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -79,10 +81,26 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../importers.html">TextImporter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">TextImporter</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">RERO Mets/Alto importer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.rero.classes">Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.rero.detect">Detect functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-files">Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Write your own importer</a></li>
 </ul>
 
@@ -129,6 +147,8 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../importers.html">TextImporter</a> &raquo;</li>
+        
       <li>RERO Mets/Alto importer</li>
     
     
@@ -150,6 +170,80 @@
             
   <div class="section" id="rero-mets-alto-importer">
 <h1>RERO Mets/Alto importer<a class="headerlink" href="#rero-mets-alto-importer" title="Permalink to this headline">¶</a></h1>
+<p>This importer extends the generic Mets/Alto importer, and it was developed to
+handle OCR newspaper data provided by RERO in Mets/Alto format (the rest of
+the data is in Olive format).</p>
+<div class="section" id="module-text_importer.importers.rero.classes">
+<span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.rero.classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="text_importer.importers.rero.classes.ReroNewspaperIssue">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.rero.classes.</code><code class="sig-name descname">ReroNewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="text_importer.importers.rero.classes.ReroNewspaperPage">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.rero.classes.</code><code class="sig-name descname">ReroNewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">n: int</em>, <em class="sig-param">filename: str</em>, <em class="sig-param">basedir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="text_importer.importers.rero.classes.ReroNewspaperPage.add_issue">
+<code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the newspaper issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-text_importer.importers.rero.detect">
+<span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.rero.detect" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="text_importer.importers.rero.detect.Rero2IssueDir">
+<code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">Rero2IssueDir</code><a class="headerlink" href="#text_importer.importers.rero.detect.Rero2IssueDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.rero.detect.IssueDirectory</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.rero.detect.detect_issues">
+<code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">detect_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">access_rights: str</em>, <em class="sig-param">data_dir: str = 'data'</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.rero.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.rero.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse directory structure and detect newspaper issues to be imported (RERO format)
+:param base_dir: the root of the directory structure
+:param access_rights: The file where access rights are stored
+:param data_dir: Directory where data is stored (usually <cite>data/</cite>)
+:return: list of <cite>IssueDir</cite> instances</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.rero.detect.dir2issues">
+<code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">dir2issues</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">access_rights: dict</em><span class="sig-paren">)</span> &#x2192; text_importer.importers.rero.detect.IssueDirectory<a class="headerlink" href="#text_importer.importers.rero.detect.dir2issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an IssueDir from a directory (RERO format)
+:param path: Path of issue
+:param access_rights: Dictionary for access rights
+:return: IssueDir</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.rero.detect.select_issues">
+<code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">select_issues</code><span class="sig-paren">(</span><em class="sig-param">input_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; Optional[List[text_importer.importers.rero.detect.IssueDirectory]]<a class="headerlink" href="#text_importer.importers.rero.detect.select_issues" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dir</strong> – </p></li>
+<li><p><strong>config</strong> – </p></li>
+<li><p><strong>access_rights</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -157,6 +251,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../custom_importer.html" class="btn btn-neutral float-right" title="Write your own importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="lux.html" class="btn btn-neutral float-left" title="BNL Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

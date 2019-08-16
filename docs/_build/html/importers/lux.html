@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RERO Mets/Alto importer" href="rero.html" />
+    <link rel="prev" title="Generic Mets/Alto importer" href="mets-alto.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -79,10 +81,27 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../importers.html">TextImporter</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">TextImporter</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">BNL Mets/Alto importer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.lux.classes">Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.lux.detect">Detect functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.lux.helpers">Helper methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-files">Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Write your own importer</a></li>
 </ul>
 
@@ -129,6 +148,8 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="../importers.html">TextImporter</a> &raquo;</li>
+        
       <li>BNL Mets/Alto importer</li>
     
     
@@ -150,6 +171,105 @@
             
   <div class="section" id="bnl-mets-alto-importer">
 <h1>BNL Mets/Alto importer<a class="headerlink" href="#bnl-mets-alto-importer" title="Permalink to this headline">¶</a></h1>
+<p>This importer extends the generic Mets/Alto importer, and it was developed to
+handle OCR newspaper data provided by the BNL.</p>
+<div class="section" id="module-text_importer.importers.lux.classes">
+<span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.lux.classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="text_importer.importers.lux.classes.LuxNewspaperIssue">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.lux.classes.</code><code class="sig-name descname">LuxNewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.lux.classes.LuxNewspaperIssue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="text_importer.importers.lux.classes.LuxNewspaperPage">
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.lux.classes.</code><code class="sig-name descname">LuxNewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">n: int</em>, <em class="sig-param">filename: str</em>, <em class="sig-param">basedir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.lux.classes.LuxNewspaperPage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class representing a page in BNL data.</p>
+<dl class="method">
+<dt id="text_importer.importers.lux.classes.LuxNewspaperPage.add_issue">
+<code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.mets_alto.classes.MetsAltoNewPaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.lux.classes.LuxNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the newspaper issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-text_importer.importers.lux.detect">
+<span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.lux.detect" title="Permalink to this headline">¶</a></h2>
+<dl class="attribute">
+<dt id="text_importer.importers.lux.detect.LuxIssueDir">
+<code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">LuxIssueDir</code><a class="headerlink" href="#text_importer.importers.lux.detect.LuxIssueDir" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.lux.detect.IssueDirectory</span></code></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.lux.detect.detect_issues">
+<code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">detect_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">access_rights: str = None</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.lux.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.lux.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse a directory structure and detect newspaper issues to be imported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>access_rights</strong> – </p></li>
+<li><p><strong>base_dir</strong> (<em>LuxIssueDir</em>) – the root of the directory structure</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of <cite>LuxIssueDir</cite> instances</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.lux.detect.dir2issue">
+<code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">dir2issue</code><span class="sig-paren">(</span><em class="sig-param">path: str</em><span class="sig-paren">)</span> &#x2192; text_importer.importers.lux.detect.IssueDirectory<a class="headerlink" href="#text_importer.importers.lux.detect.dir2issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a LuxIssueDir object from a directory.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.lux.detect.select_issues">
+<code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">select_issues</code><span class="sig-paren">(</span><em class="sig-param">input_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.lux.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.lux.detect.select_issues" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dir</strong> – </p></li>
+<li><p><strong>config</strong> – </p></li>
+<li><p><strong>access_rights</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-text_importer.importers.lux.helpers">
+<span id="helper-methods"></span><h2>Helper methods<a class="headerlink" href="#module-text_importer.importers.lux.helpers" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="text_importer.importers.lux.helpers.convert_coordinates">
+<code class="sig-prename descclassname">text_importer.importers.lux.helpers.</code><code class="sig-name descname">convert_coordinates</code><span class="sig-paren">(</span><em class="sig-param">hpos</em>, <em class="sig-param">vpos</em>, <em class="sig-param">width</em>, <em class="sig-param">height</em>, <em class="sig-param">x_res</em>, <em class="sig-param">y_res</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.lux.helpers.convert_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>x =   (coordinate[‘xResolution’]/254.0) * coordinate[‘hpos’]</p>
+<p>y =   (coordinate[‘yResolution’]/254.0) * coordinate[‘vpos’]</p>
+<p>w =  (coordinate[‘xResolution’]/254.0) * coordinate[‘width’]</p>
+<p>h =  (coordinate[‘yResolution’]/254.0) * coordinate[‘height’]</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.lux.helpers.encode_ark">
+<code class="sig-prename descclassname">text_importer.importers.lux.helpers.</code><code class="sig-name descname">encode_ark</code><span class="sig-paren">(</span><em class="sig-param">ark</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.lux.helpers.encode_ark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces (encodes) backslashes in the Ark identifier.</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -157,6 +277,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rero.html" class="btn btn-neutral float-right" title="RERO Mets/Alto importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="mets-alto.html" class="btn btn-neutral float-left" title="Generic Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
