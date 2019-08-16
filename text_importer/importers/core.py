@@ -12,6 +12,7 @@ import random
 from copy import copy
 from json import JSONDecodeError
 from pathlib import Path
+from time import strftime
 from typing import List, Optional, Tuple, Type
 
 import jsonlines
@@ -161,7 +162,7 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str]
         
         pages_bag.compute()
     
-    log_path = os.path.join(out_dir, 'failed.log')
+    log_path = os.path.join(out_dir, f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log')
     failed_log = failed_log.compute()
     
     with open(log_path, 'w') as f:
