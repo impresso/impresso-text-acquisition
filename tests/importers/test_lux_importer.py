@@ -3,7 +3,7 @@ import logging
 import os
 
 import pkg_resources
-from impresso_commons.path.path_fs import detect_canonical_issues
+from dask import bag as db
 
 from text_importer.importers.lux.core import import_issues as lux_import_issues
 from text_importer.importers.lux.detect import \
@@ -14,6 +14,7 @@ from text_importer.importers.lux.detect import \
 logger = logging.getLogger(__name__)
 
 
+# TODO: adapt code after refactoring
 def test_import_issues():
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
@@ -25,9 +26,6 @@ def test_import_issues():
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
     lux_import_issues(issues, out_dir, s3_bucket=output_bucket)
-
-    # TODO verify that issues processed are actually in the output folder
-    # try to validate the JSON documents (pages and issues)
 
 
 def test_selective_import():
@@ -63,9 +61,15 @@ def test_selective_import():
     lux_import_issues(issues, out_dir, s3_bucket=None)
 
 
-# TODO: finish implementation + add expected data
-def test_imported_data():
-    """Verify that canonical IDs stay the same."""
+# TODO: adapt it to Lux data
+def test_verify_imported_issues():
+    """Verify that imported data do not change from run to run.
+
+    We need to verify that:
+    1. canonical IDs remain stable
+    2. a given content item ID should correspond always to the same piece of
+    data.
+    """
 
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
@@ -74,37 +78,39 @@ def test_imported_data():
 
     expected_data_dir = pkg_resources.resource_filename(
         'text_importer',
-        'data/expected/Luxembourg'
+        'data/expected/Olive'
     )
 
-    ingested_issues = detect_canonical_issues(
-        inp_dir,
-        ["indeplux", "luxzeit1858", "armeteufel"]
-    )
+    # consider only newspapers in Olive format
+    newspapers = ["GDL", "JDG", "IMP"]
 
-    for issue in ingested_issues:
-        issue_json_file = [
-            file
-            for file in os.listdir(issue.path)
-            if "issue" in file and "json" in file
-        ]
+    # look for bz2 archives in the output directory
+    issue_archive_files = [
+        os.path.join(inp_dir, file)
+        for file in os.listdir(inp_dir)
+        if any([np in file for np in newspapers]) and
+        os.path.isfile(os.path.join(inp_dir, file))
+    ]
+    logger.info(f'Found canonical files: {issue_archive_files}')
 
-        if len(issue_json_file) == 0:
-            continue
+    # read issue JSON data from bz2 archives
+    ingested_issues = db.read_text(issue_archive_files)\
+        .map(json.loads)\
+        .compute()
+    logger.info(f"Issues to verify: {[i['id'] for i in ingested_issues]}")
 
-        issue_json_file = issue_json_file[0]
-        expected_output_path = os.path.join(expected_data_dir, issue_json_file)
-        actual_output_path = os.path.join(issue.path, issue_json_file)
+    for actual_issue_json in ingested_issues:
+
+        expected_output_path = os.path.join(
+            expected_data_dir,
+            f"{actual_issue_json['id']}-issue.json"
+        )
 
         if not os.path.exists(expected_output_path):
+            print(expected_output_path)
             continue
 
         with open(expected_output_path, 'r') as infile:
-            expected_json = json.load(infile)
+            expected_issue_json = json.load(infile)
 
-        with open(actual_output_path, 'r') as infile:
-            actual_json = json.load(infile)
-
-        actual_ids = set([i['m']['id'] for i in actual_json['i']])
-        expected_ids = set([i['m']['id'] for i in expected_json['i']])
-        assert expected_ids.difference(actual_ids) == set()
+        verify_imported_issues(actual_issue_json, expected_issue_json)
