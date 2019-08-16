@@ -37,9 +37,6 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         page_data = parse_printspace(pselement, mappings)
         
         self.page_data['cc'], self.page_data['r'] = False, page_data
-        
-        if all(len(p.page_data['r']) > 0 for p in self.issue.pages):
-            self.issue.archive.cleanup()
     
     def get_iiif_image(self):
         return os.path.join(self.iiif, "full/full/0/default.jpg")

@@ -1,12 +1,11 @@
-import json
 import logging
 import os
 from collections import namedtuple
-from datetime import datetime
-from typing import List, Optional
 from datetime import date
+
+import dask.bag as db
 import pandas as pd
-from text_importer.utils import get_access_right
+from impresso_commons.path.path_fs import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +41,8 @@ def get_issuedir(row, archives_full_dir):
             try:
                 journal, year, mo, day, edition = split
                 d = date(int(year), int(mo), int(day))
-                return SwaIssueDir(journal, date=d, edition=edition, path=archive, rights='open_public',  # TODO: ask about rights
+                return SwaIssueDir(journal, date=d, edition=edition, path=archive, rights='open_public',
+                                   # TODO: ask about rights
                                    pages=row.pages)
             except ValueError as e:
                 logger.debug(f"Issue {row.manifest_id} does not have a regular name")
@@ -53,18 +53,20 @@ def get_issuedir(row, archives_full_dir):
     return None
 
 
-def detect_issues(base_dir: str, access_rights: str, csv_file: str = 'impresso_ids.csv', archives_dir: str = 'impresso_ocr'):
+def detect_issues(base_dir: str, access_rights: str, csv_file: str = 'impresso_ids.zip', archives_dir: str = 'impresso_ocr'):
     archives_full_dir = os.path.join(base_dir, archives_dir)
     csv_file = os.path.join(base_dir, csv_file)
-    
-    df = pd.read_csv(csv_file).groupby('manifest_id').apply(_apply).reset_index()
-    result = df.apply(lambda r: get_issuedir(r, archives_full_dir), axis=1)
-    result = result[~result.isna()]
-    
-    return result.values
+    result = []
+    if os.path.isfile(csv_file):
+        df = pd.read_csv(csv_file, compression='zip').groupby('manifest_id').apply(_apply).reset_index()
+        result = df.apply(lambda r: get_issuedir(r, archives_full_dir), axis=1)
+        result = result[~result.isna()].values
+    else:
+        logger.warning(f"Could not find csv file {csv_file}")
+    return result
 
 
-def select_issues(base_dir: str, config: dict, access_rights: str):  # TODO: continue select issues
+def select_issues(base_dir: str, config: dict, access_rights: str):
     try:
         filter_dict = config.get("newspapers")
         exclude_list = config["exclude_newspapers"]
@@ -78,14 +80,29 @@ def select_issues(base_dir: str, config: dict, access_rights: str):  # TODO: con
                  f"\nyear_flag: {year_flag}"
                  f"\nexclude_flag: {exclude_flag}")
     
-    if not filter_dict and not exclude_list:  # todo: remove this case? should be detect issue
-        logger.debug("No positive nor negative filter definition, all issues in {inp_dir} will be considered.")
-        issues = detect_issues(base_dir, access_rights)
-        return issues
-    else:
-        filter_newspapers = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
-        logger.debug(f"got filter_newspapers: {filter_newspapers}, with exclude flag: {exclude_flag}")
-        issues = detect_issues(base_dir, access_rights)
-        
-        # apply date filter if not exclusion mode
-        return issues
+    filter_newspapers = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
+    logger.debug(f"got filter_newspapers: {filter_newspapers}, with exclude flag: {exclude_flag}")
+    issues = detect_issues(base_dir, access_rights)
+    
+    issue_bag = db.from_sequence(issues)
+    selected_issues = issue_bag \
+        .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \
+        .compute()
+    
+    logger.info(
+            "{} newspaper issues remained after applying filter: {}".format(
+                    len(selected_issues),
+                    selected_issues
+                    )
+            )
+    
+    exclude_flag = False if not exclude_list else True
+    filtered_issues = _apply_datefilter(filter_dict, selected_issues,
+                                        year_only=year_flag) if not exclude_flag else selected_issues
+    logger.info(
+            "{} newspaper issues remained after applying filter: {}".format(
+                    len(filtered_issues),
+                    filtered_issues
+                    )
+            )
+    return selected_issues
