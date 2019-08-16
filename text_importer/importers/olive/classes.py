@@ -83,9 +83,9 @@ class OliveNewspaperPage(NewspaperPage):
         
         self._convert_page_coords()
         
-        if all(p.page_data is not None for p in self.issue.pages):
-            # Means issue has been fully processed, can cleanup
-            self.archive.cleanup()
+        # if all(p.page_data is not None for p in self.issue.pages):
+        #     # Means issue has been fully processed, can cleanup
+        #     self.archive.cleanup()
     
     def _convert_page_coords(self):
         self.page_data['cc'] = False

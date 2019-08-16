@@ -22,9 +22,10 @@ from impresso_commons.text.rebuilder import cleanup
 from impresso_commons.utils import chunk
 from impresso_commons.utils.s3 import get_s3_resource
 from smart_open import smart_open as smart_open_function
-
+import shutil
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers.olive.classes import OliveNewspaperIssue
+from text_importer.importers.swa.classes import SWANewspaperIssue
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,8 @@ def dir2issue(issue: IssueDir, issue_class: Type[NewspaperIssue], image_dirs=Non
     try:
         if issue_class is OliveNewspaperIssue:
             np_issue = OliveNewspaperIssue(issue, image_dirs=image_dirs, temp_dir=temp_dir)
+        elif issue_class is SWANewspaperIssue:
+            np_issue = SWANewspaperIssue(issue, temp_dir=temp_dir)
         else:
             np_issue = issue_class(issue)
         return np_issue, None
@@ -97,7 +100,7 @@ def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
             page.parse()
             result.append(page)
         except Exception as e:
-            logger.error(f'Error when processing page {page}: {e}')
+            logger.error(f'Error when processing page {page.id}: {e}')
             # logger.exception(e)
     return result
 
@@ -168,6 +171,9 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str]
     with open(log_path, 'w') as f:
         f.write("\n".join(failed_log))
         logger.info(f"Dumped {len(failed_log)} failed issues with errors in {log_path}")
+        
+    if temp_dir is not None:
+        shutil.rmtree(temp_dir)
     
     logger.info("---------- Done ----------")
 
