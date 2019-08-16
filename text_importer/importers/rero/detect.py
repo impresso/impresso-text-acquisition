@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from dask import bag as db
+from impresso_commons.path.path_fs import _apply_datefilter
 
 from text_importer.utils import get_access_right
 
@@ -131,12 +132,13 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[L
         .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \
         .compute()
     
-    # TODO : date filter
-    
+    exclude_flag = False if not exclude_list else True
+    filtered_issues = _apply_datefilter(filter_dict, selected_issues,
+                                        year_only=year_flag) if not exclude_flag else selected_issues
     logger.info(
             "{} newspaper issues remained after applying filter: {}".format(
-                    len(selected_issues),
-                    selected_issues
+                    len(filtered_issues),
+                    filtered_issues
                     )
             )
-    return selected_issues
+    return filtered_issues
