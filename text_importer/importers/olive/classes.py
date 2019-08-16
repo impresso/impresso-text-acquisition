@@ -134,7 +134,6 @@ class OliveNewspaperIssue(NewspaperIssue):
     
     def __init__(self, issue_dir: IssueDir, image_dirs: str, temp_dir: str):
         super().__init__(issue_dir)
-        self.issue_dir = issue_dir
         self.image_dirs = image_dirs
         logger.info(f"Starting to parse {self.id}")
         
@@ -173,7 +172,7 @@ class OliveNewspaperIssue(NewspaperIssue):
             self,
             temp_dir: str,
             file: str = "Document.zip"
-            ) -> OliveArchive:
+            ) -> Archive:
         """
         Parses the archive for this issue. Fails if archive could not be parsed
         :param file: The archive file to parse
@@ -183,7 +182,7 @@ class OliveNewspaperIssue(NewspaperIssue):
         if os.path.isfile(archive_path):
             archive_tmp_path = os.path.join(
                     temp_dir,
-                    canonical_path(self.issue_dir, path_type='dir')
+                    canonical_path(self.issuedir, path_type='dir')
                     )
             
             try:
@@ -223,7 +222,7 @@ class OliveNewspaperIssue(NewspaperIssue):
         """
         toc_path = os.path.join(self.path, file)
         try:
-            toc_data = olive_toc_parser(toc_path, self.issue_dir)
+            toc_data = olive_toc_parser(toc_path, self.issuedir)
             logger.debug(toc_data)
         except FileNotFoundError:
             raise FileNotFoundError(f'Missing ToC.xml for {self.id}')
@@ -457,6 +456,6 @@ class OliveNewspaperIssue(NewspaperIssue):
                         image_name,
                         self.archive,
                         box_strategy,
-                        self.issue_dir
+                        self.issuedir
                         )
                 image['m']['tp'] = 'image'
