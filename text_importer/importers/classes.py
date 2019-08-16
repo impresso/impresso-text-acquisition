@@ -83,7 +83,7 @@ class NewspaperPage(ABC):
         This allows each page to preserve contextual information coming from
         the newspaper issue.
 
-        :param NewspaperIssue issue: Description of parameter `issue`.
+        :param NewspaperIssue issue: Newspaper issue contaning this page.
         """
         pass
 
