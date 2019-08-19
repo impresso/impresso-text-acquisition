@@ -13,6 +13,11 @@ IIIF_ENDPOINT_URL = "https://ub-sipi.ub.unibas.ch/impresso"
 
 
 class SWANewspaperPage(MetsAltoNewspaperPage):
+    """Class representing a SWA Newspaper page, which are given in ALTO format
+    
+    :param str alto_path: Full path of alto file
+    """
+
     def __init__(self, _id: str, number: int, alto_path: str):
         basedir, filename = os.path.split(alto_path)
         super().__init__(_id, number, filename, basedir)
@@ -23,7 +28,11 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         self.issue = issue
 
     @property
-    def ci_id(self):
+    def ci_id(self) -> str:
+        """
+        Returns the content item ID of the page. In SWA, each page is a content item, so we just replace the "p" with "i"
+        :return: str Content item id
+        """
         split = self.id.split('-')
         split[-1] = split[-1].replace('p', 'i')
         return "-".join(split)
@@ -43,6 +52,15 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
 
 
 class SWANewspaperIssue(NewspaperIssue):
+    """Class representing a SWA Newspaper Issue.
+    
+    .. note ::
+
+        SWA is in ALTO format, but there isn't any Mets file. So in that case, Issues are simply a collection of pages
+    :param SwaIssueDir issue_dir: SwaIssueDir of the current Issue
+    :param str temp_dir: Temporary directory to extract archives
+    
+    """
 
     def __init__(self, issue_dir: SwaIssueDir, temp_dir: str):
         super().__init__(issue_dir)
