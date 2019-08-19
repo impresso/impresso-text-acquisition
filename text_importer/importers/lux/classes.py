@@ -77,7 +77,10 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
 
 
 class LuxNewspaperIssue(MetsAltoNewPaperIssue):
-
+    """Class representing an issue in BNL data.
+    All functions defined in this child class are specific to parsing BNL Mets/Alto format
+    """
+    
     def _find_pages(self):
         """Detects the Alto XML page files for a newspaper issue."""
 

@@ -57,8 +57,8 @@ def dir2issue(path: str, access_rights: dict) -> Rero2IssueDir:
     .. note ::
         This function is called internally by :func:`detect_issues`
         
-    :param path: Path of issue.
-    :param access_rights: Dictionary for access rights.
+    :param str path: Path of issue.
+    :param dict access_rights: Dictionary for access rights.
     :return: New ``Rero2IssueDir`` object.
     """
     journal, issue = path.split('/')[-2:]
@@ -77,9 +77,9 @@ def detect_issues(base_dir: str, access_rights: str, data_dir: str = 'data') -> 
     This function expects the directory structure that RERO used to
     organize the dump of Mets/Alto OCR data.
     
-    :param base_dir: Path to the base directory of newspaper data.
-    :param access_rights: Path to ``access_rights.json`` file.
-    :param data_dir: Directory where data is stored (usually `data/`).
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param str access_rights: Path to ``access_rights.json`` file.
+    :param str data_dir: Directory where data is stored (usually `data/`).
     :return: List of `Rero2IssueDir` instances, to be imported.
     """
     
@@ -109,9 +109,9 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[L
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
     
-    :param base_dir: Path to the base directory of newspaper data.
-    :param config: Config dictionary for filtering.
-    :param access_rights: Path to ``access_rights.json`` file.
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param dict config: Config dictionary for filtering.
+    :param str access_rights: Path to ``access_rights.json`` file.
     :return: List of `Rero2IssueDir` instances, to be imported.
     """
     

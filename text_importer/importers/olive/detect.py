@@ -70,9 +70,9 @@ def olive_detect_issues(
     This function expects the directory structure that RERO used to
     organize the dump of Olive OCR data.
 
-    :param base_dir: Path to the base directory of newspaper data.
-    :param access_rights: Path to ``access_rights.json`` file.
-    :param journal_filter: IDs of newspapers to consider.
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param str access_rights: Path to ``access_rights.json`` file.
+    :param set journal_filter: IDs of newspapers to consider.
     :param bool exclude: Whether ``journal_filter`` should determine exclusion.
     :return: List of `OliveIssueDir` instances, to be imported.
     """
@@ -101,9 +101,9 @@ def olive_select_issues(
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
 
-    :param base_dir: Path to the base directory of newspaper data.
-    :param config: Config dictionary for filtering.
-    :param access_rights: Path to ``access_rights.json`` file.
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param dict config: Config dictionary for filtering.
+    :param str access_rights: Path to ``access_rights.json`` file.
     :return: List of `OliveIssueDir` instances, to be imported.
     """
     with open(access_rights, 'r') as f:

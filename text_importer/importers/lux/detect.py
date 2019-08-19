@@ -54,7 +54,7 @@ def dir2issue(path: str) -> LuxIssueDir:
     .. note ::
         This function is called internally by :func:`detect_issues`
         
-    :param path: Path of issue.
+    :param str path: Path of issue.
     :return: New ``LuxIssueDir`` object
     """
     issue_dir = os.path.basename(path)
@@ -84,8 +84,8 @@ def detect_issues(base_dir: str, access_rights: str = None) -> List[LuxIssueDir]
     This function expects the directory structure that BNL used to
     organize the dump of Mets/Alto OCR data.
 
-    :param base_dir: Path to the base directory of newspaper data.
-    :param access_rights: Not used for this imported, but argument is kept for normality
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param str access_rights: Not used for this imported, but argument is kept for normality
     :return: List of `LuxIssueDir` instances, to be imported.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
@@ -110,9 +110,9 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> List[LuxIs
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
     
-    :param base_dir: Path to the base directory of newspaper data.
-    :param config: Config dictionary for filtering
-    :param access_rights: Not used for this imported, but argument is kept for normality
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param dict config: Config dictionary for filtering
+    :param str access_rights: Not used for this imported, but argument is kept for normality
     :return: List of `LuxIssueDir` instances, to be imported.
     """
     issues = detect_issues(base_dir)
