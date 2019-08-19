@@ -3,21 +3,22 @@ import logging
 import os
 import re
 from time import strftime
+from typing import List, Tuple
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
-from impresso_commons.path.path_fs import IssueDir
 
-from text_importer.helpers import get_issue_schema, get_page_schema
-from text_importer.importers.lux import alto
+from text_importer.importers import (CONTENTITEM_TYPE_ADVERTISEMENT,
+                                     CONTENTITEM_TYPE_ARTICLE,
+                                     CONTENTITEM_TYPE_IMAGE,
+                                     CONTENTITEM_TYPE_OBITUARY,
+                                     CONTENTITEM_TYPE_TABLE,
+                                     CONTENTITEM_TYPE_WEATHER)
 from text_importer.importers.lux.helpers import convert_coordinates, encode_ark
-from text_importer.importers import CONTENTITEM_TYPE_IMAGE
-from text_importer.importers import CONTENTITEM_TYPE_TABLE
-from text_importer.importers import CONTENTITEM_TYPE_ARTICLE
-from text_importer.importers import CONTENTITEM_TYPE_WEATHER
-from text_importer.importers import CONTENTITEM_TYPE_OBITUARY
-from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT
-
+from text_importer.importers.mets_alto import (MetsAltoNewPaperIssue,
+                                               MetsAltoNewspaperPage,
+                                               parse_mets_amdsec)
+from text_importer.utils import get_issue_schema, get_page_schema
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -26,58 +27,17 @@ logger = logging.getLogger(__name__)
 IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/iiif/2"
 
 
-class LuxNewspaperPage(object):
+class LuxNewspaperPage(MetsAltoNewspaperPage):
     """Class representing a page in BNL data."""
 
-    def __init__(self, n, id, filename, basedir):
-        self.number = n
-        self.id = id
-        self.filename = filename
-        self.basedir = basedir
-        self.issue = None
-        self.data = {
-            'id': id,
-            'cdt': strftime("%Y-%m-%d %H:%M:%S"),
-            'r': []  # here go the page regions
-        }
-
-    def add_issue(self, issue):
+    def add_issue(self, issue: MetsAltoNewPaperIssue):
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
         iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
         iiif_link = f'{iiif_base_link}%2fpages%2f{self.number}/info.json'
-        self.data['iiif'] = iiif_link
-        return
+        self.page_data['iiif'] = iiif_link
 
-    def to_json(self):
-        """Validates `page.data` against PageSchema & serializes to string.
-
-        ..note::
-            Validation adds a substantial overhead to computing time. For
-            serialization of lots of pages it is recommendable to bypass
-            schema validation.
-        """
-        page = Pageschema(**self.data)
-        return page.serialize()
-
-    def parse(self):
-
-        doc = self.xml
-
-        mappings = {}
-        for ci in self.issue._issue_data['i']:
-            ci_id = ci['m']['id']
-            if 'parts' in ci['l']:
-                for part in ci['l']['parts']:
-                    mappings[part['comp_id']] = ci_id
-
-        pselement = doc.find('PrintSpace')
-        page_data = alto.parse_printspace(pselement, mappings)
-        self.data['cc'], self.data["r"] = self._convert_coordinates(page_data)
-        return
-
-    def _convert_coordinates(self, page_data):
-        # TODO: move this to a separate method ?
+    def _convert_coordinates(self, page_data: List[dict]) -> Tuple[bool, List[dict]]:
         success = False
         try:
             img_props = self.issue.image_properties[self.number]
@@ -89,84 +49,38 @@ class LuxNewspaperPage(object):
                 x, y, w, h = region['c']
                 region['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                logger.debug(
-                    f"Page {self.number}: {x},{y},{w},{h} => {region['c']}"
-                )
+                logger.debug(f"Page {self.number}: {x},{y},{w},{h} => {region['c']}")
 
                 for paragraph in region['p']:
 
                     x, y, w, h = paragraph['c']
                     paragraph['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                    logger.debug(
-                        f"(para) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}"
-                    )
+                    logger.debug(f"(para) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}")
 
                     for line in paragraph['l']:
 
                         x, y, w, h = line['c']
                         line['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                        logger.debug(
-                            f"(line) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}"
-                        )
+                        logger.debug(f"(line) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}")
 
                         for token in line['t']:
                             x, y, w, h = token['c']
-                            token['c'] = convert_coordinates(
-                                x, y, w, h, x_res, y_res
-                            )
-                            logger.debug(
-                                f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}"
-                            )
+                            token['c'] = convert_coordinates(x, y, w, h, x_res, y_res)
+                            logger.debug(f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}")
             success = True
         except Exception as e:
-            pass
+            logger.error(f"Error {e} occurred when converting coordinates for {self.id}")
         finally:
-            return (success, page_data)
-
-    @property
-    def xml(self):
-        """Returns a BeautifulSoup object with Alto XML of the page."""
-        alto_xml_path = os.path.join(self.basedir, self.filename)
-
-        with codecs.open(alto_xml_path, 'r', "utf-8") as f:
-            raw_xml = f.read()
-
-        alto_doc = BeautifulSoup(raw_xml, 'xml')
-        return alto_doc
+            return success, page_data
 
 
-class LuxNewspaperIssue(object):
-    """docstring for MetsNewspaperIssue."""
-
-    def __init__(self, issue_dir):
-
-        # create the canonical issue id
-        self.id = "{}-{}-{}".format(
-            issue_dir.journal,
-            "{}-{}-{}".format(
-                issue_dir.date.year,
-                str(issue_dir.date.month).zfill(2),
-                str(issue_dir.date.day).zfill(2)
-            ),
-            issue_dir.edition
-        )
-        self.edition = issue_dir.edition
-        self.journal = issue_dir.journal
-        self.path = issue_dir.path
-        self.date = issue_dir.date
-        self._issue_data = {}
-        self._notes = []
-        self.rights = issue_dir.rights
-        self.image_properties = {}
-        self.ark_id = None
-
-        # TODO: copy the license/rights information from `issue_dir`
-
-        self._find_pages()
-        self._parse_mets()
-
+class LuxNewspaperIssue(MetsAltoNewPaperIssue):
+    """Class representing an issue in BNL data.
+    All functions defined in this child class are specific to parsing BNL Mets/Alto format
+    """
+    
     def _find_pages(self):
         """Detects the Alto XML page files for a newspaper issue."""
 
@@ -174,10 +88,10 @@ class LuxNewspaperIssue(object):
         # visiting the `text` sub-folder with the alto XML files
         text_path = os.path.join(self.path, 'text')
         page_file_names = [
-            file
-            for file in os.listdir(text_path)
-            if not file.startswith('.') and '.xml' in file
-        ]
+                file
+                for file in os.listdir(text_path)
+                if not file.startswith('.') and '.xml' in file
+                ]
 
         page_numbers = []
         page_match_exp = r'(.*?)(\d{5})(.*)'
@@ -187,24 +101,17 @@ class LuxNewspaperIssue(object):
             page_no = g.group(2)
             page_numbers.append(int(page_no))
 
-        page_canonical_names = [
-            "{}-p{}".format(self.id, str(page_n).zfill(4))
-            for page_n in page_numbers
-        ]
+        page_canonical_names = ["{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
-                self.pages.append(
-                    LuxNewspaperPage(page_no, page_id, filename, text_path)
-                )
+                self.pages.append(LuxNewspaperPage(page_id, page_no, filename, text_path))
             except Exception as e:
                 logger.error(
-                    f'Adding page {page_no} {page_id} {filename}',
-                    f'raised following exception: {e}'
-                )
+                        f'Adding page {page_no} {page_id} {filename}',
+                        f'raised following exception: {e}'
+                        )
                 raise e
 
     def _parse_mets_sections(self, mets_doc):
@@ -216,9 +123,9 @@ class LuxNewspaperIssue(object):
         # enforce sorting based on the ID string to pinpoint the
         # generated canonical IDs
         sections = sorted(
-            sections,
-            key=lambda elem: elem.get('ID').split("_")[1]
-        )
+                sections,
+                key=lambda elem: elem.get('ID').split("_")[1]
+                )
 
         for item_counter, section in enumerate(sections):
 
@@ -228,46 +135,46 @@ class LuxNewspaperIssue(object):
                 item_counter += 1
                 lang = section.find_all('languageTerm')[0].getText()
                 title_elements = section.find_all('titleInfo')
-                item_title = title_elements[0].getText().replace('\n', ' ')\
+                item_title = title_elements[0].getText().replace('\n', ' ') \
                     .strip() if len(title_elements) > 0 else None
                 metadata = {
-                    'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
-                    'l': lang,
-                    'tp': CONTENTITEM_TYPE_ARTICLE,
-                    'pp': []
-                }
+                        'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
+                        'l': lang,
+                        'tp': CONTENTITEM_TYPE_ARTICLE,
+                        'pp': []
+                        }
                 # if there is not a title we omit the field
                 if item_title:
                     metadata['t'] = item_title
                 item = {
-                    "m": metadata,
-                    "l": {
-                        # TODO: pass the article components
-                        "id": section_id
-                    }
-                }
+                        "m": metadata,
+                        "l": {
+                                # TODO: pass the article components
+                                "id": section_id
+                                }
+                        }
                 content_items.append(item)
             elif 'PICT' in section_id:
                 # TODO: keep language (there may be more than one)
                 title_elements = section.find_all('titleInfo')
-                item_title = title_elements[0].getText().replace('\n', ' ')\
+                item_title = title_elements[0].getText().replace('\n', ' ') \
                     .strip() if len(title_elements) > 0 else None
 
                 # TODO: how to get language information for these CIs ?
                 metadata = {
-                    'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
-                    'tp': CONTENTITEM_TYPE_IMAGE,
-                    'pp': []
-                }
+                        'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
+                        'tp': CONTENTITEM_TYPE_IMAGE,
+                        'pp': []
+                        }
                 # if there is not a title we omit the field
                 if item_title:
                     metadata['t'] = item_title
                 item = {
-                    "m": metadata,
-                    "l": {
-                        "id": section_id
-                    }
-                }
+                        "m": metadata,
+                        "l": {
+                                "id": section_id
+                                }
+                        }
                 content_items.append(item)
         return content_items
 
@@ -283,9 +190,9 @@ class LuxNewspaperIssue(object):
             divs += element.findAll('div', {'TYPE': div_type})
 
         sorted_divs = sorted(
-            divs,
-            key=lambda elem: elem.get('ID')
-        )
+                divs,
+                key=lambda elem: elem.get('ID')
+                )
 
         for div in sorted_divs:
 
@@ -299,17 +206,17 @@ class LuxNewspaperIssue(object):
 
             # TODO: how to get language information for these CIs ?
             metadata = {
-                'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
-                'tp': content_item_type,
-                'pp': [],
-                't': div.get('LABEL')
-            }
+                    'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
+                    'tp': content_item_type,
+                    'pp': [],
+                    't': div.get('LABEL')
+                    }
             item = {
-                "m": metadata,
-                "l": {
-                    "id": div.get('ID')
-                }
-            }
+                    "m": metadata,
+                    "l": {
+                            "id": div.get('ID')
+                            }
+                    }
             counter += 1
             content_items.append(item)
 
@@ -341,54 +248,23 @@ class LuxNewspaperIssue(object):
                     comp_page_no = int(comp_fileid.replace('ALTO', ''))
 
                     parts.append(
-                        {
-                            'comp_role': comp_role,
-                            'comp_id': comp_id,
-                            'comp_fileid': comp_fileid,
-                            'comp_page_no': comp_page_no
-                        }
-                    )
+                            {
+                                    'comp_role': comp_role,
+                                    'comp_id': comp_id,
+                                    'comp_fileid': comp_fileid,
+                                    'comp_page_no': comp_page_no
+                                    }
+                            )
         return parts
-
-    def _parse_mets_filegroup(self, element):
-        # return a list of page image ids
-
-        return {
-            int(child.get("SEQ")): child.get("ADMID")
-            for child in element.findAll('file')
-        }
-
-    def parse_mets_amdsec(self, mets_doc):
-        image_filegroup = mets_doc.findAll('fileGrp', {'USE': 'Images'})[0]
-        page_image_ids = self._parse_mets_filegroup(image_filegroup)
-        amd_sections = {
-            image_id:  mets_doc.findAll('amdSec', {'ID': image_id})[0]
-            for image_id in page_image_ids.values()
-        }
-        image_properties_dict = {}
-        for image_no, image_id in page_image_ids.items():
-            amd_sect = amd_sections[image_id]
-            try:
-                image_properties_dict[image_no] = {
-                    'x_resolution': int(amd_sect.find('xOpticalResolution').text),
-                    'y_resolution': int(amd_sect.find('yOpticalResolution').text)
-                }
-            # if it fails it's because of value < 1
-            except Exception as e:
-                image_properties_dict[image_no] = {
-                    'x_resolution': 300,
-                    'y_resolution': 300
-                }
-        return image_properties_dict
 
     def _parse_mets(self):
         """Parses the Mets XML file of the newspaper issue."""
 
         mets_file = [
-            os.path.join(self.path, f)
-            for f in os.listdir(self.path)
-            if 'mets.xml' in f
-        ][0]
+                os.path.join(self.path, f)
+                for f in os.listdir(self.path)
+                if 'mets.xml' in f
+                ][0]
 
         with codecs.open(mets_file, 'r', "utf-8") as f:
             raw_xml = f.read()
@@ -396,13 +272,13 @@ class LuxNewspaperIssue(object):
         mets_doc = BeautifulSoup(raw_xml, 'xml')
 
         # explain
-        self.image_properties = self.parse_mets_amdsec(mets_doc)
+        self.image_properties = parse_mets_amdsec(mets_doc, x_res='xOpticalResolution', y_res='yOpticalResolution')
 
         content_items = self._parse_mets_sections(mets_doc)
         content_items += self._parse_structmap_divs(
-            mets_doc,
-            start_counter=len(content_items) + 1
-        )
+                mets_doc,
+                start_counter=len(content_items) + 1
+                )
 
         # NOTE: there are potentially other CIs that are not captured
         # by the method above. For example DEATH_NOTICE, WEATHER and
@@ -419,8 +295,8 @@ class LuxNewspaperIssue(object):
             try:
                 legacy_id = ci['l']['id']
                 if (
-                    ci['m']['tp'] == CONTENTITEM_TYPE_ARTICLE or
-                    ci['m']['tp'] == CONTENTITEM_TYPE_IMAGE
+                        ci['m']['tp'] == CONTENTITEM_TYPE_ARTICLE or
+                        ci['m']['tp'] == CONTENTITEM_TYPE_IMAGE
                 ):
                     item_div = mets_doc.findAll('div', {'DMDID': legacy_id})[0]
                 else:
@@ -454,10 +330,10 @@ class LuxNewspaperIssue(object):
                     # the other part is the caption
                     try:
                         part = [
-                            part
-                            for part in ci['l']['parts']
-                            if part['comp_role'] == 'image'
-                        ][0]
+                                part
+                                for part in ci['l']['parts']
+                                if part['comp_role'] == 'image'
+                                ][0]
                     except IndexError as e:
                         err_msg = f'{legacy_id} without image subpart'
                         err_msg += f"; {legacy_id} has {ci['l']['parts']}"
@@ -480,24 +356,24 @@ class LuxNewspaperIssue(object):
                     try:
                         # parse the Alto file to fetch the coordinates
                         composed_block = curr_page.xml.find(
-                            'ComposedBlock',
-                            {"ID": part['comp_id']}
-                        )
+                                'ComposedBlock',
+                                {"ID": part['comp_id']}
+                                )
 
                         if composed_block:
                             graphic_el = composed_block.find(
-                                'GraphicalElement'
-                            )
+                                    'GraphicalElement'
+                                    )
 
                             if graphic_el is None:
                                 graphic_el = curr_page.xml.find(
-                                    'Illustration'
-                                )
+                                        'Illustration'
+                                        )
                         else:
                             graphic_el = curr_page.xml.find(
-                                'Illustration',
-                                {"ID": part['comp_id']}
-                            )
+                                    'Illustration',
+                                    {"ID": part['comp_id']}
+                                    )
 
                         hpos = int(graphic_el.get('HPOS'))
                         vpos = int(graphic_el.get('VPOS'))
@@ -507,13 +383,13 @@ class LuxNewspaperIssue(object):
                         x_resolution = img_props['x_resolution']
                         y_resolution = img_props['y_resolution']
                         coordinates = convert_coordinates(
-                            hpos,
-                            vpos,
-                            height,
-                            width,
-                            x_resolution,
-                            y_resolution
-                        )
+                                hpos,
+                                vpos,
+                                height,
+                                width,
+                                x_resolution,
+                                y_resolution
+                                )
                         encoded_ark_id = encode_ark(self.ark_id)
                         iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
                         ci['m']['iiif_link'] = f'{iiif_base_link}%2fpages%2f{curr_page.number}/info.json'
@@ -521,11 +397,11 @@ class LuxNewspaperIssue(object):
                         del ci['l']['parts']
                     except Exception as e:
                         err_msg = 'An error occurred with {}'.format(
-                            os.path.join(
-                                curr_page.basedir,
-                                curr_page.filename
-                            )
-                        )
+                                os.path.join(
+                                        curr_page.basedir,
+                                        curr_page.filename
+                                        )
+                                )
                         err_msg += f"<ComposedBlock> @ID {part['comp_id']} \
                         not found"
                         logger.error(err_msg)
@@ -538,35 +414,13 @@ class LuxNewspaperIssue(object):
                     if page_no not in ci['m']['pp']:
                         ci['m']['pp'].append(page_no)
 
-        self._issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "i": content_items,
-            "id": self.id,
-            "ar": self.rights,
-            "pp": [p.id for p in self.pages]
-        }
+        self.issue_data = {
+                "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+                "i": content_items,
+                "id": self.id,
+                "ar": self.rights,
+                "pp": [p.id for p in self.pages]
+                }
 
         if self._notes:
-            self._issue_data["n"] = "\n".join(self._notes)
-
-    @property
-    def xml(self):
-        mets_file = [
-            os.path.join(self.path, f)
-            for f in os.listdir(self.path)
-            if 'mets.xml' in f
-        ][0]
-
-        with codecs.open(mets_file, 'r', "utf-8") as f:
-            raw_xml = f.read()
-
-        mets_doc = BeautifulSoup(raw_xml, 'xml')
-        return mets_doc
-
-    @property
-    def issuedir(self):
-        return IssueDir(self.journal, self.date, self.edition, self.path)
-
-    def to_json(self):
-        issue = IssueSchema(**self._issue_data)
-        return issue.serialize()
+            self.issue_data["n"] = "\n".join(self._notes)

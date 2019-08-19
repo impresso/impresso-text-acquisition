@@ -34,7 +34,7 @@ from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
                                            detect_issues, select_issues)
 
 from text_importer import __version__
-from text_importer.importers.olive import olive_import_issue
+from text_importer.importers.olive_old import olive_import_issue
 
 __author__ = "Matteo Romanello"
 __email__ = "matteo.romanello@epfl.ch"

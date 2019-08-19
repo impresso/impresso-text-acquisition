@@ -12,7 +12,7 @@ def convert_coordinates(hpos, vpos, width, height, x_res, y_res):
     y = (y_res / 254) * vpos
     w = (x_res / 254) * width
     h = (y_res / 254) * height
-    return int(x), int(y), int(w), int(h)
+    return [int(x), int(y), int(w), int(h)]
 
 
 def encode_ark(ark):
