@@ -25,6 +25,7 @@ For further details on any of these implementations, please do refer to its docu
    importers/mets-alto
    importers/lux
    importers/rero
+   importers/swa
 
 Command-line interface
 ----------------------
