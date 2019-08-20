@@ -54,8 +54,8 @@ class MetsAltoNewspaperPage(NewspaperPage):
         return alto_doc
 
     # TODO: decide whether to remove this
-    def _convert_coordinates(self, page_data: dict) -> Tuple[bool, List[dict]]:
-        return True, page_data['r']
+    def _convert_coordinates(self, page_data: List[dict]) -> Tuple[bool, List[dict]]:
+        return False, page_data
 
     @abstractmethod
     def add_issue(self, issue):
