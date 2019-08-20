@@ -68,3 +68,38 @@ def get_access_right(journal: str, date, access_rights: dict) -> str:
     else:
         # TODO: this should rather be a custom exception
         logger.warning(f"Access right not defined for {journal}-{date}")
+
+
+def verify_imported_issues(actual_issue_json, expected_issue_json):
+    # FIRST CHECK: number of content items
+    actual_ids = set([i['m']['id'] for i in actual_issue_json['i']])
+    expected_ids = set([i['m']['id'] for i in expected_issue_json['i']])
+    logger.info((
+        f"[{actual_issue_json['id']}] Expected IDs: {len(expected_ids)}"
+        f"; actual IDs: {len(actual_ids)}"
+    ))
+    assert expected_ids.difference(actual_ids) == set()
+
+    # SECOND CHECK: identity of content items
+    # the assumption here is that: 1) content item IDs are the same;
+    # 2) two CIs are identical when their legacy information is
+    # identical (e.g. ID of the XML elememnt in the Olive file)
+    for actual_content_item in actual_issue_json['i']:
+
+        try:
+            expected_content_item = [
+                ci
+                for ci in expected_issue_json['i']
+                if ci['m']['id'] == actual_content_item['m']['id']
+            ][0]
+        except Exception:
+            # usually these are images: they were not there in the
+            # first content ingestion; nothing to worry about
+            continue
+
+        assert actual_content_item['l'] == expected_content_item['l']
+
+        logger.info((
+            f"Content item {actual_content_item['m']['id']}"
+            "dit not change (legacy metadata are identical)"
+        ))

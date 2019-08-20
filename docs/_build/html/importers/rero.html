@@ -178,12 +178,23 @@ the data is in Olive format).</p>
 <dl class="class">
 <dt id="text_importer.importers.rero.classes.ReroNewspaperIssue">
 <em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.rero.classes.</code><code class="sig-name descname">ReroNewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Class representing an issue in RERO (Mets/Alto) data.
+All functions defined in this child class are specific to parsing RERO Mets/Alto format</p>
+</dd></dl>
 
 <dl class="class">
 <dt id="text_importer.importers.rero.classes.ReroNewspaperPage">
 <em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.rero.classes.</code><code class="sig-name descname">ReroNewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">n: int</em>, <em class="sig-param">filename: str</em>, <em class="sig-param">basedir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>Class representing a page in RERO (Mets/Alto) data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="method">
 <dt id="text_importer.importers.rero.classes.ReroNewspaperPage.add_issue">
 <code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
@@ -204,41 +215,93 @@ the newspaper issue.</p>
 <dl class="attribute">
 <dt id="text_importer.importers.rero.detect.Rero2IssueDir">
 <code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">Rero2IssueDir</code><a class="headerlink" href="#text_importer.importers.rero.detect.Rero2IssueDir" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.rero.detect.IssueDirectory</span></code></p>
+<dd><p>A light-weight data structure to represent a newspaper issue.</p>
+<p>This named tuple contains basic metadata about a newspaper issue. They
+can then be used to locate the relevant data in the filesystem or to create
+canonical identifiers for the issue and its pages.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case of newspaper published multiple times per day, a lowercase letter
+is used to indicate the edition number: ‘a’ for the first, ‘b’ for the
+second, etc.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>journal</strong> (<em>str</em>) – Newspaper ID</p></li>
+<li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date</p></li>
+<li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.)</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing OCR data</p></li>
+<li><p><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">Rero2IssueDir</span><span class="p">(</span><span class="s1">&#39;BLB&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1845</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">28</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./BLB/data/BLB/18451228_01&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.rero.detect.IssueDirectory</span></code></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.rero.detect.detect_issues">
 <code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">detect_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">access_rights: str</em>, <em class="sig-param">data_dir: str = 'data'</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.rero.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.rero.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse directory structure and detect newspaper issues to be imported (RERO format)
-:param base_dir: the root of the directory structure
-:param access_rights: The file where access rights are stored
-:param data_dir: Directory where data is stored (usually <cite>data/</cite>)
-:return: list of <cite>IssueDir</cite> instances</p>
+<dd><p>Detect newspaper issues to import within the filesystem.</p>
+<p>This function expects the directory structure that RERO used to
+organize the dump of Mets/Alto OCR data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
+<li><p><strong>data_dir</strong> (<em>str</em>) – Directory where data is stored (usually <cite>data/</cite>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of <cite>Rero2IssueDir</cite> instances, to be imported.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="text_importer.importers.rero.detect.dir2issues">
-<code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">dir2issues</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">access_rights: dict</em><span class="sig-paren">)</span> &#x2192; text_importer.importers.rero.detect.IssueDirectory<a class="headerlink" href="#text_importer.importers.rero.detect.dir2issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates an IssueDir from a directory (RERO format)
-:param path: Path of issue
-:param access_rights: Dictionary for access rights
-:return: IssueDir</p>
+<dt id="text_importer.importers.rero.detect.dir2issue">
+<code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">dir2issue</code><span class="sig-paren">(</span><em class="sig-param">path: str</em>, <em class="sig-param">access_rights: dict</em><span class="sig-paren">)</span> &#x2192; text_importer.importers.rero.detect.IssueDirectory<a class="headerlink" href="#text_importer.importers.rero.detect.dir2issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a <cite>Rero2IssueDir</cite> from a directory (RERO format)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is called internally by <a class="reference internal" href="#text_importer.importers.rero.detect.detect_issues" title="text_importer.importers.rero.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path of issue.</p></li>
+<li><p><strong>access_rights</strong> (<em>dict</em>) – Dictionary for access rights.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>New <code class="docutils literal notranslate"><span class="pre">Rero2IssueDir</span></code> object.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.rero.detect.select_issues">
-<code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">select_issues</code><span class="sig-paren">(</span><em class="sig-param">input_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; Optional[List[text_importer.importers.rero.detect.IssueDirectory]]<a class="headerlink" href="#text_importer.importers.rero.detect.select_issues" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<code class="sig-prename descclassname">text_importer.importers.rero.detect.</code><code class="sig-name descname">select_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; Optional[List[text_importer.importers.rero.detect.IssueDirectory]]<a class="headerlink" href="#text_importer.importers.rero.detect.select_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect selectively newspaper issues to import.</p>
+<p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.rero.detect.detect_issues" title="text_importer.importers.rero.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
+difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
+import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
+further details on how to configure filtering.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_dir</strong> – </p></li>
-<li><p><strong>config</strong> – </p></li>
-<li><p><strong>access_rights</strong> – </p></li>
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>List of <cite>Rero2IssueDir</cite> instances, to be imported.</p>
 </dd>
 </dl>
 </dd></dl>

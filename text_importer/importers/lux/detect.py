@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from collections import namedtuple
@@ -26,10 +25,38 @@ LuxIssueDir = namedtuple(
                 'rights'
                 ]
         )
+"""A light-weight data structure to represent a newspaper issue.
+
+This named tuple contains basic metadata about a newspaper issue. They
+can then be used to locate the relevant data in the filesystem or to create
+canonical identifiers for the issue and its pages.
+
+.. note ::
+
+    In case of newspaper published multiple times per day, a lowercase letter
+    is used to indicate the edition number: 'a' for the first, 'b' for the
+    second, etc.
+
+:param str journal: Newspaper ID
+:param datetime.date date: Publication date
+:param str edition: Edition of the newspaper issue ('a', 'b', 'c', etc.)
+:param str path: Path to the directory containing OCR data
+:param str rights: Access rights on the data (open, closed, etc.)
+
+>>> from datetime import date
+>>> i = LuxIssueDir('armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/', 'protected')
+"""
 
 
 def dir2issue(path: str) -> LuxIssueDir:
-    """Create a LuxIssueDir object from a directory."""
+    """Create a `LuxIssueDir` object from a directory path.
+    
+    .. note ::
+        This function is called internally by :func:`detect_issues`
+        
+    :param str path: Path of issue.
+    :return: New ``LuxIssueDir`` object
+    """
     issue_dir = os.path.basename(path)
     local_id = issue_dir.split('_')[2]
     issue_date = issue_dir.split('_')[3]
@@ -52,13 +79,14 @@ def dir2issue(path: str) -> LuxIssueDir:
 
 
 def detect_issues(base_dir: str, access_rights: str = None) -> List[LuxIssueDir]:
-    """Parse a directory structure and detect newspaper issues to be imported.
+    """Detect newspaper issues to import within the filesystem.
 
-    :param access_rights:
-    :param base_dir: the root of the directory structure
-    :type base_dir: LuxIssueDir
-    :return: list of `LuxIssueDir` instances
-    :rtype: list
+    This function expects the directory structure that BNL used to
+    organize the dump of Mets/Alto OCR data.
+
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param str access_rights: Not used for this imported, but argument is kept for normality
+    :return: List of `LuxIssueDir` instances, to be imported.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
     batches_dirs = [os.path.join(dir_path, dir) for dir in dirs]
@@ -74,15 +102,20 @@ def detect_issues(base_dir: str, access_rights: str = None) -> List[LuxIssueDir]
             ]
 
 
-def select_issues(input_dir: str, config: dict, access_rights: str) -> List[LuxIssueDir]:
-    """
+def select_issues(base_dir: str, config: dict, access_rights: str) -> List[LuxIssueDir]:
+    """Detect selectively newspaper issues to import.
+
+    The behavior is very similar to :func:`detect_issues` with the only
+    difference that ``config`` specifies some rules to filter the data to
+    import. See `this section <../importers.html#configuration-files>`__ for
+    further details on how to configure filtering.
     
-    :param input_dir:
-    :param config:
-    :param access_rights:
-    :return:
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param dict config: Config dictionary for filtering
+    :param str access_rights: Not used for this imported, but argument is kept for normality
+    :return: List of `LuxIssueDir` instances, to be imported.
     """
-    issues = detect_issues(input_dir)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag \
         .filter(lambda i: i.journal in config['newspapers'].keys()) \

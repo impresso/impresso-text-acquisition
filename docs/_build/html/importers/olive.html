@@ -271,6 +271,8 @@ paths should be separated by comma (“,”).</p></li>
 <li><p><strong>toc_data</strong> (<em>dict</em>) – Metadata about content items in the newspaper issue.</p></li>
 <li><p><strong>image_info</strong> (<em>dict</em>) – Metadata about the page image.</p></li>
 <li><p><strong>page_xml</strong> (<em>str</em>) – Path to the Olive XML file of the page.</p></li>
+<li><p><strong>_id</strong> – Canonical page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
 </ul>
 </dd>
 </dl>
@@ -304,11 +306,10 @@ method is called.</p>
 </div>
 <div class="section" id="module-text_importer.importers.olive.detect">
 <span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.olive.detect" title="Permalink to this headline">¶</a></h2>
-<p>Objects and functions to detect Olive data in the RERO dump.</p>
 <dl class="attribute">
 <dt id="text_importer.importers.olive.detect.OliveIssueDir">
 <code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">OliveIssueDir</code><a class="headerlink" href="#text_importer.importers.olive.detect.OliveIssueDir" title="Permalink to this definition">¶</a></dt>
-<dd><p>A light-weight data strucuture to represent a newspaper issue.</p>
+<dd><p>A light-weight data structure to represent a newspaper issue.</p>
 <p>This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
 canonical identifiers for the issue and its pages.</p>
@@ -342,7 +343,7 @@ second, etc.</p>
 <dd><p>Helper function that injects access rights info into an <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This function is called internally by <a class="reference internal" href="#text_importer.importers.olive.detect.olive_select_issues" title="text_importer.importers.olive.detect.olive_select_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_select_issues()</span></code></a>.</p>
+<p>This function is called internally by <a class="reference internal" href="#text_importer.importers.olive.detect.olive_detect_issues" title="text_importer.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a>.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -353,9 +354,6 @@ second, etc.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>New <code class="docutils literal notranslate"><span class="pre">OliveIssueDir</span></code> object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>OliveIssueDir</p>
 </dd>
 </dl>
 </dd></dl>
@@ -376,10 +374,7 @@ organize the dump of Olive OCR data.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A list of newspaper issues to be imported.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[OliveIssueDir]</p>
+<dd class="field-even"><p>List of <cite>OliveIssueDir</cite> instances, to be imported.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -388,23 +383,20 @@ organize the dump of Olive OCR data.</p>
 <dt id="text_importer.importers.olive.detect.olive_select_issues">
 <code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">olive_select_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.olive.detect.OliveIssueDirectory]<a class="headerlink" href="#text_importer.importers.olive.detect.olive_select_issues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
-<p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.olive.detect.olive_select_issues" title="text_importer.importers.olive.detect.olive_select_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_select_issues()</span></code></a> with the only
+<p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.olive.detect.olive_detect_issues" title="text_importer.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a> with the only
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
 import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
 further details on how to configure filtering.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>base_dir</strong> (<em>str</em>) – Description of parameter <cite>base_dir</cite>.</p></li>
-<li><p><strong>config</strong> (<em>dict</em>) – Description of parameter <cite>config</cite>.</p></li>
-<li><p><strong>access_rights</strong> (<em>dict</em>) – Description of parameter <cite>access_rights_dict</cite>.</p></li>
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Description of returned object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[OliveIssueDir]</p>
+<dd class="field-even"><p>List of <cite>OliveIssueDir</cite> instances, to be imported.</p>
 </dd>
 </dl>
 </dd></dl>

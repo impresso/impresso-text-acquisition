@@ -1,5 +1,3 @@
-"""Objects and functions to detect Olive data in the RERO dump."""
-
 import json
 from collections import namedtuple
 from typing import List
@@ -18,7 +16,7 @@ OliveIssueDir = namedtuple(
                 'rights'
                 ]
         )
-"""A light-weight data strucuture to represent a newspaper issue.
+"""A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
@@ -45,13 +43,11 @@ def dir2olivedir(issue_dir: IssueDir, access_rights: dict) -> OliveIssueDir:
     """Helper function that injects access rights info into an ``IssueDir``.
 
     .. note ::
-        This function is called internally by :func:`olive_select_issues`.
+        This function is called internally by :func:`olive_detect_issues`.
 
     :param IssueDir issue_dir: Input ``IssueDir`` object.
     :param dict access_rights: Access rights information.
     :return: New ``OliveIssueDir`` object.
-    :rtype: OliveIssueDir
-
     """
     ar = get_access_right(issue_dir.journal, issue_dir.date, access_rights)
     return OliveIssueDir(
@@ -78,9 +74,7 @@ def olive_detect_issues(
     :param str access_rights: Path to ``access_rights.json`` file.
     :param set journal_filter: IDs of newspapers to consider.
     :param bool exclude: Whether ``journal_filter`` should determine exclusion.
-    :return: A list of newspaper issues to be imported.
-    :rtype: List[OliveIssueDir]
-
+    :return: List of `OliveIssueDir` instances, to be imported.
     """
 
     with open(access_rights, 'r') as f:
@@ -102,17 +96,15 @@ def olive_select_issues(
 ) -> List[OliveIssueDir]:
     """Detect selectively newspaper issues to import.
 
-    The behavior is very similar to :func:`olive_select_issues` with the only
+    The behavior is very similar to :func:`olive_detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
 
-    :param str base_dir: Description of parameter `base_dir`.
-    :param dict config: Description of parameter `config`.
-    :param dict access_rights: Description of parameter `access_rights_dict`.
-    :return: Description of returned object.
-    :rtype: List[OliveIssueDir]
-
+    :param str base_dir: Path to the base directory of newspaper data.
+    :param dict config: Config dictionary for filtering.
+    :param str access_rights: Path to ``access_rights.json`` file.
+    :return: List of `OliveIssueDir` instances, to be imported.
     """
     with open(access_rights, 'r') as f:
         access_rights_dict = json.load(f)

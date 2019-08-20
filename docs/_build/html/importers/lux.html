@@ -178,12 +178,22 @@ handle OCR newspaper data provided by the BNL.</p>
 <dl class="class">
 <dt id="text_importer.importers.lux.classes.LuxNewspaperIssue">
 <em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.lux.classes.</code><code class="sig-name descname">LuxNewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.lux.classes.LuxNewspaperIssue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Class representing an issue in BNL data.
+All functions defined in this child class are specific to parsing BNL Mets/Alto format</p>
+</dd></dl>
 
 <dl class="class">
 <dt id="text_importer.importers.lux.classes.LuxNewspaperPage">
 <em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.lux.classes.</code><code class="sig-name descname">LuxNewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">n: int</em>, <em class="sig-param">filename: str</em>, <em class="sig-param">basedir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.lux.classes.LuxNewspaperPage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a page in BNL data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="method">
 <dt id="text_importer.importers.lux.classes.LuxNewspaperPage.add_issue">
 <code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.mets_alto.classes.MetsAltoNewPaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.lux.classes.LuxNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
@@ -205,25 +215,49 @@ the newspaper issue.</p>
 <dl class="attribute">
 <dt id="text_importer.importers.lux.detect.LuxIssueDir">
 <code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">LuxIssueDir</code><a class="headerlink" href="#text_importer.importers.lux.detect.LuxIssueDir" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.lux.detect.IssueDirectory</span></code></p>
+<dd><p>A light-weight data structure to represent a newspaper issue.</p>
+<p>This named tuple contains basic metadata about a newspaper issue. They
+can then be used to locate the relevant data in the filesystem or to create
+canonical identifiers for the issue and its pages.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case of newspaper published multiple times per day, a lowercase letter
+is used to indicate the edition number: ‘a’ for the first, ‘b’ for the
+second, etc.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>journal</strong> (<em>str</em>) – Newspaper ID</p></li>
+<li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date</p></li>
+<li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.)</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing OCR data</p></li>
+<li><p><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.)</p></li>
+</ul>
+</dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">LuxIssueDir</span><span class="p">(</span><span class="s1">&#39;armeteufel&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1904</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">17</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./protected_027/1497608_newspaper_armeteufel_1904-01-17/&#39;</span><span class="p">,</span> <span class="s1">&#39;protected&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.lux.detect.IssueDirectory</span></code></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.lux.detect.detect_issues">
 <code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">detect_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">access_rights: str = None</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.lux.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.lux.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse a directory structure and detect newspaper issues to be imported.</p>
+<dd><p>Detect newspaper issues to import within the filesystem.</p>
+<p>This function expects the directory structure that BNL used to
+organize the dump of Mets/Alto OCR data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>access_rights</strong> – </p></li>
-<li><p><strong>base_dir</strong> (<em>LuxIssueDir</em>) – the root of the directory structure</p></li>
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Not used for this imported, but argument is kept for normality</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>list of <cite>LuxIssueDir</cite> instances</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list</p>
+<dd class="field-even"><p>List of <cite>LuxIssueDir</cite> instances, to be imported.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -231,22 +265,39 @@ the newspaper issue.</p>
 <dl class="function">
 <dt id="text_importer.importers.lux.detect.dir2issue">
 <code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">dir2issue</code><span class="sig-paren">(</span><em class="sig-param">path: str</em><span class="sig-paren">)</span> &#x2192; text_importer.importers.lux.detect.IssueDirectory<a class="headerlink" href="#text_importer.importers.lux.detect.dir2issue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a LuxIssueDir object from a directory.</p>
+<dd><p>Create a <cite>LuxIssueDir</cite> object from a directory path.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is called internally by <a class="reference internal" href="#text_importer.importers.lux.detect.detect_issues" title="text_importer.importers.lux.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Path of issue.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>New <code class="docutils literal notranslate"><span class="pre">LuxIssueDir</span></code> object</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.lux.detect.select_issues">
-<code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">select_issues</code><span class="sig-paren">(</span><em class="sig-param">input_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.lux.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.lux.detect.select_issues" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<code class="sig-prename descclassname">text_importer.importers.lux.detect.</code><code class="sig-name descname">select_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.lux.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.lux.detect.select_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detect selectively newspaper issues to import.</p>
+<p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.lux.detect.detect_issues" title="text_importer.importers.lux.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
+difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
+import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
+further details on how to configure filtering.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_dir</strong> – </p></li>
-<li><p><strong>config</strong> – </p></li>
-<li><p><strong>access_rights</strong> – </p></li>
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Not used for this imported, but argument is kept for normality</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dd class="field-even"><p>List of <cite>LuxIssueDir</cite> instances, to be imported.</p>
 </dd>
 </dl>
 </dd></dl>

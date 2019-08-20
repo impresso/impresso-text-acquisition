@@ -2,8 +2,10 @@ import os
 import json
 import pkg_resources
 
+from dask import bag as db
+
+from text_importer.utils import verify_imported_issues
 from text_importer.importers.core import import_issues
-from impresso_commons.path.path_fs import detect_canonical_issues
 from text_importer.importers.olive.detect import olive_detect_issues
 from text_importer.importers.olive.classes import OliveNewspaperIssue
 
@@ -43,8 +45,14 @@ def test_import_issues():
     print(result)
 
 
-def test_imported_data():
-    """Verify that canonical IDs stay the same."""
+def test_verify_imported_issues():
+    """Verify that imported data do not change from run to run.
+
+    We need to verify that:
+    1. canonical IDs remain stable
+    2. a given content item ID should correspond always to the same piece of
+    data.
+    """
 
     inp_dir = pkg_resources.resource_filename(
         'text_importer',
@@ -56,34 +64,36 @@ def test_imported_data():
         'data/expected/Olive'
     )
 
-    # TODO: read issues JSON from bz2 archives
-    ingested_issues = detect_canonical_issues(inp_dir, ["GDL", "JDG", "IMP"])
+    # consider only newspapers in Olive format
+    newspapers = ["GDL", "JDG", "IMP"]
 
-    for issue in ingested_issues:
-        issue_json_file = [
-            file
-            for file in os.listdir(issue.path)
-            if "issue" in file and "json" in file
-        ]
+    # look for bz2 archives in the output directory
+    issue_archive_files = [
+        os.path.join(inp_dir, file)
+        for file in os.listdir(inp_dir)
+        if any([np in file for np in newspapers]) and
+        os.path.isfile(os.path.join(inp_dir, file))
+    ]
+    logger.info(f'Found canonical files: {issue_archive_files}')
 
-        if len(issue_json_file) == 0:
-            continue
+    # read issue JSON data from bz2 archives
+    ingested_issues = db.read_text(issue_archive_files)\
+        .map(json.loads)\
+        .compute()
+    logger.info(f"Issues to verify: {[i['id'] for i in ingested_issues]}")
 
-        issue_json_file = issue_json_file[0]
-        expected_output_path = os.path.join(expected_data_dir, issue_json_file)
-        actual_output_path = os.path.join(issue.path, issue_json_file)
+    for actual_issue_json in ingested_issues:
+
+        expected_output_path = os.path.join(
+            expected_data_dir,
+            f"{actual_issue_json['id']}-issue.json"
+        )
 
         if not os.path.exists(expected_output_path):
+            print(expected_output_path)
             continue
 
         with open(expected_output_path, 'r') as infile:
-            expected_json = json.load(infile)
+            expected_issue_json = json.load(infile)
 
-        with open(actual_output_path, 'r') as infile:
-            actual_json = json.load(infile)
-
-        actual_ids = set([i['m']['id'] for i in actual_json['i']])
-        expected_ids = set([i['m']['id'] for i in expected_json['i']])
-        assert expected_ids.difference(actual_ids) == set()
-
-        # TODO: add an identity check based on legacy metadata
+        verify_imported_issues(actual_issue_json, expected_issue_json)
