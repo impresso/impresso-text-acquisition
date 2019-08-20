@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Architecture &mdash; Impresso TextImporter  documentation</title>
+  <title>Overview &mdash; Impresso TextImporter  documentation</title>
   
 
   
@@ -83,7 +83,22 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#impresso-data-architecture">Impresso data architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#canonical-identifiers">Canonical identifiers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#issue-ids">Issue IDs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#page-ids">Page IDs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#content-item-ids">Content item IDs</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#data-packaging">Data packaging</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#issue-data">Issue data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#page-data">Page data</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#image-data">Image data</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#module-text_importer.importers.core">Processing</a></li>
 </ul>
 </li>
@@ -134,7 +149,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Architecture</li>
+      <li>Overview</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -153,15 +168,75 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="architecture">
-<h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
-<p>things to mention:</p>
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="impresso-data-architecture">
+<h2>Impresso data architecture<a class="headerlink" href="#impresso-data-architecture" title="Permalink to this headline">¶</a></h2>
+<p>This <cite>TextImporter</cite> is part of and fits into the data architecture defined in
+the framework of the impresso project to store and process a large-scale
+archive of historical newspapers. To understand the importer’s logic
+is worth touching upon the key points of the architecure into which it fits.</p>
+<div class="section" id="canonical-identifiers">
+<h3>Canonical identifiers<a class="headerlink" href="#canonical-identifiers" title="Permalink to this headline">¶</a></h3>
+<p>Canonical identifiers are defined at the following levels:</p>
+<ol class="arabic simple">
+<li><p>newspaper issue</p></li>
+<li><p>newspaper page</p></li>
+<li><p>content item (e.g. article, advertisement, weather forecast, obituary, etc.)</p></li>
+</ol>
+<div class="section" id="issue-ids">
+<h4>Issue IDs<a class="headerlink" href="#issue-ids" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li><p>canonical IDs for pages, issues</p></li>
-<li><p>how files are packaged into compressed JSON lines archives</p></li>
-<li><p>page images are expected to be served by an image server</p></li>
-<li><p>how things are processed in parallel using <code class="docutils literal notranslate"><span class="pre">dask</span></code></p></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}</span></code></p></li>
+<li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a</span></code></p></li>
 </ul>
+</div>
+<div class="section" id="page-ids">
+<h4>Page IDs<a class="headerlink" href="#page-ids" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-p{page_number}</span></code></p></li>
+<li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a-p0002</span></code></p></li>
+</ul>
+</div>
+<div class="section" id="content-item-ids">
+<h4>Content item IDs<a class="headerlink" href="#content-item-ids" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-i{item_number}</span></code></p></li>
+<li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-i0048</span></code>, <code class="docutils literal notranslate"><span class="pre">JDG-1901-01-01-a-i0031</span></code></p></li>
+</ul>
+<p>Some things to note about these templates:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">newspaper_id</span></code> is an arbitrary string, not containing white spaces, unambiguously identifying a given newspaper</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">page_number</span></code> is a four-digits integer (zeroes are used for filling)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edition</span></code>: in case of newspapers published multiple times per day, a lowercase letter is used to indicate the edition number: <code class="docutils literal notranslate"><span class="pre">a</span></code> for the first, <code class="docutils literal notranslate"><span class="pre">b</span></code> for the second, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">item_number</span></code>: is a four-digits integer (zeroes are used for filling); <strong>NB</strong>: content item IDs are <strong>expected to remain stable</strong> across any two runs of the importer given the same input data.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="data-packaging">
+<h3>Data packaging<a class="headerlink" href="#data-packaging" title="Permalink to this headline">¶</a></h3>
+<p>The JSON data produced by <code class="docutils literal notranslate"><span class="pre">TextImporter</span></code> are packaged into <code class="docutils literal notranslate"><span class="pre">.bz2</span></code> archives for efficient storage. Each archive consists of one JSON-line file, where each line contains a JSON document. The JSON schemas are described <strong>here</strong>.</p>
+<p>In Impresso we use an S3 solution for distributed storage to store newspaper data and accessed them at processing time.</p>
+<div class="section" id="issue-data">
+<h4>Issue data<a class="headerlink" href="#issue-data" title="Permalink to this headline">¶</a></h4>
+<p>They are packaged <strong>by newspaper and by year</strong> (as they tend to be very small files). Each archive contains, one document per line, all issues of a newspaper that appeared in that year.</p>
+<p>Examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-issues.jsonl.bz2</span></code> contains all issues of the <em>Gazette de Lausanne</em> published in 1900.</p>
+</div>
+<div class="section" id="page-data">
+<h4>Page data<a class="headerlink" href="#page-data" title="Permalink to this headline">¶</a></h4>
+<p>They are packaged <strong>by newspaper issue</strong>. Each archive contains, one document per line, all JSON pages belonging to a given newspaper issue (edition).</p>
+<p>Examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-01-a-pages.jsonl.bz2</span></code> contains all issues of the <em>Gazette de Lausanne</em> (= <code class="docutils literal notranslate"><span class="pre">GDL</span></code>) published on January 1, 1900.</p>
+</div>
+</div>
+<div class="section" id="image-data">
+<h3>Image data<a class="headerlink" href="#image-data" title="Permalink to this headline">¶</a></h3>
+<p>They are expected to be delivered via a dedicated IIIF endpoint, and typically stored in an image server. To each newspaper page corresponds an image file.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case the canonical ID of a page and the internal ID of its image differ, the content provider is expected to be able to provide a mapping of the two identifier systems.</p>
+</div>
+</div>
+</div>
 <div class="section" id="module-text_importer.importers.core">
 <span id="processing"></span><h2>Processing<a class="headerlink" href="#module-text_importer.importers.core" title="Permalink to this headline">¶</a></h2>
 <p>Core functions to perform large-scale import of OCR data.</p>
