@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>TextImporter &mdash; Impresso TextImporter  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Olive XML importer" href="importers/olive.html" />
+    <link rel="prev" title="Architecture" href="architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Impresso TextImporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TextImporter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#available-importers">Available importers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="importers/olive.html">Olive XML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/mets-alto.html">Generic Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/lux.html">BNL Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/rero.html">RERO Mets/Alto importer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-files">Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-text_importer.utils">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Write your own importer</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Impresso TextImporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>TextImporter</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/importers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="textimporter">
+<h1>TextImporter<a class="headerlink" href="#textimporter" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="available-importers">
+<h2>Available importers<a class="headerlink" href="#available-importers" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>: Olive XML OCR of <a class="reference external" href="https://www.rero.ch/">RERO</a></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">reroimporter.py</span></code>: Mets/ALTO flavor of <a class="reference external" href="https://www.rero.ch/">RERO</a></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">luximporter.py</span></code>: Mets/ALTO flavor of the Bibliotheque National du Luxembourg</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Importers' APIs:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="importers/olive.html">Olive XML importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/mets-alto.html">Generic Mets/Alto importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/lux.html">BNL Mets/Alto importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/rero.html">RERO Mets/Alto importer</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="command-line-interface">
+<h2>Command-line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All importers share the same command-line interface; only a few options
+are import-specific (see documentation below).</p>
+</div>
+<span class="target" id="module-text_importer.importers.generic_importer"></span><p>Functions and CLI script to convert any OCR data into Impresso’s format.</p>
+<dl>
+<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –access-rights=&lt;ar&gt;]
+&lt;importer-name&gt;importer.py –version</p>
+</dd>
+<dt>Options:</dt><dd><dl class="option-list">
+<dt><kbd><span class="option">--input-dir=<var>&lt;id&gt;</var></span></kbd></dt>
+<dd><p>Base directory containing one sub-directory for each journal</p>
+</dd>
+<dt><kbd><span class="option">--image-dirs=<var>&lt;imd&gt;</var></span></kbd></dt>
+<dd><p>Directory containing (canonical) images and their metadata (use <cite>,</cite> to separate multiple dirs)</p>
+</dd>
+<dt><kbd><span class="option">--output-dir=<var>&lt;od&gt;</var></span></kbd></dt>
+<dd><p>Base directory where to write the output files</p>
+</dd>
+<dt><kbd><span class="option">--temp-dir=<var>&lt;td&gt;</var></span></kbd></dt>
+<dd><p>Temporary directory to extract .zip archives</p>
+</dd>
+<dt><kbd><span class="option">--config-file=<var>&lt;cf&gt;</var></span></kbd></dt>
+<dd><p>configuration file for selective import</p>
+</dd>
+<dt><kbd><span class="option">--s3-bucket=<var>&lt;b&gt;</var></span></kbd></dt>
+<dd><p>If provided, writes output to an S3 drive, in the specified bucket</p>
+</dd>
+<dt><kbd><span class="option">--scheduler=<var>&lt;sch&gt;</var></span></kbd></dt>
+<dd><p>Tell dask to use an existing scheduler (otherwise it’ll create one)</p>
+</dd>
+<dt><kbd><span class="option">--log-file=<var>&lt;f&gt;</var></span></kbd></dt>
+<dd><p>Log file; when missing print log to stdout</p>
+</dd>
+<dt><kbd><span class="option">--access-rights=<var>&lt;ar&gt;</var></span></kbd></dt>
+<dd><p>Access right file if relevant (only for <code class="docutils literal notranslate"><span class="pre">olive</span></code> and <code class="docutils literal notranslate"><span class="pre">rero</span></code> importers)</p>
+</dd>
+<dt><kbd><span class="option">--verbose</span></kbd></dt>
+<dd><p>Verbose log messages (good for debugging)</p>
+</dd>
+<dt><kbd><span class="option">--clear</span></kbd></dt>
+<dd><p>Removes the output folder (if already existing)</p>
+</dd>
+<dt><kbd><span class="option">--version</span></kbd></dt>
+<dd><p>Prints version and exits.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="section" id="configuration-files">
+<h2>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<p>todo</p>
+</div>
+<div class="section" id="module-text_importer.utils">
+<span id="utilities"></span><h2>Utilities<a class="headerlink" href="#module-text_importer.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="text_importer.utils.get_issue_schema">
+<code class="sig-prename descclassname">text_importer.utils.</code><code class="sig-name descname">get_issue_schema</code><span class="sig-paren">(</span><em class="sig-param">schema_folder: str = 'impresso-schemas/json/newspaper/issue.schema.json'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.get_issue_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a list of python classes starting from a JSON schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>schema_folder</strong> (<em>string</em>) – path to the schema folder (default=”./schemas/”)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><cite>python_jsonschema_objects.util.Namespace</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.utils.get_page_schema">
+<code class="sig-prename descclassname">text_importer.utils.</code><code class="sig-name descname">get_page_schema</code><span class="sig-paren">(</span><em class="sig-param">schema_folder: str = 'impresso-schemas/json/newspaper/page.schema.json'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.get_page_schema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a list of python classes starting from a JSON schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>schema_folder</strong> – path to the schema folder (default=”./schemas/”)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><cite>python_jsonschema_objects.util.Namespace</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="importers/olive.html" class="btn btn-neutral float-right" title="Olive XML importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="architecture.html" class="btn btn-neutral float-left" title="Architecture" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Matteo Romanello &amp; Impresso team
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

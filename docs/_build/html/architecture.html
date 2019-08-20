@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Architecture &mdash; Impresso TextImporter  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="TextImporter" href="importers.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Impresso TextImporter
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-text_importer.importers.core">Processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Write your own importer</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Impresso TextImporter</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Architecture</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/architecture.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="architecture">
+<h1>Architecture<a class="headerlink" href="#architecture" title="Permalink to this headline">¶</a></h1>
+<p>things to mention:</p>
+<ul class="simple">
+<li><p>canonical IDs for pages, issues</p></li>
+<li><p>how files are packaged into compressed JSON lines archives</p></li>
+<li><p>page images are expected to be served by an image server</p></li>
+<li><p>how things are processed in parallel using <code class="docutils literal notranslate"><span class="pre">dask</span></code></p></li>
+</ul>
+<div class="section" id="module-text_importer.importers.core">
+<span id="processing"></span><h2>Processing<a class="headerlink" href="#module-text_importer.importers.core" title="Permalink to this headline">¶</a></h2>
+<p>Core functions to perform large-scale import of OCR data.</p>
+<p>Add additional bla bla bla about parallel processing and dask.</p>
+<dl class="function">
+<dt id="text_importer.importers.core.compress_issues">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">compress_issues</code><span class="sig-paren">(</span><em class="sig-param">key: Tuple[str, int], issues: List[text_importer.importers.classes.NewspaperIssue], output_dir: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[str, str]<a class="headerlink" href="#text_importer.importers.core.compress_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>type</em>) – Description of parameter <cite>key</cite>.</p></li>
+<li><p><strong>issues</strong> (<em>list</em>) – A list of <cite>NewspaperIssue</cite> instances.</p></li>
+<li><p><strong>output_dir</strong> (<em>type</em>) – Description of parameter <cite>output_dir</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tuple with [0] being NEWSPAPER-YEAR and
+[1] the path of the compressed file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.core.compress_pages">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">compress_pages</code><span class="sig-paren">(</span><em class="sig-param">key: str</em>, <em class="sig-param">json_files: List</em>, <em class="sig-param">output_dir: str</em>, <em class="sig-param">prefix: str = ''</em><span class="sig-paren">)</span> &#x2192; Tuple[str, str]<a class="headerlink" href="#text_importer.importers.core.compress_pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Merges a set of JSON line files into a single compressed archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> – signature of the newspaper issue (e.g. GDL-1900)</p></li>
+<li><p><strong>json_files</strong> – input JSON line files</p></li>
+<li><p><strong>output_dir</strong> – directory where to write the output file</p></li>
+<li><p><strong>prefix</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tuple with: sorting key [0] and path to serialized file [1].</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
+(e.g. GDL-1900).</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.core.dir2issue">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">dir2issue</code><span class="sig-paren">(</span><em class="sig-param">issue: impresso_commons.path.path_fs.IssueDirectory, issue_class: Type[text_importer.importers.classes.NewspaperIssue], image_dirs=None, temp_dir=None</em><span class="sig-paren">)</span> &#x2192; Tuple[Optional[text_importer.importers.classes.NewspaperIssue], Optional[str]]<a class="headerlink" href="#text_importer.importers.core.dir2issue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instantiates a NewspaperIssue instance from an IssueDir.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.core.import_issues">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">import_issues</code><span class="sig-paren">(</span><em class="sig-param">issues: List[impresso_commons.path.path_fs.IssueDirectory], out_dir: str, s3_bucket: Optional[str], issue_class: Type[text_importer.importers.classes.NewspaperIssue], image_dirs: str, temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.core.import_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imports a bunch of newspaper issues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>issues</strong> (<em>list</em>) – Description of parameter <cite>issues</cite>.</p></li>
+<li><p><strong>out_dir</strong> (<em>str</em>) – Description of parameter <cite>out_dir</cite>.</p></li>
+<li><p><strong>s3_bucket</strong> (<em>str</em>) – Description of parameter <cite>s3_bucket</cite>.</p></li>
+<li><p><strong>issue_class</strong> – The newspaper issue class to import (Child of NewspaperIssue)</p></li>
+<li><p><strong>image_dirs</strong> – Directory of images (can be multiple)</p></li>
+<li><p><strong>temp_dir</strong> – Temporary directory for extracting archives (For Olive format)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.core.issue2pages">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">issue2pages</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.classes.NewspaperPage]<a class="headerlink" href="#text_importer.importers.core.issue2pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes the pages of the given issue</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.core.upload_issues">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">upload_issues</code><span class="sig-paren">(</span><em class="sig-param">sort_key: str</em>, <em class="sig-param">filepath: str</em>, <em class="sig-param">bucket_name: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[bool, str]<a class="headerlink" href="#text_importer.importers.core.upload_issues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a file to a given S3 bucket.
+:param sort_key: the key used to group articles (e.g. “GDL-1900”)
+:param filepath: path of the file to upload to S3
+:param bucket_name: name of S3 bucket where to upload the file
+:return: a tuple with [0] whether the upload was successful (boolean) and</p>
+<blockquote>
+<div><p>[1] the path of the uploaded file (string)</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
+(e.g. GDL-1900).</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.core.upload_pages">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">upload_pages</code><span class="sig-paren">(</span><em class="sig-param">sort_key: str</em>, <em class="sig-param">filepath: str</em>, <em class="sig-param">bucket_name: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[bool, str]<a class="headerlink" href="#text_importer.importers.core.upload_pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a file to a given S3 bucket.
+:param sort_key: the key used to group articles (e.g. “GDL-1900”)
+:param filepath: path of the file to upload to S3
+:param bucket_name: name of S3 bucket where to upload the file
+:return: a tuple with [0] whether the upload was successful (boolean) and</p>
+<blockquote>
+<div><p>[1] the path of the uploaded file (string)</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
+(e.g. GDL-1900).</p>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="importers.html" class="btn btn-neutral float-right" title="TextImporter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Matteo Romanello &amp; Impresso team
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
