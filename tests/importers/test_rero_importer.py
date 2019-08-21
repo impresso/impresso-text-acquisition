@@ -40,4 +40,3 @@ def test_import_issues():
         chunk_size=None
     )
     print(result)
-

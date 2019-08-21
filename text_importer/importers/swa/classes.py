@@ -13,9 +13,9 @@ IIIF_ENDPOINT_URL = "https://ub-sipi.ub.unibas.ch/impresso"
 
 
 class SWANewspaperPage(MetsAltoNewspaperPage):
-    """Class representing a SWA Newspaper page, which are given in ALTO format
-    
-    :param str alto_path: Full path of alto file
+    """Class representing a newspaper page in SWA data.
+
+    :param str alto_path: Full path to the Alto XML file.
     """
 
     def __init__(self, _id: str, number: int, alto_path: str):
@@ -30,7 +30,13 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
     @property
     def ci_id(self) -> str:
         """
-        Returns the content item ID of the page. In SWA, each page is a content item, so we just replace the "p" with "i"
+        Return the content item ID of the page.
+
+        Given that SWA data do not entail article-level segmentation,
+        each page is considered as a content item. Thus, to mint the content
+        item ID we take the canonical page ID and simply replace the "p"
+        prefix with "i".
+
         :return: str Content item id
         """
         split = self.id.split('-')
@@ -53,13 +59,15 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
 
 class SWANewspaperIssue(NewspaperIssue):
     """Class representing a SWA Newspaper Issue.
-    
+
     .. note ::
 
-        SWA is in ALTO format, but there isn't any Mets file. So in that case, Issues are simply a collection of pages
+        SWA is in ALTO format, but there isn't any Mets file. So in that case,
+        issues are simply a collection of pages.
+
     :param SwaIssueDir issue_dir: SwaIssueDir of the current Issue
     :param str temp_dir: Temporary directory to extract archives
-    
+
     """
 
     def __init__(self, issue_dir: SwaIssueDir, temp_dir: str):
@@ -83,7 +91,9 @@ class SWANewspaperIssue(NewspaperIssue):
         if os.path.isfile(self.path):
             try:
                 archive = ZipFile(self.path)
-                logger.debug(f"Contents of archive for {self.id}: {archive.namelist()}")
+                logger.debug(
+                        f"Contents of archive for {self.id}: {archive.namelist()}"
+                )
                 return ZipArchive(archive, temp_dir)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
