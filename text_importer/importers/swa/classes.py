@@ -13,63 +13,71 @@ IIIF_ENDPOINT_URL = "https://ub-sipi.ub.unibas.ch/impresso"
 
 
 class SWANewspaperPage(MetsAltoNewspaperPage):
-    """Class representing a SWA Newspaper page, which are given in ALTO format
-    
-    :param str alto_path: Full path of alto file
+    """Class representing a newspaper page in SWA data.
+
+    :param str alto_path: Full path to the Alto XML file.
     """
     def __init__(self, _id: str, number: int, alto_path: str):
         basedir, filename = os.path.split(alto_path)
         super().__init__(_id, number, filename, basedir)
         self.iiif = os.path.join(IIIF_ENDPOINT_URL, filename.split('.')[0])
         self.page_data['iiif'] = self.iiif
-    
+
     def add_issue(self, issue: NewspaperIssue):
         self.issue = issue
-    
+
     @property
     def ci_id(self) -> str:
         """
-        Returns the content item ID of the page. In SWA, each page is a content item, so we just replace the "p" with "i"
+        Return the content item ID of the page.
+
+        Given that SWA data do not entail article-level segmentation,
+        each page is considered as a content item. Thus, to mint the content
+        item ID we take the canonical page ID and simply replace the "p"
+        prefix with "i".
+
         :return: str Content item id
         """
         split = self.id.split('-')
         split[-1] = split[-1].replace('p', 'i')
         return "-".join(split)
-    
+
     def parse(self):
         doc = self.xml
         pselement = doc.find('PrintSpace')
         ci_id = self.ci_id
-        
+
         mappings = {k.get('ID'): ci_id for k in pselement.findAll('TextBlock')}
         page_data = parse_printspace(pselement, mappings)
-        
+
         self.page_data['cc'], self.page_data['r'] = False, page_data
-    
+
     def get_iiif_image(self):
         return os.path.join(self.iiif, "full/full/0/default.jpg")
 
 
 class SWANewspaperIssue(NewspaperIssue):
     """Class representing a SWA Newspaper Issue.
-    
+
     .. note ::
 
-        SWA is in ALTO format, but there isn't any Mets file. So in that case, Issues are simply a collection of pages
+        SWA is in ALTO format, but there isn't any Mets file. So in that case,
+        issues are simply a collection of pages.
+
     :param SwaIssueDir issue_dir: SwaIssueDir of the current Issue
     :param str temp_dir: Temporary directory to extract archives
-    
+
     """
-    
+
     def __init__(self, issue_dir: SwaIssueDir, temp_dir: str):
         super().__init__(issue_dir)
         self.archive = self._parse_archive(temp_dir)
         self.temp_pages = issue_dir.pages
         self.content_items = []
-        
+
         self._find_pages()
         self._find_content_items()
-        
+
         self.issue_data = {
                 'id': self.id,
                 'cdt': strftime("%Y-%m-%d %H:%M:%S"),
@@ -77,12 +85,14 @@ class SWANewspaperIssue(NewspaperIssue):
                 'ar': self.rights,
                 'pp': [p.id for p in self.pages]
                 }
-    
+
     def _parse_archive(self, temp_dir: str) -> Archive:
         if os.path.isfile(self.path):
             try:
                 archive = ZipFile(self.path)
-                logger.debug(f"Contents of archive for {self.id}: {archive.namelist()}")
+                logger.debug(
+                    f"Contents of archive for {self.id}: {archive.namelist()}"
+                )
                 return Archive(archive, temp_dir)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
@@ -90,13 +100,13 @@ class SWANewspaperIssue(NewspaperIssue):
         else:
             msg = f"Could not find archive {self.path} for {self.id}"
             raise ValueError(msg)
-    
+
     def _find_pages(self):
         for n, val in enumerate(sorted(self.temp_pages)):
             page_id, page_path = val
             page_path = os.path.join(self.archive.dir, page_path)
             self.pages.append(SWANewspaperPage(page_id, n + 1, page_path))
-    
+
     def _find_content_items(self):
         for n, page in enumerate(sorted(self.pages, key=lambda x: x.id)):
             ci_id = self.id + '-i' + str(n + 1).zfill(4)

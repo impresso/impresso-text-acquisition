@@ -39,4 +39,3 @@ def test_import_issues():
         image_dirs=None
     )
     print(result)
-

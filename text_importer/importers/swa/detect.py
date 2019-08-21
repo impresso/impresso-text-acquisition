@@ -48,7 +48,7 @@ canonical identifiers for the issue and its pages.
 def _apply(part: pd.DataFrame) -> pd.Series:
     """
     Helper to parse csv document
-    
+
     :param pd.Dataframe part: Partition for current issue
     :return: pd.Series: Holding the pages and archives for issue
     """
@@ -61,18 +61,18 @@ def _apply(part: pd.DataFrame) -> pd.Series:
 
 
 def get_issuedir(row: pd.Series, archives_full_dir: str) -> Optional[SwaIssueDir]:
-    """ Creates a `SwaIssueDir` from a row of the csv file
+    """ Creates a ``SwaIssueDir`` from a row of the csv file
 
     .. note ::
         This function is called internally by :func:`detect_issues`
 
     :param pd.Series row: Path of issue.
     :param str archives_full_dir: Path to archive for current issue
-    :return: New ``SwaIssueDir`` object.
+    :return: New `` object.
     """
     if len(row.archives) > 1:
         logger.debug(f"Issue {row.manifest_id} has more than one archive {row.archives}")
-    
+
     archive = os.path.join(archives_full_dir, list(row.archives)[0])
     if os.path.isfile(archive):
         split = row.manifest_id.split('-')[:-1]
@@ -96,16 +96,21 @@ def detect_issues(base_dir: str, access_rights: str, csv_file: str = 'impresso_i
                   archives_dir: str = 'impresso_ocr') -> List[SwaIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
-    This function expects the directory structure that RERO used to
-    organize the dump of Mets/Alto OCR data.
+    This function expects the directory structure that SWA used to
+    organize the dump of Alto OCR data.
+
+    .. todo::
+
+        The access rights information is not in place yet, but needs
+        to be specified by the content provider (SWA).
 
     :param str base_dir: Path to the base directory of newspaper data.
     :param str access_rights: Path to ``access_rights.json`` file.
     :param str csv_file: Compressed csv file holding Issue and page identifiers with alto paths (impresso_ids.zip as default)
     :param str archives_dir: Directory where archives are stored (impresso_ocr/ as default)
-    :return: List of `SwaIssueDir` instances, to be imported.
+    :return: List of ``SwaIssueDir`` instances, to be imported.
     """
-    
+
     archives_full_dir = os.path.join(base_dir, archives_dir)
     csv_file = os.path.join(base_dir, csv_file)
     result = []
@@ -126,12 +131,17 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> List[SwaIs
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
 
+    .. todo::
+
+        The access rights information is not in place yet, but needs
+        to be specified by the content provider (SWA).
+
     :param str base_dir: Path to the base directory of newspaper data.
     :param dict config: Config dictionary for filtering.
     :param str access_rights: Path to ``access_rights.json`` file.
-    :return: List of `SwaIssueDir` instances, to be imported.
+    :return: List of ``SwaIssueDir`` instances, to be imported.
     """
-    
+
     try:
         filter_dict = config.get("newspapers")
         exclude_list = config["exclude_newspapers"]
@@ -139,29 +149,29 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> List[SwaIs
     except KeyError:
         logger.critical(f"The key [newspapers|exclude_newspapers|year_only] is missing in the config file.")
         return []
-    
+
     exclude_flag = False if not exclude_list else True
     logger.debug(f"got filter_dict: {filter_dict}, "
                  f"\nexclude_list: {exclude_list}, "
                  f"\nyear_flag: {year_flag}"
                  f"\nexclude_flag: {exclude_flag}")
-    
+
     filter_newspapers = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
     logger.debug(f"got filter_newspapers: {filter_newspapers}, with exclude flag: {exclude_flag}")
     issues = detect_issues(base_dir, access_rights)
-    
+
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag \
         .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \
         .compute()
-    
+
     logger.info(
             "{} newspaper issues remained after applying filter: {}".format(
                     len(selected_issues),
                     selected_issues
                     )
             )
-    
+
     exclude_flag = False if not exclude_list else True
     filtered_issues = _apply_datefilter(filter_dict, selected_issues,
                                         year_only=year_flag) if not exclude_flag else selected_issues
