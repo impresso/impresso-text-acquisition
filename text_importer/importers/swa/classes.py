@@ -3,7 +3,7 @@ import os
 from time import strftime
 from zipfile import ZipFile
 
-from text_importer.importers.classes import Archive, NewspaperIssue
+from text_importer.importers.classes import ZipArchive, NewspaperIssue
 from text_importer.importers.mets_alto.alto import parse_printspace
 from text_importer.importers.mets_alto.classes import MetsAltoNewspaperPage
 from text_importer.importers.swa.detect import SwaIssueDir
@@ -85,15 +85,13 @@ class SWANewspaperIssue(NewspaperIssue):
                 'ar': self.rights,
                 'pp': [p.id for p in self.pages]
                 }
-
-    def _parse_archive(self, temp_dir: str) -> Archive:
+        
+    def _parse_archive(self, temp_dir: str) -> ZipArchive:
         if os.path.isfile(self.path):
             try:
                 archive = ZipFile(self.path)
-                logger.debug(
-                    f"Contents of archive for {self.id}: {archive.namelist()}"
-                )
-                return Archive(archive, temp_dir)
+                logger.debug(f"Contents of archive for {self.id}: {archive.namelist()}")
+                return ZipArchive(archive, temp_dir)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
                 raise ValueError(msg)
