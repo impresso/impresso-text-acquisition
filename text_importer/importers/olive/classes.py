@@ -11,7 +11,7 @@ from zipfile import ZipFile
 from impresso_commons.path import IssueDir
 from impresso_commons.path.path_fs import canonical_path
 
-from text_importer.importers.classes import NewspaperIssue, NewspaperPage, Archive
+from text_importer.importers.classes import NewspaperIssue, NewspaperPage, ZipArchive
 from text_importer.importers.olive.helpers import (combine_article_parts,
                                                    convert_image_coordinates,
                                                    convert_page_coordinates,
@@ -172,7 +172,7 @@ class OliveNewspaperIssue(NewspaperIssue):
             self,
             temp_dir: str,
             file: str = "Document.zip"
-            ) -> Archive:
+            ) -> ZipArchive:
         """
         Parses the archive for this issue. Fails if archive could not be parsed
         :param file: The archive file to parse
@@ -191,7 +191,7 @@ class OliveNewspaperIssue(NewspaperIssue):
                         f"Contents of archive for {self.id}:"
                         f" {archive.namelist()}"
                 ))
-                return Archive(archive, archive_tmp_path)
+                return ZipArchive(archive, archive_tmp_path)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
                 raise ValueError(msg)

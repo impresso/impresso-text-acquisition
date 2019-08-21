@@ -107,7 +107,7 @@ class NewspaperPage(ABC):
         pass
 
 
-class Archive(object):
+class ZipArchive(object):
     """ Class representing an archive document. Usually, we unpack them in a temp directory to avoid jamming the memory"""
     
     def __init__(self, archive: ZipFile, temp_dir: str):
