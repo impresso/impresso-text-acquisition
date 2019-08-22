@@ -25,6 +25,7 @@ import json
 import logging
 import os
 import shutil
+import time
 from typing import Type
 
 from dask.distributed import Client
@@ -44,6 +45,26 @@ __copyright__ = "EPFL, 2017"
 __status__ = "development"
 
 logger = logging.getLogger()
+
+
+def clear_output_dir(out_dir, clear_output):
+    if out_dir is not None:
+        if os.path.exists(out_dir):
+            if clear_output is not None and clear_output:
+                shutil.rmtree(out_dir)  # Deletes the whole dir
+                time.sleep(3)
+                os.makedirs(out_dir)
+        else:
+            os.makedirs(out_dir)
+
+
+def get_dask_client(scheduler, log_file, log_level):
+    if scheduler is None:
+        client = Client(processes=False, n_workers=8, threads_per_worker=2)
+    else:
+        client = Client(scheduler)
+        client.run(init_logger, _logger=logger, log_level=log_level, log_file=log_file)
+    return client
 
 
 def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
@@ -73,18 +94,12 @@ def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
     logger.debug("CLI arguments received: {}".format(args))
     
     # start the dask local cluster
-    if scheduler is None:
-        client = Client(processes=False, n_workers=8, threads_per_worker=2)
-    else:
-        client = Client(scheduler)
-        client.run(init_logger, _logger=logger, log_level=log_level, log_file=log_file)
+    client = get_dask_client(scheduler, log_file, log_level)
     
     logger.info(f"Dask cluster: {client}")
     
     # clean output directory if existing
-    if outp_dir is not None and os.path.exists(outp_dir):
-        if clear_output is not None and clear_output:
-            shutil.rmtree(outp_dir)
+    clear_output_dir(outp_dir, clear_output)  # Checks if out dir exists (Creates it if not) and if should empty it
     
     # detect/select issues
     if config_file and os.path.isfile(config_file):
@@ -103,7 +118,7 @@ def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
         issues = detect_func(inp_dir, access_rights=access_rights_file)
         logger.info(f'{len(issues)} newspaper issues detected')
     
-    if os.path.exists(outp_dir) and incremental_output:
+    if outp_dir is not None and os.path.exists(outp_dir) and incremental_output:
         issues_to_skip = [
                 (issue.journal, issue.date, issue.edition)
                 for issue in detect_canonical_issues(outp_dir, KNOWN_JOURNALS)

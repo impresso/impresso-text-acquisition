@@ -490,7 +490,7 @@ def convert_page_coordinates(
     :param OliveNewspaperPage page: Page whose coordinates should be converted.
     :param str page_xml: Content of Olive page XML.
     :param type page_image_name: Name of page image file.
-    :param OliveArchive zip_archive: Olive Zip archive.
+    :param ZipArchive zip_archive: Olive Zip archive.
     :param str box_strategy: Conversion strategy to apply.
     :param OliveNewspaperIssue issue: Newspaper issue the page belongs to.
     :return: Whether the coordinate conversion was successful or not.
@@ -543,7 +543,7 @@ def convert_image_coordinates(
     :param dict image: Image metadata.
     :param str page_xml: Content of Olive page XML.
     :param str page_image_name: Name of page image file.
-    :param OliveArchive zip_archive: Olive Zip archive.
+    :param ZipArchive zip_archive: Olive Zip archive.
     :param str box_strategy: Conversion strategy to apply.
     :param OliveNewspaperIssue issue: Newspaper issue the page belongs to.
     :return: Whether the coordinate conversion was successful or not.
