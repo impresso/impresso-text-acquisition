@@ -25,7 +25,6 @@ from smart_open import smart_open as smart_open_function
 import shutil
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers.olive.classes import OliveNewspaperIssue
-from text_importer.importers.swa.classes import SWANewspaperIssue
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +35,6 @@ def dir2issue(issue: IssueDir, issue_class: Type[NewspaperIssue], image_dirs=Non
     try:
         if issue_class is OliveNewspaperIssue:
             np_issue = OliveNewspaperIssue(issue, image_dirs=image_dirs, temp_dir=temp_dir)
-        elif issue_class is SWANewspaperIssue:
-            np_issue = SWANewspaperIssue(issue, temp_dir=temp_dir)
         else:
             np_issue = issue_class(issue)
         return np_issue, None
