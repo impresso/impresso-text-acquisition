@@ -7,6 +7,7 @@ Available importers
 The *Impresso TextImporter* already supports a number of formats (and flavours of standard formats), while a few others
 are currently being developed.
 
+<<<<<<< HEAD
 The following importer CLI scripts are already available:
 
 - :py:mod:`text_importer.scripts.oliveimporter`: importer for the *Olive XML format*, used by
@@ -15,6 +16,7 @@ The following importer CLI scripts are already available:
   to encode and deliver part of its data.
 - :py:mod:`text_importer.scripts.luximporter`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de Luxembourg (BNL)
   <https://bnl.public.lu/>`_ to encode and deliver its newspaper data.
+- :py:mod:`text_importer.scripts.swaimporter.py`: ALTO flavor of the `Basel University Library`.
 
 For further details on any of these implementations, please do refer to its documentation:
 
