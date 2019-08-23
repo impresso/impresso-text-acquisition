@@ -1,10 +1,10 @@
 Overview
 ========
 
-Impresso data architecture
+Data architecture
 --------------------------
 
-This `TextImporter` is part of and fits into the data architecture defined in
+The `Impreso TextImporter` is part of and fits into the data architecture defined in
 the framework of the impresso project to store and process a large-scale
 archive of historical newspapers. To understand the importer's logic
 is worth touching upon the key points of the architecure into which it fits.

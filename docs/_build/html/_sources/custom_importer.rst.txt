@@ -14,12 +14,12 @@ pieces of code:
 
 **TODO**: How to structure the code.
 
-Minting canonical IDs
+Mint canonical IDs
 ---------------------
 
 TBD
 
-Detecting data to import
+Detect data to import
 ------------------------
 
 - the importer needs to know which data should be imported
@@ -29,7 +29,7 @@ Detecting data to import
 
 For example: :py:func:`~text_importer.importers.olive.detect.olive_detect_issues`
 
-Subclassing abstract classes
+Implement abstract classes
 ----------------------------
 
 .. autoclass:: text_importer.importers.classes.NewspaperIssue
@@ -37,3 +37,9 @@ Subclassing abstract classes
 
 .. autoclass:: text_importer.importers.classes.NewspaperPage
   :members:
+
+Write a test
+------------
+
+Add a CLI interface
+-------------------

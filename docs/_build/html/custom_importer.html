@@ -86,9 +86,11 @@
 <li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Write your own importer</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tldr">TLDR;</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#minting-canonical-ids">Minting canonical IDs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#detecting-data-to-import">Detecting data to import</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#subclassing-abstract-classes">Subclassing abstract classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#mint-canonical-ids">Mint canonical IDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detect-data-to-import">Detect data to import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implement-abstract-classes">Implement abstract classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-a-test">Write a test</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-a-cli-interface">Add a CLI interface</a></li>
 </ul>
 </li>
 </ul>
@@ -168,12 +170,12 @@ pieces of code:</p>
 <p><strong>TODO</strong>: Given an example.</p>
 <p><strong>TODO</strong>: How to structure the code.</p>
 </div>
-<div class="section" id="minting-canonical-ids">
-<h2>Minting canonical IDs<a class="headerlink" href="#minting-canonical-ids" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mint-canonical-ids">
+<h2>Mint canonical IDs<a class="headerlink" href="#mint-canonical-ids" title="Permalink to this headline">¶</a></h2>
 <p>TBD</p>
 </div>
-<div class="section" id="detecting-data-to-import">
-<h2>Detecting data to import<a class="headerlink" href="#detecting-data-to-import" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="detect-data-to-import">
+<h2>Detect data to import<a class="headerlink" href="#detect-data-to-import" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>the importer needs to know which data should be imported</p></li>
 <li><p>information about the newspaper contents is often encoded as part of
@@ -181,8 +183,8 @@ folder names etc., thus it needs to be extracted and made explicit</p></li>
 </ul>
 <p>For example: <a class="reference internal" href="importers/olive.html#text_importer.importers.olive.detect.olive_detect_issues" title="text_importer.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a></p>
 </div>
-<div class="section" id="subclassing-abstract-classes">
-<h2>Subclassing abstract classes<a class="headerlink" href="#subclassing-abstract-classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="implement-abstract-classes">
+<h2>Implement abstract classes<a class="headerlink" href="#implement-abstract-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="text_importer.importers.classes.NewspaperIssue">
 <em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.classes.</code><code class="sig-name descname">NewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue" title="Permalink to this definition">¶</a></dt>
@@ -256,6 +258,12 @@ bypass schema validation.</p>
 
 </dd></dl>
 
+</div>
+<div class="section" id="write-a-test">
+<h2>Write a test<a class="headerlink" href="#write-a-test" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="add-a-cli-interface">
+<h2>Add a CLI interface<a class="headerlink" href="#add-a-cli-interface" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

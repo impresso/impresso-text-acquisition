@@ -1,6 +1,13 @@
 """Core functions to perform large-scale import of OCR data.
 
-Add additional bla bla bla about parallel processing and dask.
+Most of the functions in this module are meant to be used in conjuction
+with `Dask <https://dask.org/>`_, the library we are using to parallelize
+the ingestion process and run it on distributed computing infrastructures.
+
+.. note::
+
+    The function :func:`import_issues` is the most important in this module
+    as it keeps everything together, by calling all other functions.
 """
 
 import codecs
@@ -28,19 +35,30 @@ from text_importer.importers.olive.classes import OliveNewspaperIssue
 logger = logging.getLogger(__name__)
 
 
-def dir2issue(issue: IssueDir, issue_class: Type[NewspaperIssue], image_dirs=None, temp_dir=None) -> \
-        Tuple[Optional[NewspaperIssue], Optional[str]]:
-    """Instantiates a NewspaperIssue instance from an IssueDir."""
+def dir2issue(
+    issue: IssueDir,
+    issue_class: Type[NewspaperIssue],
+    image_dirs=None, temp_dir=None) -> Tuple[
+    Optional[NewspaperIssue], Optional[str]
+]:
+    """Instantiate a ``NewspaperIssue`` instance from an ``IssueDir``."""
     try:
         if issue_class is OliveNewspaperIssue:
-            np_issue = OliveNewspaperIssue(issue, image_dirs=image_dirs, temp_dir=temp_dir)
+            np_issue = OliveNewspaperIssue(
+                issue,
+                image_dirs=image_dirs,
+                temp_dir=temp_dir
+            )
         else:
             np_issue = issue_class(issue)
         return np_issue, None
     except Exception as e:
         logger.error(f'Error when processing issue {issue}: {e}')
         logger.exception(e)
-        note = f"{canonical_path(issue, path_type='dir').replace('/', '-')}: {e}"
+        note = (
+            f"{canonical_path(issue, path_type='dir').replace('/', '-')}: "
+            f"{e}"
+        )
         return None, note
 
 
@@ -53,7 +71,18 @@ def issue2pages(issue: NewspaperIssue) -> List[NewspaperPage]:
     return pages
 
 
-def serialize_pages(pages: List[NewspaperPage], output_dir: str = None) -> List[Tuple[IssueDir, str]]:
+def serialize_pages(
+    pages: List[NewspaperPage],
+    output_dir: str = None
+) -> List[Tuple[IssueDir, str]]:
+    """Short summary.
+
+    :param List[NewspaperPage] pages: Description of parameter `pages`.
+    :param str output_dir: Description of parameter `output_dir`.
+    :return: Description of returned object.
+    :rtype: List[Tuple[IssueDir, str]]
+
+    """
     result = []
 
     for page in pages:
@@ -83,13 +112,19 @@ def serialize_pages(pages: List[NewspaperPage], output_dir: str = None) -> List[
                     )
         result.append((issue_dir, out_file))
 
-    # del pages
-
+    # TODO: this can be deleyted, I believe as it has no effect
     gc.collect()
     return result
 
 
 def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
+    """Short summary.
+
+    :param List[NewspaperPage] pages: Description of parameter `pages`.
+    :return: Description of returned object.
+    :rtype: List[NewspaperPage]
+
+    """
     result = []
     for page in pages:
         try:
@@ -101,16 +136,24 @@ def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
     return result
 
 
-def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str], issue_class: Type[NewspaperIssue],
-                  image_dirs: str, temp_dir: str):
-    """Imports a bunch of newspaper issues.
+def import_issues(
+    issues: List[IssueDir],
+    out_dir: str,
+    s3_bucket: Optional[str],
+    issue_class: Type[NewspaperIssue],
+    image_dirs: str,
+    temp_dir: str
+):
+    """Import a bunch of newspaper issues.
 
     :param list issues: Description of parameter `issues`.
     :param str out_dir: Description of parameter `out_dir`.
     :param str s3_bucket: Description of parameter `s3_bucket`.
-    :param issue_class: The newspaper issue class to import (Child of NewspaperIssue)
+    :param issue_class: The newspaper issue class to import
+        (Child of ``NewspaperIssue``).
     :param image_dirs: Directory of images (can be multiple)
-    :param temp_dir: Temporary directory for extracting archives (For Olive format)
+    :param temp_dir: Temporary directory for extracting archives
+    (applies only to impoters make use of ``ZipArchive``).
     :return: Description of returned object.
     :rtype: tuple
 
@@ -119,10 +162,20 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str]
     logger.info(msg)
 
     issue_bag = db.from_sequence(issues, partition_size=60) \
-        .map(dir2issue, issue_class=issue_class, image_dirs=image_dirs, temp_dir=temp_dir)
+        .map(
+            dir2issue,
+            issue_class=issue_class,
+            image_dirs=image_dirs,
+            temp_dir=temp_dir
+        )
 
-    failed_log = issue_bag.filter(lambda x: x[0] is None).map(lambda x: x[1]).persist()
-    issue_bag = issue_bag.filter(lambda x: x[0] is not None).map(lambda x: x[0])
+    failed_log = issue_bag.filter(
+        lambda x: x[0] is None
+    ).map(lambda x: x[1]).persist()
+
+    issue_bag = issue_bag.filter(
+        lambda x: x[0] is not None
+    ).map(lambda x: x[0])
 
     logger.info('Start compressing and uploading issues')
     issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
@@ -155,7 +208,7 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str]
                         x[0], path_type='dir'
                         ).replace('/', '-')
                 ) \
-            .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir) \
+            .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir)\
             .starmap(upload_pages, bucket_name=s3_bucket) \
             .starmap(cleanup)
 
@@ -166,12 +219,20 @@ def import_issues(issues: List[IssueDir], out_dir: str, s3_bucket: Optional[str]
 
     with open(log_path, 'w') as f:
         f.write("\n".join(failed_log))
-        logger.info(f"Dumped {len(failed_log)} failed issues with errors in {log_path}")
+        logger.info(
+            f"Dumped {len(failed_log)} failed issues "
+            f"with errors in {log_path}"
+        )
 
     logger.info("---------- Done ----------")
 
 
-def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = "") -> Tuple[str, str]:
+def compress_pages(
+    key: str,
+    json_files: List,
+    output_dir: str,
+    prefix: str = ""
+) -> Tuple[str, str]:
     """Merges a set of JSON line files into a single compressed archive.
 
     :param key: signature of the newspaper issue (e.g. GDL-1900)
@@ -188,7 +249,10 @@ def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = ""
 
     newspaper, year, month, day, edition = key.split('-')
     prefix_string = "" if prefix == "" else f"-{prefix}"
-    filename = f'{newspaper}-{year}-{month}-{day}-{edition}{prefix_string}.jsonl.bz2'
+    filename = (
+        f'{newspaper}-{year}-{month}-{day}-{edition}'
+        f'{prefix_string}.jsonl.bz2'
+    )
     filepath = os.path.join(output_dir, filename)
     logger.info(f'Compressing {len(json_files)} JSON files into {filepath}')
 
@@ -217,7 +281,11 @@ def compress_pages(key: str, json_files: List, output_dir: str, prefix: str = ""
     return key, filepath
 
 
-def compress_issues(key: Tuple[str, int], issues: List[NewspaperIssue], output_dir: str = None) -> Tuple[str, str]:
+def compress_issues(
+    key: Tuple[str, int],
+    issues: List[NewspaperIssue],
+    output_dir: str = None
+) -> Tuple[str, str]:
     """Short summary.
 
     :param type key: Description of parameter `key`.
@@ -246,16 +314,25 @@ def compress_issues(key: Tuple[str, int], issues: List[NewspaperIssue], output_d
     return f'{newspaper}-{year}', filepath
 
 
-def upload_issues(sort_key: str, filepath: str, bucket_name: str = None) -> Tuple[bool, str]:
-    """Uploads a file to a given S3 bucket.
+def upload_issues(
+    sort_key: str,
+    filepath: str,
+    bucket_name: str = None
+) -> Tuple[bool, str]:
+    """Upload a file to a given S3 bucket.
+
     :param sort_key: the key used to group articles (e.g. "GDL-1900")
     :param filepath: path of the file to upload to S3
     :param bucket_name: name of S3 bucket where to upload the file
-    :return: a tuple with [0] whether the upload was successful (boolean) and
-        [1] the path of the uploaded file (string)
+    :return: [0] whether the upload was successful (boolean) and
+    [1] the path of the uploaded file (string)
+    :rtype: Tuple[bool, str]
+
     .. note::
+
         `sort_key` is expected to be the concatenation of newspaper ID and year
         (e.g. GDL-1900).
+
     """
     # create connection with bucket
     # copy contents to s3 key
@@ -277,16 +354,25 @@ def upload_issues(sort_key: str, filepath: str, bucket_name: str = None) -> Tupl
         return False, filepath
 
 
-def upload_pages(sort_key: str, filepath: str, bucket_name: str = None) -> Tuple[bool, str]:
-    """Uploads a file to a given S3 bucket.
+def upload_pages(
+    sort_key: str,
+    filepath: str,
+    bucket_name: str = None
+) -> Tuple[bool, str]:
+    """Upload a file to a given S3 bucket.
+
     :param sort_key: the key used to group articles (e.g. "GDL-1900")
     :param filepath: path of the file to upload to S3
     :param bucket_name: name of S3 bucket where to upload the file
     :return: a tuple with [0] whether the upload was successful (boolean) and
-        [1] the path of the uploaded file (string)
+    [1] the path of the uploaded file (string)
+    :rtype: Tuple[bool, str]
+
     .. note::
-        `sort_key` is expected to be the concatenation of newspaper ID and year
-        (e.g. GDL-1900).
+
+        ``sort_key`` is expected to be the concatenation of newspaper ID and
+        year (e.g. GDL-1900).
+
     """
     # create connection with bucket
     # copy contents to s3 key

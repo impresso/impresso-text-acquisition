@@ -84,7 +84,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#impresso-data-architecture">Impresso data architecture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#data-architecture">Data architecture</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#canonical-identifiers">Canonical identifiers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#issue-ids">Issue IDs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#page-ids">Page IDs</a></li>
@@ -170,9 +170,9 @@
             
   <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="impresso-data-architecture">
-<h2>Impresso data architecture<a class="headerlink" href="#impresso-data-architecture" title="Permalink to this headline">¶</a></h2>
-<p>This <cite>TextImporter</cite> is part of and fits into the data architecture defined in
+<div class="section" id="data-architecture">
+<h2>Data architecture<a class="headerlink" href="#data-architecture" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>Impreso TextImporter</cite> is part of and fits into the data architecture defined in
 the framework of the impresso project to store and process a large-scale
 archive of historical newspapers. To understand the importer’s logic
 is worth touching upon the key points of the architecure into which it fits.</p>
@@ -240,7 +240,14 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 <div class="section" id="module-text_importer.importers.core">
 <span id="processing"></span><h2>Processing<a class="headerlink" href="#module-text_importer.importers.core" title="Permalink to this headline">¶</a></h2>
 <p>Core functions to perform large-scale import of OCR data.</p>
-<p>Add additional bla bla bla about parallel processing and dask.</p>
+<p>Most of the functions in this module are meant to be used in conjuction
+with <a class="reference external" href="https://dask.org/">Dask</a>, the library we are using to parallelize
+the ingestion process and run it on distributed computing infrastructures.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The function <a class="reference internal" href="#text_importer.importers.core.import_issues" title="text_importer.importers.core.import_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">import_issues()</span></code></a> is the most important in this module
+as it keeps everything together, by calling all other functions.</p>
+</div>
 <dl class="function">
 <dt id="text_importer.importers.core.compress_issues">
 <code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">compress_issues</code><span class="sig-paren">(</span><em class="sig-param">key: Tuple[str, int], issues: List[text_importer.importers.classes.NewspaperIssue], output_dir: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[str, str]<a class="headerlink" href="#text_importer.importers.core.compress_issues" title="Permalink to this definition">¶</a></dt>
@@ -287,31 +294,29 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 <dl class="function">
 <dt id="text_importer.importers.core.dir2issue">
 <code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">dir2issue</code><span class="sig-paren">(</span><em class="sig-param">issue: impresso_commons.path.path_fs.IssueDirectory, issue_class: Type[text_importer.importers.classes.NewspaperIssue], image_dirs=None, temp_dir=None</em><span class="sig-paren">)</span> &#x2192; Tuple[Optional[text_importer.importers.classes.NewspaperIssue], Optional[str]]<a class="headerlink" href="#text_importer.importers.core.dir2issue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instantiates a NewspaperIssue instance from an IssueDir.</p>
+<dd><p>Instantiate a <code class="docutils literal notranslate"><span class="pre">NewspaperIssue</span></code> instance from an <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.core.import_issues">
 <code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">import_issues</code><span class="sig-paren">(</span><em class="sig-param">issues: List[impresso_commons.path.path_fs.IssueDirectory], out_dir: str, s3_bucket: Optional[str], issue_class: Type[text_importer.importers.classes.NewspaperIssue], image_dirs: str, temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.core.import_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Imports a bunch of newspaper issues.</p>
+<dd><p>Import a bunch of newspaper issues.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>issues</strong> (<em>list</em>) – Description of parameter <cite>issues</cite>.</p></li>
 <li><p><strong>out_dir</strong> (<em>str</em>) – Description of parameter <cite>out_dir</cite>.</p></li>
 <li><p><strong>s3_bucket</strong> (<em>str</em>) – Description of parameter <cite>s3_bucket</cite>.</p></li>
-<li><p><strong>issue_class</strong> – The newspaper issue class to import (Child of NewspaperIssue)</p></li>
+<li><p><strong>issue_class</strong> – The newspaper issue class to import
+(Child of <code class="docutils literal notranslate"><span class="pre">NewspaperIssue</span></code>).</p></li>
 <li><p><strong>image_dirs</strong> – Directory of images (can be multiple)</p></li>
-<li><p><strong>temp_dir</strong> – Temporary directory for extracting archives (For Olive format)</p></li>
+<li><p><strong>temp_dir</strong> – Temporary directory for extracting archives</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Description of returned object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>tuple</p>
-</dd>
 </dl>
+<p>(applies only to impoters make use of <code class="docutils literal notranslate"><span class="pre">ZipArchive</span></code>).
+:return: Description of returned object.
+:rtype: tuple</p>
 </dd></dl>
 
 <dl class="function">
@@ -321,16 +326,60 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="text_importer.importers.core.process_pages">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">process_pages</code><span class="sig-paren">(</span><em class="sig-param">pages: List[text_importer.importers.classes.NewspaperPage]</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.classes.NewspaperPage]<a class="headerlink" href="#text_importer.importers.core.process_pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pages</strong> (<em>List</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><em>NewspaperPage</em></a><em>]</em>) – Description of parameter <cite>pages</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage">NewspaperPage</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.core.serialize_pages">
+<code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">serialize_pages</code><span class="sig-paren">(</span><em class="sig-param">pages: List[text_importer.importers.classes.NewspaperPage], output_dir: str = None</em><span class="sig-paren">)</span> &#x2192; List[Tuple[impresso_commons.path.path_fs.IssueDirectory, str]]<a class="headerlink" href="#text_importer.importers.core.serialize_pages" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short summary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pages</strong> (<em>List</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><em>NewspaperPage</em></a><em>]</em>) – Description of parameter <cite>pages</cite>.</p></li>
+<li><p><strong>output_dir</strong> (<em>str</em>) – Description of parameter <cite>output_dir</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Description of returned object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>List[Tuple[IssueDir, str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="text_importer.importers.core.upload_issues">
 <code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">upload_issues</code><span class="sig-paren">(</span><em class="sig-param">sort_key: str</em>, <em class="sig-param">filepath: str</em>, <em class="sig-param">bucket_name: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[bool, str]<a class="headerlink" href="#text_importer.importers.core.upload_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uploads a file to a given S3 bucket.
-:param sort_key: the key used to group articles (e.g. “GDL-1900”)
-:param filepath: path of the file to upload to S3
-:param bucket_name: name of S3 bucket where to upload the file
-:return: a tuple with [0] whether the upload was successful (boolean) and</p>
-<blockquote>
-<div><p>[1] the path of the uploaded file (string)</p>
-</div></blockquote>
+<dd><p>Upload a file to a given S3 bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sort_key</strong> – the key used to group articles (e.g. “GDL-1900”)</p></li>
+<li><p><strong>filepath</strong> – path of the file to upload to S3</p></li>
+<li><p><strong>bucket_name</strong> – name of S3 bucket where to upload the file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[0] whether the upload was successful (boolean) and</p>
+</dd>
+</dl>
+<p>[1] the path of the uploaded file (string)
+:rtype: Tuple[bool, str]</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
@@ -341,18 +390,25 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 <dl class="function">
 <dt id="text_importer.importers.core.upload_pages">
 <code class="sig-prename descclassname">text_importer.importers.core.</code><code class="sig-name descname">upload_pages</code><span class="sig-paren">(</span><em class="sig-param">sort_key: str</em>, <em class="sig-param">filepath: str</em>, <em class="sig-param">bucket_name: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[bool, str]<a class="headerlink" href="#text_importer.importers.core.upload_pages" title="Permalink to this definition">¶</a></dt>
-<dd><p>Uploads a file to a given S3 bucket.
-:param sort_key: the key used to group articles (e.g. “GDL-1900”)
-:param filepath: path of the file to upload to S3
-:param bucket_name: name of S3 bucket where to upload the file
-:return: a tuple with [0] whether the upload was successful (boolean) and</p>
-<blockquote>
-<div><p>[1] the path of the uploaded file (string)</p>
-</div></blockquote>
+<dd><p>Upload a file to a given S3 bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sort_key</strong> – the key used to group articles (e.g. “GDL-1900”)</p></li>
+<li><p><strong>filepath</strong> – path of the file to upload to S3</p></li>
+<li><p><strong>bucket_name</strong> – name of S3 bucket where to upload the file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tuple with [0] whether the upload was successful (boolean) and</p>
+</dd>
+</dl>
+<p>[1] the path of the uploaded file (string)
+:rtype: Tuple[bool, str]</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
-(e.g. GDL-1900).</p>
+<p><code class="docutils literal notranslate"><span class="pre">sort_key</span></code> is expected to be the concatenation of newspaper ID and
+year (e.g. GDL-1900).</p>
 </div>
 </dd></dl>
 
