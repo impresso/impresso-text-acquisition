@@ -176,68 +176,6 @@
 <span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.olive.classes" title="Permalink to this headline">¶</a></h2>
 <p>Classes to handle the Olive XML OCR format.</p>
 <dl class="class">
-<dt id="text_importer.importers.olive.classes.OliveArchive">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.olive.classes.</code><code class="sig-name descname">OliveArchive</code><span class="sig-paren">(</span><em class="sig-param">archive: zipfile.ZipFile</em>, <em class="sig-param">temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class representing a Zip archive of Olive XML data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>archive</strong> (<em>ZipFile</em>) – Zip archive containing Olive XML data.</p></li>
-<li><p><strong>temp_dir</strong> (<em>str</em>) – A temporary directory to store uncompressed data.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="method">
-<dt id="text_importer.importers.olive.classes.OliveArchive.cleanup">
-<code class="sig-name descname">cleanup</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive.cleanup" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove the temporary directory with uncompressed data.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="text_importer.importers.olive.classes.OliveArchive.extract_archive">
-<code class="sig-name descname">extract_archive</code><span class="sig-paren">(</span><em class="sig-param">archive: zipfile.ZipFile</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive.extract_archive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract the Olive Zip archive into a temporary directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>archive</strong> (<em>ZipFile</em>) – The Zip archive to extract.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="text_importer.importers.olive.classes.OliveArchive.namelist">
-<code class="sig-name descname">namelist</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive.namelist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the list of file names in the archive.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The name of files in the Zip archive.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>List[str]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="text_importer.importers.olive.classes.OliveArchive.read">
-<code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param">file: str</em><span class="sig-paren">)</span> &#x2192; bytes<a class="headerlink" href="#text_importer.importers.olive.classes.OliveArchive.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read one of the files in the archive from the temporary directory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>file</strong> (<em>str</em>) – Name of the file to read.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The file’s content (in bytes format).</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bytes</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="text_importer.importers.olive.classes.OliveNewspaperIssue">
 <em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.olive.classes.</code><code class="sig-name descname">OliveNewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em class="sig-param">image_dirs: str</em>, <em class="sig-param">temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a newspaper issue in Olive format.</p>
@@ -521,7 +459,7 @@ in the impresso interface.</p>
 <li><p><strong>image</strong> (<em>dict</em>) – Image metadata.</p></li>
 <li><p><strong>page_xml</strong> (<em>str</em>) – Content of Olive page XML.</p></li>
 <li><p><strong>page_image_name</strong> (<em>str</em>) – Name of page image file.</p></li>
-<li><p><strong>zip_archive</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveArchive" title="text_importer.importers.olive.classes.OliveArchive"><em>OliveArchive</em></a>) – Olive Zip archive.</p></li>
+<li><p><strong>zip_archive</strong> (<em>ZipArchive</em>) – Olive Zip archive.</p></li>
 <li><p><strong>box_strategy</strong> (<em>str</em>) – Conversion strategy to apply.</p></li>
 <li><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><em>OliveNewspaperIssue</em></a>) – Newspaper issue the page belongs to.</p></li>
 </ul>
@@ -548,7 +486,7 @@ the impresso interface.</p>
 <li><p><strong>page</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperPage" title="text_importer.importers.olive.classes.OliveNewspaperPage"><em>OliveNewspaperPage</em></a>) – Page whose coordinates should be converted.</p></li>
 <li><p><strong>page_xml</strong> (<em>str</em>) – Content of Olive page XML.</p></li>
 <li><p><strong>page_image_name</strong> (<em>type</em>) – Name of page image file.</p></li>
-<li><p><strong>zip_archive</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveArchive" title="text_importer.importers.olive.classes.OliveArchive"><em>OliveArchive</em></a>) – Olive Zip archive.</p></li>
+<li><p><strong>zip_archive</strong> (<em>ZipArchive</em>) – Olive Zip archive.</p></li>
 <li><p><strong>box_strategy</strong> (<em>str</em>) – Conversion strategy to apply.</p></li>
 <li><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><em>OliveNewspaperIssue</em></a>) – Newspaper issue the page belongs to.</p></li>
 </ul>

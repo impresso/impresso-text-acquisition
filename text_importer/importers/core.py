@@ -19,6 +19,7 @@ import random
 from copy import copy
 from json import JSONDecodeError
 from pathlib import Path
+from time import strftime
 from typing import List, Optional, Tuple, Type
 
 import jsonlines
@@ -137,7 +138,7 @@ def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
             page.parse()
             result.append(page)
         except Exception as e:
-            logger.error(f'Error when processing page {page}: {e}')
+            logger.error(f'Error when processing page {page.id}: {e}')
             # logger.exception(e)
     return result
 
@@ -167,17 +168,16 @@ def import_issues(
     msg = f'Issues to import: {len(issues)}'
     logger.info(msg)
 
-    issue_bag = db.from_sequence(issues, partition_size=60) \
-        .map(
-            dir2issue,
-            issue_class=issue_class,
-            image_dirs=image_dirs,
-            temp_dir=temp_dir
-        )
+    issue_bag = db.from_sequence(issues, partition_size=60).map(
+        dir2issue,
+        issue_class=issue_class,
+        image_dirs=image_dirs,
+        temp_dir=temp_dir
+    ).persist()
 
     failed_log = issue_bag.filter(
         lambda x: x[0] is None
-    ).map(lambda x: x[1]).persist()
+    ).map(lambda x: x[1])
 
     issue_bag = issue_bag.filter(
         lambda x: x[0] is not None
@@ -220,7 +220,10 @@ def import_issues(
 
         pages_bag.compute()
 
-    log_path = os.path.join(out_dir, 'failed.log')
+    log_path = os.path.join(
+        out_dir,
+        f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
+    )
     failed_log = failed_log.compute()
 
     with open(log_path, 'w') as f:
@@ -299,9 +302,9 @@ def compress_issues(
     :param list issues: A list of `NewspaperIssue` instances.
     :param type output_dir: Description of parameter `output_dir`.
     :return: a tuple with: ``tuple[0]`` a label following the template
-        ``<NEWSPAPER>-<YEAR>`` and ``tuple[1]`` the path to the the compressed ``.bz2``
-        file containing the input issues as separate documents in a JSON-line
-        file.
+        ``<NEWSPAPER>-<YEAR>`` and ``tuple[1]`` the path to the the compressed
+        ``.bz2``file containing the input issues as separate documents in
+         a JSON-line file.
     :rtype: tuple
     """
     newspaper, year = key
