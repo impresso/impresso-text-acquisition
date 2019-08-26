@@ -1,4 +1,4 @@
-"""Tokenization rules for various languages0."""
+"""Tokenization rules for various languages."""
 
 import logging
 

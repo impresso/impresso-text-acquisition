@@ -33,7 +33,8 @@ release = ''
 # ones.
 extensions = [
     'sphinx.ext.githubpages',
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autosectionlabel'
 ]
 
 autoclass_content = "both"

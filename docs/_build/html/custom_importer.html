@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Write your own importer &mdash; Impresso TextImporter  documentation</title>
+  <title>Writing a new importer &mdash; Impresso TextImporter  documentation</title>
   
 
   
@@ -82,13 +82,14 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Write your own importer</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Writing a new importer</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tldr">TLDR;</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#minting-canonical-ids">Minting canonical IDs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#detecting-data-to-import">Detecting data to import</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#subclassing-abstract-classes">Subclassing abstract classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#detect-data-to-import">Detect data to import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#implement-abstract-classes">Implement abstract classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-an-importer-cli-script">Write an importer CLI script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#test">Test</a></li>
 </ul>
 </li>
 </ul>
@@ -136,7 +137,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Write your own importer</li>
+      <li>Writing a new importer</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -155,34 +156,54 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="write-your-own-importer">
-<h1>Write your own importer<a class="headerlink" href="#write-your-own-importer" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="writing-a-new-importer">
+<h1>Writing a new importer<a class="headerlink" href="#writing-a-new-importer" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="tldr">
 <h2>TLDR;<a class="headerlink" href="#tldr" title="Permalink to this headline">¶</a></h2>
-<p>Writing a custom importer is easy and entails implementing two
+<p>Writing a new importer is easy and entails implementing two
 pieces of code:</p>
 <ol class="arabic simple">
-<li><p>implementing functions to find the data that should be imported.</p></li>
-<li><p>implementing classes that handle the data format you’d like to import.</p></li>
+<li><p>implementing <strong>functions to detect the data</strong> to import;</p></li>
+<li><p>implementing from scratch <strong>classes that handle the conversion into JSON</strong> of your OCR format or adapt one of the existing importers.</p></li>
 </ol>
-<p><strong>TODO</strong>: Given an example.</p>
-<p><strong>TODO</strong>: How to structure the code.</p>
+<p>Once these two pieces of code are in place, they can be plugged into the functions defined in <a class="reference internal" href="importers.html#module-text_importer.importers.generic_importer" title="text_importer.importers.generic_importer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.generic_importer</span></code></a> so as to create a dedicated CLI script for your specific format.</p>
+<p>For example, this is the content of <code class="docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">text_importer.importers</span> <span class="kn">import</span> <span class="n">generic_importer</span>
+<span class="kn">from</span> <span class="nn">text_importer.importers.olive.classes</span> <span class="kn">import</span> <span class="n">OliveNewspaperIssue</span>
+<span class="kn">from</span> <span class="nn">text_importer.importers.olive.detect</span> <span class="kn">import</span> <span class="p">(</span><span class="n">olive_detect_issues</span><span class="p">,</span>
+                                                  <span class="n">olive_select_issues</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">generic_importer</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
+        <span class="n">OliveNewspaperIssue</span><span class="p">,</span>
+        <span class="n">olive_detect_issues</span><span class="p">,</span>
+        <span class="n">olive_select_issues</span>
+    <span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="minting-canonical-ids">
-<h2>Minting canonical IDs<a class="headerlink" href="#minting-canonical-ids" title="Permalink to this headline">¶</a></h2>
-<p>TBD</p>
+<p><strong>How should the code of a new text importer be structured?</strong> We recommend to comply to the following structure:</p>
+<ul class="simple">
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.detect</span></code> will contain functions to find the data to be imported;</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.helpers</span></code> (optional) will contain ancillary functions;</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.parsers</span></code> (optional) will contain functions/classes to parse the data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer/scripts/&lt;new_importer&gt;.py</span></code>: will contain a CLI script to run the importer.</p></li>
+</ul>
 </div>
-<div class="section" id="detecting-data-to-import">
-<h2>Detecting data to import<a class="headerlink" href="#detecting-data-to-import" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="detect-data-to-import">
+<h2>Detect data to import<a class="headerlink" href="#detect-data-to-import" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>the importer needs to know which data should be imported</p></li>
 <li><p>information about the newspaper contents is often encoded as part of
-folder names etc., thus it needs to be extracted and made explicit</p></li>
+folder names etc., thus it needs to be extracted and made explicit, by means
+of <a class="reference internal" href="architecture.html#canonical-identifiers"><span class="std std-ref">Canonical identifiers</span></a></p></li>
+<li><p>add some sample data to <code class="docutils literal notranslate"><span class="pre">text_importer/data/sample/&lt;new_format&gt;</span></code></p></li>
 </ul>
 <p>For example: <a class="reference internal" href="importers/olive.html#text_importer.importers.olive.detect.olive_detect_issues" title="text_importer.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a></p>
 </div>
-<div class="section" id="subclassing-abstract-classes">
-<h2>Subclassing abstract classes<a class="headerlink" href="#subclassing-abstract-classes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="implement-abstract-classes">
+<h2>Implement abstract classes<a class="headerlink" href="#implement-abstract-classes" title="Permalink to this headline">¶</a></h2>
+<p>These two classes are passed to the the importer’s generic command-line interface,
+see <code class="xref py py-func docutils literal notranslate"><span class="pre">text_importer.importers.generic_importer.main()</span></code></p>
 <dl class="class">
 <dt id="text_importer.importers.classes.NewspaperIssue">
 <em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.classes.</code><code class="sig-name descname">NewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue" title="Permalink to this definition">¶</a></dt>
@@ -256,6 +277,21 @@ bypass schema validation.</p>
 
 </dd></dl>
 
+</div>
+<div class="section" id="write-an-importer-cli-script">
+<h2>Write an importer CLI script<a class="headerlink" href="#write-an-importer-cli-script" title="Permalink to this headline">¶</a></h2>
+<p>This script imports passes the new <code class="xref py py-class docutils literal notranslate"><span class="pre">NewspaperIssue</span></code> class, together with the-newly
+defined <em>detect</em> functions, to the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function of the generic importer CLI
+<code class="xref py py-func docutils literal notranslate"><span class="pre">text_importer.importers.generic_importer.main()</span></code>.</p>
+</div>
+<div class="section" id="test">
+<h2>Test<a class="headerlink" href="#test" title="Permalink to this headline">¶</a></h2>
+<p>Create a new test file named <code class="docutils literal notranslate"><span class="pre">test_&lt;new_importer&gt;_importer.py</span></code> and add it to <code class="docutils literal notranslate"><span class="pre">tests/importers/</span></code>.</p>
+<p>This file should contain at the very minimum a test called <code class="xref py py-func docutils literal notranslate"><span class="pre">test_import_issues()</span></code>, which</p>
+<ul class="simple">
+<li><p>detects input data from <code class="docutils literal notranslate"><span class="pre">text_importer/data/sample/&lt;new_format&gt;</span></code></p></li>
+<li><p>writes any output to <code class="docutils literal notranslate"><span class="pre">text_importer/data/out/</span></code>.</p></li>
+</ul>
 </div>
 </div>
 
