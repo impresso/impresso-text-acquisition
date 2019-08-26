@@ -85,7 +85,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Write your own importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Writing a new importer</a></li>
 </ul>
 
             
@@ -153,9 +153,15 @@
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>For now you’ll have to:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/impresso/impresso-text-acquisition.git
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># use --recursive as the main repo contains a git sub-module</span>
+git clone --recursive https://github.com/impresso/impresso-text-acquisition.git
+
 <span class="nb">cd</span> impresso-text-acquisition
+
+<span class="c1"># install dependencies into your virtual environment</span>
 pip install -r requirements.txt
+
+<span class="c1"># install the TextImporter</span>
 python setup.py install
 </pre></div>
 </div>

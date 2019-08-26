@@ -8,7 +8,22 @@ import python_jsonschema_objects as pjs
 logger = logging.getLogger(__name__)
 
 
-def init_logger(_logger, log_level, log_file):
+def init_logger(
+    _logger: logging.RootLogger,
+    log_level: int,
+    log_file: str
+) -> logging.RootLogger:
+    """Initialise the logger.
+
+    :param logging.RootLogger _logger: Logger instance to initialise.
+    :param int log_level: Desidered logging level (e.g. ``logging.INFO``).
+    :param str log_file: Path to destination file for logging output. If no
+        output file is provided (``log_file`` is ``None``) logs will be written
+        to standard output.
+    :return: The initialised logger object.
+    :rtype: logging.RootLogger
+
+    """
     # Initialise the logger
     _logger.setLevel(log_level)
 
@@ -24,6 +39,7 @@ def init_logger(_logger, log_level, log_file):
     _logger.addHandler(handler)
 
     _logger.info("Logger successfully initialised")
+    return _logger
 
 
 def get_page_schema(schema_folder: str = 'impresso-schemas/json/newspaper/page.schema.json'):
@@ -70,7 +86,16 @@ def get_access_right(journal: str, date, access_rights: dict) -> str:
         logger.warning(f"Access right not defined for {journal}-{date}")
 
 
-def verify_imported_issues(actual_issue_json, expected_issue_json):
+def verify_imported_issues(
+    actual_issue_json: dict,
+    expected_issue_json: dict
+):
+    """Short summary.
+
+    :param dict actual_issue_json: Description of parameter `actual_issue_json`.
+    :param dict expected_issue_json: Description of parameter `expected_issue_json`.
+
+    """
     # FIRST CHECK: number of content items
     actual_ids = set([i['m']['id'] for i in actual_issue_json['i']])
     expected_ids = set([i['m']['id'] for i in expected_issue_json['i']])

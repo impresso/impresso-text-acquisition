@@ -48,7 +48,7 @@ Some things to note about these templates:
 Data packaging
 **************
 
-The JSON data produced by ``TextImporter`` are packaged into ``.bz2`` archives for efficient storage. Each archive consists of one JSON-line file, where each line contains a JSON document. The JSON schemas are described **here**.
+The JSON data produced by ``TextImporter`` are packaged into ``.bz2`` archives for efficient storage. Each archive consists of one JSON-line file, where each line contains a JSON document. The JSON schemas are described `here <https://github.com/impresso/impresso-schemas>`_.
 
 In Impresso we use an S3 solution for distributed storage to store newspaper data and accessed them at processing time.
 

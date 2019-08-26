@@ -63,7 +63,11 @@ def dir2issue(
 
 
 def issue2pages(issue: NewspaperIssue) -> List[NewspaperPage]:
-    """Processes the pages of the given issue"""
+    """Flatten a list of issues into  a list of their pages.
+
+    As an issue consists of several pagaes, this function is useful
+    in order to process each page in a truly parallel fashion.
+    """
     pages = []
     for page in issue.pages:
         page.add_issue(issue)
@@ -75,11 +79,13 @@ def serialize_pages(
     pages: List[NewspaperPage],
     output_dir: str = None
 ) -> List[Tuple[IssueDir, str]]:
-    """Short summary.
+    """Serialise a list of pages to an output directory.
 
-    :param List[NewspaperPage] pages: Description of parameter `pages`.
-    :param str output_dir: Description of parameter `output_dir`.
-    :return: Description of returned object.
+    :param List[NewspaperPage] pages: Input newspaper pages.
+    :param str output_dir: Path to the output directory.
+    :return: A list of tuples, where each tuple contains ``[0]`` the
+        ``IssueDir`` object representing the issue to which pages belong
+        and ``[1]`` the path to the individual page JSON file.
     :rtype: List[Tuple[IssueDir, str]]
 
     """
@@ -118,10 +124,10 @@ def serialize_pages(
 
 
 def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
-    """Short summary.
+    """Given a list of pages, trigger the ``.parse()`` method of each page.
 
-    :param List[NewspaperPage] pages: Description of parameter `pages`.
-    :return: Description of returned object.
+    :param List[NewspaperPage] pages: Input newspaper pages.
+    :return: A list of processed pages.
     :rtype: List[NewspaperPage]
 
     """
@@ -153,7 +159,7 @@ def import_issues(
         (Child of ``NewspaperIssue``).
     :param image_dirs: Directory of images (can be multiple)
     :param temp_dir: Temporary directory for extracting archives
-    (applies only to impoters make use of ``ZipArchive``).
+        (applies only to impoters make use of ``ZipArchive``).
     :return: Description of returned object.
     :rtype: tuple
 
@@ -288,11 +294,15 @@ def compress_issues(
 ) -> Tuple[str, str]:
     """Short summary.
 
-    :param type key: Description of parameter `key`.
+    :param tuple key: Tuple with newspaper ID and year of input issues
+        (e.g. ``(GDL, 1900)``).
     :param list issues: A list of `NewspaperIssue` instances.
     :param type output_dir: Description of parameter `output_dir`.
-    :return: a tuple with [0] being NEWSPAPER-YEAR and
-        [1] the path of the compressed file
+    :return: a tuple with: ``tuple[0]`` a label following the template
+        ``<NEWSPAPER>-<YEAR>`` and ``tuple[1]`` the path to the the compressed ``.bz2``
+        file containing the input issues as separate documents in a JSON-line
+        file.
+    :rtype: tuple
     """
     newspaper, year = key
     filename = f'{newspaper}-{year}-issues.jsonl.bz2'
@@ -324,8 +334,8 @@ def upload_issues(
     :param sort_key: the key used to group articles (e.g. "GDL-1900")
     :param filepath: path of the file to upload to S3
     :param bucket_name: name of S3 bucket where to upload the file
-    :return: [0] whether the upload was successful (boolean) and
-    [1] the path of the uploaded file (string)
+    :return: a tuple with [0] whether the upload was successful (boolean) and
+        [1] the path to the uploaded file.
     :rtype: Tuple[bool, str]
 
     .. note::
@@ -359,13 +369,13 @@ def upload_pages(
     filepath: str,
     bucket_name: str = None
 ) -> Tuple[bool, str]:
-    """Upload a file to a given S3 bucket.
+    """Upload a page JSON file to a given S3 bucket.
 
     :param sort_key: the key used to group articles (e.g. "GDL-1900")
     :param filepath: path of the file to upload to S3
     :param bucket_name: name of S3 bucket where to upload the file
     :return: a tuple with [0] whether the upload was successful (boolean) and
-    [1] the path of the uploaded file (string)
+        [1] the path of the uploaded file (string)
     :rtype: Tuple[bool, str]
 
     .. note::
