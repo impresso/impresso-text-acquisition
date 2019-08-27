@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Import the data from various OCR formats (Olive XML, Mets/Alto, etc.) into a canonical JSON format defined by the Impresso project (see [documentation of schemas](https://github.com/impresso/impresso-schemas)).
+Import the data from various OCR formats (Olive XML, Mets/Alto, etc.) into a canonical JSON format defined by the Impresso project (see [documentation of schemas](https://github.com/impresso/impresso-schemas)). A sample of the input data that this importer can deal with can be found in [sample_data/](sample_data/).
 
-## Input data
+## Documentation
 
-A sample of the input data for this script can be found in [sample_data/](sample_data/).
+Code documentation, including a brief guide on how to write a custom importer, can be found at <https://impresso.github.io/impresso-text-acquisition/>. 
 
 ## Development settings
 
