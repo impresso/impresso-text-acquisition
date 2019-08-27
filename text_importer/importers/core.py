@@ -16,6 +16,7 @@ import json
 import logging
 import os
 import random
+import shutil
 from copy import copy
 from json import JSONDecodeError
 from pathlib import Path
