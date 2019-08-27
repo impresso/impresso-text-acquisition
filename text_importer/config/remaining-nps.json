@@ -1,5 +1,5 @@
 {
   "newspapers": {},
-  "exclude_newspapers": ["JDG", "GDL", "IMP", "EXP"],
-  "year_only": true
+  "exclude_newspapers": ["JDG", "GDL", "IMP", "EXP", "JDV"],
+  "year_only": false
 }
