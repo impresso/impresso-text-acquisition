@@ -297,7 +297,8 @@ def compress_issues(
         issues: List[NewspaperIssue],
         output_dir: str = None
         ) -> Tuple[str, str]:
-    """Short summary.
+    """This function compresses a list of issues belonging to the same Journal-year, and saves them in the output directory
+    First, it will check if the file already exists, loads it and then over-writes/adds the newly generated issues.
 
     :param tuple key: Tuple with newspaper ID and year of input issues
         (e.g. ``(GDL, 1900)``).
@@ -320,7 +321,7 @@ def compress_issues(
             reader = jsonlines.Reader(f)
             dumped_issues = list(reader)  # Read the file if it exists to not lose any dumped data
     
-    dumped_ids = set(x['id'] for x in dumped_issues)
+    dumped_ids = set(x['id'] for x in dumped_issues)  # Keep set of IDs already exported
     
     with smart_open_function(filepath, 'wb') as fout:
         writer = jsonlines.Writer(fout)
@@ -328,7 +329,7 @@ def compress_issues(
         
         to_keep = [issue.issue_data for issue in dumped_issues if
                    issue.id not in ids_to_overwrite]  # Keep old ones from file
-        items = [issue.issue_data for issue in issues] + to_keep
+        items = [issue.issue_data for issue in issues] + to_keep  # Add the new ones/to overwrite
         
         writer.write_all(items)
         logger.info(
