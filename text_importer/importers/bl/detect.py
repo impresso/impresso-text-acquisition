@@ -86,7 +86,8 @@ def _get_journal_name(issue_path: str, blip_id: str) -> Optional[str]:
         return None
     
     title = contents[0]
-    return title
+    acronym = [x[0] for x in title.split(" ")]
+    return "".join(acronym)
 
 
 def dir2issue(blip_dir: str) -> Optional[BlIssueDir]:  # TODO: ask about rights and edition
