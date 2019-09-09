@@ -1,0 +1,10 @@
+PDFlib TET: PDFlib Text Extraction Toolkit, 4.3p1
+(c) 2002-2014 PDFlib GmbH  www.pdflib.com  sales@pdflib.com
+Option list for set_option: ' outputformat=utf8'
+Option list for open_document: 'tetml={} '
+Option list for process_page: 'tetml={} granularity=word tetml={elements={line} glyphdetails={all}} contentanalysis={dehyphenate=true keephyphenglyphs=true}'
+Option list for open_page: 'granularity=word tetml={elements={line} glyphdetails={all}} contentanalysis={dehyphenate=true keephyphenglyphs=true} skipengines={ image text}'
+Output file: 'data_tetml-word/FedGazDe/2013/08/13/2013_6309.word.tetml'
+
+PDF file: 'data_pdf/FedGazDe/2013/08/13/2013_6309.pdf'
+Page 1 - 10 (10 of all 10 pages)
