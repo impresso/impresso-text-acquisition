@@ -251,5 +251,5 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
             "i": content_items,
             "id": self.id,
             "ar": self.rights,
-            "pp": [p.id for p in self.pages.values()]  # TODO: styles
+            "pp": [p.id for p in self.pages]  # TODO: styles
         }
