@@ -193,7 +193,7 @@ def import_issues(
         logger.info(f"Dividing issues into chunks of {chunk_size} years.")
         chunks = groupby(sorted(issues, key=lambda x: x.date.year), lambda x: x.date.year - (x.date.year % csize))
     else:
-        chunks = (None, issues)
+        chunks = [(None, issues)]
 
     for year, issue_chunk in chunks:
         if year is not None:
