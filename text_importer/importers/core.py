@@ -33,6 +33,7 @@ from smart_open import smart_open as smart_open_function
 from itertools import groupby
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers.olive.classes import OliveNewspaperIssue
+from text_importer.importers.bnf.classes import BnfNewspaperIssue
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +60,11 @@ def dir2issue(
             np_issue = OliveNewspaperIssue(
                     issue,
                     image_dirs=image_dirs,
+                    temp_dir=temp_dir
+            )
+        elif issue_class is BnfNewspaperIssue:
+            np_issue = BnfNewspaperIssue(
+                    issue,
                     temp_dir=temp_dir
             )
         else:
