@@ -37,6 +37,17 @@ from text_importer.importers.olive.classes import OliveNewspaperIssue
 logger = logging.getLogger(__name__)
 
 
+def write_error(issue, error, failed_log):
+    logger.error(f'Error when processing {issue}: {error}')
+    logger.exception(error)
+    note = (
+        f"{canonical_path(issue, path_type='dir').replace('/', '-')}: "
+        f"{error}"
+    )
+    with open(failed_log, "a+") as f:
+        f.write(note + "\n")
+
+
 def dir2issue(
         issue: IssueDir,
         issue_class: Type[NewspaperIssue],
@@ -54,14 +65,7 @@ def dir2issue(
             np_issue = issue_class(issue)
         return np_issue
     except Exception as e:
-        logger.error(f'Error when processing issue {issue}: {e}')
-        logger.exception(e)
-        note = (
-            f"{canonical_path(issue, path_type='dir').replace('/', '-')}: "
-            f"{e}"
-        )
-        with open(failed_log, "a+") as f:
-            f.write(note + "\n")
+        write_error(issue, e, failed_log)
         return None
 
 
@@ -139,10 +143,11 @@ def serialize_pages(
     return result
 
 
-def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
+def process_pages(pages: List[NewspaperPage], failed_log: str) -> List[NewspaperPage]:
     """Given a list of pages, trigger the ``.parse()`` method of each page.
 
     :param List[NewspaperPage] pages: Input newspaper pages.
+    :param str failed_log: File path of failed log
     :return: A list of processed pages.
     :rtype: List[NewspaperPage]
 
@@ -154,8 +159,7 @@ def process_pages(pages: List[NewspaperPage]) -> List[NewspaperPage]:
             page.parse()
             result.append(page)
         except Exception as e:
-            logger.error(f'Error when processing page {page.id}: {e}')
-            # logger.exception(e)
+            write_error(page, e, failed_log)
     return result
 
 
@@ -226,7 +230,7 @@ def import_issues(
             pages_bag = db.from_sequence(chunk_of_issues, partition_size=2) \
                 .map(issue2pages) \
                 .flatten() \
-                .map_partitions(process_pages) \
+                .map_partitions(process_pages, failed_log=failed_log_path) \
                 .map_partitions(serialize_pages, output_dir=out_dir)
 
             pages_out_dir = os.path.join(out_dir, 'pages')
