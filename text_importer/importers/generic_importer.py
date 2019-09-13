@@ -2,7 +2,7 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
-    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar>]
+    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar>]
     <importer-name>importer.py --version
 
 Options:
@@ -15,6 +15,7 @@ Options:
     --scheduler=<sch>  Tell dask to use an existing scheduler (otherwise it'll create one)
     --log-file=<f>      Log file; when missing print log to stdout
     --access-rights=<ar>  Access right file if relevant (only for ``olive`` and ``rero`` importers)
+    --chunk-size=<cs>   Chunk size in years
     --verbose   Verbose log messages (good for debugging)
     --clear    Removes the output folder (if already existing)
     --version    Prints version and exits.
@@ -79,6 +80,7 @@ def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
     out_bucket = args["--s3-bucket"]
     log_file = args["--log-file"]
     access_rights_file = args['--access-rights']
+    chunk_size = args['--chunk-size']
     scheduler = args["--scheduler"]
     clear_output = args["--clear"]
     incremental_output = args["--incremental"]
@@ -138,4 +140,5 @@ def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
     
     assert outp_dir is not None or out_bucket is not None
     
-    result = import_issues(issues, outp_dir, out_bucket, issue_class=issue_class, image_dirs=image_dirs, temp_dir=temp_dir)
+    result = import_issues(issues, outp_dir, out_bucket, issue_class=issue_class, image_dirs=image_dirs,
+                           temp_dir=temp_dir, chunk_size=chunk_size)
