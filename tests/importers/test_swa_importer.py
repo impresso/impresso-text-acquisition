@@ -28,7 +28,7 @@ def test_import_issues():
         issues,
         out_dir=pkg_resources.resource_filename(
             'text_importer',
-            'data/out/SWA'
+            'data/out'
         ),
         s3_bucket=None,
         issue_class=SWANewspaperIssue,
@@ -36,6 +36,7 @@ def test_import_issues():
         temp_dir=pkg_resources.resource_filename(
             'text_importer',
             'data/temp/'
-        )
+        ),
+        chunk_size=None
     )
     print(result)
