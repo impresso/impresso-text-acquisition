@@ -36,7 +36,8 @@ def test_import_issues():
         s3_bucket=None,
         issue_class=ReroNewspaperIssue,
         temp_dir=None,
-        image_dirs=None
+        image_dirs=None,
+        chunk_size=None
     )
     print(result)
 

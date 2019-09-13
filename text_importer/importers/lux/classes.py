@@ -15,7 +15,7 @@ from text_importer.importers import (CONTENTITEM_TYPE_ADVERTISEMENT,
                                      CONTENTITEM_TYPE_TABLE,
                                      CONTENTITEM_TYPE_WEATHER)
 from text_importer.importers.lux.helpers import convert_coordinates, encode_ark
-from text_importer.importers.mets_alto import (MetsAltoNewPaperIssue,
+from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage,
                                                parse_mets_amdsec)
 from text_importer.utils import get_issue_schema, get_page_schema
@@ -30,7 +30,7 @@ IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/iiif/2"
 class LuxNewspaperPage(MetsAltoNewspaperPage):
     """Class representing a page in BNL data."""
 
-    def add_issue(self, issue: MetsAltoNewPaperIssue):
+    def add_issue(self, issue: MetsAltoNewspaperIssue):
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
         iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
@@ -76,7 +76,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
             return success, page_data
 
 
-class LuxNewspaperIssue(MetsAltoNewPaperIssue):
+class LuxNewspaperIssue(MetsAltoNewspaperIssue):
     """Class representing an issue in BNL data.
     All functions defined in this child class are specific to parsing BNL Mets/Alto format
     """
