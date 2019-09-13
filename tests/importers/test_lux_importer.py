@@ -24,7 +24,8 @@ def test_import_issues():
     
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
-    import_issues(issues, out_dir, s3_bucket=output_bucket, issue_class=LuxNewspaperIssue, image_dirs=None, temp_dir=None)
+    import_issues(issues, out_dir, s3_bucket=output_bucket, issue_class=LuxNewspaperIssue,
+                  image_dirs=None, temp_dir=None, chunk_size=None)
 
 
 def test_selective_import():
@@ -60,7 +61,8 @@ def test_selective_import():
     assert issues is not None and len(issues) > 0
     
     logger.info(f'There are {len(issues)} to ingest')
-    import_issues(issues, out_dir, s3_bucket=None, issue_class=LuxNewspaperIssue, image_dirs=None, temp_dir=None)
+    import_issues(issues, out_dir, s3_bucket=None, issue_class=LuxNewspaperIssue,
+                  image_dirs=None, temp_dir=None, chunk_size=None)
 
 # # TODO: adapt it to Lux data
 # def test_verify_imported_issues():

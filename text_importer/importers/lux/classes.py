@@ -15,7 +15,7 @@ from text_importer.importers import (CONTENTITEM_TYPE_ADVERTISEMENT,
                                      CONTENTITEM_TYPE_TABLE,
                                      CONTENTITEM_TYPE_WEATHER)
 from text_importer.importers.lux.helpers import convert_coordinates, encode_ark
-from text_importer.importers.mets_alto import (MetsAltoNewPaperIssue,
+from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage,
                                                parse_mets_amdsec)
 from text_importer.utils import get_issue_schema, get_page_schema
@@ -30,7 +30,7 @@ IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/iiif/2"
 class LuxNewspaperPage(MetsAltoNewspaperPage):
     """Class representing a page in BNL data."""
 
-    def add_issue(self, issue: MetsAltoNewPaperIssue):
+    def add_issue(self, issue: MetsAltoNewspaperIssue):
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
         iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
@@ -76,7 +76,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
             return success, page_data
 
 
-class LuxNewspaperIssue(MetsAltoNewPaperIssue):
+class LuxNewspaperIssue(MetsAltoNewspaperIssue):
     """Class representing an issue in BNL data.
     All functions defined in this child class are specific to parsing BNL Mets/Alto format
     """
@@ -126,19 +126,18 @@ class LuxNewspaperIssue(MetsAltoNewPaperIssue):
                 sections,
                 key=lambda elem: elem.get('ID').split("_")[1]
                 )
-
-        for item_counter, section in enumerate(sections):
+        counter = 1
+        for section in sections:
 
             section_id = section.get('ID')
 
             if 'ARTICLE' in section_id:
-                item_counter += 1
                 lang = section.find_all('languageTerm')[0].getText()
                 title_elements = section.find_all('titleInfo')
                 item_title = title_elements[0].getText().replace('\n', ' ') \
                     .strip() if len(title_elements) > 0 else None
                 metadata = {
-                        'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
+                        'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
                         'l': lang,
                         'tp': CONTENTITEM_TYPE_ARTICLE,
                         'pp': []
@@ -154,6 +153,7 @@ class LuxNewspaperIssue(MetsAltoNewPaperIssue):
                                 }
                         }
                 content_items.append(item)
+                counter += 1
             elif 'PICT' in section_id:
                 # TODO: keep language (there may be more than one)
                 title_elements = section.find_all('titleInfo')
@@ -162,7 +162,7 @@ class LuxNewspaperIssue(MetsAltoNewPaperIssue):
 
                 # TODO: how to get language information for these CIs ?
                 metadata = {
-                        'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
+                        'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
                         'tp': CONTENTITEM_TYPE_IMAGE,
                         'pp': []
                         }
@@ -176,6 +176,7 @@ class LuxNewspaperIssue(MetsAltoNewPaperIssue):
                                 }
                         }
                 content_items.append(item)
+                counter += 1
         return content_items
 
     def _parse_structmap_divs(self, mets_doc, start_counter):

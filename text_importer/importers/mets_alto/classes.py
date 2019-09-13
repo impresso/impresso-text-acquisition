@@ -78,7 +78,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
         )
 
 
-class MetsAltoNewPaperIssue(NewspaperIssue):
+class MetsAltoNewspaperIssue(NewspaperIssue):
     """Generic class representing a newspaper issue in Mets/Alto format.
 
     .. note ::
