@@ -4,7 +4,7 @@ from time import strftime
 from typing import List, Optional
 
 from text_importer.importers import (CONTENTITEM_TYPES, CONTENTITEM_TYPE_IMAGE)
-from text_importer.importers.mets_alto import (MetsAltoNewPaperIssue,
+from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage)
 from text_importer.utils import get_issue_schema, get_page_schema
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class BlNewspaperPage(MetsAltoNewspaperPage):
     
-    def add_issue(self, issue: MetsAltoNewPaperIssue):  # TODO: missing iiif
+    def add_issue(self, issue: MetsAltoNewspaperIssue):  # TODO: missing iiif
         """Adds the given `BlNewspaperIssue` as an attribute for this class
         
         :param BlNewspaperIssue issue:
@@ -24,7 +24,7 @@ class BlNewspaperPage(MetsAltoNewspaperPage):
         self.issue = issue
 
 
-class BlNewspaperIssue(MetsAltoNewPaperIssue):
+class BlNewspaperIssue(MetsAltoNewspaperIssue):
     
     def _find_pages(self):
         """Detects the Alto XML page files for a newspaper issue and initializes page objects."""
