@@ -164,8 +164,8 @@ def import_issues(
         out_dir: str,
         s3_bucket: Optional[str],
         issue_class: Type[NewspaperIssue],
-        image_dirs: str,
-        temp_dir: str,
+        image_dirs: Optional[str],
+        temp_dir: Optional[str],
         chunk_size: Optional[int]):
     """Import a bunch of newspaper issues.
 
