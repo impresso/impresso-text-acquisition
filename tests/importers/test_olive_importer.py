@@ -40,7 +40,8 @@ def test_import_issues():
         s3_bucket=None,
         issue_class=OliveNewspaperIssue,
         image_dirs="/mnt/project_impresso/images/",
-        temp_dir=pkg_resources.resource_filename('text_importer', 'data/temp/')
+        temp_dir=pkg_resources.resource_filename('text_importer', 'data/temp/'),
+        chunk_size=None
     )
     print(result)
 

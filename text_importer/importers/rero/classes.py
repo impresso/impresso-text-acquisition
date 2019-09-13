@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPES
-from text_importer.importers.mets_alto import (MetsAltoNewPaperIssue,
+from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage,
                                                parse_mets_amdsec)
 from text_importer.utils import get_issue_schema, get_page_schema
@@ -37,7 +37,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         return False, page_data
 
 
-class ReroNewspaperIssue(MetsAltoNewPaperIssue):
+class ReroNewspaperIssue(MetsAltoNewspaperIssue):
     """Class representing an issue in RERO (Mets/Alto) data.
     All functions defined in this child class are specific to parsing RERO Mets/Alto format
     """
