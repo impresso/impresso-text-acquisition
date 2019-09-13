@@ -126,19 +126,18 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 sections,
                 key=lambda elem: elem.get('ID').split("_")[1]
                 )
-
-        for item_counter, section in enumerate(sections):
+        counter = 1
+        for section in sections:
 
             section_id = section.get('ID')
 
             if 'ARTICLE' in section_id:
-                item_counter += 1
                 lang = section.find_all('languageTerm')[0].getText()
                 title_elements = section.find_all('titleInfo')
                 item_title = title_elements[0].getText().replace('\n', ' ') \
                     .strip() if len(title_elements) > 0 else None
                 metadata = {
-                        'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
+                        'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
                         'l': lang,
                         'tp': CONTENTITEM_TYPE_ARTICLE,
                         'pp': []
@@ -154,6 +153,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                                 }
                         }
                 content_items.append(item)
+                counter += 1
             elif 'PICT' in section_id:
                 # TODO: keep language (there may be more than one)
                 title_elements = section.find_all('titleInfo')
@@ -162,7 +162,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
 
                 # TODO: how to get language information for these CIs ?
                 metadata = {
-                        'id': "{}-i{}".format(self.id, str(item_counter).zfill(4)),
+                        'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
                         'tp': CONTENTITEM_TYPE_IMAGE,
                         'pp': []
                         }
@@ -176,6 +176,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                                 }
                         }
                 content_items.append(item)
+                counter += 1
         return content_items
 
     def _parse_structmap_divs(self, mets_doc, start_counter):

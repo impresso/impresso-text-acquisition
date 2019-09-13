@@ -2,9 +2,10 @@ import logging
 import os
 from collections import namedtuple
 from datetime import date
-from typing import List
+from typing import List, Optional
 
 from dask import bag as db
+from impresso_commons.path.path_fs import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 
@@ -62,13 +63,13 @@ def dir2issue(path: str) -> LuxIssueDir:
     issue_date = issue_dir.split('_')[3]
     year, month, day = issue_date.split('-')
     rights = 'open_public' if 'public_domain' in path else 'closed'
-    
+
     if len(issue_dir.split('_')) == 4:
         edition = 'a'
     elif len(issue_dir.split('_')) == 5:
         edition = issue_dir.split('_')[4]
         edition = EDITIONS_MAPPINGS[int(edition)]
-    
+
     return LuxIssueDir(
             local_id,
             date(int(year), int(month), int(day)),
@@ -102,7 +103,7 @@ def detect_issues(base_dir: str, access_rights: str = None) -> List[LuxIssueDir]
             ]
 
 
-def select_issues(base_dir: str, config: dict, access_rights: str) -> List[LuxIssueDir]:
+def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[List[LuxIssueDir]]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -115,16 +116,30 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> List[LuxIs
     :param str access_rights: Not used for this imported, but argument is kept for normality
     :return: List of `LuxIssueDir` instances, to be imported.
     """
-    issues = detect_issues(base_dir)
+
+    try:
+        filter_dict = config["newspapers"]
+        exclude_list = config["exclude_newspapers"]
+        year_flag = config["year_only"]
+
+    except KeyError:
+        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] is missing in the config file.")
+        return
+
+    issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag \
-        .filter(lambda i: i.journal in config['newspapers'].keys()) \
+        .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \
         .compute()
-    
+
+    exclude_flag = False if not exclude_list else True
+    filtered_issues = _apply_datefilter(filter_dict, selected_issues,
+                                        year_only=year_flag) if not exclude_flag else selected_issues
     logger.info(
             "{} newspaper issues remained after applying filter: {}".format(
-                    len(selected_issues),
-                    selected_issues
-                    )
+                    len(filtered_issues),
+                    filtered_issues
             )
-    return selected_issues
+    )
+    return filtered_issues
+
