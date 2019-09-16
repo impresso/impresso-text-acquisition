@@ -30,11 +30,11 @@ def get_metadata(root):
     pdfdoc = root.find(f".//{TETPREFIX}Document")
     if pdfdoc is not None:
         result["pdfpath"] = pdfdoc.attrib["filename"]
-    pdfcreation = root.find(r".//{TETPREFIX}CreationDate")
+    pdfcreation = root.find(f".//{TETPREFIX}CreationDate")
     if pdfcreation is not None:
         result["pdfcdt"] = pdfcreation.text
 
-    pages = root.find(f".//{TETPREFIX}Page")
+    pages = root.findall(f".//{TETPREFIX}Page")
     if pages is not None:
         result["npages"] = len(pages)
 
@@ -100,6 +100,123 @@ def word2json(
             placed_image_attribs,
         )
         result["c"] = coords
+
+    return result
+
+
+def word2json(
+    word,
+    pageheight,
+    pagewidth,
+    imageheight,
+    imagewidth,
+    placed_image_attribs,
+    filename=None,
+):
+    """
+    Return dict with all information about (hyphenated) XML word element
+
+    {"tx": Text,
+    "c": coords,
+    "hy" : Bool,
+     "hyt": {"nf": Text, "c":coords, "tx":coords}}
+
+    "hyt" is {} if word is not hyphenated
+
+    :param pageheight:
+    :param pagewidth:
+    :param imageheight:
+    :param imagewidth:
+    :param placed_image_attribs:
+    :param filename:
+    :param word:
+    :return:
+    """
+
+    result = {}
+    boxes = word.findall(f"{TETPREFIX}Box")
+
+    # unhyphenated case
+    if len(boxes) == 1:
+        tokentext = word.find(f"{TETPREFIX}Text").text
+        if tokentext is None:
+            error_msg = (
+                f"{filename}, Empty TOKEN {lxml.etree.tostring(word)}, {len(boxes)}"
+            )
+            logger.error(error_msg)
+
+            return
+
+        result["tx"] = tokentext
+
+        box = word.find("%sBox" % TETPREFIX)
+        llx = float(box.get("llx"))
+        lly = float(box.get("lly"))
+        ury = float(box.get("ury"))
+        urx = float(box.get("urx"))
+        coords = compute_box(
+            llx,
+            lly,
+            urx,
+            ury,
+            pageheight,
+            pagewidth,
+            imageheight,
+            imagewidth,
+            placed_image_attribs,
+        )
+        result["c"] = coords
+
+    # hyphenated case
+    elif len(boxes) >= 2:
+        result["hy"] = True
+
+        # word part before hyphenation
+        llx1 = float(boxes[0].get("llx"))
+        lly1 = float(boxes[0].get("lly"))
+        ury1 = float(boxes[0].get("ury"))
+        urx1 = float(boxes[0].get("urx"))
+        coords1 = compute_box(
+            llx1,
+            lly1,
+            urx1,
+            ury1,
+            pageheight,
+            pagewidth,
+            imageheight,
+            imagewidth,
+            placed_image_attribs,
+        )
+        result["c"] = coords1
+
+        result["tx"] = "".join(c.text for c in boxes[0].findall(f"{TETPREFIX}Glyph"))
+
+        # word part following hyphenation
+        hyphenated = {
+            "tx": "".join(c.text for c in boxes[1].findall(f"{TETPREFIX}Glyph")),
+            "nf": word.find(f"{TETPREFIX}Text").text,
+        }
+        llx2 = float(boxes[1].get("llx"))
+        lly2 = float(boxes[1].get("lly"))
+        ury2 = float(boxes[1].get("ury"))
+        urx2 = float(boxes[1].get("urx"))
+        coords2 = compute_box(
+            llx2,
+            lly2,
+            urx2,
+            ury2,
+            pageheight,
+            pagewidth,
+            imageheight,
+            imagewidth,
+            placed_image_attribs,
+        )
+        hyphenated["c"] = coords2
+        result["hyt"] = hyphenated
+        if len(boxes) > 2:
+            error_msg = f"{filename}, Wrong number of boxes: {len(boxes)}, {lxml.etree.tostring(word)}"
+
+            logger.error(error_msg)
 
     return result
 

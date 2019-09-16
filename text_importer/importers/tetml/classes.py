@@ -1,4 +1,3 @@
-
 """Classes to handle the TETML OCR format."""
 
 import logging
@@ -49,17 +48,14 @@ class TetmlNewspaperPage(NewspaperPage):
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "cc": True,
             "iiif": os.path.join(IMPRESSO_IIIF_BASEURI, self.id),
-
-            "r": self.article_data["r"]
-
+            "r": self.article_data["r"],
         }
-
 
         if not self.page_data["r"]:
             logger.warning(f"Page {self.id} has not OCR text")
 
         # content item to which page region belongs
-        self.page_data["r"]["pOf"]: self.article_data['m']['id']
+        self.page_data["r"]["pOf"]: self.article_data["m"]["id"]
 
         # self._convert_page_coords() # # TODO: conversion can be parallelized when trigggered here
 
@@ -84,7 +80,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
 
     """
 
-    def __init__(self, issue_dir: IssueDir, image_dirs: str, temp_dir: str):
+    def __init__(self, issue_dir: IssueDir):
         super().__init__(issue_dir)
         """
         self.id = canonical_path(issue_dir, path_type='dir').replace('/', '-')
@@ -134,10 +130,10 @@ class TetmlNewspaperIssue(NewspaperIssue):
         # parse the indexed files
         self.article_data = self.parse_articles()
 
-        self.content_items = [art['m'] for art in self.article_data]
+        self.content_items = [{"m": art["m"]} for art in self.article_data]
 
         # instantiate the individual pages
-        self.get_pages()
+        self._find_pages()
 
         self.issue_data = {
             "id": self.id,
@@ -145,7 +141,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
             "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
-            "ar": None,  # TODO: ignore access rights for the time being
+            "ar": self.rights,
         }
         logger.info(f"Finished parsing {self.id}")
 
@@ -169,21 +165,22 @@ class TetmlNewspaperIssue(NewspaperIssue):
         """
 
         articles = []
-        current_issue_page = 1 # start page of next article
+        current_issue_page = 1  # start page of next article
         for i, fname in enumerate(self.files):
             try:
-                with open(fname, mode="r") as article:
-                    data = tetml_parser(article)
-                    # canonical identifier
-                    data['m']['id'] = canonical_path(self.path, name=f"i{str(i).zfill(4)}", extension="")
-                    data['m']['tp']= 'article' # type attribute
+                data = tetml_parser(fname)
+                # canonical identifier
+                data["m"]["id"] = canonical_path(
+                    self.issuedir, name=f"i{i+1:04}", extension=""
+                )
+                data["m"]["tp"] = "article"  # type attribute
 
-                    # attribute indicating the range of pages an article covers
-                    page_end = current_issue_page + data['meta']['npages']
-                    data['m']['pp'] = list(range(current_issue_page, page_end + 1))
-                    current_issue_page = page_end + 2
+                # attribute indicating the range of pages an article covers
+                page_end = current_issue_page + data["meta"]["npages"]
+                data["m"]["pp"] = list(range(current_issue_page, page_end))
+                current_issue_page = page_end
 
-                    articles.append(data)
+                articles.append(data)
 
             except Exception as e:
                 logger.error(f"Parsing of {fname} failed for {self.id}")
@@ -191,21 +188,21 @@ class TetmlNewspaperIssue(NewspaperIssue):
 
         return articles
 
-
-    def get_pages(self):
+    def _find_pages(self):
         """
         Initialize all page objects per issue,
         assuming that no identical pages are scanned/included across files
         """
 
         for art in self.article_data:
-            can_id = "{}-p{}".format(self.id, str(art['npages']).zfill(4))
+            for n_page in art["m"]["pp"]:
 
-            self.pages.append(
-                TetmlNewspaperPage(
-                    can_id, art['npages'], art, art['tetml_path']
+                can_id = f"{self.id}-p{n_page:04}"
+
+                # TODO: filter page content according to current page
+                self.pages.append(
+                    TetmlNewspaperPage(can_id, n_page, art, art["meta"]["tetml_path"])
                 )
-            )
 
     def _parse_toc(self, file="metadata.tsv"):
         """

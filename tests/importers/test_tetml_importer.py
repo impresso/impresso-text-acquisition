@@ -1,16 +1,15 @@
 import os
 import json
+import logging
 import pkg_resources
 
-# from dask import bag as db
+from dask import bag as db
 
 from text_importer.utils import verify_imported_issues
 from text_importer.importers.core import import_issues
 from text_importer.importers.tetml.detect import tetml_detect_issues
 from text_importer.importers.tetml.classes import TetmlNewspaperIssue
 
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +56,7 @@ def test_verify_imported_issues():
     )
 
     # consider only newspapers in Tetml format
-    newspapers = ["FedGazDe"]
+    newspapers = ["FedGazDe", "FedGazFr", "FedGazIt"]
 
     # look for bz2 archives in the output directory
     issue_archive_files = [

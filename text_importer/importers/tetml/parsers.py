@@ -101,7 +101,7 @@ def tetml_parser(tetml: str) -> dict:
                         jtoken["hy"] = True
                     jtokens.append(jtoken)
 
-                add_gn_property(jtokens, data["meta"]["language"])
+                add_gn_property(jtokens, data["m"]["l"])  # language attribute
 
                 if token_coords_per_line:
                     linecoords = compute_bb(token_coords_per_line)
@@ -110,9 +110,11 @@ def tetml_parser(tetml: str) -> dict:
                     jlines.append(jline)
                 else:
                     logger.error("#EMPTY LINE {jline}")
+
             jparacoords = compute_bb(jlines_coords_per_para)
             jparas_coords_per_region.append(jparacoords)
             jpara["c"] = jparacoords
+
         if jparas_coords_per_region:
             regioncoords = compute_bb(jparas_coords_per_region)
             jregion["c"] = regioncoords
