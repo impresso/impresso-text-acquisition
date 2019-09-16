@@ -30,7 +30,7 @@ HeapDict==1.0.0
 idna==2.8
 imagesize==1.1.0
 importlib-metadata==0.19
--e git+https://github.com/impresso/impresso-pycommons.git@c599c7101a034d0c19e73c465ba9ae045773d2b9#egg=impresso_commons
+-e git+https://github.com/impresso/impresso-pycommons.git@afd5df8b8cf16facf18a49e39238827b8bd910d0#egg=impresso_commons
 inflection==0.3.1
 ipdb==0.12.2
 ipykernel==5.1.2
