@@ -37,13 +37,19 @@ from text_importer.importers.olive.classes import OliveNewspaperIssue
 logger = logging.getLogger(__name__)
 
 
-def write_error(issue, error, failed_log):
-    logger.error(f'Error when processing {issue}: {error}')
+def write_error(thing, error, failed_log):
+    logger.error(f'Error when processing {thing}: {error}')
     logger.exception(error)
+    if isinstance(thing, NewspaperPage):
+        issuedir = thing.issue.issuedir
+    else:
+        issuedir = thing.issuedir
+
     note = (
-        f"{canonical_path(issue, path_type='dir').replace('/', '-')}: "
+        f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: "
         f"{error}"
     )
+
     with open(failed_log, "a+") as f:
         f.write(note + "\n")
 
