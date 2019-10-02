@@ -42,8 +42,11 @@ def write_error(thing, error, failed_log):
     logger.exception(error)
     if isinstance(thing, NewspaperPage):
         issuedir = thing.issue.issuedir
-    else:
+    elif isinstance(thing, NewspaperIssue):
         issuedir = thing.issuedir
+    else:
+        # if it's neither an issue nor a page it must be an issuedir
+        issuedir = thing
 
     note = (
         f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: "
