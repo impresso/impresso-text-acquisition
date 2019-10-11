@@ -68,35 +68,38 @@ def parse_printspace(element: Tag, mappings: Dict[str, str]) -> List[dict]:
 
     regions = []
 
-    for block in element.children:
+    # in case of a blank page, the PrintSpace element is not found thus
+    # it will be none
+    if element:
+        for block in element.children:
 
-        if isinstance(block, bs4.element.NavigableString):
-            continue
+            if isinstance(block, bs4.element.NavigableString):
+                continue
 
-        block_id = block.get('ID')
-        if block_id in mappings:
-            part_of_contentitem = mappings[block_id]
-        else:
-            part_of_contentitem = None
+            block_id = block.get('ID')
+            if block_id in mappings:
+                part_of_contentitem = mappings[block_id]
+            else:
+                part_of_contentitem = None
 
-        coordinates = distill_coordinates(block)
+            coordinates = distill_coordinates(block)
 
-        lines = [
-                parse_textline(line_element)
-                for line_element in block.findAll('TextLine')
-                ]
+            lines = [
+                    parse_textline(line_element)
+                    for line_element in block.findAll('TextLine')
+                    ]
 
-        paragraph = {
-                "c": coordinates,
-                "l": lines
-                }
+            paragraph = {
+                    "c": coordinates,
+                    "l": lines
+                    }
 
-        region = {
-                "c": coordinates,
-                "p": [paragraph]
-                }
+            region = {
+                    "c": coordinates,
+                    "p": [paragraph]
+                    }
 
-        if part_of_contentitem:
-            region['pOf'] = part_of_contentitem
-        regions.append(region)
+            if part_of_contentitem:
+                region['pOf'] = part_of_contentitem
+            regions.append(region)
     return regions
