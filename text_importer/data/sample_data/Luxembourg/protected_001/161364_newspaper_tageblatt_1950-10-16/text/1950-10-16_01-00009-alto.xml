@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alto xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/standards/alto/ns-v3#" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v3# https://www.loc.gov/standards/alto/v3/alto-3-1.xsd">
+  <Description>
+    <MeasurementUnit>mm10</MeasurementUnit>
+    <sourceImageInformation>
+      <fileName>1950-10-16_01-00009.tif</fileName>
+    </sourceImageInformation>
+    <OCRProcessing ID="OCR_1">
+      <ocrProcessingStep>
+        <processingDateTime>2008-07-07</processingDateTime>
+        <processingStepSettings>OCR BRUT 33.08 %</processingStepSettings>
+      </ocrProcessingStep>
+    </OCRProcessing>
+  </Description>
+  <Styles>
+    <TextStyle ID="TXT_1" FONTFAMILY="Arial" FONTSIZE="16"/>
+    <TextStyle ID="TXT_2" FONTFAMILY="Times" FONTSIZE="16"/>
+    <TextStyle ID="TXT_3" FONTFAMILY="Times" FONTSIZE="17"/>
+    <TextStyle ID="TXT_4" FONTFAMILY="Arial" FONTSIZE="17"/>
+    <TextStyle ID="TXT_5" FONTFAMILY="Times" FONTSIZE="5"/>
+  </Styles>
+  <Layout>
+    <Page ID="PAGE9" HEIGHT="4665" WIDTH="3237" PHYSICAL_IMG_NR="1" QUALITY="OK">
+    <PrintSpace ID="PAG_9_PrintSpace" HPOS="225" VPOS="3832" HEIGHT="685" WIDTH="2714">
+    <TextBlock ID="BLOCK1" STYLEREFS="TXT_1" HPOS="1436" VPOS="3837" HEIGHT="53" WIDTH="1329">
+      <TextLine ID="LINE1" STYLEREFS="TXT_1" HPOS="1436" VPOS="3837" HEIGHT="53" WIDTH="1329">
+        <String ID="S1" STYLEREFS="TXT_1" HPOS="1436" VPOS="3843" HEIGHT="43" WIDTH="139" WC="0.99" CONTENT="LES"/>
+        <SP ID="SP1" HPOS="1576" VPOS="3843" WIDTH="39"/>
+        <String ID="S2" STYLEREFS="TXT_2" HPOS="1616" VPOS="3843" HEIGHT="47" WIDTH="447" WC="0.33" CONTENT="AVENTURES"/>
+        <SP ID="SP2" HPOS="2063" VPOS="3846" WIDTH="44"/>
+        <String ID="S3" STYLEREFS="TXT_2" HPOS="2108" VPOS="3846" HEIGHT="41" WIDTH="115" WC="0.99" CONTENT="DE"/>
+        <SP ID="SP3" HPOS="2224" VPOS="3844" WIDTH="27"/>
+        <String ID="S4" STYLEREFS="TXT_1" HPOS="2252" VPOS="3844" HEIGHT="43" WIDTH="365" WC="0.99" CONTENT="MONSIEUR"/>
+        <SP ID="SP4" HPOS="2617" VPOS="3837" WIDTH="38"/>
+        <String ID="S5" STYLEREFS="TXT_1" HPOS="2656" VPOS="3837" HEIGHT="51" WIDTH="109" WC="0.99" CONTENT="JO"/>
+      </TextLine>
+    </TextBlock>
+    <TextBlock ID="BLOCK2" STYLEREFS="TXT_3" HPOS="265" VPOS="3832" HEIGHT="60" WIDTH="1006">
+      <TextLine ID="LINE2" STYLEREFS="TXT_3" HPOS="265" VPOS="3832" HEIGHT="60" WIDTH="1006">
+        <String ID="S6" STYLEREFS="TXT_3" HPOS="265" VPOS="3841" HEIGHT="44" WIDTH="37" WC="0.12" CONTENT="LA"/>
+        <SP ID="SP5" HPOS="302" VPOS="3838" WIDTH="15"/>
+        <String ID="S7" STYLEREFS="TXT_3" HPOS="317" VPOS="3838" HEIGHT="53" WIDTH="107" WC="0.31" CONTENT="FAÇON"/>
+        <SP ID="SP6" HPOS="425" VPOS="3859" WIDTH="13"/>
+        <String ID="S8" STYLEREFS="TXT_3" HPOS="438" VPOS="3859" HEIGHT="23" WIDTH="33" WC="0.96" CONTENT="DE"/>
+        <SP ID="SP7" HPOS="471" VPOS="3837" WIDTH="10"/>
+        <String ID="S9" STYLEREFS="TXT_3" HPOS="481" VPOS="3837" HEIGHT="44" WIDTH="137" WC="0.01" CONTENT="DONNER"/>
+        <SP ID="SP8" HPOS="618" VPOS="3836" WIDTH="19"/>
+        <String ID="S10" STYLEREFS="TXT_3" HPOS="638" VPOS="3836" HEIGHT="42" WIDTH="84" WC="0.99" CONTENT="VAUT"/>
+        <SP ID="SP9" HPOS="723" VPOS="3832" WIDTH="16"/>
+        <String ID="S11" STYLEREFS="TXT_4" HPOS="739" VPOS="3832" HEIGHT="44" WIDTH="113" WC="0.89" CONTENT="MIEUX"/>
+        <SP ID="SP10" HPOS="853" VPOS="3848" WIDTH="14"/>
+        <String ID="S12" STYLEREFS="TXT_3" HPOS="867" VPOS="3848" WIDTH="59" HEIGHT="32" WC="0.01" CONTENT="QUE"/>
+        <SP ID="SP11" HPOS="927" VPOS="3848" WIDTH="20"/>
+        <String ID="S13" STYLEREFS="TXT_3" HPOS="947" VPOS="3848" WIDTH="39" HEIGHT="32" WC="0.01" CONTENT="CE"/>
+        <SP ID="SP12" HPOS="984" VPOS="3850" WIDTH="14"/>
+        <String ID="S14" STYLEREFS="TXT_3" HPOS="999" VPOS="3850" HEIGHT="32" WIDTH="46" WC="0.99" CONTENT="pu"/>
+        <SP ID="SP13" HPOS="1045" VPOS="3832" WIDTH="11"/>
+        <String ID="S15" STYLEREFS="TXT_3" HPOS="1056" VPOS="3832" HEIGHT="44" WIDTH="63" WC="0.06" CONTENT="'ON"/>
+        <SP ID="SP14" HPOS="1120" VPOS="3833" WIDTH="22"/>
+        <String ID="S16" STYLEREFS="TXT_3" HPOS="1143" VPOS="3833" HEIGHT="44" WIDTH="128" WC="0.01" CONTENT="DONNE"/>
+      </TextLine>
+    </TextBlock>
+    <Illustration ID="ILLUSTRATION1" HPOS="225" VPOS="3906" HEIGHT="589" WIDTH="557"/>
+    <Illustration ID="ILLUSTRATION2" HPOS="782" VPOS="3906" HEIGHT="589" WIDTH="511"/>
+    <Illustration ID="ILLUSTRATION3" HPOS="1293" VPOS="3906" HEIGHT="589" WIDTH="530"/>
+    <Illustration ID="ILLUSTRATION4" HPOS="1823" VPOS="3906" HEIGHT="589" WIDTH="521"/>
+    <Illustration ID="ILLUSTRATION5" HPOS="2345" VPOS="3906" HEIGHT="589" WIDTH="594"/>
+    <TextBlock ID="BLOCK3" STYLEREFS="TXT_3" HPOS="306" VPOS="4492" HEIGHT="25" WIDTH="543">
+      </TextBlock>
+    </PrintSpace>
+    </Page>
+  </Layout>
+</alto>

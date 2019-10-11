@@ -1,0 +1,3451 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mets xmlns="http://www.loc.gov/METS/" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" LABEL="Tageblatt 1950-10-16_01" OBJID="https://persist.lu/ark:/70795/tgc13s" TYPE="Newspaper" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd http://www.loc.gov/mix/v20 http://www.loc.gov/standards/mix/mix.xsd">
+  <metsHdr CREATEDATE="2008-07-07T11:45:15" LASTMODDATE="2018-05-08T12:40:06Z">
+    <agent OTHERTYPE="SOFTWARE" ROLE="CREATOR" TYPE="OTHER">
+      <name>Jouve/BnLux Production Process</name>
+    </agent>
+  </metsHdr>
+  <dmdSec ID="MODSMD_COLLECTION">
+    <mdWrap LABEL="Bibliographic meta-data of the collection" MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:identifier type="local">tageblatt</mods:identifier>
+          <mods:titleInfo ID="MODSMD_COLLECTION_TI1" xml:lang="de">
+            <mods:title>Escher Tageblatt</mods:title>
+            <mods:subTitle>Le Journal d'Esch</mods:subTitle>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT23">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT23_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT24">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT24_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT21">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT21_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT22">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT22_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT27">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT27_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT28">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT28_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT25">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT25_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT26">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT26_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE29">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE29_TI1" xml:lang="de">
+            <mods:title>Lohnerhöhungen in England </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_SECTION1">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_SECTION1_TI1" xml:lang="fr">
+            <mods:title>Publicités</mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE27">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE27_TI1" xml:lang="de">
+            <mods:title>AUS ALLER WELT </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT29">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT29_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE28">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE28_TI1" xml:lang="de">
+            <mods:title>Appell Attlees für den zivilen Luftschutz </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE25">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE25_TI1" xml:lang="de">
+            <mods:title>Journee de comme- moration nationale </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_SECTION4">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_SECTION4_TI1" xml:lang="fr">
+            <mods:title>Publicités</mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE26">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE26_TI1" xml:lang="de">
+            <mods:title>Société Nationale des Chemins de fer Luxembourgeois 8 OCTOBRE 1950 </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_SECTION2">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_SECTION2_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE23">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE23_TI1" xml:lang="de">
+            <mods:title>Stadt Esch </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_SECTION3">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_SECTION3_TI1" xml:lang="fr">
+            <mods:title>Publicités</mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE24">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE24_TI1" xml:lang="de">
+            <mods:title>AUS DEM GROSSHERZOGTUM </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE33">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE33_TI1" xml:lang="fr">
+            <mods:title>AVIS MORTUAIRES </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE32">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE32_TI1" xml:lang="de">
+            <mods:title>Les femmes Socialistes </mods:title>
+            <mods:title>UNSERE BILDUNGSKURSE </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE31">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE31_TI1" xml:lang="de">
+            <mods:title>Eisenbahnerstreik in Australien </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE30">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE30_TI1" xml:lang="de">
+            <mods:title>Demission der Israelischen Regierung </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PRINT">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:originInfo>
+            <mods:publisher>Tageblatt</mods:publisher>
+          </mods:originInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+          <mods:identifier type="local">LQ 2</mods:identifier>
+          <mods:originInfo>
+            <mods:dateCreated encoding="w3cdtf" keyDate="yes" point="start">2008-07-07</mods:dateCreated>
+            <mods:dateIssued encoding="w3cdtf" keyDate="yes" point="start">1950-10-16</mods:dateIssued>
+          </mods:originInfo>
+          <mods:recordInfo>
+            <mods:recordIdentifier>newspaper/tageblatt/1950-10-16</mods:recordIdentifier>
+          </mods:recordInfo>
+          <mods:titleInfo ID="MODSMD_PRINT_TI1" xml:lang="de">
+            <mods:title>Escher Tageblatt</mods:title>
+            <mods:subTitle>Le Journal d'Esch</mods:subTitle>
+            <mods:partNumber>Jg. 1950, nº 238</mods:partNumber>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT31">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT31_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT30">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT30_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE2">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE2_TI1" xml:lang="de">
+            <mods:title>Ostdeutscher Wahlschwank </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT32">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT32_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT33">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT33_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE1">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE1_TI1" xml:lang="de">
+            <mods:title>Die Entrevue Truman-Mac Arthur </mods:title>
+            <mods:title>Auftakt zu einer diplomatischen Gegenoffensive der USA Zurechtweisung des Generals </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE6">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE6_TI1" xml:lang="de">
+            <mods:title>Verstärkung der amerikanischen Garnison von Berlin </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE5">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE5_TI1" xml:lang="de">
+            <mods:title>Lake-Success Neue Fassung der "Entschließung zur Aufrechterhaltung des Friedens" </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE4">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE4_TI1" xml:lang="de">
+            <mods:title>Rascher Vorstoß der UN-Streitkräfte auf Pyongyang </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE3">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE3_TI1" xml:lang="de">
+            <mods:title>Das Armee-Projekt </mods:title>
+            <mods:title>LUXEMBURG UND DIE ONU </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE16">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE16_TI1" xml:lang="fr">
+            <mods:title>Publicités</mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE17">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE17_TI1" xml:lang="de">
+            <mods:title>Einkommen-Anglei- chung in Schweden </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE9">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE9_TI1" xml:lang="de">
+            <mods:title>Gewerkschaftliche Lohn- politik in den USA </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE18">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE18_TI1" xml:lang="de">
+            <mods:title>Sozialistische Arbeiterpartei </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE8">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE8_TI1" xml:lang="de">
+            <mods:title>Um das Thema: Defense Sociale </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE19">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE19_TI1" xml:lang="de">
+            <mods:title>Liebeszauder auf Pita-Paga </mods:title>
+            <mods:title>Die 'Insel der Dämonen </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE7">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE7_TI1" xml:lang="de">
+            <mods:title>Schoner Erfolg der Europa-Tage </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE12">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE12_TI1" xml:lang="de">
+            <mods:title>Sonstige Sportnachrichten </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE13">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE13_TI1" xml:lang="de">
+            <mods:title>Das Rodinger Boxmeeting </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE14">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE14_TI1" xml:lang="de">
+            <mods:title>Schifflinger Gemeinderatsbericht </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE15">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE15_TI1" xml:lang="de">
+            <mods:title>Rundgang um und durch das Steinforter Stadthaus </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE20">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE20_TI1" xml:lang="fr">
+            <mods:title>L'Optimiste </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT9">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICTURE9_TI2" xml:lang="de">
+            <mods:title>M. le Premier-Ministre devant la croia: de Hinzert au cimetiere de Notre Dame. (Photo Tony Krier) </mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE22">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE22_TI1" xml:lang="de">
+            <mods:title>Aus der Hauptstadt </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE21">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE21_TI1" xml:lang="de">
+            <mods:title>Hundert Jahre Handelskammer </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT1">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICTURE1_TI2" xml:lang="de">
+            <mods:title>JOURNEES EUROPÉENNES. Empfang im Casino (v.l.n.r.) MM. Calteux, Frenay und Hubert Clement. (Photo Pit Schneider) </mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT2">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICTURE2_TI3" xml:lang="de">
+            <mods:title>Nic. MAY </mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT3">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICTURE3_TI4" xml:lang="de">
+            <mods:title>C. WAGNER </mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT4">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICTURE4_TI2" xml:lang="de">
+            <mods:title>Die luxbg. Elf und eine Spielszene aus dem Match. (Photos Tony Krier) </mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT5">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT5_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT6">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT6_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT7">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT7_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT8">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT8_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE10">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE10_TI1" xml:lang="fr">
+            <mods:title>Luxembourgeois illustres de l'élranger </mods:title>
+          </mods:titleInfo>
+          <mods:titleInfo ID="MODSMD_ARTICLE10_TI2" xml:lang="fr">
+            <mods:title>Aux tombeaux des Funck-Brentano à Montfermeil </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE11">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE11_TI1" xml:lang="de">
+            <mods:title>Halbe Enttäuschung </mods:title>
+          </mods:titleInfo>
+          <mods:titleInfo ID="MODSMD_ARTICLE11_TI2" xml:lang="de">
+            <mods:title>Ein unbefriedigendes 0-0 Ergebnis gegen Süd-Holland </mods:title>
+            <mods:title>vor 6000 Zuschauer im hauptstädtischen Stadion Mässiges Spiel Verteidigung meistens gut Der famose Sturm versagt </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT20">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT20_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE34">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE34_TI1" xml:lang="fr">
+            <mods:title>Publicités</mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE35">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE35_TI1" xml:lang="de">
+            <mods:title>Die Friedenschancen haben sich vermehrt" </mods:title>
+            <mods:title>erklärt Churchill in Blackpool </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE36">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE36_TI1" xml:lang="de">
+            <mods:title>MEISTER DER ELEGANZ: </mods:title>
+          </mods:titleInfo>
+          <mods:titleInfo ID="MODSMD_ARTICLE36_TI2" xml:lang="de">
+            <mods:title>SIE KLEIDEN DIE FRAUEN DER WELT </mods:title>
+            <mods:title>Französische Modekünstler im Wirbel ihres Lebens TATSACHENBERICHT VON FERDINAND FINNE </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">de</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE37">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE37_TI1" xml:lang="fr">
+            <mods:title>LES AVENTURES DE MONSIEUR JO </mods:title>
+            <mods:title>LA FAÇON DE DONNER VAUT MIEUX QUE CE pu 'ON DONNE </mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_ARTICLE38">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_ARTICLE38_TI1" xml:lang="fr">
+            <mods:title>Publicités</mods:title>
+          </mods:titleInfo>
+          <mods:language>
+            <mods:languageTerm authority="rfc3066" type="code">fr</mods:languageTerm>
+          </mods:language>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT19">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT19_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT18">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT18_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT17">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT17_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT16">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICTURE16_TI2" xml:lang="fr">
+            <mods:title />
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT15">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT15_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT14">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT14_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT13">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT13_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT12">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT12_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT11">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT11_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <dmdSec ID="MODSMD_PICT10">
+    <mdWrap MDTYPE="MODS" MIMETYPE="text/xml">
+      <xmlData>
+        <mods:mods>
+          <mods:titleInfo ID="MODSMD_PICT10_TI1" xml:lang="fr">
+            <mods:title>Sans Titre</mods:title>
+          </mods:titleInfo>
+        </mods:mods>
+      </xmlData>
+    </mdWrap>
+  </dmdSec>
+  <amdSec ID="IMGPARAM00004">
+    <techMD ID="IMGPARAM00004TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00004.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>21168090</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3801</mix:imageWidth>
+                <mix:imageHeight>5569</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00008">
+    <techMD ID="IMGPARAM00008TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00008.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>21240546</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3825</mix:imageWidth>
+                <mix:imageHeight>5553</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00003">
+    <techMD ID="IMGPARAM00003TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00003.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>20772470</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3794</mix:imageWidth>
+                <mix:imageHeight>5475</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00006">
+    <techMD ID="IMGPARAM00006TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00006.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>21140230</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3829</mix:imageWidth>
+                <mix:imageHeight>5521</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00005">
+    <techMD ID="IMGPARAM00005TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00005.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>21339500</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3870</mix:imageWidth>
+                <mix:imageHeight>5514</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00002">
+    <techMD ID="IMGPARAM00002TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00002.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>21293306</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3818</mix:imageWidth>
+                <mix:imageHeight>5577</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00001">
+    <techMD ID="IMGPARAM00001TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00001.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>20997182</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3819</mix:imageWidth>
+                <mix:imageHeight>5498</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00010">
+    <techMD ID="IMGPARAM00010TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00010.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>21339996</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3825</mix:imageWidth>
+                <mix:imageHeight>5579</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00007">
+    <techMD ID="IMGPARAM00007TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00007.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>20576404</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3763</mix:imageWidth>
+                <mix:imageHeight>5468</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <amdSec ID="IMGPARAM00009">
+    <techMD ID="IMGPARAM00009TECHMD">
+      <mdWrap MDTYPE="NISOIMG" MIMETYPE="text/xml">
+        <xmlData>
+          <mix:mix>
+            <mix:BasicDigitalObjectInformation>
+              <mix:ObjectIdentifier>
+                <mix:objectIdentifierType>Local File Reference</mix:objectIdentifierType>
+                <mix:objectIdentifierValue>1950/1950-10-16_01/tif/1950-10-16_01-00009.tif</mix:objectIdentifierValue>
+              </mix:ObjectIdentifier>
+              <mix:fileSize>21031990</mix:fileSize>
+              <mix:FormatDesignation>
+                <mix:formatName>image/tiff</mix:formatName>
+                <mix:formatVersion>Not Set</mix:formatVersion>
+              </mix:FormatDesignation>
+              <mix:byteOrder>big endian</mix:byteOrder>
+              <mix:Compression>
+                <mix:compressionScheme>Uncompressed</mix:compressionScheme>
+                <mix:compressionRatio>
+                  <mix:numerator>1</mix:numerator>
+                  <mix:denominator>1</mix:denominator>
+                </mix:compressionRatio>
+              </mix:Compression>
+            </mix:BasicDigitalObjectInformation>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>3817</mix:imageWidth>
+                <mix:imageHeight>5510</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+            <mix:ImageCaptureMetadata>
+              <mix:SourceInformation>
+                <mix:sourceType>Newspaper</mix:sourceType>
+                <mix:SourceID>
+                  <mix:sourceIDType>Volume identifier</mix:sourceIDType>
+                  <mix:sourceIDValue />
+                </mix:SourceID>
+              </mix:SourceInformation>
+              <mix:GeneralCaptureInformation>
+                <mix:imageProducer>Bibliothèque nationale du Luxembourg</mix:imageProducer>
+                <mix:captureDevice>digital still camera</mix:captureDevice>
+              </mix:GeneralCaptureInformation>
+              <mix:ScannerCapture>
+                <mix:scannerManufacturer>I2S</mix:scannerManufacturer>
+                <mix:ScannerModel>
+                  <mix:scannerModelName>Suprascan</mix:scannerModelName>
+                  <mix:scannerModelNumber>A1</mix:scannerModelNumber>
+                  <mix:scannerModelSerialNo>232100</mix:scannerModelSerialNo>
+                </mix:ScannerModel>
+                <mix:MaximumOpticalResolution>
+                  <mix:xOpticalResolution>0.84</mix:xOpticalResolution>
+                  <mix:yOpticalResolution>0.63</mix:yOpticalResolution>
+                  <mix:opticalResolutionUnit>in.</mix:opticalResolutionUnit>
+                </mix:MaximumOpticalResolution>
+                <mix:ScanningSystemSoftware>
+                  <mix:scanningSoftwareName>Digibook</mix:scanningSoftwareName>
+                  <mix:scanningSoftwareVersionNo>5.4.8.20</mix:scanningSoftwareVersionNo>
+                </mix:ScanningSystemSoftware>
+              </mix:ScannerCapture>
+              <mix:orientation>normal*</mix:orientation>
+            </mix:ImageCaptureMetadata>
+          </mix:mix>
+        </xmlData>
+      </mdWrap>
+    </techMD>
+  </amdSec>
+  <fileSec>
+    <fileGrp ID="IMGGRP" USE="Images">
+      <file ADMID="IMGPARAM00001" CHECKSUM="ed66fffd2d7dfecb2c39a6afdda112c5" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="1" ID="IMG00001" MIMETYPE="image/tiff" SEQ="1" SIZE="20997182">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00001.tif" />
+      </file>
+      <file ADMID="IMGPARAM00002" CHECKSUM="7849eaaf3d348e6c4c35c114260e8225" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="2" ID="IMG00002" MIMETYPE="image/tiff" SEQ="2" SIZE="21293306">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00002.tif" />
+      </file>
+      <file ADMID="IMGPARAM00003" CHECKSUM="4f7248ea623fd40018e4e5ac3802f08b" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="3" ID="IMG00003" MIMETYPE="image/tiff" SEQ="3" SIZE="20772470">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00003.tif" />
+      </file>
+      <file ADMID="IMGPARAM00004" CHECKSUM="de86ed001b040f51c2d2104a1d575b0c" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="4" ID="IMG00004" MIMETYPE="image/tiff" SEQ="4" SIZE="21168090">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00004.tif" />
+      </file>
+      <file ADMID="IMGPARAM00005" CHECKSUM="122b9ef21c20212e1d1df0f82a9e6a78" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="5" ID="IMG00005" MIMETYPE="image/tiff" SEQ="5" SIZE="21339500">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00005.tif" />
+      </file>
+      <file ADMID="IMGPARAM00006" CHECKSUM="d20b2b55ef42b9416850402cf1e228a7" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="6" ID="IMG00006" MIMETYPE="image/tiff" SEQ="6" SIZE="21140230">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00006.tif" />
+      </file>
+      <file ADMID="IMGPARAM00007" CHECKSUM="e42039a3fd555eafcfc4f76ddfc4afc6" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="7" ID="IMG00007" MIMETYPE="image/tiff" SEQ="7" SIZE="20576404">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00007.tif" />
+      </file>
+      <file ADMID="IMGPARAM00008" CHECKSUM="146ebac59c36bee26d1b4ccdec5ded4c" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="8" ID="IMG00008" MIMETYPE="image/tiff" SEQ="8" SIZE="21240546">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00008.tif" />
+      </file>
+      <file ADMID="IMGPARAM00009" CHECKSUM="01b66233e48d53612f25956136b374df" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="9" ID="IMG00009" MIMETYPE="image/tiff" SEQ="9" SIZE="21031990">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00009.tif" />
+      </file>
+      <file ADMID="IMGPARAM00010" CHECKSUM="fb4e4073085082a48e0fdee22b6a8216" CHECKSUMTYPE="MD5" CREATED="2008-07-07T11:45:18" GROUPID="10" ID="IMG00010" MIMETYPE="image/tiff" SEQ="10" SIZE="21339996">
+        <FLocat LOCTYPE="URL" xlink:href="file://./images/1950-10-16_01-00010.tif" />
+      </file>
+    </fileGrp>
+    <fileGrp ID="ALTOGRP" USE="Text">
+      <file CHECKSUM="11196712b1dc7c43144af6cd2f5c1340" CHECKSUMTYPE="MD5" GROUPID="1" ID="ALTO00001" MIMETYPE="text/xml" SEQ="1" SIZE="521613">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00001-alto.xml" />
+      </file>
+      <file CHECKSUM="307871b2f79d2d253a5a3cd7eb79b2b4" CHECKSUMTYPE="MD5" GROUPID="2" ID="ALTO00002" MIMETYPE="text/xml" SEQ="2" SIZE="763836">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00002-alto.xml" />
+      </file>
+      <file CHECKSUM="d012b3eebfdf97f8c9b2dd8e984d6663" CHECKSUMTYPE="MD5" GROUPID="3" ID="ALTO00003" MIMETYPE="text/xml" SEQ="3" SIZE="519596">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00003-alto.xml" />
+      </file>
+      <file CHECKSUM="187ee6ad1d1c9297860cb192798090b5" CHECKSUMTYPE="MD5" GROUPID="4" ID="ALTO00004" MIMETYPE="text/xml" SEQ="4" SIZE="648781">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00004-alto.xml" />
+      </file>
+      <file CHECKSUM="2fde98be1abf96979f488d518ca7c9f6" CHECKSUMTYPE="MD5" GROUPID="5" ID="ALTO00005" MIMETYPE="text/xml" SEQ="5" SIZE="655957">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00005-alto.xml" />
+      </file>
+      <file CHECKSUM="b4bbd6e9c92a6db7a8d3831eb8aad973" CHECKSUMTYPE="MD5" GROUPID="6" ID="ALTO00006" MIMETYPE="text/xml" SEQ="6" SIZE="477685">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00006-alto.xml" />
+      </file>
+      <file CHECKSUM="25c19a50a40f823d31f6c0dc310d90f4" CHECKSUMTYPE="MD5" GROUPID="7" ID="ALTO00007" MIMETYPE="text/xml" SEQ="7" SIZE="961">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00007-alto.xml" />
+      </file>
+      <file CHECKSUM="370cedd5092dd991f13d2a4d720e667d" CHECKSUMTYPE="MD5" GROUPID="8" ID="ALTO00008" MIMETYPE="text/xml" SEQ="8" SIZE="634088">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00008-alto.xml" />
+      </file>
+      <file CHECKSUM="36f7e4faa4fb6b8bb4fe8cbf42b7f611" CHECKSUMTYPE="MD5" GROUPID="9" ID="ALTO00009" MIMETYPE="text/xml" SEQ="9" SIZE="4958">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00009-alto.xml" />
+      </file>
+      <file CHECKSUM="17a0986256097310d59b989e7cb0508c" CHECKSUMTYPE="MD5" GROUPID="10" ID="ALTO00010" MIMETYPE="text/xml" SEQ="10" SIZE="237854">
+        <FLocat LOCTYPE="URL" xlink:href="file://./text/1950-10-16_01-00010-alto.xml" />
+      </file>
+    </fileGrp>
+    <fileGrp ID="PDFGRP" USE="PDF">
+      <file CHECKSUM="f687d03e29519cda0afcc59fd448dc5d" CHECKSUMTYPE="MD5" GROUPID="1" ID="PDF00001" MIMETYPE="application/pdf" SEQ="1" SIZE="3316515">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00001.pdf" />
+      </file>
+      <file CHECKSUM="60ad78c059f9cfdb61eca1defc089ffc" CHECKSUMTYPE="MD5" GROUPID="2" ID="PDF00002" MIMETYPE="application/pdf" SEQ="2" SIZE="3587910">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00002.pdf" />
+      </file>
+      <file CHECKSUM="3aa67d7a92bced9afbf620667a76c961" CHECKSUMTYPE="MD5" GROUPID="3" ID="PDF00003" MIMETYPE="application/pdf" SEQ="3" SIZE="3393382">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00003.pdf" />
+      </file>
+      <file CHECKSUM="d3ae7282d8f5ae2381bc16328bea0280" CHECKSUMTYPE="MD5" GROUPID="4" ID="PDF00004" MIMETYPE="application/pdf" SEQ="4" SIZE="3544769">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00004.pdf" />
+      </file>
+      <file CHECKSUM="d21ec35a9c3194e79276347132ab88ea" CHECKSUMTYPE="MD5" GROUPID="5" ID="PDF00005" MIMETYPE="application/pdf" SEQ="5" SIZE="3555065">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00005.pdf" />
+      </file>
+      <file CHECKSUM="9150c5cd7aca141b5d783db08938eaf9" CHECKSUMTYPE="MD5" GROUPID="6" ID="PDF00006" MIMETYPE="application/pdf" SEQ="6" SIZE="2768814">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00006.pdf" />
+      </file>
+      <file CHECKSUM="6bca14fb164664ad359744566c565ce1" CHECKSUMTYPE="MD5" GROUPID="7" ID="PDF00007" MIMETYPE="application/pdf" SEQ="7" SIZE="2572036">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00007.pdf" />
+      </file>
+      <file CHECKSUM="6fb11897d3d3e6d0f27f566c8620a83e" CHECKSUMTYPE="MD5" GROUPID="8" ID="PDF00008" MIMETYPE="application/pdf" SEQ="8" SIZE="3475262">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00008.pdf" />
+      </file>
+      <file CHECKSUM="c9115521597c94700a991a2994cae978" CHECKSUMTYPE="MD5" GROUPID="9" ID="PDF00009" MIMETYPE="application/pdf" SEQ="9" SIZE="2611161">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00009.pdf" />
+      </file>
+      <file CHECKSUM="ce3d8dc41f04ab94ea99ce0740d66e73" CHECKSUMTYPE="MD5" GROUPID="10" ID="PDF00010" MIMETYPE="application/pdf" SEQ="10" SIZE="2982776">
+        <FLocat LOCTYPE="URL" xlink:href="file://./pdf/1950-10-16_01-00010.pdf" />
+      </file>
+    </fileGrp>
+    <fileGrp ID="THUMBGRP" USE="Thumbnails">
+      <file CHECKSUM="acfd32a7b386ccc07d5a4ef8530d543d" CHECKSUMTYPE="MD5" GROUPID="3" ID="THUMB00003" MIMETYPE="image/jpeg" SEQ="3" SIZE="26486">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161367.jpg" />
+      </file>
+      <file CHECKSUM="26299b11773140d5eed8fe1f0a1d2c89" CHECKSUMTYPE="MD5" GROUPID="2" ID="THUMB00002" MIMETYPE="image/jpeg" SEQ="2" SIZE="27338">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161366.jpg" />
+      </file>
+      <file CHECKSUM="65c3af4bd55eea3c3ffee86b81816b54" CHECKSUMTYPE="MD5" GROUPID="10" ID="THUMB00010" MIMETYPE="image/jpeg" SEQ="10" SIZE="26451">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161381.jpg" />
+      </file>
+      <file CHECKSUM="a1b2a825944c758b69be71812b0c2280" CHECKSUMTYPE="MD5" GROUPID="1" ID="THUMB00001" MIMETYPE="image/jpeg" SEQ="1" SIZE="27531">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161365.jpg" />
+      </file>
+      <file CHECKSUM="749f2b51a758fb1cc3be85ed97a26541" CHECKSUMTYPE="MD5" GROUPID="7" ID="THUMB00007" MIMETYPE="image/jpeg" SEQ="7" SIZE="27207">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161375.jpg" />
+      </file>
+      <file CHECKSUM="23adab1e77d59dc95f3cf0bfe37a6379" CHECKSUMTYPE="MD5" GROUPID="6" ID="THUMB00006" MIMETYPE="image/jpeg" SEQ="6" SIZE="27197">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161373.jpg" />
+      </file>
+      <file CHECKSUM="971ff8a07e17f9bdfd5a85438cc281c7" CHECKSUMTYPE="MD5" GROUPID="5" ID="THUMB00005" MIMETYPE="image/jpeg" SEQ="5" SIZE="26785">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161372.jpg" />
+      </file>
+      <file CHECKSUM="91f018ab6ae14617065460345293ff38" CHECKSUMTYPE="MD5" GROUPID="4" ID="THUMB00004" MIMETYPE="image/jpeg" SEQ="4" SIZE="27161">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161370.jpg" />
+      </file>
+      <file CHECKSUM="a4227bf41c33331e5e8fc133fb8809db" CHECKSUMTYPE="MD5" GROUPID="9" ID="THUMB00009" MIMETYPE="image/jpeg" SEQ="9" SIZE="26035">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161380.jpg" />
+      </file>
+      <file CHECKSUM="1d7a87cdcf91a987cf2147e1ed1c3413" CHECKSUMTYPE="MD5" GROUPID="8" ID="THUMB00008" MIMETYPE="image/jpeg" SEQ="8" SIZE="27924">
+        <FLocat LOCTYPE="URL" xlink:href="file://./thumbnails/161378.jpg" />
+      </file>
+    </fileGrp>
+    <fileGrp ID="COMPLETEOBJECTGRP" USE="CompleteObject">
+      <file CHECKSUM="354289658bb70394d11e144eb6cf5d1a" CHECKSUMTYPE="MD5" GROUPID="0" ID="ALLPAGESPDF01" MIMETYPE="application/pdf" SEQ="1" SIZE="31348084">
+        <FLocat LOCTYPE="URL" xlink:href="file://./161364_newspaper_tageblatt_1950-10-16.pdf" />
+      </file>
+    </fileGrp>
+  </fileSec>
+  <structMap ID="DTL1" LABEL="Physical Structure" TYPE="PHYSICAL">
+    <div DMDID="MODSMD_COLLECTION MODSMD_PRINT" ID="DTL2" LABEL="Escher Tagablatt" TYPE="Newspaper">
+      <div ID="DTL3" LABEL="1" ORDER="1" ORDERLABEL="1" TYPE="PAGE">
+        <fptr ID="DTL13">
+          <par>
+            <area FILEID="IMG00001" ID="DTL23" />
+            <area FILEID="PDF00001" ID="DTL24" />
+            <area FILEID="ALTO00001" ID="DTL25" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL4" LABEL="2" ORDER="2" ORDERLABEL="2" TYPE="PAGE">
+        <fptr ID="DTL14">
+          <par>
+            <area FILEID="IMG00002" ID="DTL26" />
+            <area FILEID="PDF00002" ID="DTL27" />
+            <area FILEID="ALTO00002" ID="DTL28" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL5" LABEL="3" ORDER="3" ORDERLABEL="3" TYPE="PAGE">
+        <fptr ID="DTL15">
+          <par>
+            <area FILEID="IMG00003" ID="DTL29" />
+            <area FILEID="PDF00003" ID="DTL30" />
+            <area FILEID="ALTO00003" ID="DTL31" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL6" LABEL="4" ORDER="4" ORDERLABEL="4" TYPE="PAGE">
+        <fptr ID="DTL16">
+          <par>
+            <area FILEID="IMG00004" ID="DTL32" />
+            <area FILEID="PDF00004" ID="DTL33" />
+            <area FILEID="ALTO00004" ID="DTL34" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL7" LABEL="5" ORDER="5" ORDERLABEL="5" TYPE="PAGE">
+        <fptr ID="DTL17">
+          <par>
+            <area FILEID="IMG00005" ID="DTL35" />
+            <area FILEID="PDF00005" ID="DTL36" />
+            <area FILEID="ALTO00005" ID="DTL37" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL8" LABEL="6" ORDER="6" ORDERLABEL="6" TYPE="PAGE">
+        <fptr ID="DTL18">
+          <par>
+            <area FILEID="IMG00006" ID="DTL38" />
+            <area FILEID="PDF00006" ID="DTL39" />
+            <area FILEID="ALTO00006" ID="DTL40" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL9" LABEL="7" ORDER="7" ORDERLABEL="7" TYPE="PAGE">
+        <fptr ID="DTL19">
+          <par>
+            <area FILEID="IMG00007" ID="DTL41" />
+            <area FILEID="PDF00007" ID="DTL42" />
+            <area FILEID="ALTO00007" ID="DTL43" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL10" LABEL="8" ORDER="8" ORDERLABEL="8" TYPE="PAGE">
+        <fptr ID="DTL20">
+          <par>
+            <area FILEID="IMG00008" ID="DTL44" />
+            <area FILEID="PDF00008" ID="DTL45" />
+            <area FILEID="ALTO00008" ID="DTL46" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL11" LABEL="9" ORDER="9" ORDERLABEL="9" TYPE="PAGE">
+        <fptr ID="DTL21">
+          <par>
+            <area FILEID="IMG00009" ID="DTL47" />
+            <area FILEID="PDF00009" ID="DTL48" />
+            <area FILEID="ALTO00009" ID="DTL49" />
+          </par>
+        </fptr>
+      </div>
+      <div ID="DTL12" LABEL="10" ORDER="10" ORDERLABEL="10" TYPE="PAGE">
+        <fptr ID="DTL22">
+          <par>
+            <area FILEID="IMG00010" ID="DTL50" />
+            <area FILEID="PDF00010" ID="DTL51" />
+            <area FILEID="ALTO00010" ID="DTL52" />
+          </par>
+        </fptr>
+      </div>
+    </div>
+  </structMap>
+  <structMap ID="DTL53" LABEL="Logical Structure" TYPE="LOGICAL">
+    <div ID="DTL54" LABEL="Tageblatt 1950-10-16_01" TYPE="Newspaper">
+      <div DMDID="MODSMD_COLLECTION MODSMD_PRINT" ID="DTL55" LABEL="Tageblatt 1950-10-16_01" TYPE="VOLUME">
+        <div ID="DTL56" LABEL="Tageblatt 1950-10-16_01" TYPE="ISSUE">
+          <div ID="DTL57" TYPE="TITLE_SECTION">
+            <div ID="DTL59" ORDER="1" TYPE="TEXTBLOCK">
+              <fptr ID="DTL511">
+                <area BEGIN="BLOCK1" FILEID="ALTO00001" ID="DTL702" />
+              </fptr>
+            </div>
+            <div ID="DTL60" TYPE="MOTTO">
+              <fptr ID="DTL512">
+                <area BEGIN="BLOCK2" FILEID="ALTO00001" ID="DTL703" />
+              </fptr>
+            </div>
+            <div ID="DTL61" ORDER="3" TYPE="TEXTBLOCK">
+              <fptr ID="DTL513">
+                <area BEGIN="BLOCK3" FILEID="ALTO00001" ID="DTL704" />
+              </fptr>
+            </div>
+            <div ID="DTL62" ORDER="4" TYPE="TEXTBLOCK">
+              <fptr ID="DTL514">
+                <area BEGIN="BLOCK4" FILEID="ALTO00001" ID="DTL705" />
+              </fptr>
+            </div>
+          </div>
+          <div ID="DTL58" TYPE="CONTENT">
+            <div DMDID="MODSMD_ARTICLE1" ID="DTL63" LABEL="Die Entrevue Truman-Mac Arthur " ORDER="1" TYPE="ARTICLE">
+              <div ID="DTL113" TYPE="HEADING">
+                <div ID="DTL197" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL527">
+                    <area BEGIN="BLOCK5" FILEID="ALTO00001" ID="DTL718" />
+                  </fptr>
+                </div>
+                <div ID="DTL198" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL528">
+                    <area BEGIN="BLOCK6" FILEID="ALTO00001" ID="DTL719" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL114" TYPE="BODY">
+                <div ID="DTL199" TYPE="BODY_CONTENT">
+                  <div ID="DTL291" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL421" TYPE="TEXT">
+                      <fptr ID="DTL612">
+                        <area BEGIN="BLOCK7" FILEID="ALTO00001" ID="DTL780" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL292" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL422" TYPE="TEXT">
+                      <fptr ID="DTL613">
+                        <area BEGIN="BLOCK8" FILEID="ALTO00001" ID="DTL781" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL293" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL423" TYPE="TEXT">
+                      <fptr ID="DTL614">
+                        <area BEGIN="BLOCK9" FILEID="ALTO00001" ID="DTL782" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL294" ORDER="5" TYPE="PARAGRAPH">
+                    <div ID="DTL424" TYPE="TEXT">
+                      <fptr ID="DTL615">
+                        <area BEGIN="BLOCK10" FILEID="ALTO00008" ID="DTL783" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE2" ID="DTL64" LABEL="Ostdeutscher Wahlschwank " ORDER="2" TYPE="ARTICLE">
+              <div ID="DTL115" TYPE="HEADING">
+                <div ID="DTL200" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL529">
+                    <area BEGIN="BLOCK10" FILEID="ALTO00001" ID="DTL720" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL116" TYPE="BODY">
+                <div ID="DTL201" TYPE="BODY_CONTENT">
+                  <div ID="DTL295" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL425" TYPE="TEXT">
+                      <fptr ID="DTL616">
+                        <area BEGIN="BLOCK11" FILEID="ALTO00001" ID="DTL784" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL296" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL426" TYPE="TEXT">
+                      <fptr ID="DTL617">
+                        <area BEGIN="BLOCK12" FILEID="ALTO00001" ID="DTL785" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT1" ID="DTL202" ORDER="3" TYPE="ILLUSTRATION">
+                  <div ID="DTL297" ORDER="4" TYPE="IMAGE">
+                    <fptr ID="DTL572">
+                      <area BEGIN="ILLUSTRATION1" FILEID="ALTO00001" ID="DTL763" />
+                    </fptr>
+                  </div>
+                  <div ID="DTL298" TYPE="CAPTION">
+                    <fptr ID="DTL573">
+                      <area BEGIN="BLOCK13" FILEID="ALTO00001" ID="DTL764" />
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE3" ID="DTL65" LABEL="Das Armee-Projekt " ORDER="3" TYPE="ARTICLE">
+              <div ID="DTL117" TYPE="HEADING">
+                <div ID="DTL203" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL530">
+                    <area BEGIN="BLOCK14" FILEID="ALTO00001" ID="DTL721" />
+                  </fptr>
+                </div>
+                <div ID="DTL204" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL531">
+                    <area BEGIN="BLOCK15" FILEID="ALTO00001" ID="DTL722" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL118" TYPE="BODY">
+                <div ID="DTL205" TYPE="BODY_CONTENT">
+                  <div ID="DTL299" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL427" TYPE="TEXT">
+                      <fptr ID="DTL618">
+                        <area BEGIN="BLOCK16" FILEID="ALTO00001" ID="DTL786" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL300" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL428" TYPE="TEXT">
+                      <fptr ID="DTL619">
+                        <area BEGIN="BLOCK17" FILEID="ALTO00001" ID="DTL787" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL301" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL429" TYPE="TEXT">
+                      <fptr ID="DTL620">
+                        <area BEGIN="BLOCK18" FILEID="ALTO00001" ID="DTL788" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE4" ID="DTL66" LABEL="Rascher Vorstoß der UN-Streitkräfte auf Pyongyang " ORDER="4" TYPE="ARTICLE">
+              <div ID="DTL119" TYPE="HEADING">
+                <div ID="DTL206" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL532">
+                    <area BEGIN="BLOCK19" FILEID="ALTO00001" ID="DTL723" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL120" TYPE="BODY">
+                <div ID="DTL207" TYPE="BODY_CONTENT">
+                  <div ID="DTL302" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL430" TYPE="TEXT">
+                      <fptr ID="DTL621">
+                        <area BEGIN="BLOCK20" FILEID="ALTO00001" ID="DTL789" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL303" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL431" TYPE="TEXT">
+                      <fptr ID="DTL622">
+                        <area BEGIN="BLOCK21" FILEID="ALTO00001" ID="DTL790" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL304" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL432" TYPE="TEXT">
+                      <fptr ID="DTL623">
+                        <area BEGIN="BLOCK8" FILEID="ALTO00008" ID="DTL791" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL305" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL433" TYPE="TEXT">
+                      <fptr ID="DTL624">
+                        <area BEGIN="BLOCK9" FILEID="ALTO00008" ID="DTL792" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE5" ID="DTL67" LABEL="Lake-Success Neue Fassung der &quot;Entschließung zur Aufrechterhaltung des Friedens&quot; " ORDER="5" TYPE="ARTICLE">
+              <div ID="DTL121" TYPE="HEADING">
+                <div ID="DTL208" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL533">
+                    <area BEGIN="BLOCK22" FILEID="ALTO00001" ID="DTL724" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL122" TYPE="BODY">
+                <div ID="DTL209" TYPE="BODY_CONTENT">
+                  <div ID="DTL306" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL434" TYPE="TEXT">
+                      <fptr ID="DTL625">
+                        <area BEGIN="BLOCK23" FILEID="ALTO00001" ID="DTL793" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL307" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL435" TYPE="TEXT">
+                      <fptr ID="DTL626">
+                        <area BEGIN="BLOCK24" FILEID="ALTO00001" ID="DTL794" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE6" ID="DTL68" LABEL="Verstärkung der amerikanischen Garnison von Berlin " ORDER="6" TYPE="ARTICLE">
+              <div ID="DTL123" TYPE="HEADING">
+                <div ID="DTL210" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL534">
+                    <area BEGIN="BLOCK25" FILEID="ALTO00001" ID="DTL725" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL124" TYPE="BODY">
+                <div ID="DTL211" TYPE="BODY_CONTENT">
+                  <div ID="DTL308" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL436" TYPE="TEXT">
+                      <fptr ID="DTL627">
+                        <area BEGIN="BLOCK26" FILEID="ALTO00001" ID="DTL795" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div ID="DTL69" ORDER="2" TYPE="PARAGRAPH">
+              <div ID="DTL125" TYPE="TEXT">
+                <fptr ID="DTL515">
+                  <area BEGIN="BLOCK1" FILEID="ALTO00002" ID="DTL706" />
+                </fptr>
+              </div>
+            </div>
+            <div ID="DTL70" ORDER="3" TYPE="PARAGRAPH">
+              <div ID="DTL126" TYPE="TEXT">
+                <fptr ID="DTL516">
+                  <area BEGIN="BLOCK2" FILEID="ALTO00002" ID="DTL707" />
+                </fptr>
+              </div>
+            </div>
+            <div ID="DTL71" ORDER="4" TYPE="PARAGRAPH">
+              <div ID="DTL127" TYPE="TEXT">
+                <fptr ID="DTL517">
+                  <area BEGIN="BLOCK3" FILEID="ALTO00002" ID="DTL708" />
+                </fptr>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE7" ID="DTL72" LABEL="Schoner Erfolg der Europa-Tage " ORDER="7" TYPE="ARTICLE">
+              <div ID="DTL128" TYPE="HEADING">
+                <div ID="DTL212" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL535">
+                    <area BEGIN="BLOCK4" FILEID="ALTO00002" ID="DTL726" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL129" TYPE="BODY">
+                <div ID="DTL213" TYPE="BODY_CONTENT">
+                  <div ID="DTL309" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL437" TYPE="TEXT">
+                      <fptr ID="DTL628">
+                        <area BEGIN="BLOCK5" FILEID="ALTO00002" ID="DTL796" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL310" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL438" TYPE="TEXT">
+                      <fptr ID="DTL629">
+                        <area BEGIN="BLOCK6" FILEID="ALTO00002" ID="DTL797" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL311" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL439" TYPE="TEXT">
+                      <fptr ID="DTL630">
+                        <area BEGIN="BLOCK7" FILEID="ALTO00002" ID="DTL798" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL312" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL440" TYPE="TEXT">
+                      <fptr ID="DTL631">
+                        <area BEGIN="BLOCK8" FILEID="ALTO00002" ID="DTL799" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE8" ID="DTL73" LABEL="Um das Thema: Defense Sociale " ORDER="8" TYPE="ARTICLE">
+              <div ID="DTL130" TYPE="HEADING">
+                <div ID="DTL214" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL536">
+                    <area BEGIN="BLOCK9" FILEID="ALTO00002" ID="DTL727" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL131" TYPE="BODY">
+                <div ID="DTL215" TYPE="BODY_CONTENT">
+                  <div ID="DTL313" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL441" TYPE="TEXT">
+                      <fptr ID="DTL632">
+                        <area BEGIN="BLOCK10" FILEID="ALTO00002" ID="DTL800" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL314" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL442" TYPE="TEXT">
+                      <fptr ID="DTL633">
+                        <area BEGIN="BLOCK11" FILEID="ALTO00002" ID="DTL801" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL315" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL443" TYPE="TEXT">
+                      <fptr ID="DTL634">
+                        <area BEGIN="BLOCK12" FILEID="ALTO00002" ID="DTL802" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL316" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL444" TYPE="TEXT">
+                      <fptr ID="DTL635">
+                        <area BEGIN="BLOCK13" FILEID="ALTO00002" ID="DTL803" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL317" ORDER="5" TYPE="PARAGRAPH">
+                    <div ID="DTL445" TYPE="TEXT">
+                      <fptr ID="DTL636">
+                        <area BEGIN="BLOCK9" FILEID="ALTO00005" ID="DTL804" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE9" ID="DTL74" LABEL="Gewerkschaftliche Lohn- politik in den USA " ORDER="9" TYPE="ARTICLE">
+              <div ID="DTL132" TYPE="HEADING">
+                <div ID="DTL216" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL537">
+                    <area BEGIN="BLOCK14" FILEID="ALTO00002" ID="DTL728" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL133" TYPE="BODY">
+                <div ID="DTL217" TYPE="BODY_CONTENT">
+                  <div ID="DTL318" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL446" TYPE="TEXT">
+                      <fptr ID="DTL637">
+                        <area BEGIN="BLOCK15" FILEID="ALTO00002" ID="DTL805" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE10" ID="DTL75" LABEL="Aux tombeaux des Funck-Brentano à Montfermeil " ORDER="10" TYPE="ARTICLE">
+              <div ID="DTL134" TYPE="HEADING">
+                <div ID="DTL218" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL538">
+                    <area BEGIN="BLOCK16" FILEID="ALTO00002" ID="DTL729" />
+                  </fptr>
+                </div>
+                <div ID="DTL219" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL539">
+                    <area BEGIN="BLOCK17" FILEID="ALTO00002" ID="DTL730" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL135" TYPE="BODY">
+                <div ID="DTL220" TYPE="BODY_CONTENT">
+                  <div ID="DTL319" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL447" TYPE="TEXT">
+                      <fptr ID="DTL638">
+                        <area BEGIN="BLOCK18" FILEID="ALTO00002" ID="DTL806" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL320" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL448" TYPE="TEXT">
+                      <fptr ID="DTL639">
+                        <area BEGIN="BLOCK19" FILEID="ALTO00002" ID="DTL807" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div ID="DTL76" ORDER="3" TYPE="PARAGRAPH">
+              <div ID="DTL136" TYPE="TEXT">
+                <fptr ID="DTL518">
+                  <area BEGIN="BLOCK1" FILEID="ALTO00003" ID="DTL709" />
+                </fptr>
+              </div>
+            </div>
+            <div ID="DTL77" ORDER="4" TYPE="PARAGRAPH">
+              <div ID="DTL137" TYPE="TEXT">
+                <fptr ID="DTL519">
+                  <area BEGIN="BLOCK2" FILEID="ALTO00003" ID="DTL710" />
+                </fptr>
+              </div>
+            </div>
+            <div ID="DTL78" ORDER="5" TYPE="PARAGRAPH">
+              <div ID="DTL138" TYPE="TEXT">
+                <fptr ID="DTL520">
+                  <area BEGIN="BLOCK3" FILEID="ALTO00003" ID="DTL711" />
+                </fptr>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE11" ID="DTL79" LABEL="Ein unbefriedigendes 0-0 Ergebnis gegen Süd-Holland " ORDER="11" TYPE="ARTICLE">
+              <div ID="DTL139" TYPE="HEADING">
+                <div ID="DTL221" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL540">
+                    <area BEGIN="BLOCK4" FILEID="ALTO00003" ID="DTL731" />
+                  </fptr>
+                </div>
+                <div ID="DTL222" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL541">
+                    <area BEGIN="BLOCK5" FILEID="ALTO00003" ID="DTL732" />
+                  </fptr>
+                </div>
+                <div ID="DTL223" ORDER="3" TYPE="TITLE">
+                  <fptr ID="DTL542">
+                    <area BEGIN="BLOCK6" FILEID="ALTO00003" ID="DTL733" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL140" TYPE="BODY">
+                <div ID="DTL224" TYPE="BODY_CONTENT">
+                  <div ID="DTL321" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL449" TYPE="TEXT">
+                      <fptr ID="DTL640">
+                        <area BEGIN="BLOCK7" FILEID="ALTO00003" ID="DTL808" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL322" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL450" TYPE="TEXT">
+                      <fptr ID="DTL641">
+                        <area BEGIN="BLOCK8" FILEID="ALTO00003" ID="DTL809" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL323" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL451" TYPE="TEXT">
+                      <fptr ID="DTL642">
+                        <area BEGIN="BLOCK9" FILEID="ALTO00003" ID="DTL810" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL324" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL452" TYPE="TEXT">
+                      <fptr ID="DTL643">
+                        <area BEGIN="BLOCK10" FILEID="ALTO00003" ID="DTL811" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL325" ORDER="5" TYPE="PARAGRAPH">
+                    <div ID="DTL453" TYPE="TEXT">
+                      <fptr ID="DTL644">
+                        <area BEGIN="BLOCK11" FILEID="ALTO00003" ID="DTL812" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT2" ID="DTL225" ORDER="6" TYPE="ILLUSTRATION">
+                  <div ID="DTL326" ORDER="7" TYPE="IMAGE">
+                    <fptr ID="DTL574">
+                      <area BEGIN="ILLUSTRATION1" FILEID="ALTO00003" ID="DTL765" />
+                    </fptr>
+                  </div>
+                  <div ID="DTL327" TYPE="CAPTION">
+                    <fptr ID="DTL575">
+                      <area BEGIN="BLOCK12" FILEID="ALTO00003" ID="DTL766" />
+                    </fptr>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT3" ID="DTL226" ORDER="9" TYPE="ILLUSTRATION">
+                  <div ID="DTL328" ORDER="10" TYPE="IMAGE">
+                    <fptr ID="DTL576">
+                      <area BEGIN="ILLUSTRATION2" FILEID="ALTO00003" ID="DTL767" />
+                    </fptr>
+                  </div>
+                  <div ID="DTL329" TYPE="CAPTION">
+                    <fptr ID="DTL577">
+                      <area BEGIN="BLOCK13" FILEID="ALTO00003" ID="DTL768" />
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE12" ID="DTL80" LABEL="Sonstige Sportnachrichten " ORDER="12" TYPE="ARTICLE">
+              <div ID="DTL141" TYPE="HEADING">
+                <div ID="DTL227" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL543">
+                    <area BEGIN="BLOCK14" FILEID="ALTO00003" ID="DTL734" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL142" TYPE="BODY">
+                <div ID="DTL228" TYPE="BODY_CONTENT">
+                  <div ID="DTL330" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL454" TYPE="TEXT">
+                      <fptr ID="DTL645">
+                        <area BEGIN="BLOCK15" FILEID="ALTO00003" ID="DTL813" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL331" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL455" TYPE="TEXT">
+                      <fptr ID="DTL646">
+                        <area BEGIN="BLOCK16" FILEID="ALTO00003" ID="DTL814" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL332" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL456" TYPE="TEXT">
+                      <fptr ID="DTL647">
+                        <area BEGIN="BLOCK17" FILEID="ALTO00003" ID="DTL815" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT4" ID="DTL229" ORDER="4" TYPE="ILLUSTRATION">
+                  <div ID="DTL333" ORDER="5" TYPE="IMAGE">
+                    <fptr ID="DTL578">
+                      <area BEGIN="ILLUSTRATION3" FILEID="ALTO00003" ID="DTL769" />
+                    </fptr>
+                  </div>
+                  <div ID="DTL334" TYPE="CAPTION">
+                    <fptr ID="DTL579">
+                      <area BEGIN="BLOCK18" FILEID="ALTO00003" ID="DTL770" />
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE13" ID="DTL81" LABEL="Das Rodinger Boxmeeting " ORDER="13" TYPE="ARTICLE">
+              <div ID="DTL143" TYPE="HEADING">
+                <div ID="DTL230" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL544">
+                    <area BEGIN="BLOCK19" FILEID="ALTO00003" ID="DTL735" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL144" TYPE="BODY">
+                <div ID="DTL231" TYPE="BODY_CONTENT">
+                  <div ID="DTL335" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL457" TYPE="TEXT">
+                      <fptr ID="DTL648">
+                        <area BEGIN="BLOCK20" FILEID="ALTO00003" ID="DTL816" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL336" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL458" TYPE="TEXT">
+                      <fptr ID="DTL649">
+                        <area BEGIN="BLOCK21" FILEID="ALTO00003" ID="DTL817" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div ID="DTL82" ORDER="3" TYPE="PARAGRAPH">
+              <div ID="DTL145" TYPE="TEXT">
+                <fptr ID="DTL521">
+                  <area BEGIN="BLOCK1" FILEID="ALTO00004" ID="DTL712" />
+                </fptr>
+              </div>
+            </div>
+            <div ID="DTL83" ORDER="4" TYPE="PARAGRAPH">
+              <div ID="DTL146" TYPE="TEXT">
+                <fptr ID="DTL522">
+                  <area BEGIN="BLOCK2" FILEID="ALTO00004" ID="DTL713" />
+                </fptr>
+              </div>
+            </div>
+            <div ID="DTL84" ORDER="5" TYPE="PARAGRAPH">
+              <div ID="DTL147" TYPE="TEXT">
+                <fptr ID="DTL523">
+                  <area BEGIN="BLOCK3" FILEID="ALTO00004" ID="DTL714" />
+                </fptr>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE14" ID="DTL85" LABEL="Schifflinger Gemeinderatsbericht " ORDER="14" TYPE="ARTICLE">
+              <div ID="DTL148" TYPE="HEADING">
+                <div ID="DTL232" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL545">
+                    <area BEGIN="BLOCK4" FILEID="ALTO00004" ID="DTL736" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL149" TYPE="BODY">
+                <div ID="DTL233" TYPE="BODY_CONTENT">
+                  <div ID="DTL337" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL459" TYPE="TEXT">
+                      <fptr ID="DTL650">
+                        <area BEGIN="BLOCK5" FILEID="ALTO00004" ID="DTL818" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL338" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL460" TYPE="TEXT">
+                      <fptr ID="DTL651">
+                        <area BEGIN="BLOCK6" FILEID="ALTO00004" ID="DTL819" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL339" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL461" TYPE="TEXT">
+                      <fptr ID="DTL652">
+                        <area BEGIN="BLOCK7" FILEID="ALTO00004" ID="DTL820" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL340" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL462" TYPE="TEXT">
+                      <fptr ID="DTL653">
+                        <area BEGIN="BLOCK8" FILEID="ALTO00004" ID="DTL821" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE15" ID="DTL86" LABEL="Rundgang um und durch das Steinforter Stadthaus " ORDER="15" TYPE="ARTICLE">
+              <div ID="DTL150" TYPE="HEADING">
+                <div ID="DTL234" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL546">
+                    <area BEGIN="BLOCK9" FILEID="ALTO00004" ID="DTL737" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL151" TYPE="BODY">
+                <div ID="DTL235" TYPE="BODY_CONTENT">
+                  <div ID="DTL341" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL463" TYPE="TEXT">
+                      <fptr ID="DTL654">
+                        <area BEGIN="BLOCK10" FILEID="ALTO00004" ID="DTL822" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL342" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL464" TYPE="TEXT">
+                      <fptr ID="DTL655">
+                        <area BEGIN="BLOCK11" FILEID="ALTO00004" ID="DTL823" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL343" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL465" TYPE="TEXT">
+                      <fptr ID="DTL656">
+                        <area BEGIN="BLOCK12" FILEID="ALTO00004" ID="DTL824" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_SECTION1" ID="DTL87" LABEL="Publicites" TYPE="SECTION">
+              <div ID="DTL152" TYPE="BODY">
+                <div ID="DTL236" TYPE="BODY_CONTENT">
+                  <div DMDID="MODSMD_PICT5" ID="DTL344" ORDER="1" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL580">
+                      <seq>
+                        <area BEGIN="BLOCK13" FILEID="ALTO00004" ID="DTL825" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT6" ID="DTL345" ORDER="2" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL581">
+                      <seq>
+                        <area BEGIN="BLOCK14" FILEID="ALTO00004" ID="DTL826" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT7" ID="DTL346" ORDER="3" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL582">
+                      <seq>
+                        <area BEGIN="BLOCK15" FILEID="ALTO00004" ID="DTL827" />
+                      </seq>
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE17" ID="DTL88" LABEL="Einkommen-Anglei- chung in Schweden " ORDER="1" TYPE="ARTICLE">
+              <div ID="DTL153" TYPE="HEADING">
+                <div ID="DTL237" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL547">
+                    <area BEGIN="BLOCK16" FILEID="ALTO00004" ID="DTL738" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL154" TYPE="BODY">
+                <div ID="DTL238" TYPE="BODY_CONTENT">
+                  <div ID="DTL347" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL466" TYPE="TEXT">
+                      <fptr ID="DTL657">
+                        <area BEGIN="BLOCK17" FILEID="ALTO00004" ID="DTL828" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL348" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL467" TYPE="TEXT">
+                      <fptr ID="DTL658">
+                        <area BEGIN="BLOCK18" FILEID="ALTO00004" ID="DTL829" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE18" ID="DTL89" LABEL="Sozialistische Arbeiterpartei " ORDER="2" TYPE="ARTICLE">
+              <div ID="DTL155" TYPE="HEADING">
+                <div ID="DTL239" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL548">
+                    <area BEGIN="BLOCK19" FILEID="ALTO00004" ID="DTL739" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL156" TYPE="BODY">
+                <div ID="DTL240" TYPE="BODY_CONTENT">
+                  <div ID="DTL349" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL468" TYPE="TEXT">
+                      <fptr ID="DTL659">
+                        <area BEGIN="BLOCK20" FILEID="ALTO00004" ID="DTL830" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE19" ID="DTL90" LABEL="Liebeszauber auf Pita-Paga " ORDER="3" TYPE="ARTICLE">
+              <div ID="DTL157" TYPE="HEADING">
+                <div ID="DTL241" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL549">
+                    <area BEGIN="BLOCK21" FILEID="ALTO00004" ID="DTL740" />
+                  </fptr>
+                </div>
+                <div ID="DTL242" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL550">
+                    <area BEGIN="BLOCK22" FILEID="ALTO00004" ID="DTL741" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL158" TYPE="BODY">
+                <div ID="DTL243" TYPE="BODY_CONTENT">
+                  <div ID="DTL350" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL469" TYPE="TEXT">
+                      <fptr ID="DTL660">
+                        <area BEGIN="BLOCK23" FILEID="ALTO00004" ID="DTL831" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL351" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL470" TYPE="TEXT">
+                      <fptr ID="DTL661">
+                        <area BEGIN="BLOCK24" FILEID="ALTO00004" ID="DTL832" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL352" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL471" TYPE="TEXT">
+                      <fptr ID="DTL662">
+                        <area BEGIN="BLOCK25" FILEID="ALTO00004" ID="DTL833" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL353" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL472" TYPE="TEXT">
+                      <fptr ID="DTL663">
+                        <area BEGIN="BLOCK26" FILEID="ALTO00004" ID="DTL834" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL354" ORDER="5" TYPE="PARAGRAPH">
+                    <div ID="DTL473" TYPE="TEXT">
+                      <fptr ID="DTL664">
+                        <area BEGIN="BLOCK27" FILEID="ALTO00004" ID="DTL835" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL355" ORDER="6" TYPE="PARAGRAPH">
+                    <div ID="DTL474" TYPE="TEXT">
+                      <fptr ID="DTL665">
+                        <area BEGIN="BLOCK28" FILEID="ALTO00004" ID="DTL836" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE20" ID="DTL91" LABEL="L'Optimiste " ORDER="4" TYPE="ARTICLE">
+              <div ID="DTL159" TYPE="HEADING">
+                <div ID="DTL244" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL551">
+                    <area BEGIN="BLOCK29" FILEID="ALTO00004" ID="DTL742" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL160" TYPE="BODY">
+                <div ID="DTL245" TYPE="BODY_CONTENT">
+                  <div ID="DTL356" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL475" TYPE="TEXT">
+                      <fptr ID="DTL666">
+                        <area BEGIN="BLOCK30" FILEID="ALTO00004" ID="DTL837" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT8" ID="DTL246" ORDER="1" TYPE="ILLUSTRATION">
+                  <div ID="DTL357" ORDER="2" TYPE="IMAGE">
+                    <fptr ID="DTL583">
+                      <area BEGIN="ILLUSTRATION4" FILEID="ALTO00004" ID="DTL771" />
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div ID="DTL92" ORDER="4" TYPE="PARAGRAPH">
+              <div ID="DTL161" TYPE="TEXT">
+                <fptr ID="DTL524">
+                  <area BEGIN="BLOCK1" FILEID="ALTO00005" ID="DTL715" />
+                </fptr>
+              </div>
+            </div>
+            <div ID="DTL93" ORDER="5" TYPE="PARAGRAPH">
+              <div ID="DTL162" TYPE="TEXT">
+                <fptr ID="DTL525">
+                  <area BEGIN="BLOCK2" FILEID="ALTO00005" ID="DTL716" />
+                </fptr>
+              </div>
+            </div>
+            <div ID="DTL94" ORDER="6" TYPE="PARAGRAPH">
+              <div ID="DTL163" TYPE="TEXT">
+                <fptr ID="DTL526">
+                  <area BEGIN="BLOCK3" FILEID="ALTO00005" ID="DTL717" />
+                </fptr>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE21" ID="DTL95" LABEL="Hundert Jahre Handelskammer " ORDER="5" TYPE="ARTICLE">
+              <div ID="DTL164" TYPE="HEADING">
+                <div ID="DTL247" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL552">
+                    <area BEGIN="BLOCK4" FILEID="ALTO00005" ID="DTL743" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL165" TYPE="BODY">
+                <div ID="DTL248" TYPE="BODY_CONTENT">
+                  <div ID="DTL358" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL476" TYPE="TEXT">
+                      <fptr ID="DTL667">
+                        <area BEGIN="BLOCK5" FILEID="ALTO00005" ID="DTL838" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL359" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL477" TYPE="TEXT">
+                      <fptr ID="DTL668">
+                        <area BEGIN="BLOCK6" FILEID="ALTO00005" ID="DTL839" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL360" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL478" TYPE="TEXT">
+                      <fptr ID="DTL669">
+                        <area BEGIN="BLOCK7" FILEID="ALTO00005" ID="DTL840" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL361" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL479" TYPE="TEXT">
+                      <fptr ID="DTL670">
+                        <area BEGIN="BLOCK8" FILEID="ALTO00005" ID="DTL841" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE22" ID="DTL96" LABEL="Aus der Hauptstadt " ORDER="6" TYPE="ARTICLE">
+              <div ID="DTL166" TYPE="HEADING">
+                <div ID="DTL249" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL553">
+                    <area BEGIN="BLOCK10" FILEID="ALTO00005" ID="DTL744" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL167" TYPE="BODY">
+                <div ID="DTL250" TYPE="BODY_CONTENT">
+                  <div ID="DTL362" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL480" TYPE="TEXT">
+                      <fptr ID="DTL671">
+                        <area BEGIN="BLOCK11" FILEID="ALTO00005" ID="DTL842" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL363" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL481" TYPE="TEXT">
+                      <fptr ID="DTL672">
+                        <area BEGIN="BLOCK12" FILEID="ALTO00005" ID="DTL843" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL364" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL482" TYPE="TEXT">
+                      <fptr ID="DTL673">
+                        <area BEGIN="BLOCK13" FILEID="ALTO00005" ID="DTL844" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL365" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL483" TYPE="TEXT">
+                      <fptr ID="DTL674">
+                        <area BEGIN="BLOCK14" FILEID="ALTO00005" ID="DTL845" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE23" ID="DTL97" LABEL="Stadt Esch " ORDER="7" TYPE="ARTICLE">
+              <div ID="DTL168" TYPE="HEADING">
+                <div ID="DTL251" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL554">
+                    <area BEGIN="BLOCK15" FILEID="ALTO00005" ID="DTL745" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL169" TYPE="BODY">
+                <div ID="DTL252" TYPE="BODY_CONTENT">
+                  <div ID="DTL366" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL484" TYPE="TEXT">
+                      <fptr ID="DTL675">
+                        <area BEGIN="BLOCK16" FILEID="ALTO00005" ID="DTL846" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE24" ID="DTL98" LABEL="AUS DEM GROSSHERZOGTUM " ORDER="8" TYPE="ARTICLE">
+              <div ID="DTL170" TYPE="HEADING">
+                <div ID="DTL253" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL555">
+                    <area BEGIN="BLOCK17" FILEID="ALTO00005" ID="DTL746" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL171" TYPE="BODY">
+                <div ID="DTL254" TYPE="BODY_CONTENT">
+                  <div ID="DTL367" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL485" TYPE="TEXT">
+                      <fptr ID="DTL676">
+                        <area BEGIN="BLOCK18" FILEID="ALTO00005" ID="DTL847" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL368" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL486" TYPE="TEXT">
+                      <fptr ID="DTL677">
+                        <area BEGIN="BLOCK19" FILEID="ALTO00005" ID="DTL848" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE25" ID="DTL99" LABEL="Journee de comme- moration nationale " ORDER="9" TYPE="ARTICLE">
+              <div ID="DTL172" TYPE="HEADING">
+                <div ID="DTL255" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL556">
+                    <area BEGIN="BLOCK20" FILEID="ALTO00005" ID="DTL747" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL173" TYPE="BODY">
+                <div ID="DTL256" TYPE="BODY_CONTENT">
+                  <div ID="DTL369" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL487" TYPE="TEXT">
+                      <fptr ID="DTL678">
+                        <area BEGIN="BLOCK21" FILEID="ALTO00005" ID="DTL849" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL370" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL488" TYPE="TEXT">
+                      <fptr ID="DTL679">
+                        <area BEGIN="BLOCK22" FILEID="ALTO00005" ID="DTL850" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT9" ID="DTL257" ORDER="3" TYPE="ILLUSTRATION">
+                  <div ID="DTL371" ORDER="4" TYPE="IMAGE">
+                    <fptr ID="DTL584">
+                      <area BEGIN="ILLUSTRATION1" FILEID="ALTO00005" ID="DTL772" />
+                    </fptr>
+                  </div>
+                  <div ID="DTL372" TYPE="CAPTION">
+                    <fptr ID="DTL585">
+                      <area BEGIN="BLOCK23" FILEID="ALTO00005" ID="DTL773" />
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE26" ID="DTL100" LABEL="Société Nationale des Chemins de fer Luxembourgeois 8 OCTOBRE 1950 " ORDER="10" TYPE="ARTICLE">
+              <div ID="DTL174" TYPE="HEADING">
+                <div ID="DTL258" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL557">
+                    <area BEGIN="BLOCK1" FILEID="ALTO00006" ID="DTL748" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL175" TYPE="BODY">
+                <div ID="DTL259" TYPE="BODY_CONTENT">
+                  <div ID="DTL373" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL489" TYPE="TEXT">
+                      <fptr ID="DTL680">
+                        <area BEGIN="BLOCK2" FILEID="ALTO00006" ID="DTL851" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL374" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL490" TYPE="TEXT">
+                      <fptr ID="DTL681">
+                        <area BEGIN="BLOCK3" FILEID="ALTO00006" ID="DTL852" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL375" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL491" TYPE="TEXT">
+                      <fptr ID="DTL682">
+                        <area BEGIN="BLOCK4" FILEID="ALTO00006" ID="DTL853" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL376" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL492" TYPE="TEXT">
+                      <fptr ID="DTL683">
+                        <area BEGIN="BLOCK5" FILEID="ALTO00006" ID="DTL854" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE27" ID="DTL101" LABEL="AUS ALLER WELT " ORDER="11" TYPE="ARTICLE">
+              <div ID="DTL176" TYPE="HEADING">
+                <div ID="DTL260" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL558">
+                    <area BEGIN="BLOCK1" FILEID="ALTO00008" ID="DTL749" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL177" TYPE="BODY">
+                <div ID="DTL261" TYPE="BODY_CONTENT">
+                  <div ID="DTL377" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL493" TYPE="TEXT">
+                      <fptr ID="DTL684">
+                        <area BEGIN="BLOCK2" FILEID="ALTO00008" ID="DTL855" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL378" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL494" TYPE="TEXT">
+                      <fptr ID="DTL685">
+                        <area BEGIN="BLOCK3" FILEID="ALTO00008" ID="DTL856" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL379" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL495" TYPE="TEXT">
+                      <fptr ID="DTL686">
+                        <area BEGIN="BLOCK4" FILEID="ALTO00008" ID="DTL857" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE28" ID="DTL102" LABEL="Appell Attlees für den zivilen Luftschutz " ORDER="12" TYPE="ARTICLE">
+              <div ID="DTL178" TYPE="HEADING">
+                <div ID="DTL262" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL559">
+                    <area BEGIN="BLOCK5" FILEID="ALTO00008" ID="DTL750" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL179" TYPE="BODY">
+                <div ID="DTL263" TYPE="BODY_CONTENT">
+                  <div ID="DTL380" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL496" TYPE="TEXT">
+                      <fptr ID="DTL687">
+                        <area BEGIN="BLOCK6" FILEID="ALTO00008" ID="DTL858" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL381" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL497" TYPE="TEXT">
+                      <fptr ID="DTL688">
+                        <area BEGIN="BLOCK7" FILEID="ALTO00008" ID="DTL859" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE29" ID="DTL103" LABEL="Lohnerhöhungen in England " ORDER="13" TYPE="ARTICLE">
+              <div ID="DTL180" TYPE="HEADING">
+                <div ID="DTL264" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL560">
+                    <area BEGIN="BLOCK11" FILEID="ALTO00008" ID="DTL751" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL181" TYPE="BODY">
+                <div ID="DTL265" TYPE="BODY_CONTENT">
+                  <div ID="DTL382" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL498" TYPE="TEXT">
+                      <fptr ID="DTL689">
+                        <area BEGIN="BLOCK12" FILEID="ALTO00008" ID="DTL860" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL383" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL499" TYPE="TEXT">
+                      <fptr ID="DTL690">
+                        <area BEGIN="BLOCK13" FILEID="ALTO00008" ID="DTL861" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE30" ID="DTL104" LABEL="Demission der Israelischen Regierung " ORDER="14" TYPE="ARTICLE">
+              <div ID="DTL182" TYPE="HEADING">
+                <div ID="DTL266" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL561">
+                    <area BEGIN="BLOCK14" FILEID="ALTO00008" ID="DTL752" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL183" TYPE="BODY">
+                <div ID="DTL267" TYPE="BODY_CONTENT">
+                  <div ID="DTL384" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL500" TYPE="TEXT">
+                      <fptr ID="DTL691">
+                        <area BEGIN="BLOCK15" FILEID="ALTO00008" ID="DTL862" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE31" ID="DTL105" LABEL="Eisenbahnerstreik in Australien " ORDER="15" TYPE="ARTICLE">
+              <div ID="DTL184" TYPE="HEADING">
+                <div ID="DTL268" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL562">
+                    <area BEGIN="BLOCK16" FILEID="ALTO00008" ID="DTL753" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL185" TYPE="BODY">
+                <div ID="DTL269" TYPE="BODY_CONTENT">
+                  <div ID="DTL385" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL501" TYPE="TEXT">
+                      <fptr ID="DTL692">
+                        <area BEGIN="BLOCK17" FILEID="ALTO00008" ID="DTL863" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE32" ID="DTL106" LABEL="Les femmes Socialistes " ORDER="16" TYPE="ARTICLE">
+              <div ID="DTL186" TYPE="HEADING">
+                <div ID="DTL270" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL563">
+                    <area BEGIN="BLOCK18" FILEID="ALTO00008" ID="DTL754" />
+                  </fptr>
+                </div>
+                <div ID="DTL271" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL564">
+                    <area BEGIN="BLOCK19" FILEID="ALTO00008" ID="DTL755" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL187" TYPE="BODY">
+                <div ID="DTL272" TYPE="BODY_CONTENT">
+                  <div ID="DTL386" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL502" TYPE="TEXT">
+                      <fptr ID="DTL693">
+                        <area BEGIN="BLOCK20" FILEID="ALTO00008" ID="DTL864" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_SECTION2" ID="DTL107" LABEL="Necrologie" TYPE="SECTION">
+              <div ID="DTL188" TYPE="BODY">
+                <div ID="DTL273" TYPE="BODY_CONTENT">
+                  <div DMDID="MODSMD_ARTICLE33" ID="DTL387" LABEL="AVIS MORTUAIRES " ORDER="1" TYPE="DEATH_NOTICE">
+                    <fptr ID="DTL586">
+                      <seq>
+                        <area BEGIN="BLOCK21" FILEID="ALTO00008" ID="DTL865" />
+                        <area BEGIN="BLOCK22" FILEID="ALTO00008" ID="DTL866" />
+                      </seq>
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_SECTION3" ID="DTL108" LABEL="Publicites" TYPE="SECTION">
+              <div ID="DTL189" TYPE="BODY">
+                <div ID="DTL274" TYPE="BODY_CONTENT">
+                  <div DMDID="MODSMD_PICT10" ID="DTL388" ORDER="1" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL587">
+                      <seq>
+                        <area BEGIN="BLOCK23" FILEID="ALTO00008" ID="DTL867" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT11" ID="DTL389" ORDER="2" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL588">
+                      <seq>
+                        <area BEGIN="BLOCK24" FILEID="ALTO00008" ID="DTL868" />
+                      </seq>
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE35" ID="DTL109" LABEL="Die Friedenschancen haben sich vermehrt&quot; " ORDER="1" TYPE="ARTICLE">
+              <div ID="DTL190" TYPE="HEADING">
+                <div ID="DTL275" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL565">
+                    <area BEGIN="BLOCK25" FILEID="ALTO00008" ID="DTL756" />
+                  </fptr>
+                </div>
+                <div ID="DTL276" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL566">
+                    <area BEGIN="BLOCK26" FILEID="ALTO00008" ID="DTL757" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL191" TYPE="BODY">
+                <div ID="DTL277" TYPE="BODY_CONTENT">
+                  <div ID="DTL390" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL503" TYPE="TEXT">
+                      <fptr ID="DTL694">
+                        <area BEGIN="BLOCK27" FILEID="ALTO00008" ID="DTL869" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL391" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL504" TYPE="TEXT">
+                      <fptr ID="DTL695">
+                        <area BEGIN="BLOCK28" FILEID="ALTO00008" ID="DTL870" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE36" ID="DTL110" LABEL="SIE KLEIDEN DIE FRAUEN DER WELT " ORDER="2" TYPE="ARTICLE">
+              <div ID="DTL192" TYPE="HEADING">
+                <div ID="DTL278" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL567">
+                    <area BEGIN="BLOCK29" FILEID="ALTO00008" ID="DTL758" />
+                  </fptr>
+                </div>
+                <div ID="DTL279" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL568">
+                    <area BEGIN="BLOCK30" FILEID="ALTO00008" ID="DTL759" />
+                  </fptr>
+                </div>
+                <div ID="DTL280" ORDER="3" TYPE="TITLE">
+                  <fptr ID="DTL569">
+                    <area BEGIN="BLOCK31" FILEID="ALTO00008" ID="DTL760" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL193" TYPE="BODY">
+                <div ID="DTL281" TYPE="BODY_CONTENT">
+                  <div ID="DTL392" ORDER="1" TYPE="PARAGRAPH">
+                    <div ID="DTL505" TYPE="TEXT">
+                      <fptr ID="DTL696">
+                        <area BEGIN="BLOCK32" FILEID="ALTO00008" ID="DTL871" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL393" ORDER="2" TYPE="PARAGRAPH">
+                    <div ID="DTL506" TYPE="TEXT">
+                      <fptr ID="DTL697">
+                        <area BEGIN="BLOCK33" FILEID="ALTO00008" ID="DTL872" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL394" ORDER="3" TYPE="PARAGRAPH">
+                    <div ID="DTL507" TYPE="TEXT">
+                      <fptr ID="DTL698">
+                        <area BEGIN="BLOCK34" FILEID="ALTO00008" ID="DTL873" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL395" ORDER="4" TYPE="PARAGRAPH">
+                    <div ID="DTL508" TYPE="TEXT">
+                      <fptr ID="DTL699">
+                        <area BEGIN="BLOCK35" FILEID="ALTO00008" ID="DTL874" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL396" ORDER="5" TYPE="PARAGRAPH">
+                    <div ID="DTL509" TYPE="TEXT">
+                      <fptr ID="DTL700">
+                        <area BEGIN="BLOCK36" FILEID="ALTO00008" ID="DTL875" />
+                      </fptr>
+                    </div>
+                  </div>
+                  <div ID="DTL397" ORDER="6" TYPE="PARAGRAPH">
+                    <div ID="DTL510" TYPE="TEXT">
+                      <fptr ID="DTL701">
+                        <area BEGIN="BLOCK37" FILEID="ALTO00008" ID="DTL876" />
+                      </fptr>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_ARTICLE37" ID="DTL111" LABEL="LES AVENTURES DE MONSIEUR JO " ORDER="3" TYPE="ARTICLE">
+              <div ID="DTL194" TYPE="HEADING">
+                <div ID="DTL282" ORDER="1" TYPE="TITLE">
+                  <fptr ID="DTL570">
+                    <area BEGIN="BLOCK1" FILEID="ALTO00009" ID="DTL761" />
+                  </fptr>
+                </div>
+                <div ID="DTL283" ORDER="2" TYPE="TITLE">
+                  <fptr ID="DTL571">
+                    <area BEGIN="BLOCK2" FILEID="ALTO00009" ID="DTL762" />
+                  </fptr>
+                </div>
+              </div>
+              <div ID="DTL195" TYPE="BODY">
+                <div ID="DTL284" TYPE="BODY_CONTENT">
+                </div>
+                <div DMDID="MODSMD_PICT12" ID="DTL285" ORDER="1" TYPE="ILLUSTRATION">
+                  <div ID="DTL398" ORDER="2" TYPE="IMAGE">
+                    <fptr ID="DTL589">
+                      <area BEGIN="ILLUSTRATION1" FILEID="ALTO00009" ID="DTL774" />
+                    </fptr>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT13" ID="DTL286" ORDER="3" TYPE="ILLUSTRATION">
+                  <div ID="DTL399" ORDER="4" TYPE="IMAGE">
+                    <fptr ID="DTL590">
+                      <area BEGIN="ILLUSTRATION2" FILEID="ALTO00009" ID="DTL775" />
+                    </fptr>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT14" ID="DTL287" ORDER="5" TYPE="ILLUSTRATION">
+                  <div ID="DTL400" ORDER="6" TYPE="IMAGE">
+                    <fptr ID="DTL591">
+                      <area BEGIN="ILLUSTRATION3" FILEID="ALTO00009" ID="DTL776" />
+                    </fptr>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT15" ID="DTL288" ORDER="7" TYPE="ILLUSTRATION">
+                  <div ID="DTL401" ORDER="8" TYPE="IMAGE">
+                    <fptr ID="DTL592">
+                      <area BEGIN="ILLUSTRATION4" FILEID="ALTO00009" ID="DTL777" />
+                    </fptr>
+                  </div>
+                </div>
+                <div DMDID="MODSMD_PICT16" ID="DTL289" ORDER="9" TYPE="ILLUSTRATION">
+                  <div ID="DTL402" ORDER="10" TYPE="IMAGE">
+                    <fptr ID="DTL593">
+                      <area BEGIN="ILLUSTRATION5" FILEID="ALTO00009" ID="DTL778" />
+                    </fptr>
+                  </div>
+                  <div ID="DTL403" TYPE="CAPTION">
+                    <fptr ID="DTL594">
+                      <area BEGIN="BLOCK3" FILEID="ALTO00009" ID="DTL779" />
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div DMDID="MODSMD_SECTION4" ID="DTL112" LABEL="Publicites" TYPE="SECTION">
+              <div ID="DTL196" TYPE="BODY">
+                <div ID="DTL290" TYPE="BODY_CONTENT">
+                  <div DMDID="MODSMD_PICT17" ID="DTL404" ORDER="1" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL595">
+                      <seq>
+                        <area BEGIN="BLOCK1" FILEID="ALTO00010" ID="DTL877" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT18" ID="DTL405" ORDER="2" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL596">
+                      <seq>
+                        <area BEGIN="BLOCK2" FILEID="ALTO00010" ID="DTL878" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT19" ID="DTL406" ORDER="3" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL597">
+                      <seq>
+                        <area BEGIN="BLOCK3" FILEID="ALTO00010" ID="DTL879" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT20" ID="DTL407" ORDER="4" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL598">
+                      <seq>
+                        <area BEGIN="BLOCK4" FILEID="ALTO00010" ID="DTL880" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT21" ID="DTL408" ORDER="5" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL599">
+                      <seq>
+                        <area BEGIN="BLOCK5" FILEID="ALTO00010" ID="DTL881" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT22" ID="DTL409" ORDER="6" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL600">
+                      <seq>
+                        <area BEGIN="BLOCK6" FILEID="ALTO00010" ID="DTL882" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT23" ID="DTL410" ORDER="7" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL601">
+                      <seq>
+                        <area BEGIN="BLOCK7" FILEID="ALTO00010" ID="DTL883" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT24" ID="DTL411" ORDER="8" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL602">
+                      <seq>
+                        <area BEGIN="BLOCK8" FILEID="ALTO00010" ID="DTL884" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT25" ID="DTL412" ORDER="9" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL603">
+                      <seq>
+                        <area BEGIN="BLOCK9" FILEID="ALTO00010" ID="DTL885" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT26" ID="DTL413" ORDER="10" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL604">
+                      <seq>
+                        <area BEGIN="BLOCK10" FILEID="ALTO00010" ID="DTL886" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT27" ID="DTL414" ORDER="11" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL605">
+                      <seq>
+                        <area BEGIN="BLOCK11" FILEID="ALTO00010" ID="DTL887" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT28" ID="DTL415" ORDER="12" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL606">
+                      <seq>
+                        <area BEGIN="BLOCK12" FILEID="ALTO00010" ID="DTL888" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT29" ID="DTL416" ORDER="13" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL607">
+                      <seq>
+                        <area BEGIN="BLOCK13" FILEID="ALTO00010" ID="DTL889" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT30" ID="DTL417" ORDER="14" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL608">
+                      <seq>
+                        <area BEGIN="BLOCK14" FILEID="ALTO00010" ID="DTL890" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT31" ID="DTL418" ORDER="15" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL609">
+                      <seq>
+                        <area BEGIN="BLOCK15" FILEID="ALTO00010" ID="DTL891" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT32" ID="DTL419" ORDER="16" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL610">
+                      <seq>
+                        <area BEGIN="BLOCK16" FILEID="ALTO00010" ID="DTL892" />
+                      </seq>
+                    </fptr>
+                  </div>
+                  <div DMDID="MODSMD_PICT33" ID="DTL420" ORDER="17" TYPE="ADVERTISEMENT">
+                    <fptr ID="DTL611">
+                      <seq>
+                        <area BEGIN="BLOCK17" FILEID="ALTO00010" ID="DTL893" />
+                      </seq>
+                    </fptr>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </structMap>
+  <structMap ID="SF1" LABEL="Single File Structure" TYPE="SINGLEFILE">
+    <div ID="SF2" LABEL="Physical Structure" TYPE="CompleteObject">
+      <fptr ID="SF3">
+        <par ID="SF4">
+          <area FILEID="ALLPAGESPDF01" ID="SF5" />
+        </par>
+      </fptr>
+    </div>
+  </structMap>
+</mets>
