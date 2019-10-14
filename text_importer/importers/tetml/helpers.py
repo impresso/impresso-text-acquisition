@@ -20,8 +20,12 @@ logger = logging.getLogger(__name__)
 TETPREFIX = "{http://www.pdflib.com/XML/TET3/TET-3.0}"
 
 
-def get_metadata(root):
-    """Return dict with relevant metadata for page file"""
+def get_metadata(root: lxml.etree.Element):
+    """Return dict with relevant metadata for page file
+
+    :param root: etree.Element of tetml page file
+    :return: A dictionary with keys: ``tetcdt``, ``pdfpath``, ``pdfcdt``, ``npages``.
+    """
 
     result = {}
     creation = root.find(f".//{TETPREFIX}Creation")
@@ -71,78 +75,13 @@ def word2json(
     """
 
     result = {}
-    boxes = word.findall(f".//{TETPREFIX}Box")
-    if len(boxes) == 1:
-        tokentext = word.find(f".//{TETPREFIX}Text").text
-        if tokentext is None:
-            error_msg = (
-                f"{filename}, Empty TOKEN {lxml.etree.tostring(word)}, {len(boxes)}"
-            )
-            logger.error(error_msg)
-            return
-
-        result["tx"] = tokentext
-
-        box = word.find("%sBox" % TETPREFIX)
-        llx = float(box.get("llx"))
-        lly = float(box.get("lly"))
-        ury = float(box.get("ury"))
-        urx = float(box.get("urx"))
-        coords = compute_box(
-            llx,
-            lly,
-            urx,
-            ury,
-            pageheight,
-            pagewidth,
-            imageheight,
-            imagewidth,
-            placed_image_attribs,
-        )
-        result["c"] = coords
-
-    return result
-
-
-def word2json(
-    word,
-    pageheight,
-    pagewidth,
-    imageheight,
-    imagewidth,
-    placed_image_attribs,
-    filename=None,
-):
-    """
-    Return dict with all information about (hyphenated) XML word element
-
-    {"tx": Text,
-    "c": coords,
-    "hy" : Bool,
-     "hyt": {"nf": Text, "c":coords, "tx":coords}}
-
-    "hyt" is {} if word is not hyphenated
-
-    :param pageheight:
-    :param pagewidth:
-    :param imageheight:
-    :param imagewidth:
-    :param placed_image_attribs:
-    :param filename:
-    :param word:
-    :return:
-    """
-
-    result = {}
     boxes = word.findall(f"{TETPREFIX}Box")
 
     # unhyphenated case
     if len(boxes) == 1:
         tokentext = word.find(f"{TETPREFIX}Text").text
         if tokentext is None:
-            error_msg = (
-                f"{filename}, Empty TOKEN {lxml.etree.tostring(word)}, {len(boxes)}"
-            )
+            error_msg = f"Empty TOKEN (# boxes: {len(boxes)}) in the following file {filename}, {lxml.etree.tostring(word)}"
             logger.error(error_msg)
 
             return
@@ -213,8 +152,10 @@ def word2json(
         )
         hyphenated["c"] = coords2
         result["hyt"] = hyphenated
+
         if len(boxes) > 2:
-            error_msg = f"{filename}, Wrong number of boxes: {len(boxes)}, {lxml.etree.tostring(word)}"
+            error_msg = f"Wrong number of boxes: {len(boxes)} in following file \
+            {filename}\n{lxml.etree.tostring(word)}"
 
             logger.error(error_msg)
 
@@ -261,8 +202,8 @@ def compute_box(
         --------------*
                       (x2, y2)
 
-    w = x2 -x
-    h = y2-y
+    w = x2 - x
+    h = y2 - y
     """
     pix = placedimage_attribs["x"]
     if int(pix) != 0:
@@ -301,10 +242,8 @@ def compute_bb(innerbbs):
 def get_placed_image(root):
     """
     Return dimensions of the placed image
-
     :param root: etree.Element
     :return: dict with all attributes of image xml element
-
      <PlacedImage image="I0" x="0.00" y="0.00" width="588.84" height="842.00" />
       => {"image":"IO", ,...}
     """
@@ -330,7 +269,7 @@ def get_tif_shape(root):
     return int(img.attrib["width"]), int(img.attrib["height"])
 
 
-def add_gn_property(tokens, language):
+def add_gn_property(tokens: list, language: str):
     """
     Set property to indicate the use of whitespace following a token
     """

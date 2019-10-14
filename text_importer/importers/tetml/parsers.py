@@ -41,18 +41,27 @@ def tetml_parser(tetml: str) -> dict:
 
     data["m"] = {}
     # use title of tetml file as provisionary title attribute
-    data["m"]["t"] = os.path.basename(data["meta"]["tetml_path"])  # title attribute
-    # TODO: parse language, seems there is no such attribute in the tetml file
+    data["m"]["t"] = os.path.basename(data["meta"]["tetml_path"])
     data["m"]["l"] = "de"  # language attribute
+    data["meta"]["id"] = data["m"]["t"].split(".")[0]
 
-    jregions = []
-
-    data["r"] = jregions
+    jpages = []
+    data["pages"] = jpages
 
     for page in root.iter(f"{TETPREFIX}Page"):
 
-        # get page coordinates to calculate standardized coordinates of the boxes
-        placed_image_attribs = get_placed_image(page)
+        # a region corresponds to an entire page initially
+        jregions = []
+        jpage = {"r": jregions}
+
+        try:
+            # get page coordinates to calculate standardized coordinates of the boxes
+            placed_image_attribs = get_placed_image(page)
+        except AttributeError:
+            error_msg = f"Article with id {data['meta']['id']} has no OCR text."
+            logger.error(error_msg)
+            return data
+
         imagewidth, imageheight = get_tif_shape(root)
         pageheight = float(page.get("height"))
         pagewidth = float(page.get("width"))
@@ -61,7 +70,20 @@ def tetml_parser(tetml: str) -> dict:
         jparas_coords_per_region = []
         jregion = {"p": jparas}
 
-        for para in page.iter(f"{TETPREFIX}Para"):
+        # catch special cases
+        if list(page.iter(f"{TETPREFIX}Para")):
+            para_iter = page.iter(f"{TETPREFIX}Para")
+        elif not list(page.iter(f"{TETPREFIX}Line")):
+            # if the page is empty the paragraph attribute is empty as well
+            error_msg = f"Empty PAGE in the following file:\n{tetml}\n{lxml.etree.tostring(page)}"
+            logger.error(error_msg)
+            continue
+        else:
+            # If there is only a table tetml doesn't produce paragraph nodes
+            # In these cases, continue with page element
+            para_iter = [page]
+
+        for para in para_iter:
             jlines = []
             jlines_coords_per_para = []
             jpara = {"l": jlines}
@@ -69,6 +91,7 @@ def tetml_parser(tetml: str) -> dict:
             jhyphenated = (
                 None
             )  # contains rest of hyphenated tokens if there was one on earlier line
+
             for line in para.iter(f"{TETPREFIX}Line"):
                 token_coords_per_line = []  # accumulator for word coordinates
                 if jhyphenated is not None:
@@ -109,17 +132,19 @@ def tetml_parser(tetml: str) -> dict:
                     jlines_coords_per_para.append(linecoords)
                     jlines.append(jline)
                 else:
-                    logger.error("#EMPTY LINE {jline}")
+                    error_msg = f"Empty LINE in the following file:\n{tetml}\n{lxml.etree.tostring(line)}"
+                    logger.error(error_msg)
 
-            jparacoords = compute_bb(jlines_coords_per_para)
-            jparas_coords_per_region.append(jparacoords)
-            jpara["c"] = jparacoords
+            if jlines_coords_per_para:
+                jparacoords = compute_bb(jlines_coords_per_para)
+                jpara["c"] = jparacoords
+                jparas_coords_per_region.append(jparacoords)
 
         if jparas_coords_per_region:
-            regioncoords = compute_bb(jparas_coords_per_region)
-            jregion["c"] = regioncoords
+            jregioncoords = compute_bb(jparas_coords_per_region)
+            jregion["c"] = jregioncoords
             jregions.append(jregion)
-        else:
-            logger.error("#EMPTY LINE {jregion}")
+
+        jpages.append(jpage)
 
     return data

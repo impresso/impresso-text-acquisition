@@ -9,6 +9,7 @@ from text_importer.utils import get_access_right
 TetmlIssueDir = namedtuple(
     "TetmlIssueDirectory", ["journal", "date", "edition", "path", "rights"]
 )
+
 """A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
