@@ -12,12 +12,13 @@ from text_importer.importers.tetml.helpers import (
     add_gn_property,
     get_placed_image,
     get_tif_shape,
+    filter_special_symbols,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def tetml_parser(tetml: str) -> dict:
+def tetml_parser(tetml: str, filtering: bool = True) -> dict:
     """Parse an TETML file (e.g. from Swiss Federal Archive).
 
     The main logic implemented here was derived from
@@ -115,6 +116,9 @@ def tetml_parser(tetml: str) -> dict:
 
                     if jworddict is None:
                         continue
+                    elif filtering:
+                        if filter_special_symbols(jtoken):
+                            continue
 
                     token_coords_per_line.append(jworddict["c"])
                     jtoken = {"tx": jworddict["tx"], "c": jworddict["c"]}
@@ -122,6 +126,7 @@ def tetml_parser(tetml: str) -> dict:
                         # will be inserted at the begin of next line
                         jhyphenated = jworddict["hyt"]
                         jtoken["hy"] = True
+
                     jtokens.append(jtoken)
 
                 add_gn_property(jtokens, data["m"]["l"])  # language attribute

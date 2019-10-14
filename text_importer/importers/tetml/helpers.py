@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 TETPREFIX = "{http://www.pdflib.com/XML/TET3/TET-3.0}"
 
 
+FILTER_WORDS = ["#", "ST", "#ST", "ST#", "#ST#"]
+
+
 def get_metadata(root: lxml.etree.Element):
     """Return dict with relevant metadata for page file
 
@@ -43,6 +46,13 @@ def get_metadata(root: lxml.etree.Element):
         result["npages"] = len(pages)
 
     return result
+
+
+def filter_word(jtoken):
+    """
+    Check if token needs to be filtered out as it is a non-content word.
+    """
+    return jtoken["tx"] in FILTER_WORDS
 
 
 def word2json(
@@ -81,7 +91,7 @@ def word2json(
     if len(boxes) == 1:
         tokentext = word.find(f"{TETPREFIX}Text").text
         if tokentext is None:
-            error_msg = f"Empty TOKEN (# boxes: {len(boxes)}) in the following file {filename}, {lxml.etree.tostring(word)}"
+            error_msg = f"Empty TOKEN (# boxes: {len(boxes)}) in the following file:\n{filename}\n{lxml.etree.tostring(word)}"
             logger.error(error_msg)
 
             return
