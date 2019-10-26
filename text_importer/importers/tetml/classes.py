@@ -17,12 +17,10 @@ from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 
 from text_importer.importers.tetml.parsers import tetml_parser
 
-from text_importer.utils import get_issue_schema, get_page_schema
+
 from text_importer.importers.tetml.helpers import compute_bb
 
 logger = logging.getLogger(__name__)
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
 
 IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
 
@@ -30,14 +28,13 @@ TokPosition = namedtuple("TokPosition", "art page reg para line tok")
 
 
 class TetmlNewspaperPage(NewspaperPage):
-    """Class representing a page in Tetml format.
+    """
+    Class representing a page in Tetml format.
 
     :param str _id: Canonical page ID.
     :param int n: Page number.
     :param dict page_content: nested article content of a single page
-    :param dict image_info: Metadata about the page image.
     :param str page_xml: Path to the Tetml file of the page.
-
     """
 
     def __init__(self, _id: str, n: int, page_content: dict, page_xml):
@@ -62,8 +59,6 @@ class TetmlNewspaperPage(NewspaperPage):
         if not self.page_data["r"]:
             logger.warning(f"Page {self.id} has no OCR text")
 
-        # self._convert_page_coords() # TODO: conversion can be parallelized when trigggered here
-
     def add_issue(self, issue: NewspaperIssue):
         self.issue = issue
 
@@ -78,9 +73,6 @@ class TetmlNewspaperIssue(NewspaperIssue):
     - page objects (instances of ``TetmlNewspaperPage``) are initialised.
 
     :param IssueDir issue_dir: Description of parameter `issue_dir`.
-    :param str image_dirs: Path to the directory with the page images. Multiple
-        paths should be separated by comma (",").
-    :param str temp_dir: Description of parameter `temp_dir`.
 
     """
 
@@ -89,19 +81,18 @@ class TetmlNewspaperIssue(NewspaperIssue):
 
         logger.info(f"Starting to parse {self.id}")
 
-        # parse metadata that contains additional article information
-        self.df = self._parse_metadata()
-
         # get all tetml files of this issue
         self.files = self.index_issue_files()
+
+        # parse metadata that contains additional article information
+        self.df = self._parse_metadata()
 
         # parse the indexed files
         self.article_data = self.parse_articles()
 
-
         # recompose articles according to their logical boundaries
-        pruned_articles = self._lookup_pruned_articles()
-        self._find_logical_article_boundary(pruned_articles)
+        overlapping = self._lookup_overlapping()
+        self._find_logical_article_boundary(overlapping)
 
         # using canonical ('m') and non-canonical ('meta') metadata
         self.content_items = [
@@ -127,11 +118,11 @@ class TetmlNewspaperIssue(NewspaperIssue):
         Index all files with a tetml suffix in the current issue directory
         """
 
-        return sorted([str(path) for path in Path(self.path).rglob("*"+suffix)])
+        return sorted([str(path) for path in Path(self.path).rglob("*" + suffix)])
 
     def parse_articles(self):
         """
-        Parse all articles of the issue
+        Parse all articles of this issue
         """
 
         articles = []
@@ -190,6 +181,31 @@ class TetmlNewspaperIssue(NewspaperIssue):
                     )
                 )
 
+    def _parse_metadata(self, fname="metadata.tsv"):
+        """
+        Parse file with additional metadata
+        """
+
+        level_journal = self.path.split("/").index(self.journal)
+        basedir = "/".join(self.path.split("/")[0 : level_journal + 1])
+        fpath = os.path.join(basedir, fname)
+
+        try:
+            df = pd.read_csv(
+                fpath,
+                sep="\t",
+                parse_dates=["issue_date"],
+                dtype={"article_docid": str},
+                index_col="article_docid",
+            )
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                'File with additional metadata needs to be placed in \
+            the top newspaper directory and named "metadata.tsv"'
+            )
+
+        return df
+
     def redefine_from_metadata(self, data):
         """
         Use additional metadata from file to set attributes
@@ -201,28 +217,53 @@ class TetmlNewspaperIssue(NewspaperIssue):
 
         return data
 
-    def _find_logical_article_boundary(self, pruned_articles: list = None):
+    def _lookup_article_title(self, docid):
+        """Use document identifier to lookup the actual title of an article"""
+
+        return self.df.loc[docid, "article_title"]
+
+    def _lookup_article_language(self, docid):
+        """Use document identifier to lookup the language of an article"""
+
+        return self.df.loc[docid, "volume_language"]
+
+    def _lookup_article_pages(self, docid):
+        """
+        Use document identifier to lookup the page span of an article.
+        The span reflects only full pages as part of an article,
+        while the remainder gets assigned to the subsequent article.
+        """
+
+        page_first = self.df.loc[docid, "canonical_page_first"]
+        page_last = self.df.loc[docid, "canonical_page_last"]
+
+        return list(range(page_first, page_last + 1))
+
+    def _lookup_overlapping(self):
+        return self.df[self.df.pruned == True].index.values
+
+    def _find_logical_article_boundary(self, overlapping: list = None):
         """
         Find and set the actual article boundary with a fuzzy match search using
         the title of the next article.
 
         Without this recomposition articles may be pruned to their last full page
-        as a consequence of in-page segmentation of articles.
+        due to a in-page segmentation of some articles.
         The remainder on the last page is assigned to the next article.
 
-        :param list pruned_articles: Pruned articles that need a recomposition.
+        :param list overlapping_articles: Overlapping articles for which the boundary needs to be redefined.
         :return: None.
         """
 
         to_do_new_boundaries = []
 
-        if pruned_articles is None:
-            # consider all articles as potentially pruned
-            pruned_articles = self.df.index.values
+        if overlapping is None:
+            # consider all articles as potentially overlapping
+            overlapping = self.df.index.values
 
         for i_art, art in enumerate(self.article_data[:-1]):
-            # only proceed if last article is pruned
-            if self.article_data[i_art - 1]["meta"]["id"] in pruned_articles:
+            # only proceed if last article overlaps with the current
+            if self.article_data[i_art - 1]["meta"]["id"] in overlapping:
                 self.article_data[i_art - 1]["meta"]["pruned"] = True
             else:
                 self.article_data[i_art - 1]["meta"]["pruned"] = False
@@ -242,7 +283,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
                                     i_art, i_page, i_region, i_para, i_line, i_tok
                                 )
                                 tok_counter += 1
-                # restrict search space to first page after pruned article
+                # restrict search space of finding the actual boundary to first page
                 continue
 
             text = " ".join(tokens).lower()
@@ -251,15 +292,10 @@ class TetmlNewspaperIssue(NewspaperIssue):
             title = str(art["m"]["t"]).lower()
             title = title.replace("(", r"\(").replace(")", r"\)")
 
-
             # ratio of corrupted symbols relative to the length
             max_errors = min(int(0.2 * len(title)), 10)
             # fuzzy match article headline to locate (bestmatch flag)
             pattern = r"(?b)(" + title + r"){e<=" + str(max_errors) + r"}"
-            # TODO: ignore whitespace due to possible wrong segmentation
-            # and save start of new token in list
-
-
 
             try:
                 match = regex.search(pattern, text)
@@ -272,16 +308,14 @@ class TetmlNewspaperIssue(NewspaperIssue):
 
             except AttributeError:
                 logger.error(
-                    f"Redefining the logical boundary for following article failed as the fuzzy match procedure could not match anything:\
+                    f"Error while searching for the logical boundary.\n\
+                    The fuzzy match failed to match anything in the following article:\
                     \n{art['meta']}. Pattern:\n{pattern}"
                 )
-                # TODO: page needs to be removed in any case regardless of matching,
+
+                # page needs to be removed in any case regardless of matching,
                 # otherwise the relation to the corresponding tif file is broken
                 del self.article_data[i_art - 1]["pages"][-1]
-
-                #print("=" * 20, '\n'+text+'\n', "=" * 20)
-
-
 
         # do the actual reassigning
         for bound in to_do_new_boundaries:
@@ -325,7 +359,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
                 # subtree["p"].append({"l": [{"t": prev_toks}]})
             """
             # remove the remainings (i.e. subtree) from the subsequent article
-            #del art_page_reg["p"][bndry.para]["l"][bndry.line]["t"][: bndry.tok]
+            # del art_page_reg["p"][bndry.para]["l"][bndry.line]["t"][: bndry.tok]
             # del art_page_reg["p"][bndry.para]["l"][: bndry.line]
             del art_page_reg["p"][: bndry.para]
 
@@ -347,53 +381,3 @@ class TetmlNewspaperIssue(NewspaperIssue):
         # remove last page of previous article that is identical
         # with the first page of the subsequent one
         del self.article_data[bndry.art - 1]["pages"][-1]
-
-    def _lookup_article_title(self, docid):
-        """Use document identifier to lookup the actual title of an article"""
-
-        return self.df.loc[docid, "article_title"]
-
-    def _lookup_article_language(self, docid):
-        """Use document identifier to lookup the language of an article"""
-
-        return self.df.loc[docid, "volume_language"]
-
-    def _lookup_article_pages(self, docid):
-        """
-        Use document identifier to lookup the page span of an article.
-        The span reflects only full pages as part of an article,
-        while the remainder gets assigned to the subsequent article.
-        """
-
-        page_first = self.df.loc[docid, "canonical_page_first"]
-        page_last = self.df.loc[docid, "canonical_page_last"]
-
-        return list(range(page_first, page_last + 1))
-
-    def _lookup_pruned_articles(self):
-        return self.df[self.df.pruned == True].index.values
-
-    def _parse_metadata(self, fname="metadata.tsv"):
-        """
-        Parse file with additional metadata
-        """
-
-        level_journal = self.path.split("/").index(self.journal)
-        basedir = "/".join(self.path.split("/")[0 : level_journal + 1])
-        fpath = os.path.join(basedir, fname)
-
-        try:
-            df = pd.read_csv(
-                fpath,
-                sep="\t",
-                parse_dates=["issue_date"],
-                dtype={"article_docid": str},
-                index_col="article_docid",
-            )
-        except FileNotFoundError:
-            raise FileNotFoundError(
-                'File with additional metadata needs to be placed in \
-            the top newspaper directory and named "metadata.tsv"'
-            )
-
-        return df

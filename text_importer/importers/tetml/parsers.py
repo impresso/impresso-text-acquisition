@@ -18,17 +18,17 @@ from text_importer.importers.tetml.helpers import (
 logger = logging.getLogger(__name__)
 
 
-def tetml_parser(tetml: str, filtering: bool = True) -> dict:
-    """Parse an TETML file (e.g. from Swiss Federal Archive).
+def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
+    """
+    Parse an TETML file (e.g. from Swiss Federal Archive).
 
     The main logic implemented here was derived from
     <https://github.com/impresso/nzz/>. A TETML file
     corresponds loosely to one article given by the boundaries
-    of the founding pdf
+    of the founding pdf.
 
-    :param text: content of the xml file to parse
-    :type text: string
-    :return: A dictionary with keys: ``meta``, ``r``, ``stats``, ``legacy``.
+    :param text tetml: path to tetml file that needs to be parsed
+    :return: A dictionary with keys: ``metadata``, ``pages (content)``, ``meta (additional metadata)``.
     :rtype: dict
     """
 
@@ -43,7 +43,8 @@ def tetml_parser(tetml: str, filtering: bool = True) -> dict:
     data["m"] = {}
     # use title of tetml file as provisionary title attribute
     data["m"]["t"] = os.path.basename(data["meta"]["tetml_path"])
-    data["m"]["l"] = "de"  # language attribute
+
+    data["m"]["l"] = language
     data["meta"]["id"] = data["m"]["t"].split(".")[0]
 
     jpages = []
@@ -59,11 +60,12 @@ def tetml_parser(tetml: str, filtering: bool = True) -> dict:
             # get page coordinates to calculate standardized coordinates of the boxes
             placed_image_attribs = get_placed_image(page)
         except AttributeError:
-            error_msg = f"Article with id {data['meta']['id']} has no OCR text."
-            logger.error(error_msg)
+            logger.error(f"Article of the following file has no OCR text:\n{tetml}")
             return data
 
-        imagewidth, imageheight = get_tif_shape(root)
+        imagewidth, imageheight = get_tif_shape(root, placed_image_attribs["image"])
+
+        # TODO: in our case, this is actually identical to placed_image_attribs
         pageheight = float(page.get("height"))
         pagewidth = float(page.get("width"))
 
@@ -71,17 +73,19 @@ def tetml_parser(tetml: str, filtering: bool = True) -> dict:
         jparas_coords_per_region = []
         jregion = {"p": jparas}
 
-        # catch special cases
+        # cover special cases
         if list(page.iter(f"{TETPREFIX}Para")):
+            # regular case with at least one paragraph on its page
             para_iter = page.iter(f"{TETPREFIX}Para")
         elif not list(page.iter(f"{TETPREFIX}Line")):
-            # if the page is empty the paragraph attribute is empty as well
-            error_msg = f"Empty PAGE in the following file:\n{tetml}\n{lxml.etree.tostring(page)}"
+            # case of an empty page
+            error_msg = f"Empty PAGE in the following file: {tetml}\n{lxml.etree.tostring(page)}"
             logger.error(error_msg)
+            jpages.append(jpage)  # add page with empty regions tag
             continue
         else:
-            # If there is only a table tetml doesn't produce paragraph nodes
-            # In these cases, continue with page element
+            # case of tables that cover the entire page without generating
+            # a paragraph node
             para_iter = [page]
 
         for para in para_iter:
@@ -89,9 +93,8 @@ def tetml_parser(tetml: str, filtering: bool = True) -> dict:
             jlines_coords_per_para = []
             jpara = {"l": jlines}
             jparas.append(jpara)
-            jhyphenated = (
-                None
-            )  # contains rest of hyphenated tokens if there was one on earlier line
+            # contains the former part(s) of hyphenated tokens from the previous line(s)
+            jhyphenated = None
 
             for line in para.iter(f"{TETPREFIX}Line"):
                 token_coords_per_line = []  # accumulator for word coordinates
@@ -117,11 +120,12 @@ def tetml_parser(tetml: str, filtering: bool = True) -> dict:
                     if jworddict is None:
                         continue
                     elif filtering:
-                        if filter_special_symbols(jtoken):
+                        if filter_special_symbols(jworddict):
                             continue
 
                     token_coords_per_line.append(jworddict["c"])
                     jtoken = {"tx": jworddict["tx"], "c": jworddict["c"]}
+
                     if "hyt" in jworddict:
                         # will be inserted at the begin of next line
                         jhyphenated = jworddict["hyt"]
@@ -137,7 +141,8 @@ def tetml_parser(tetml: str, filtering: bool = True) -> dict:
                     jlines_coords_per_para.append(linecoords)
                     jlines.append(jline)
                 else:
-                    error_msg = f"Empty LINE in the following file:\n{tetml}\n{lxml.etree.tostring(line)}"
+                    # may be caused by the removal of some words due to filter_special_symbols()
+                    error_msg = f"Empty LINE in the following file:{tetml}\n{lxml.etree.tostring(line)}"
                     logger.error(error_msg)
 
             if jlines_coords_per_para:
