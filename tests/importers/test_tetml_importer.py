@@ -36,6 +36,7 @@ def test_import_issues():
         issue_class=TetmlNewspaperIssue,
         image_dirs="/mnt/project_impresso/images/",
         temp_dir=pkg_resources.resource_filename("text_importer", "data/temp/"),
+        chunk_size=None,
     )
     print(result)
 
