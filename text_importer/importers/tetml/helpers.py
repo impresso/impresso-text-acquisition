@@ -1,7 +1,7 @@
-"""Helper functions used by the Olive Importer.
+"""Helper functions used by the Tetml Importer.
 
 These functions are mainly used within (i.e. called by) the classes
-``OliveNewspaperIssue`` and ``OliveNewspaperPage``.
+``TetmlNewspaperIssue`` and ``TetmlNewspaperPage``.
 """
 
 import copy
@@ -23,8 +23,9 @@ TETPREFIX = "{http://www.pdflib.com/XML/TET3/TET-3.0}"
 FILTER_WORDS = ["#", "ST", "#ST", "ST#", "#ST#"]
 
 
-def get_metadata(root: lxml.etree.Element):
-    """Return dict with relevant metadata for page file
+def get_metadata(root: lxml.etree.Element) -> dict:
+    """
+    Return dict with relevant metadata from page file
 
     :param root: etree.Element of tetml page file
     :return: A dictionary with keys: ``tetcdt``, ``pdfpath``, ``pdfcdt``, ``npages``.
@@ -48,9 +49,13 @@ def get_metadata(root: lxml.etree.Element):
     return result
 
 
-def filter_word(jtoken):
+def filter_special_symbols(jtoken: dict) -> bool:
     """
-    Check if token needs to be filtered out as it is a non-content word.
+    Check if token needs to be filtered out as it is a non-content word
+
+    :param jtoken:
+    :return: bool to indicate stop or content word
+
     """
     return jtoken["tx"] in FILTER_WORDS
 
@@ -63,14 +68,14 @@ def word2json(
     imagewidth,
     placed_image_attribs,
     filename=None,
-):
+) -> dict:
     """
-    Return dict with all information about (hyphenated) XML word element
+    Return dict with all information about the (hyphenated) TETML word element
 
     {"tx": Text,
     "c": coords,
     "hy" : Bool,
-     "hyt": {"nf": Text, "c":coords, "tx":coords}}
+    "hyt": {"nf": Text, "c":coords, "tx":coords}}
 
     "hyt" is {} if word is not hyphenated
 
@@ -81,7 +86,7 @@ def word2json(
     :param placed_image_attribs:
     :param filename:
     :param word:
-    :return:
+    :return: dictionary with token text and metadata
     """
 
     result = {}
@@ -91,7 +96,7 @@ def word2json(
     if len(boxes) == 1:
         tokentext = word.find(f"{TETPREFIX}Text").text
         if tokentext is None:
-            error_msg = f"Empty TOKEN (# boxes: {len(boxes)}) in the following file:\n{filename}\n{lxml.etree.tostring(word)}"
+            error_msg = f"Empty TOKEN in the following file (# boxes: {len(boxes)}):{filename}\n{lxml.etree.tostring(word)}"
             logger.error(error_msg)
 
             return
@@ -116,8 +121,8 @@ def word2json(
         )
         result["c"] = coords
 
-    # hyphenated case
-    elif len(boxes) >= 2:
+    # case of a single hyphenation across two subsequent lines
+    elif len(boxes) == 2:
         result["hy"] = True
 
         # word part before hyphenation
@@ -163,11 +168,42 @@ def word2json(
         hyphenated["c"] = coords2
         result["hyt"] = hyphenated
 
-        if len(boxes) > 2:
-            error_msg = f"Wrong number of boxes: {len(boxes)} in following file \
-            {filename}\n{lxml.etree.tostring(word)}"
+    # case of multiple hyphenation of a single word that
+    # occurs when squeezed in a narrow cell of a table
+    elif len(boxes) > 2:
+        # treat as a non-hyphenated word as it is delicate to assume
+        # a proper table segmentation because of the possibility of merged cells.
 
-            logger.error(error_msg)
+        tokentext = word.find(f"{TETPREFIX}Text").text
+        result["tx"] = tokentext
+
+        coords_boxes = []
+        for box in boxes:
+            llx = float(box.get("llx"))
+            lly = float(box.get("lly"))
+            ury = float(box.get("ury"))
+            urx = float(box.get("urx"))
+            coords = compute_box(
+                llx,
+                lly,
+                urx,
+                ury,
+                pageheight,
+                pagewidth,
+                imageheight,
+                imagewidth,
+                placed_image_attribs,
+            )
+            coords_boxes.append(coords)
+
+        coords = compute_bb(coords_boxes)
+        result["c"] = coords
+
+        error_msg = f"Wrong number of boxes ({len(boxes)}) in following file: \
+        {filename}\nThe reconstructed word is: {result}\n  \
+        {lxml.etree.tostring(word)}"
+
+        logger.error(error_msg)
 
     return result
 
@@ -190,12 +226,12 @@ def compute_box(
     :param pagewidth:
     :param imageheight:
     :param imagewidth:
-    :param llx: lower left x coordinate
-    :param lly: lower left y coordinate
-    :param urx: upper right x coordinate
-    :param ury: upper right y coordinate
+    :param llx: lower left x coordinate (lower=smaller)
+    :param lly: lower left y coordinate (lower=smaller)
+    :param urx: upper right x coordinate (upper=bigger)
+    :param ury: upper right y coordinate (upper=bigger)
     :param placedimage_attribs: all attributes of the placed image
-    :return: new box coordinates
+    :return: list with new box coordinates
     :rtype: list
 
 
@@ -222,22 +258,27 @@ def compute_box(
         )
         exit(3)
 
-    factorh = imageheight / (placedimage_attribs["height"])
-    factorw = imagewidth / (placedimage_attribs["width"] - pix)
+    ratioh = imageheight / (placedimage_attribs["height"])
+    ratiow = imagewidth / (placedimage_attribs["width"] - pix)
 
-    x = llx * factorw
-    y = (pageheight - ury) * factorh
-    x2 = urx * factorw
-    y2 = (pageheight - ury) * factorw + (ury - lly) * factorw
+    x = llx * ratiow
+    y = (pageheight - ury) * ratioh
+    x2 = urx * ratiow
+    y2 = (pageheight - ury) * ratiow + (ury - lly) * ratiow
     h = y2 - y
     w = x2 - x
 
     return [ceil(x), floor(y), ceil(w), ceil(h)]
 
 
-def compute_bb(innerbbs):
+def compute_bb(innerbbs: list) -> list:
     """
-    Return bounding box (x,y,w,h) from a list of inner bounding boxes
+    Compute coordinates of the bounding box from multiple boxes
+    This function expects the directory structure that RERO used to
+    organize the dump of Tetml OCR data.
+
+    :param list innerbbs: List of multiple inner boxes (x,y,w,h).
+    :return: List of coordinates from the bounding box (x,y,w,h).
     """
 
     bblux = min(b[0] for b in innerbbs)
@@ -249,9 +290,10 @@ def compute_bb(innerbbs):
     return [bblux, bbluy, bbw, bbh]
 
 
-def get_placed_image(root):
+def get_placed_image(root: lxml.etree.Element) -> dict:
     """
     Return dimensions of the placed image
+
     :param root: etree.Element
     :return: dict with all attributes of image xml element
      <PlacedImage image="I0" x="0.00" y="0.00" width="588.84" height="842.00" />
@@ -268,20 +310,28 @@ def get_placed_image(root):
     }
 
 
-def get_tif_shape(root):
+def get_tif_shape(root: lxml.etree.Element, id_image: str) -> tuple:
     """
     Return original tiff dimensions stored in tetml
-    :param root: etree.ELement
-    :return: pair of int
-    """
 
-    img = root.find(f".//{TETPREFIX}Image[@extractedAs]")
+    :param root: etree.ELement
+    :return: pair of int of image xml element
+      <Image id="I0" extractedAs=".tif" width="1404" height="2367" colorspace="CS0" bitsPerComponent="1"/>
+    """
+    ## TODO: root.find(f".//{TETPREFIX}Image[@extractedAs]")
+    img = root.find(f".//{TETPREFIX}Image[@id='{id_image}']")
     return int(img.attrib["width"]), int(img.attrib["height"])
 
 
-def add_gn_property(tokens: list, language: str):
+def add_gn_property(tokens: [dict], language: str):
     """
     Set property to indicate the use of whitespace following a token
+
+
+    :param list tokens: list of token dictionaries.
+    :param str language: abbreviation of languages (de, fr, eng etc.).
+
+    :return: None
     """
 
     # padding the sequence of tokens temporarily with Nones
