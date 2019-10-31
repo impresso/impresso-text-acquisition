@@ -198,10 +198,14 @@ class TetmlNewspaperIssue(NewspaperIssue):
                 dtype={"article_docid": str},
                 index_col="article_docid",
             )
+            # discard rows from other issues as they are irrelevant
+            date = pd.Timestamp(self.date)
+            df = df[df["issue_date"] == date]
+
         except FileNotFoundError:
             raise FileNotFoundError(
-                'File with additional metadata needs to be placed in \
-            the top newspaper directory and named "metadata.tsv"'
+                f"File with additional metadata needs to be placed in \
+            the top newspaper directory and named {fname}"
             )
 
         return df
