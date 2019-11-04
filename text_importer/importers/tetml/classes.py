@@ -292,8 +292,10 @@ class TetmlNewspaperIssue(NewspaperIssue):
 
             text = " ".join(tokens).lower()
 
-            # lowercase title and mask potential parenthesis
-            title = str(art["m"]["t"]).lower()
+            # lowercase title and shorten long titles to 50 characters at most
+            title = str(art["m"]["t"]).lower()[:50]
+
+            # mask potential parenthesis
             title = title.replace("(", r"\(").replace(")", r"\)")
 
             # ratio of corrupted symbols relative to the length
