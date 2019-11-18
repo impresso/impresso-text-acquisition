@@ -41,7 +41,6 @@ def get_metadata(root: lxml.etree.Element) -> dict:
     pdfcreation = root.find(f".//{TETPREFIX}CreationDate")
     if pdfcreation is not None:
         result["pdfcdt"] = pdfcreation.text
-
     pages = root.findall(f".//{TETPREFIX}Page")
     if pages is not None:
         result["npages"] = len(pages)
@@ -58,6 +57,16 @@ def filter_special_symbols(jtoken: dict) -> bool:
 
     """
     return jtoken["tx"] in FILTER_WORDS
+
+
+def remove_page_number(jtoken: dict, i_line: int, i_word: int) -> bool:
+    """
+    Remove page number in the header if a number appears within the first 3 tokens
+    of the first line and is not longer than 3 digits.
+    """
+
+    word = jtoken["tx"]
+    return any(char.isdigit() for char in word) and len(word) < 4 and i_line == 0 and i_word < 3
 
 
 def word2json(
@@ -97,7 +106,7 @@ def word2json(
         tokentext = word.find(f"{TETPREFIX}Text").text
         if tokentext is None:
             error_msg = f"Empty TOKEN in the following file (# boxes: {len(boxes)}):{filename}\n{lxml.etree.tostring(word)}"
-            logger.error(error_msg)
+            logger.info(error_msg)
 
             return
 
@@ -143,7 +152,8 @@ def word2json(
         )
         result["c"] = coords1
 
-        result["tx"] = "".join(c.text for c in boxes[0].findall(f"{TETPREFIX}Glyph"))
+        result["tx"] = "".join(
+            c.text for c in boxes[0].findall(f"{TETPREFIX}Glyph"))
 
         # word part following hyphenation
         hyphenated = {
@@ -203,7 +213,7 @@ def word2json(
         {filename}\nThe reconstructed word is: {result}\n  \
         {lxml.etree.tostring(word)}"
 
-        logger.error(error_msg)
+        logger.info(error_msg)
 
     return result
 

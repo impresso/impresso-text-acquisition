@@ -13,12 +13,15 @@ from text_importer.importers.tetml.helpers import (
     get_placed_image,
     get_tif_shape,
     filter_special_symbols,
+    remove_page_number,
 )
 
 logger = logging.getLogger(__name__)
 
 
-def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
+def tetml_parser(
+    tetml: str, filtering: bool = True, ignore_page_number: bool = True, language="de"
+) -> dict:
     """
     Parse an TETML file (e.g. from Swiss Federal Archive).
 
@@ -28,6 +31,7 @@ def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
     of the founding pdf.
 
     :param text tetml: path to tetml file that needs to be parsed
+    :param filtering bool: call method to filter out pre-defined tokens
     :return: A dictionary with keys: ``metadata``, ``pages (content)``, ``meta (additional metadata)``.
     :rtype: dict
     """
@@ -60,7 +64,7 @@ def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
             # get page coordinates to calculate standardized coordinates of the boxes
             placed_image_attribs = get_placed_image(page)
         except AttributeError:
-            logger.error(f"Article of the following file has no OCR text:\n{tetml}")
+            logger.info(f"Article of the following file has no OCR text:\n{tetml}")
             return data
 
         imagewidth, imageheight = get_tif_shape(root, placed_image_attribs["image"])
@@ -80,7 +84,7 @@ def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
         elif not list(page.iter(f"{TETPREFIX}Line")):
             # case of an empty page
             error_msg = f"Empty PAGE in the following file: {tetml}\n{lxml.etree.tostring(page)}"
-            logger.error(error_msg)
+            logger.info(error_msg)
             jpages.append(jpage)  # add page with empty regions tag
             continue
         else:
@@ -92,11 +96,11 @@ def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
             jlines = []
             jlines_coords_per_para = []
             jpara = {"l": jlines}
-            jparas.append(jpara)
+
             # contains the former part(s) of hyphenated tokens from the previous line(s)
             jhyphenated = None
 
-            for line in para.iter(f"{TETPREFIX}Line"):
+            for i_line, line in enumerate(para.iter(f"{TETPREFIX}Line")):
                 token_coords_per_line = []  # accumulator for word coordinates
                 if jhyphenated is not None:
                     jtokens = [jhyphenated]
@@ -106,7 +110,7 @@ def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
                     jtokens = []
                 jline = {"t": jtokens}
 
-                for word in line.iter(f"{TETPREFIX}Word"):
+                for i_word, word in enumerate(line.iter(f"{TETPREFIX}Word")):
                     jworddict = word2json(
                         word,
                         pageheight,
@@ -119,9 +123,10 @@ def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
 
                     if jworddict is None:
                         continue
-                    elif filtering:
-                        if filter_special_symbols(jworddict):
-                            continue
+                    if filtering and filter_special_symbols(jworddict):
+                        continue
+                    if ignore_page_number and remove_page_number(jworddict, i_line, i_word):
+                        continue
 
                     token_coords_per_line.append(jworddict["c"])
                     jtoken = {"tx": jworddict["tx"], "c": jworddict["c"]}
@@ -143,17 +148,20 @@ def tetml_parser(tetml: str, filtering: bool = True, language="de") -> dict:
                 else:
                     # may be caused by the removal of some words due to filter_special_symbols()
                     error_msg = f"Empty LINE in the following file:{tetml}\n{lxml.etree.tostring(line)}"
-                    logger.error(error_msg)
+                    logger.info(error_msg)
 
             if jlines_coords_per_para:
                 jparacoords = compute_bb(jlines_coords_per_para)
                 jpara["c"] = jparacoords
                 jparas_coords_per_region.append(jparacoords)
+                jparas.append(jpara)
 
         if jparas_coords_per_region:
             jregioncoords = compute_bb(jparas_coords_per_region)
             jregion["c"] = jregioncoords
             jregions.append(jregion)
+
+
 
         jpages.append(jpage)
 
