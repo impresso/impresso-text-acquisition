@@ -187,7 +187,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
         """
 
         level_journal = self.path.split("/").index(self.journal)
-        basedir = "/".join(self.path.split("/")[0 : level_journal + 1])
+        basedir = "/".join(self.path.split("/")[0: level_journal + 1])
         fpath = os.path.join(basedir, fname)
 
         try:
@@ -292,16 +292,25 @@ class TetmlNewspaperIssue(NewspaperIssue):
 
             text = " ".join(tokens).lower()
 
-            # lowercase title and shorten long titles to 50 characters at most
-            title = str(art["m"]["t"]).lower()[:50]
+            # lowercase title and shorten long titles to 30 characters at most
+            title = str(art["m"]["t"]).lower()[:30]
 
             # mask potential parenthesis
             title = title.replace("(", r"\(").replace(")", r"\)")
 
-            # ratio of corrupted symbols relative to the length
-            max_errors = min(int(0.2 * len(title)), 10)
+            # max corrections as a function of length
+            max_cost_total = max(2, int(0.2 * len(title)))
+            max_insert = int(0.3 * len(title))
+            # scaled by 3 to make insertions very cheap to account for bad OCR
+            fuzzy_cost = (
+                "{i<="
+                + str(max_insert)
+                + ",1i+3d+3s<="
+                + str(max_cost_total * 3)
+                + r"}"
+            )
             # fuzzy match article headline to locate (bestmatch flag)
-            pattern = r"(?b)(" + title + r"){e<=" + str(max_errors) + r"}"
+            pattern = r"(?b)(" + title + r")" + fuzzy_cost
 
             try:
                 match = regex.search(pattern, text)
@@ -309,15 +318,22 @@ class TetmlNewspaperIssue(NewspaperIssue):
                 # remap the match position to the position in the initial parsing
                 match_tok_pos = text[:match_pos].count(" ")
 
+                error_msg = (f'Positive fuzzy match (sanity check):\n' +
+                       f'\ttitle: {art["m"]["t"]}\n' +
+                       f'\tpattern: {pattern}\n' +
+                       f'\tmatch: {match}')
+
+                logger.info(error_msg)
+
                 # accumalate the boundaries
                 to_do_new_boundaries.append(tok_pos[match_tok_pos])
 
             except AttributeError:
-                logger.error(
-                    f"Error while searching for the logical boundary.\n\
-                    The fuzzy match failed to match anything in the following article:\
-                    \n{art['meta']}. Pattern:\n{pattern}"
-                )
+                error_msg = (f"Error while searching for the logical boundary.\n" +
+                       f"The fuzzy match failed to match anything in the following article:\n" +
+                       f"{art['meta']}\n" +
+                       f"Pattern:\n{pattern}")
+                logger.error(error_msg)
 
                 # page needs to be removed in any case regardless of matching,
                 # otherwise the relation to the corresponding tif file is broken
@@ -328,9 +344,10 @@ class TetmlNewspaperIssue(NewspaperIssue):
             try:
                 self._set_new_article_boundary(bound)
             except Exception as e:
-                logger.error(
-                    f"Error while setting new article boundary at position {bound} of the issue {self.id} \n{e}"
-                )
+                error_msg = (f"Error while setting new article boundary at position {bound} of the issue {self.id}.\n" +
+                f"Error: {e}")
+                logger.error(error_msg)
+
 
     def _set_new_article_boundary(self, bndry: TokPosition):
         """
