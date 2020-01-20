@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from collections import namedtuple
@@ -8,17 +9,19 @@ import dask.bag as db
 import pandas as pd
 from impresso_commons.path.path_fs import _apply_datefilter
 
+from text_importer.utils import get_access_right
+
 logger = logging.getLogger(__name__)
 
 SwaIssueDir = namedtuple(
         "IssueDirectory", [
-                'journal',
-                'date',
-                'edition',
-                'path',
-                'rights',
-                'pages',
-                ]
+            'journal',
+            'date',
+            'edition',
+            'path',
+            'rights',
+            'pages',
+            ]
         )
 """A light-weight data structure to represent a SWA newspaper issue.
 
@@ -60,7 +63,7 @@ def _apply(part: pd.DataFrame) -> pd.Series:
     return pd.Series({'pages': res, 'archives': archives})
 
 
-def get_issuedir(row: pd.Series, archives_full_dir: str) -> Optional[SwaIssueDir]:
+def get_issuedir(row: pd.Series, archives_full_dir: str, access_rights: dict) -> Optional[SwaIssueDir]:
     """ Creates a ``SwaIssueDir`` from a row of the csv file
 
     .. note ::
@@ -72,7 +75,7 @@ def get_issuedir(row: pd.Series, archives_full_dir: str) -> Optional[SwaIssueDir
     """
     if len(row.archives) > 1:
         logger.debug(f"Issue {row.manifest_id} has more than one archive {row.archives}")
-
+    
     archive = os.path.join(archives_full_dir, list(row.archives)[0])
     if os.path.isfile(archive):
         split = row.manifest_id.split('-')[:-1]
@@ -80,9 +83,8 @@ def get_issuedir(row: pd.Series, archives_full_dir: str) -> Optional[SwaIssueDir
             try:
                 journal, year, mo, day, edition = split
                 d = date(int(year), int(mo), int(day))
-                return SwaIssueDir(journal, date=d, edition=edition, path=archive, rights='open_public',
-                                   # TODO: ask about rights
-                                   pages=row.pages)
+                rights = get_access_right(journal, d, access_rights)
+                return SwaIssueDir(journal, date=d, edition=edition, path=archive, rights=rights, pages=row.pages)
             except ValueError as e:
                 logger.debug(f"Issue {row.manifest_id} does not have a regular name")
         else:
@@ -110,13 +112,16 @@ def detect_issues(base_dir: str, access_rights: str, csv_file: str = 'impresso_i
     :param str archives_dir: Directory where archives are stored (impresso_ocr/ as default)
     :return: List of ``SwaIssueDir`` instances, to be imported.
     """
-
+    
     archives_full_dir = os.path.join(base_dir, archives_dir)
     csv_file = os.path.join(base_dir, csv_file)
-    result = []
+    
+    with open(access_rights, 'r') as f:
+        access_rights_dict = json.load(f)
+    
     if os.path.isfile(csv_file):
         df = pd.read_csv(csv_file, compression='zip').groupby('manifest_id').apply(_apply).reset_index()
-        result = df.apply(lambda r: get_issuedir(r, archives_full_dir), axis=1)
+        result = df.apply(lambda r: get_issuedir(r, archives_full_dir, access_rights_dict), axis=1)
         result = result[~result.isna()].values
     else:
         logger.warning(f"Could not find csv file {csv_file}")
@@ -141,7 +146,7 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> List[SwaIs
     :param str access_rights: Path to ``access_rights.json`` file.
     :return: List of ``SwaIssueDir`` instances, to be imported.
     """
-
+    
     try:
         filter_dict = config.get("newspapers")
         exclude_list = config["exclude_newspapers"]
@@ -149,29 +154,29 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> List[SwaIs
     except KeyError:
         logger.critical(f"The key [newspapers|exclude_newspapers|year_only] is missing in the config file.")
         return []
-
+    
     exclude_flag = False if not exclude_list else True
     logger.debug(f"got filter_dict: {filter_dict}, "
                  f"\nexclude_list: {exclude_list}, "
                  f"\nyear_flag: {year_flag}"
                  f"\nexclude_flag: {exclude_flag}")
-
+    
     filter_newspapers = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
     logger.debug(f"got filter_newspapers: {filter_newspapers}, with exclude flag: {exclude_flag}")
     issues = detect_issues(base_dir, access_rights)
-
+    
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag \
         .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \
         .compute()
-
+    
     logger.info(
             "{} newspaper issues remained after applying filter: {}".format(
                     len(selected_issues),
                     selected_issues
                     )
             )
-
+    
     exclude_flag = False if not exclude_list else True
     filtered_issues = _apply_datefilter(filter_dict, selected_issues,
                                         year_only=year_flag) if not exclude_flag else selected_issues
