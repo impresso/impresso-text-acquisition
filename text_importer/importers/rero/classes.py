@@ -226,6 +226,6 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         element = elements[0]
         hpos, vpos, width, height = element.get('HPOS'), element.get('VPOS'), element.get('WIDTH'), element.get('HEIGHT')
         coords = [int(hpos), int(vpos), int(width), int(height)]
-        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, ",".join(coords), 'full', '0', 'default.jpg')
+        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, ",".join([str(x) for x in coords]), 'full', '0', 'default.jpg')
         
         return coords, iiif_link
