@@ -125,6 +125,8 @@ def detect_issues(base_dir: str, access_rights: str, csv_file: str = 'impresso_i
         result = result[~result.isna()].values
     else:
         logger.warning(f"Could not find csv file {csv_file}")
+        result = None
+        
     return result
 
 
