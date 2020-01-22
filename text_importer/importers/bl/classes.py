@@ -71,13 +71,15 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         :param phys_map: The physical structure of the Issue
         :return: list[dict] Of each content part for given item
         """
+        # Find all parts and their IDS
         tag = f"#{item_div.get('ID')}"
         linkgrp = self.xml.find('smLocatorLink', {'xlink:href': tag}).parent
         
+        # Remove `#` from xlink:href
         parts_ids = [x.get('xlink:href')[1:] for x in linkgrp.findAll('smLocatorLink') if x.get('xlink:href') != tag]
         parts = []
         for p in parts_ids:
-            div = phys_map.find('div', {'ID': p})
+            div = phys_map.find('div', {'ID': p})  # Get element in physical map
             type_attr = div.get('TYPE')
             comp_role = type_attr.lower() if type_attr else None
             
@@ -97,11 +99,12 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         """
         return self.xml.find('dmdSec', {'ID': dmdid}).findChild('languageTerm').text
     
-    def _parse_content_item(self, item_div, counter: int) -> dict:
+    def _parse_content_item(self, item_div, counter: int, phys_structmap) -> dict:
         """Parses the given content item: searches for all parts and constructs unique IDs
         
         :param item_div: The div of the content item
         :param int counter: The counter to get unique ordered IDs
+        :param phys_structmap: The physical structmap element of the Mets file
         :return: dict Representing the content item
         """
         div_type = item_div.get('TYPE').lower()
@@ -117,21 +120,22 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
                 'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
                 'tp': div_type,
                 'pp': [],
-                'l': self._get_content_item_language(item_div.get('DMDID'))
+                'l': self._get_content_item_language(item_div.get('DMDID')) # Get language from METS file
                 }
         
-        phys_structmap = self.xml.find('structMap', {'TYPE': 'PHYSICAL'})
+        # Load physical struct map
         content_item = {
                 "m": metadata,
                 "l": {
                         "id": item_div.get('ID'),
-                        "parts": self._parse_content_parts(item_div, phys_structmap)
+                        "parts": self._parse_content_parts(item_div, phys_structmap) # Find all parts in physical map
                         }
                 }
         for p in content_item['l']['parts']:
             pge_no = p["comp_page_no"]
             if pge_no not in content_item['m']['pp']:
                 content_item['m']['pp'].append(pge_no)
+                # TODO: add coordinates for images as well as iiif_link
         return content_item
     
     def _parse_content_items(self) -> List[dict]:
@@ -140,18 +144,22 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         :return: list[dict] The list of all content items and the relevant information
         """
         content_items = []
+        # Get logical structure of issue
         divs = self.xml.find('structMap', {'TYPE': 'LOGICAL'}).find('div', {'TYPE': 'ISSUE'}).findChildren('div')
         
         # Sort to have same naming
         sorted_divs = sorted(divs, key=lambda x: x.get('DMDID').lower())
         
+        # Get all CI types
         found_types = set(x.get('TYPE') for x in sorted_divs)
         print(f"Found types {found_types} for content items")
         
+        phys_structmap = self.xml.find('structMap', {'TYPE': 'PHYSICAL'})
+
         counter = 1
         for div in sorted_divs:
             # Parse Each contentitem
-            content_items.append(self._parse_content_item(div, counter))
+            content_items.append(self._parse_content_item(div, counter, phys_structmap))
             counter += 1
         return content_items
     

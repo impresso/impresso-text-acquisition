@@ -4,10 +4,11 @@ import os
 from collections import namedtuple
 from datetime import date
 from typing import List, Optional
+import zipfile
 
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
-
+from glob import glob
 from text_importer.utils import get_access_right
 
 import codecs
@@ -16,22 +17,23 @@ from bs4 import BeautifulSoup
 logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {
-        1: 'a',
-        2: 'b',
-        3: 'c',
-        4: 'd',
-        5: 'e'
-        }
+    1: 'a',
+    2: 'b',
+    3: 'c',
+    4: 'd',
+    5: 'e'
+    }
 
 BlIssueDir = namedtuple(
         "IssueDirectory", [
-                'journal',
-                'date',
-                'edition',
-                'path',
-                'rights'
-                ]
+            'journal',
+            'date',
+            'edition',
+            'path',
+            'rights'
+            ]
         )
+BL_ACCESS_RIGHTS = "closed"
 
 
 def _get_single_subdir(_dir: str) -> Optional[str]:
@@ -60,10 +62,10 @@ def _get_journal_name(issue_path: str, blip_id: str) -> Optional[str]:
     :return: str : The name of the journal, or None if not found
     """
     mets_file = [
-            os.path.join(issue_path, f)
-            for f in os.listdir(issue_path)
-            if 'mets.xml' in f.lower()
-            ]
+        os.path.join(issue_path, f)
+        for f in os.listdir(issue_path)
+        if 'mets.xml' in f.lower()
+        ]
     if len(mets_file) == 0:
         logger.critical(f"Could not find METS file in {issue_path}")
         return None
@@ -90,44 +92,69 @@ def _get_journal_name(issue_path: str, blip_id: str) -> Optional[str]:
     return "".join(acronym)
 
 
-def dir2issue(blip_dir: str) -> Optional[BlIssueDir]:  # TODO: ask about rights and edition
+def _extract_all(archive_dir: str, destination: str):
+    """
+    Extracts all zip files in `archive_dir` into `destination`
+    :param str archive_dir: Directory containing all archives to extract
+    :param str destination: Destination directory
+    :return:
+    """
+    
+    archive_files = glob(os.path.join(archive_dir, "*.zip"))
+    logger.info(f"Found {len(archive_files)} files to extract")
+    
+    for archive in archive_files:
+        with zipfile.ZipFile(archive, 'r') as zip_ref:
+            zip_ref.extractall(destination)
+
+
+def dir2issue(path: str) -> Optional[BlIssueDir]:  # TODO: ask about rights and edition
     """
     Given the BLIP directory of an issue, this function returns the corresponding IssueDirectory.
     
     :param str blip_dir: The BLIP directory path
     :return: BlIssueDir The corresponding Issue
     """
-    year_str = _get_single_subdir(blip_dir)
-    if year_str is None:
-        return None
+    split = path.split('/')
+    journal, year, month_day = split[-3], int(split[-2]), split[-1]
+    month, day = int(month_day[:2]), int(month_day[2:])
     
-    year_dir = os.path.join(blip_dir, year_str)
-    mo_day = _get_single_subdir(year_dir)
-    if mo_day is None:
-        return None
-    
-    issue_path = os.path.join(year_dir, mo_day)
-    month, day = int(mo_day[:2]), int(mo_day[2:])
-    journal = _get_journal_name(issue_path, os.path.basename(blip_dir))
-    
-    return BlIssueDir(journal=journal, date=date(int(year_str), month, day), edition='a', path=issue_path,
-                      rights='open_public')
+    return BlIssueDir(journal=journal, date=date(year, month, day), edition='a', path=path,
+                      rights=BL_ACCESS_RIGHTS)
 
 
-def detect_issues(base_dir: str, access_rights: str) -> List[BlIssueDir]:
+def detect_issues(base_dir: str, access_rights: str, tmp_dir: str) -> List[BlIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that the BL used to
     organize the dump of Mets/Alto OCR data.
 
-    :param str base_dir: Path to the base directory of newspaper data.
+    :param str base_dir: Path to the base directory of newspaper data. (For BL this dir should contain `zip` files)
     :param str access_rights: Not used for this imported, but argument is kept for normality
+    :param str tmp_dir: Temporary directory to unzip archives
     :return: List of `BlIssueDir` instances, to be imported.
     """
-    blips = [os.path.join(base_dir, x) for x in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, x))]
+    # Extract all zips to tmp_dir
+    _extract_all(base_dir, tmp_dir)
     
-    issues = [dir2issue(b) for b in blips]
-    issues = [b for b in issues if b is not None]
+    # base_dir becomes extracted archives dir
+    base_dir = tmp_dir
+    # Get all BLIP dirs (named with NLP ID)
+    journal_dirs = [x for x in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, x))]
+    
+    issues = []
+    for journal in journal_dirs:
+        journal_path = os.path.join(base_dir, journal)
+        dir_path, year_dirs, files = next(os.walk(journal_path))
+        
+        for year in year_dirs:
+            year_path = os.path.join(journal_path, year)
+            dir_path, month_day_dirs, files = next(os.walk(year_path))
+            
+            for month_day in month_day_dirs:
+                path = os.path.join(year_path, month_day)
+                issues.append(dir2issue(path))
+                
     return issues
 
 
