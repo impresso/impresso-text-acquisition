@@ -50,10 +50,10 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             logger.critical(f"Could not find pages for {self.id}")
         
         page_file_names = [
-                file
-                for file in os.listdir(alto_path)
-                if not file.startswith('.') and '.xml' in file
-                ]
+            file
+            for file in os.listdir(alto_path)
+            if not file.startswith('.') and '.xml' in file
+            ]
         
         page_numbers = []
         
@@ -62,9 +62,9 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             page_numbers.append(int(page_no))
         
         page_canonical_names = [
-                "{}-p{}".format(self.id, str(page_n).zfill(4))
-                for page_n in page_numbers
-                ]
+            "{}-p{}".format(self.id, str(page_n).zfill(4))
+            for page_n in page_numbers
+            ]
         
         self.pages = []
         for filename, page_no, page_id in zip(
@@ -108,11 +108,11 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                     
                     parts.append(
                             {
-                                    'comp_role': comp_role,
-                                    'comp_id': comp_id,
-                                    'comp_fileid': comp_fileid,
-                                    'comp_page_no': comp_page_no
-                                    }
+                                'comp_role': comp_role,
+                                'comp_id': comp_id,
+                                'comp_fileid': comp_fileid,
+                                'comp_page_no': comp_page_no
+                                }
                             )
         return parts
     
@@ -138,23 +138,26 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             logger.warning(f"Found new content item type: {div_type}")
         
         metadata = {
-                'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
-                'tp': div_type,
-                'pp': [],
-                't': item_div.get('LABEL')
-                }
+            'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
+            'tp': div_type,
+            'pp': [],
+            't': item_div.get('LABEL')
+            }
         
         content_item = {
-                "m": metadata,
-                "l": {
-                        "id": item_div.get('ID'),
-                        "parts": self._parse_content_parts(item_div)
-                        }
+            "m": metadata,
+            "l": {
+                "id": item_div.get('ID'),
+                "parts": self._parse_content_parts(item_div)
                 }
+            }
         for p in content_item['l']['parts']:
             pge_no = p["comp_page_no"]
             if pge_no not in content_item['m']['pp']:
                 content_item['m']['pp'].append(pge_no)
+                
+        if content_item['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
+            content_item['m']['c'], content_item['iiif_link'] = self._get_image_info(content_item['l']['parts'])
         return content_item
     
     def _parse_content_items(self, mets_doc: BeautifulSoup):
@@ -197,9 +200,32 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         content_items = self._parse_content_items(mets_doc)
         
         self.issue_data = {
-                "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-                "i": content_items,
-                "id": self.id,
-                "ar": self.rights,
-                "pp": [p.id for p in self.pages]
-                }
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "i": content_items,
+            "id": self.id,
+            "ar": self.rights,
+            "pp": [p.id for p in self.pages]
+            }
+    
+    def _get_image_info(self, parts):
+        # Fetch the legacy parts
+        
+        assert len(parts) == 1, "Image has more than 1 part"
+        part = parts[0]
+        
+        # Fetch page number and corresponding page
+        pge_nb = part['comp_page_no']
+        comp_id = part['comp_id']
+        page = [p for p in self.pages if p.number == pge_nb][0]
+        
+        elements = page.xml.findAll("TextBlock", {"ID": comp_id})
+        assert len(elements) <= 1, "Image comp_id matches multiple TextBlock tags"
+        if len(elements) == 0:
+            return []
+        
+        element = elements[0]
+        hpos, vpos, width, height = element.get('HPOS'), element.get('VPOS'), element.get('WIDTH'), element.get('HEIGHT')
+        coords = [int(hpos), int(vpos), int(width), int(height)]
+        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, ",".join([str(x) for x in coords]), 'full', '0', 'default.jpg')
+        
+        return coords, iiif_link
