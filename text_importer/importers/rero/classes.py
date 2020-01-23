@@ -157,7 +157,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                 content_item['m']['pp'].append(pge_no)
                 
         if content_item['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
-            content_item['m']['c'], content_item['iiif_link'] = self._get_image_info(content_item['l']['parts'])
+            content_item['m']['c'], content_item['iiif_link'] = self._get_image_info(content_item)
         return content_item
     
     def _parse_content_items(self, mets_doc: BeautifulSoup):
@@ -207,25 +207,42 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             "pp": [p.id for p in self.pages]
             }
     
-    def _get_image_info(self, parts):
+    def _get_image_info(self, content_item):
         # Fetch the legacy parts
         
-        assert len(parts) == 1, "Image has more than 1 part"
-        part = parts[0]
+        # Images cannot be on multiple pages
+        num_pages = len(content_item['m']['pp'])
+        assert num_pages == 1, "Image is on more than one page"
         
-        # Fetch page number and corresponding page
-        pge_nb = part['comp_page_no']
-        comp_id = part['comp_id']
-        page = [p for p in self.pages if p.number == pge_nb][0]
+        page_nb = content_item['m']['pp'][0]
+        page = [p for p in self.pages if p.number == page_nb][0]
+        parts = content_item['l']['parts']
         
-        elements = page.xml.findAll("TextBlock", {"ID": comp_id})
-        assert len(elements) <= 1, "Image comp_id matches multiple TextBlock tags"
-        if len(elements) == 0:
-            return []
+        assert len(parts) >= 1, f"No parts for image {content_item['m']['id']}"
         
-        element = elements[0]
-        hpos, vpos, width, height = element.get('HPOS'), element.get('VPOS'), element.get('WIDTH'), element.get('HEIGHT')
-        coords = [int(hpos), int(vpos), int(width), int(height)]
+        if len(parts) > 1:
+            logger.info(f"Found multiple parts for image {content_item['m']['id']}, selecting largest one")
+            
+        coords = None
+        max_area = 0
+        # Image can have multiple parts,
+        for part in parts:
+            comp_id = part['comp_id']
+        
+            elements = page.xml.findAll("TextBlock", {"ID": comp_id})
+            assert len(elements) <= 1, "Image comp_id matches multiple TextBlock tags"
+            if len(elements) == 0:
+                continue
+        
+            element = elements[0]
+            hpos, vpos, width, height = element.get('HPOS'), element.get('VPOS'), element.get('WIDTH'), element.get('HEIGHT')
+            
+            # Select largest image
+            area = int(width) * int(height)
+            if area > max_area:
+                max_area = area
+                coords = [int(hpos), int(vpos), int(width), int(height)]
+            
         iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, ",".join([str(x) for x in coords]), 'full', '0', 'default.jpg')
         
         return coords, iiif_link
