@@ -24,20 +24,22 @@ PICTURE_TYPE = "picture"
 ILLUSTRATION_TYPE = "illustration"
 
 
-def convert_coordinates(coords, page, image_properties):
-    res = image_properties[page.number]
-    x_res_true, y_res_true = res['x_resolution'], res['y_resolution']
+def convert_coordinates(coords, resolution, page_width):
+    x_res_true, y_res_true = resolution['x_resolution'], resolution['y_resolution']
     if x_res_true == 0 or y_res_true == 0:
         return coords
-    page_tag = page.xml.find('Page')
-    p_height, p_width = float(page_tag.get('HEIGHT')), float(page_tag.get('WIDTH'))
-    
-    factor = x_res_true / p_width
-    return [int(c * factor) for c in coords]
+    factor = page_width / x_res_true
+    return [int(c / factor) for c in coords]
 
 
 class ReroNewspaperPage(MetsAltoNewspaperPage):
     """Class representing a page in RERO (Mets/Alto) data."""
+    
+    def __init__(self, _id: str, n: int, filename: str, basedir: str):
+        super().__init__(_id, n, filename, basedir)
+        
+        page_tag = self.xml.find('Page')
+        self.page_width = float(page_tag.get('WIDTH'))
     
     def add_issue(self, issue):
         self.issue = issue
@@ -50,7 +52,32 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         :param page_data:
         :return:
         """
-        return True, page_data
+        if self.issue is None:
+            logger.critical("Cannot convert coordinates if issue is unknown")
+        
+        image_properties = self.issue.image_properties[self.number]
+        
+        x_res = image_properties['x_resolution']
+        y_res = image_properties['y_resolution']
+        
+        # Those fields are 0 For RERO2
+        if x_res == 0 or y_res == 0:
+            return True, page_data
+        
+        success = False
+        try:
+            for region in page_data:
+                region['c'] = convert_coordinates(region['c'], image_properties, self.page_width)
+                for paragraph in region['p']:
+                    paragraph['c'] = convert_coordinates(paragraph['c'], image_properties, self.page_width)
+                    for line in paragraph['l']:
+                        line['c'] = convert_coordinates(line['c'], image_properties, self.page_width)
+                        for token in line['t']:
+                            token['c'] = convert_coordinates(token['c'], image_properties, self.page_width)
+            success = True
+        except Exception as e:
+            logger.error(f"Error {e} occurred when converting coordinates for {self.id}")
+        return success, page_data
 
 
 class ReroNewspaperIssue(MetsAltoNewspaperIssue):
@@ -146,7 +173,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         if lang is None:
             return None
         return lang.text
-        
+    
     def _parse_content_item(self, item_div, counter: int):
         """
         Parses a content item div and returns the dictionary representing it.
@@ -301,7 +328,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                 max_area = area
                 coords = [int(float(hpos)), int(float(vpos)), int(float(width)), int(float(height))]
         
-        coords = convert_coordinates(coords, page, self.image_properties)
+        coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
         iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, ",".join([str(x) for x in coords]), 'full', '0', 'default.jpg')
         
         return coords, iiif_link
