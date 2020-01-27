@@ -59,9 +59,12 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         ci_id = self.ci_id
         
         mappings = {k.get('ID'): ci_id for k in pselement.findAll('TextBlock')}
-        page_data = parse_printspace(pselement, mappings)
+        page_data, notes = parse_printspace(pselement, mappings)
         
         self.page_data['cc'], self.page_data['r'] = False, page_data
+        if len(notes) > 0:
+            self.page_data['n'] = notes
+        return notes
     
     def get_iiif_image(self):
         return os.path.join(self.iiif, "full/full/0/default.jpg")
