@@ -20,6 +20,7 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
     """
     
     def __init__(self, _id: str, number: int, alto_path: str):
+        self.alto_path = alto_path
         basedir, filename = os.path.split(alto_path)
         super().__init__(_id, number, filename, basedir, encoding=SWA_XML_ENCODING)
         self.iiif = os.path.join(IIIF_ENDPOINT_URL, filename.split('.')[0])
@@ -43,6 +44,14 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         split = self.id.split('-')
         split[-1] = split[-1].replace('p', 'i')
         return "-".join(split)
+    
+    @property
+    def file_exists(self) -> bool:
+        """ Checks whether the ALTO file exists for this page
+        
+        :return:
+        """
+        return os.path.exists(self.alto_path) and os.path.isfile(self.alto_path)
     
     def parse(self):
         doc = self.xml
@@ -107,7 +116,13 @@ class SWANewspaperIssue(NewspaperIssue):
         for n, val in enumerate(sorted(self.temp_pages)):
             page_id, page_path = val
             page_path = os.path.join(self.archive.dir, page_path)
-            self.pages.append(SWANewspaperPage(page_id, n + 1, page_path))
+            page = SWANewspaperPage(page_id, n + 1, page_path)
+            
+            # Check page existence
+            if not page.file_exists:
+                raise ValueError(f"Alto file for {page_id} missing {page_path}")
+            
+            self.pages.append(page)
     
     def _find_content_items(self):
         for n, page in enumerate(sorted(self.pages, key=lambda x: x.id)):
