@@ -62,6 +62,8 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         page_data, notes = parse_printspace(pselement, mappings)
         
         self.page_data['cc'], self.page_data['r'] = False, page_data
+        
+        # Add notes to page data
         if len(notes) > 0:
             self.page_data['n'] = notes
         return notes

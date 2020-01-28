@@ -39,6 +39,8 @@ def parse_textline(element: Tag) -> Tuple[dict, List[str]]:
             continue
 
         if child.name == 'String':
+            
+            # Here we do this in case coordinates are not found for this String
             try:
                 coords = distill_coordinates(child)
             except TypeError as e:
