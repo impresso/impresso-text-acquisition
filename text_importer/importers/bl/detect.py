@@ -139,22 +139,29 @@ def detect_issues(base_dir: str, access_rights: str, tmp_dir: str) -> List[BlIss
     
     # base_dir becomes extracted archives dir
     base_dir = tmp_dir
-    # Get all BLIP dirs (named with NLP ID)
-    journal_dirs = [x for x in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, x))]
     
+    # Get all BLIP dirs (named with NLP ID)
+    blip_dirs = [x for x in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, x))]
     issues = []
-    for journal in journal_dirs:
-        journal_path = os.path.join(base_dir, journal)
-        dir_path, year_dirs, files = next(os.walk(journal_path))
+    
+    for blip in blip_dirs:
+        blip_path = os.path.join(base_dir, blip)
+        dir_path, journal_dirs, files = next(os.walk(blip_path))
         
-        for year in year_dirs:
-            year_path = os.path.join(journal_path, year)
-            dir_path, month_day_dirs, files = next(os.walk(year_path))
+        # First iterate on all journals in BLIP dir
+        for journal in journal_dirs:
+            journal_path = os.path.join(blip_path, journal)
+            dir_path, year_dirs, files = next(os.walk(journal_path))
             
-            for month_day in month_day_dirs:
-                path = os.path.join(year_path, month_day)
-                issues.append(dir2issue(path))
-                
+            # Then on years
+            for year in year_dirs:
+                year_path = os.path.join(journal_path, year)
+                dir_path, month_day_dirs, files = next(os.walk(year_path))
+                # Then on each issue
+                for month_day in month_day_dirs:
+                    path = os.path.join(year_path, month_day)
+                    issues.append(dir2issue(path))
+    
     return issues
 
 

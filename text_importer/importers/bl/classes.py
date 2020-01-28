@@ -13,15 +13,18 @@ Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
 
+IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
+
 
 class BlNewspaperPage(MetsAltoNewspaperPage):
     
-    def add_issue(self, issue: MetsAltoNewspaperIssue):  # TODO: missing iiif
+    def add_issue(self, issue: MetsAltoNewspaperIssue):
         """Adds the given `BlNewspaperIssue` as an attribute for this class
         
         :param BlNewspaperIssue issue:
         """
         self.issue = issue
+        self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
 
 
 class BlNewspaperIssue(MetsAltoNewspaperIssue):
@@ -166,7 +169,7 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
     def _parse_mets(self):
         """Parses the Mets XML file of the newspaper issue."""
         
-        # TODO: ask about image properties
+        # No image properties in BL data
         # Parse all the content items
         content_items = self._parse_content_items()
         
