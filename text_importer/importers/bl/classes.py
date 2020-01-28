@@ -3,7 +3,7 @@ import os
 from time import strftime
 from typing import List, Optional
 
-from text_importer.importers import (CONTENTITEM_TYPES, CONTENTITEM_TYPE_IMAGE)
+from text_importer.importers import (CONTENTITEM_TYPES, CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_ADVERTISEMENT)
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage)
 from text_importer.utils import get_issue_schema, get_page_schema
@@ -14,6 +14,9 @@ Pageschema = get_page_schema()
 logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
+
+BL_PICTURE_TYPE = "picture"
+BL_AD_TYPE = "advert"
 
 
 class BlNewspaperPage(MetsAltoNewspaperPage):
@@ -32,10 +35,10 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
     def _find_pages(self):
         """Detects the Alto XML page files for a newspaper issue and initializes page objects."""
         page_file_names = [
-                file
-                for file in os.listdir(self.path)
-                if not file.startswith('.') and '.xml' in file and 'mets' not in file
-                ]
+            file
+            for file in os.listdir(self.path)
+            if not file.startswith('.') and '.xml' in file and 'mets' not in file
+            ]
         page_numbers = [int(os.path.splitext(fname)[0].split('_')[-1]) for fname in page_file_names]
         
         page_canonical_names = ["{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers]
@@ -112,28 +115,30 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         """
         div_type = item_div.get('TYPE').lower()
         
-        if div_type == 'picture':
+        if div_type == BL_PICTURE_TYPE:
             div_type = CONTENTITEM_TYPE_IMAGE
+        elif div_type == BL_AD_TYPE:
+            div_type = CONTENTITEM_TYPE_ADVERTISEMENT
         
         # Check if new content item is found (or if we need more translation)
         if div_type not in CONTENTITEM_TYPES:
             logger.warning(f"Found new content item type: {div_type}")
         
         metadata = {
-                'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
-                'tp': div_type,
-                'pp': [],
-                'l': self._get_content_item_language(item_div.get('DMDID')) # Get language from METS file
-                }
+            'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
+            'tp': div_type,
+            'pp': [],
+            'l': self._get_content_item_language(item_div.get('DMDID'))  # Get language from METS file
+            }
         
         # Load physical struct map
         content_item = {
-                "m": metadata,
-                "l": {
-                        "id": item_div.get('ID'),
-                        "parts": self._parse_content_parts(item_div, phys_structmap) # Find all parts in physical map
-                        }
+            "m": metadata,
+            "l": {
+                "id": item_div.get('ID'),
+                "parts": self._parse_content_parts(item_div, phys_structmap)  # Find all parts in physical map
                 }
+            }
         for p in content_item['l']['parts']:
             pge_no = p["comp_page_no"]
             if pge_no not in content_item['m']['pp']:
@@ -155,10 +160,9 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         
         # Get all CI types
         found_types = set(x.get('TYPE') for x in sorted_divs)
-        print(f"Found types {found_types} for content items")
         
         phys_structmap = self.xml.find('structMap', {'TYPE': 'PHYSICAL'})
-
+        
         counter = 1
         for div in sorted_divs:
             # Parse Each contentitem
@@ -174,9 +178,9 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         content_items = self._parse_content_items()
         
         self.issue_data = {
-                "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-                "i": content_items,
-                "id": self.id,
-                "ar": self.rights,
-                "pp": [p.id for p in self.pages]
-                }
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "i": content_items,
+            "id": self.id,
+            "ar": self.rights,
+            "pp": [p.id for p in self.pages]
+            }
