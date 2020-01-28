@@ -19,12 +19,22 @@ logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
 
+# Types used in RERO2/RERO3 that are not in impresso schema
 SECTION_TYPE = "section"
 PICTURE_TYPE = "picture"
 ILLUSTRATION_TYPE = "illustration"
 
 
-def convert_coordinates(coords, resolution, page_width):
+def convert_coordinates(coords: List[float], resolution: Dict, page_width: float) -> List[int]:
+    """
+    Converts the given coordinates by taking the true resolution and the coordinate system resolution.
+    
+    Essentially computes fact = coordinate_width / true_width and converts using x/fact
+    :param coords: List of coordinates to convert
+    :param resolution: Dictionary describing the true resolution of the images (`x_resolution` and `y_resolution`)
+    :param page_width: The page width used for the coordinate system
+    :return:
+    """
     x_res_true, y_res_true = resolution['x_resolution'], resolution['y_resolution']
     if x_res_true == 0 or y_res_true == 0:
         return coords
@@ -55,8 +65,8 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         if self.issue is None:
             logger.critical("Cannot convert coordinates if issue is unknown")
         
+        # Get page real resolution
         image_properties = self.issue.image_properties[self.number]
-        
         x_res = image_properties['x_resolution']
         y_res = image_properties['y_resolution']
         
@@ -64,6 +74,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         if x_res == 0 or y_res == 0:
             return True, page_data
         
+        # Then convert coordinates of all regions/paragraphs/lines/tokens
         success = False
         try:
             for region in page_data:
@@ -222,6 +233,11 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         return content_item
     
     def _decompose_section(self, div):
+        """ In RERO3, sometimes textblocks and images are withing `Section` tags. Those need to be recursively decomposed
+        
+        :param div: The `Section` div
+        :return: all children divs that are not `Section`
+        """
         logger.info("Decomposing section type")
         section_divs = [d for d in div.findAll("div") if
                         d.get('DMDID') is not None]  # Only consider those with DMDID
