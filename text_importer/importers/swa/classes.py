@@ -61,7 +61,7 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         mappings = {k.get('ID'): ci_id for k in pselement.findAll('TextBlock')}
         page_data, notes = parse_printspace(pselement, mappings)
         
-        self.page_data['cc'], self.page_data['r'] = False, page_data
+        self.page_data['cc'], self.page_data['r'] = True, page_data
         
         # Add notes to page data
         if len(notes) > 0:
