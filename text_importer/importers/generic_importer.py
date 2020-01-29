@@ -36,6 +36,7 @@ from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
 
 from text_importer import __version__
 from text_importer.importers.classes import NewspaperIssue
+from text_importer.importers.bl.classes import BlNewspaperIssue
 from text_importer.importers.core import import_issues
 from text_importer.utils import init_logger
 
@@ -66,6 +67,23 @@ def get_dask_client(scheduler, log_file, log_level):
         client = Client(scheduler)
         client.run(init_logger, _logger=logger, log_level=log_level, log_file=log_file)
     return client
+
+
+def apply_detect_func(issue_class: Type[NewspaperIssue], input_dir: str, access_rights: str, detect_func, tmp_dir: str):
+    if issue_class is BlNewspaperIssue:
+        issues = detect_func(input_dir, access_rights=access_rights, tmp_dir=tmp_dir)
+        return issues
+    else:
+        return detect_func(input_dir, access_rights=access_rights)
+
+
+def apply_select_func(issue_class: Type[NewspaperIssue], config, input_dir: str, access_rights: str, select_func,
+                      tmp_dir: str):
+    if issue_class is BlNewspaperIssue:
+        issues = select_func(input_dir, config=config, access_rights=access_rights, tmp_dir=tmp_dir)
+        return issues
+    else:
+        return select_func(input_dir, config=config, access_rights=access_rights)
 
 
 def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
@@ -117,14 +135,15 @@ def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
                 )
     else:
         logger.info("No config file found.")
-        issues = detect_func(inp_dir, access_rights=access_rights_file)
+        issues = apply_detect_func(issue_class, inp_dir, access_rights=access_rights_file, detect_func=detect_func,
+                                   tmp_dir=temp_dir)
         logger.info(f'{len(issues)} newspaper issues detected')
     
     if outp_dir is not None and os.path.exists(outp_dir) and incremental_output:
         issues_to_skip = [
-                (issue.journal, issue.date, issue.edition)
-                for issue in detect_canonical_issues(outp_dir, KNOWN_JOURNALS)
-                ]
+            (issue.journal, issue.date, issue.edition)
+            for issue in detect_canonical_issues(outp_dir, KNOWN_JOURNALS)
+            ]
         logger.debug(f"Issues to skip: {issues_to_skip}")
         logger.info(f"{len(issues_to_skip)} issues to skip")
         issues = list(

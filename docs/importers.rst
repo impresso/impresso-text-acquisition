@@ -15,9 +15,10 @@ The following importer CLI scripts are already available:
   to encode and deliver part of its data.
 - :py:mod:`text_importer.scripts.luximporter`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de Luxembourg (BNL)
   <https://bnl.public.lu/>`_ to encode and deliver its newspaper data.
-- :py:mod:`text_importer.scripts.lbnfimporter`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de France (BNF)
+- :py:mod:`text_importer.scripts.bnfimporter`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de France (BNF)
   <https://www.bnf.fr/en/>`_ to encode and deliver its newspaper data.
-
+- :py:mod:`text_importer.scripts.blimporter`: importer for the Mets/ALTO flavor used by the `British Library (BL) <https://www.bl.uk/>`_
+  to encode and deliver its newspaper data.
 For further details on any of these implementations, please do refer to its documentation:
 
 .. toctree::

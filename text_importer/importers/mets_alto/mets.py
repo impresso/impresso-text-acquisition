@@ -22,7 +22,7 @@ def parse_mets_amdsec(mets_doc, x_res: str, y_res: str, x_res_default=300, y_res
     :param y_res_default: Default Y res (300)
     :return: dict, containing the resolution for each image
     """
-    image_filegroup = mets_doc.findAll('fileGrp', {'USE': 'Images'})[0]
+    image_filegroup = mets_doc.findAll('fileGrp', {"USE": lambda x: x and x.lower() == 'images'})[0]
     page_image_ids = parse_mets_filegroup(image_filegroup)  # Returns {page: im_id}
     
     amd_sections = {
