@@ -14,7 +14,8 @@ from text_importer.importers import (CONTENTITEM_TYPE_ADVERTISEMENT,
                                      CONTENTITEM_TYPE_OBITUARY,
                                      CONTENTITEM_TYPE_TABLE,
                                      CONTENTITEM_TYPE_WEATHER)
-from text_importer.importers.lux.helpers import convert_coordinates, encode_ark
+from text_importer.importers.lux.helpers import convert_coordinates, encode_ark, section_is_article, div_has_body, \
+    find_section_articles, remove_section_cis
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage,
                                                parse_mets_amdsec)
@@ -183,6 +184,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     self._notes.append(err_msg)
                     logger.error(err_msg)
                     parts = []
+                    item_div = None
                 
                 if item_title:
                     metadata['t'] = item_title
@@ -202,10 +204,12 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     lang = section.find_all('languageTerm')[0].getText()
                     item['m']['l'] = lang
                 
-                content_items.append(item)
+                # This has been added to not consider ads as pictures
+                if not ((item_div is not None) and ("PICT" in section_id) and (item_div.get("TYPE") == "ADVERTISEMENT")):
+                    content_items.append(item)
                 counter += 1
         
-        return content_items
+        return content_items, counter
     
     def _parse_structmap_divs(self, start_counter):
         """
@@ -217,7 +221,6 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         counter = start_counter
         element = self.xml.find('structMap', {'TYPE': 'LOGICAL'})
         
-        # TODO: not sure if death_notice is a type, maybe replace by `OBITUARY`
         allowed_types = ["ADVERTISEMENT", "DEATH_NOTICE", "WEATHER"]
         divs = []
         
@@ -257,10 +260,9 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     "id": div.get('ID')
                     }
                 }
-            counter += 1
             content_items.append(item)
-        
-        return content_items
+            counter += 1
+        return content_items, counter
     
     def _process_image_ci(self, ci):
         
@@ -365,6 +367,76 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 self._notes.append(err_msg)
                 logger.exception(e)
     
+    def _parse_section(self, section, section_div, content_items, counter):
+        """
+        Given the section (DMDID), the section div and the content items, this function reconstructs the sections
+        In the `l` part of the ci, there is an additional field `canonical_parts` which points to articles that were added
+        to this section. (Bugfix done by Edoardo)
+        :param section:
+        :param section_div:
+        :param content_items:
+        :param counter:
+        :return:
+        """
+        title_elements = section.find_all('titleInfo')
+        
+        item_title = title_elements[0].getText().replace('\n', ' ') \
+            .strip() if len(title_elements) > 0 else None
+        
+        metadata = {
+            'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
+            'pp': [],
+            'tp': CONTENTITEM_TYPE_ARTICLE
+            }
+        if item_title:
+            metadata['t'] = item_title
+        
+        parts = self._parse_mets_div(section_div)
+        
+        old_cis = find_section_articles(section_div, content_items)
+        item = {
+            "m": metadata,
+            "l": {
+                "id": section_div.get('DMDID'),
+                "parts": parts,
+                "canonical_parts": old_cis
+                }
+            }
+        return item
+    
+    def _parse_sections(self, content_items, start_counter):
+        """
+        Reconstructs all the sections from the METS file (bugfix by Edoardo)
+        
+        :param content_items:
+        :param start_counter:
+        :return:
+        """
+        counter = start_counter
+        mets_doc = self.xml
+        sections = mets_doc.findAll('dmdSec')
+        
+        sections = sorted(
+                sections,
+                key=lambda elem: elem.get('ID').split("_")[1]
+                )
+        # First look for sections and get their ID
+        new_sections = []
+        for section in sections:
+            section_id = section.get('ID')
+            if 'SECT' in section_id:
+                div = mets_doc.find('div', {"DMDID": section_id})  # Get div
+                if div is None:
+                    err_msg = f"<div [DMID]={section_id}> not found {self.path}"
+                    self._notes.append(err_msg)
+                    logger.error(err_msg)
+                    continue
+                if div_has_body(div) and section_is_article(div):
+                    new_section = self._parse_section(section, div, content_items, counter)
+                    new_sections.append(new_section)
+                    counter += 1
+        return new_sections
+    
     def _parse_mets(self):
         """Parses the Mets XML file of the newspaper issue."""
         
@@ -383,12 +455,21 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         self.image_properties = parse_mets_amdsec(mets_doc, x_res='xOpticalResolution', y_res='yOpticalResolution')
         
         # First find `ARTICLE` and `PICTURE`
-        content_items = self._parse_dmdsec()
+        content_items, counter = self._parse_dmdsec()
         # Then find other CIs
-        content_items += self._parse_structmap_divs(
-                start_counter=len(content_items) + 1
+        new_cis, counter = self._parse_structmap_divs(
+                start_counter=counter
                 )
+        content_items += new_cis
         
+        # Reconstruct sections
+        section_cis = self._parse_sections(content_items, start_counter=counter)
+        # Remove cis that are contained in sections
+        content_items, removed = remove_section_cis(content_items, section_cis)
+        
+        logger.debug("Removed {} as they are in sections".format(removed))
+        # Add sections to CIs
+        content_items += section_cis
         # Set ark_id
         ark_link = mets_doc.find('mets').get('OBJID')
         self.ark_id = ark_link.replace('https://persist.lu/', '')
