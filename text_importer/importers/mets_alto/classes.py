@@ -79,8 +79,10 @@ class MetsAltoNewspaperPage(NewspaperPage):
                 page_data
                 )
         
+        # Add notes for missing coordinates in SWA
         if len(notes) > 0:
             self.page_data['n'] = notes
+
 
 class MetsAltoNewspaperIssue(NewspaperIssue):
     """Generic class representing a newspaper issue in Mets/Alto format.
