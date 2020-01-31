@@ -32,50 +32,52 @@ class MetsAltoNewspaperPage(NewspaperPage):
     :param str basedir: Base directory where Alto files are located.
 
     """
-    def __init__(self, _id: str, n: int, filename: str, basedir: str):
+    
+    def __init__(self, _id: str, n: int, filename: str, basedir: str, encoding: str = 'utf-8'):
         super().__init__(_id, n)
         self.filename = filename
         self.basedir = basedir
+        self.encoding = encoding
         self.page_data = {
-                'id': _id,
-                'cdt': strftime("%Y-%m-%d %H:%M:%S"),
-                'r': []  # here go the page regions
-                }
-
+            'id': _id,
+            'cdt': strftime("%Y-%m-%d %H:%M:%S"),
+            'r': []  # here go the page regions
+            }
+    
     @property
     def xml(self) -> BeautifulSoup:
         """Returns a BeautifulSoup object with Alto XML of the page."""
         alto_xml_path = os.path.join(self.basedir, self.filename)
-
-        with codecs.open(alto_xml_path, 'r', "utf-8") as f:
+        
+        with codecs.open(alto_xml_path, 'r', encoding=self.encoding) as f:
             raw_xml = f.read()
-
+        
         alto_doc = BeautifulSoup(raw_xml, 'xml')
         return alto_doc
-
+    
     # TODO: decide whether to remove this
     def _convert_coordinates(self, page_data: List[dict]) -> Tuple[bool, List[dict]]:
         return False, page_data
-
+    
     @abstractmethod
     def add_issue(self, issue):
         pass
-
+    
     def parse(self):
         doc = self.xml
-
+        
         mappings = {}
         for ci in self.issue.issue_data['i']:
             ci_id = ci['m']['id']
             if 'parts' in ci['l']:
                 for part in ci['l']['parts']:
                     mappings[part['comp_id']] = ci_id
-
+        
         pselement = doc.find('PrintSpace')
         page_data = alto.parse_printspace(pselement, mappings)
         self.page_data['cc'], self.page_data["r"] = self._convert_coordinates(
-            page_data
-        )
+                page_data
+                )
 
 
 class MetsAltoNewspaperIssue(NewspaperIssue):
@@ -89,23 +91,24 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
     :param IssueDir issue_dir: Description of parameter `issue_dir`.
 
     """
+    
     def __init__(self, issue_dir: IssueDir):
         super().__init__(issue_dir)
         # create the canonical issue id
         self.image_properties = {}
         self.ark_id = None
-
+        
         self._find_pages()
         self._parse_mets()
-
+    
     @abstractmethod
     def _find_pages(self):
         pass
-
+    
     @abstractmethod
     def _parse_mets(self):
         pass
-
+    
     @property
     def xml(self):
         """Returns a BeautifulSoup object with Mets XML file of the issue.
@@ -120,15 +123,15 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
             os.path.join(self.path, f)
             for f in os.listdir(self.path)
             if 'mets.xml' in f.lower()
-        ]
+            ]
         if len(mets_file) == 0:
             logger.critical(f"Could not find METS file in {self.path}")
             return
-
+        
         mets_file = mets_file[0]
-
+        
         with codecs.open(mets_file, 'r', "utf-8") as f:
             raw_xml = f.read()
-
+        
         mets_doc = BeautifulSoup(raw_xml, 'xml')
         return mets_doc

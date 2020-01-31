@@ -2,7 +2,7 @@
 
 import bs4
 from bs4.element import Tag
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 
 def distill_coordinates(element: Tag) -> List[int]:
@@ -27,19 +27,27 @@ def distill_coordinates(element: Tag) -> List[int]:
     return [hpos, vpos, width, height]
 
 
-def parse_textline(element: Tag) -> dict:
+def parse_textline(element: Tag) -> Tuple[dict, List[str]]:
     line = {}
     line['c'] = distill_coordinates(element)
     tokens = []
-
+    
+    notes = []
     for child in element.children:
 
         if isinstance(child, bs4.element.NavigableString):
             continue
 
         if child.name == 'String':
+            
+            # Here we do this in case coordinates are not found for this String
+            try:
+                coords = distill_coordinates(child)
+            except TypeError as e:
+                notes.append("Token {} does not have coordinates".format(child.get('ID')))
+                continue
             token = {
-                    'c': distill_coordinates(child),
+                    'c': coords,
                     'tx': child.get('CONTENT')
                     }
 
@@ -53,10 +61,10 @@ def parse_textline(element: Tag) -> dict:
             tokens.append(token)
 
     line['t'] = tokens
-    return line
+    return line, notes
 
 
-def parse_printspace(element: Tag, mappings: Dict[str, str]) -> List[dict]:
+def parse_printspace(element: Tag, mappings: Dict[str, str]) -> Tuple[List[dict], List[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
     :param Tag element: Input XML element (``<PrintSpace>``).
@@ -67,7 +75,7 @@ def parse_printspace(element: Tag, mappings: Dict[str, str]) -> List[dict]:
     """
 
     regions = []
-
+    notes = []
     # in case of a blank page, the PrintSpace element is not found thus
     # it will be none
     if element:
@@ -83,12 +91,18 @@ def parse_printspace(element: Tag, mappings: Dict[str, str]) -> List[dict]:
                 part_of_contentitem = None
 
             coordinates = distill_coordinates(block)
-
-            lines = [
+            
+            tmp = [
                     parse_textline(line_element)
                     for line_element in block.findAll('TextLine')
                     ]
-
+            
+            if len(tmp) > 0:
+                lines, new_notes = list(zip(*tmp))
+                new_notes = [i for n in new_notes for i in n]
+            else:
+                lines, new_notes = [], []
+                
             paragraph = {
                     "c": coordinates,
                     "l": lines
@@ -101,5 +115,7 @@ def parse_printspace(element: Tag, mappings: Dict[str, str]) -> List[dict]:
 
             if part_of_contentitem:
                 region['pOf'] = part_of_contentitem
+            
+            notes += new_notes
             regions.append(region)
-    return regions
+    return regions, notes
