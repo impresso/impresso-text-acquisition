@@ -15,7 +15,7 @@ from text_importer.importers import (CONTENTITEM_TYPE_ADVERTISEMENT,
                                      CONTENTITEM_TYPE_TABLE,
                                      CONTENTITEM_TYPE_WEATHER)
 from text_importer.importers.lux.helpers import convert_coordinates, encode_ark, section_is_article, div_has_body, \
-    find_section_articles, remove_section_cis
+    find_section_articles, remove_section_cis, parse_style
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage,
                                                parse_mets_amdsec)
@@ -31,12 +31,22 @@ IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/iiif/2"
 class LuxNewspaperPage(MetsAltoNewspaperPage):
     """Class representing a page in BNL data."""
     
+    def _parse_font_styles(self):
+        style_divs = self.xml.findAll("TextStyle")
+        
+        styles = []
+        for d in style_divs:
+            styles.append(parse_style(d))
+        
+        self.page_data['s'] = styles
+    
     def add_issue(self, issue: MetsAltoNewspaperIssue):
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
         iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
         iiif_link = f'{iiif_base_link}%2fpages%2f{self.number}/info.json'
         self.page_data['iiif'] = iiif_link
+        self._parse_font_styles()
     
     def _convert_coordinates(self, page_data: List[dict]) -> Tuple[bool, List[dict]]:
         success = False

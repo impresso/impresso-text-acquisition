@@ -1,4 +1,4 @@
-from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_ADVERTISEMENT, CONTENTITEM_TYPE_OBITUARY
+from text_importer.importers import CONTENTITEM_TYPE_IMAGE
 
 NON_ARTICLE = ["advertisement", "death_notice"]
 
@@ -44,7 +44,6 @@ def section_is_article(section_div):
     """ Returns True if the given div's children are all `ad_type`, except for "BODY" and "BODY_CONTENT"
     
     :param section_div:
-    :param ad_type:
     :return:
     """
     types = []
@@ -99,3 +98,21 @@ def remove_section_cis(content_items, sections):
             removed.append(ci['m']['id'])
     
     return new_cis, to_remove
+
+
+def parse_style(style_div):
+    font_family = style_div.get("FONTFAMILY")
+    font_size = style_div.get("FONTSIZE")
+    font_style = style_div.get("FONTSTYLE")
+    font_id = style_div.get("ID")
+    
+    font_name = font_family
+    if font_style is not None:
+        font_name = "{}-{}".format(font_name, font_style)
+    
+    style = {
+        "id": font_id,
+        "fs": int(font_size),
+        "f": font_name
+        }
+    return style
