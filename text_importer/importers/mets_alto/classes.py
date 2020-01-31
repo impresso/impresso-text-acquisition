@@ -74,11 +74,13 @@ class MetsAltoNewspaperPage(NewspaperPage):
                     mappings[part['comp_id']] = ci_id
         
         pselement = doc.find('PrintSpace')
-        page_data = alto.parse_printspace(pselement, mappings)
+        page_data, notes = alto.parse_printspace(pselement, mappings)
         self.page_data['cc'], self.page_data["r"] = self._convert_coordinates(
                 page_data
                 )
-
+        
+        if len(notes) > 0:
+            self.page_data['n'] = notes
 
 class MetsAltoNewspaperIssue(NewspaperIssue):
     """Generic class representing a newspaper issue in Mets/Alto format.
