@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Olive XML importer" href="importers/olive.html" />
-    <link rel="prev" title="Overview" href="architecture.html" /> 
+    <link rel="prev" title="Architecture" href="architecture.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -83,21 +83,22 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">TextImporter</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#available-importers">Available importers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="importers/olive.html">Olive XML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/mets-alto.html">Generic Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/rero.html">RERO Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/swa.html">SWA Alto importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuration-file">Configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-files">Configuration files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-text_importer.utils">Utilities</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Writing a new importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Write your own importer</a></li>
 </ul>
 
             
@@ -166,23 +167,20 @@
 <h1>TextImporter<a class="headerlink" href="#textimporter" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="available-importers">
 <h2>Available importers<a class="headerlink" href="#available-importers" title="Permalink to this headline">¶</a></h2>
-<p>The <em>Impresso TextImporter</em> already supports a number of formats (and flavours of standard formats), while a few others
-are currently being developed.</p>
-<p>The following importer CLI scripts are already available:</p>
 <ul class="simple">
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.oliveimporter</span></code>: importer for the <em>Olive XML format</em>, used by
-<a class="reference external" href="https://www.rero.ch/">RERO</a> to encode and deliver the majority of its newspaper data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.reroimporter</span></code>: importer for the Mets/ALTO flavor used by <a class="reference external" href="https://www.rero.ch/">RERO</a>
-to encode and deliver part of its data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.luximporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://bnl.public.lu/">Bibliothèque nationale de Luxembourg (BNL)</a> to encode and deliver its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>: Olive XML OCR of <a class="reference external" href="https://www.rero.ch/">RERO</a></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">reroimporter.py</span></code>: Mets/ALTO flavor of <a class="reference external" href="https://www.rero.ch/">RERO</a></p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">luximporter.py</span></code>: Mets/ALTO flavor of the Bibliotheque National du Luxembourg</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">swaimporter.py</span></code>: ALTO flavor of the Basel University Library.</p></li>
 </ul>
-<p>For further details on any of these implementations, please do refer to its documentation:</p>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Importers' APIs:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="importers/olive.html">Olive XML importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/mets-alto.html">Generic Mets/Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/rero.html">RERO Mets/Alto importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/swa.html">SWA Alto importer</a></li>
 </ul>
 </div>
 </div>
@@ -239,43 +237,9 @@ are import-specific (see documentation below).</p>
 </dd>
 </dl>
 </div>
-<div class="section" id="configuration-file">
-<h2>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
-<p>The selection of the actual newspaper data to be imported can be controlled by
-means of a configuration file (JSON format). The path to this file is passed via the <code class="docutils literal notranslate"><span class="pre">--config_file=</span></code>
-CLI parameter.</p>
-<p>This JSON file contains three properties:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">newspapers</span></code>: a dictionary containing the newspaper IDs to be imported (e.g. GDL);</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">exclude_newspapers</span></code>: a list of the newspaper IDs to be excluded;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">year_only</span></code>: a boolean flag indicating whether date ranges are expressed by using years
-or more granular dates (in the format <code class="docutils literal notranslate"><span class="pre">YYYY/MM/DD</span></code>).</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>When ingesting large amounts of data, these configuration files can help you organise
-your data imports into batches or homogeneous collections.</p>
-</div>
-<p>Here is a simple configuration file:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;newspapers&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="p">[]</span>
-    <span class="p">},</span>
-  <span class="s2">&quot;exclude_newspapers&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;year_only&quot;</span><span class="p">:</span> <span class="n">false</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>This is what a more complex config file looks like (only contents for the decade 1950-1960 of GDL are processed):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;newspapers&quot;</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="s2">&quot;1950/01/01-1960/12/31&quot;</span>
-    <span class="p">},</span>
-  <span class="s2">&quot;exclude_newspapers&quot;</span><span class="p">:</span> <span class="p">[],</span>
-  <span class="s2">&quot;year_only&quot;</span><span class="p">:</span> <span class="n">false</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+<div class="section" id="configuration-files">
+<h2>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<p>todo</p>
 </div>
 <div class="section" id="module-text_importer.utils">
 <span id="utilities"></span><h2>Utilities<a class="headerlink" href="#module-text_importer.utils" title="Permalink to this headline">¶</a></h2>
@@ -307,43 +271,6 @@ your data imports into batches or homogeneous collections.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="text_importer.utils.init_logger">
-<code class="sig-prename descclassname">text_importer.utils.</code><code class="sig-name descname">init_logger</code><span class="sig-paren">(</span><em class="sig-param">_logger: logging.RootLogger</em>, <em class="sig-param">log_level: int</em>, <em class="sig-param">log_file: str</em><span class="sig-paren">)</span> &#x2192; logging.RootLogger<a class="headerlink" href="#text_importer.utils.init_logger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialise the logger.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>_logger</strong> (<em>logging.RootLogger</em>) – Logger instance to initialise.</p></li>
-<li><p><strong>log_level</strong> (<em>int</em>) – Desidered logging level (e.g. <code class="docutils literal notranslate"><span class="pre">logging.INFO</span></code>).</p></li>
-<li><p><strong>log_file</strong> (<em>str</em>) – Path to destination file for logging output. If no
-output file is provided (<code class="docutils literal notranslate"><span class="pre">log_file</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>) logs will be written
-to standard output.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The initialised logger object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>logging.RootLogger</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.utils.verify_imported_issues">
-<code class="sig-prename descclassname">text_importer.utils.</code><code class="sig-name descname">verify_imported_issues</code><span class="sig-paren">(</span><em class="sig-param">actual_issue_json: dict</em>, <em class="sig-param">expected_issue_json: dict</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.verify_imported_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Short summary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>actual_issue_json</strong> (<em>dict</em>) – Description of parameter <cite>actual_issue_json</cite>.</p></li>
-<li><p><strong>expected_issue_json</strong> (<em>dict</em>) – Description of parameter <cite>expected_issue_json</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 </div>
 
@@ -358,7 +285,7 @@ to standard output.</p></li>
         <a href="importers/olive.html" class="btn btn-neutral float-right" title="Olive XML importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="architecture.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="architecture.html" class="btn btn-neutral float-left" title="Architecture" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
