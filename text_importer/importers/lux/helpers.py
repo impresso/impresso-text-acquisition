@@ -86,9 +86,7 @@ def remove_section_cis(content_items, sections):
     to_remove = [j for i in sections for j in i['l']['canonical_parts']]
     if len(to_remove) == 0:
         return content_items, []
-    
-    assert len(to_remove) == len(set(to_remove)), "Articles belonging to multiple sections"
-    
+        
     to_remove = set(to_remove)
     new_cis = []
     removed = []

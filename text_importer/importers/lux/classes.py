@@ -190,7 +190,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     item_div = self.xml.findAll('div', {'DMDID': section_id})[0]
                     parts = self._parse_mets_div(item_div)
                 except IndexError:
-                    err_msg = f"<div [DMID]={section_id}> not found {self.path}"
+                    err_msg = f"<div DMID={section_id}> not found {self.path}"
                     self._notes.append(err_msg)
                     logger.error(err_msg)
                     parts = []
@@ -276,8 +276,11 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
     
     def _process_image_ci(self, ci):
         
-        item_div = self.xml.findAll('div', {'DMDID': ci['l']['id']})[0]
-        
+        item_div = self.xml.findAll('div', {'DMDID': ci['l']['id']})
+        if len(item_div) > 0:
+            item_div = item_div[0]
+        else:
+            return
         legacy_id = item_div.get('ID')
         # Image is actually table
         
