@@ -25,7 +25,7 @@ type_translation = {
     'table': CONTENTITEM_TYPE_TABLE,
     'article': CONTENTITEM_TYPE_ARTICLE,
     'freead': CONTENTITEM_TYPE_ADVERTISEMENT
-}
+    }
 
 logger = logging.getLogger(__name__)
 
@@ -61,11 +61,11 @@ def extract_bnf_archive(dest_dir: str, issue_dir: IssueDir) -> ZipArchive:
         archive_tmp_path = os.path.join(
                 dest_dir,
                 canonical_path(issue_dir, path_type='dir')
-        )
-
+                )
+        
         try:
             archive = ZipFile(issue_dir.path)
-
+            
             logger.debug((
                 f"Contents of archive for {issue_id}:"
                 f" {archive.namelist()}"
@@ -77,3 +77,20 @@ def extract_bnf_archive(dest_dir: str, issue_dir: IssueDir) -> ZipArchive:
     else:
         msg = f"Could not find archive {issue_dir.path} for {issue_id}"
         raise ValueError(msg)
+
+
+def is_int(s):
+    try:
+        int(s)
+        return True
+    except ValueError as e:
+        return False
+
+
+def get_journal_name(archive_path):
+    split = os.path.splitext(os.path.basename(archive_path))[0].split('-')
+    if is_int(split[-1]):
+        journal = "".join(split[:-1]).lower()
+    else:
+        journal = "".join(split).lower()
+    return journal
