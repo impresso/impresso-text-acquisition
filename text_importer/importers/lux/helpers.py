@@ -112,7 +112,7 @@ def parse_style(style_div):
     
     style = {
         "id": font_id,
-        "fs": int(font_size),
+        "fs": float(font_size),
         "f": font_name
         }
     return style
