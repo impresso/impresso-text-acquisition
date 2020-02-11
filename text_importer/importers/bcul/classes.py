@@ -12,6 +12,12 @@ from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TAB
 logger = logging.getLogger(__name__)
 
 BCUL_IMAGE_TYPE = "Picture"
+BCUL_TABLE_TYPE = "Table"
+BCUL_CI_TYPES = {BCUL_IMAGE_TYPE, BCUL_TABLE_TYPE}
+BCUL_CI_TRANSLATION = {
+    BCUL_IMAGE_TYPE: CONTENTITEM_TYPE_IMAGE,
+    BCUL_TABLE_TYPE: CONTENTITEM_TYPE_TABLE
+    }
 
 
 class BCULNewspaperPage(NewspaperPage):
@@ -48,6 +54,9 @@ class BCULNewspaperPage(NewspaperPage):
     
     def add_issue(self, issue: NewspaperIssue):
         self.issue = issue
+    
+    def get_ci_divs(self):
+        return self.xml.findAll("block", {"blockType": lambda x: x in BCUL_CI_TYPES})
     
     def get_image_divs(self):
         return self.xml.findAll("block", {"blockType": BCUL_IMAGE_TYPE})
@@ -147,21 +156,22 @@ class BCULNewspaperIssue(NewspaperIssue):
                     }
                 }
             self.content_items.append(ci)
-    
-    def _find_images(self, start_counter):
-        # Get all images
+        
+        n = len(self.content_items) + 1
+        # Get all images and tables
         for p in sorted(self.pages, key=lambda x: x.number):
-            page_images = [get_div_coords(div) for div in p.get_image_divs()]  # Get page
-            for im in sorted(page_images):
-                ci_id = self.id + '-i' + str(start_counter).zfill(4)
+            page_cis = [(div.get('blockType'), get_div_coords(div)) for div in p.get_ci_divs()]  # Get page
+            for div_type, coords in sorted(page_cis, key=lambda x: x[1]):  # Sort by coordinates
+                ci_id = self.id + '-i' + str(n).zfill(4)
                 
                 ci = {
                     'm': {
                         'id': ci_id,
                         'pp': [p.number],
-                        'tp': CONTENTITEM_TYPE_IMAGE,
-                        'c': im,
+                        'tp': BCUL_CI_TRANSLATION[div_type],
+                        'c': coords,
                         }
                     }
+                # TODO: add IIIF url for image types
                 self.content_items.append(ci)
-                start_counter += 1
+                n += 1
