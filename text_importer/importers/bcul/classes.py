@@ -5,7 +5,7 @@ from time import strftime
 
 from bs4 import BeautifulSoup
 
-from text_importer.importers.bcul.helpers import find_mit_file, get_page_number, get_div_coords
+from text_importer.importers.bcul.helpers import find_mit_file, get_page_number, get_div_coords, parse_textblock
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
 
@@ -25,6 +25,12 @@ class BCULNewspaperPage(NewspaperPage):
     def __init__(self, _id: str, number: int, page_path: str):
         super().__init__(_id, number)
         self.path = page_path
+        
+        self.page_data = {
+            'id': _id,
+            'cdt': strftime("%Y-%m-%d %H:%M:%S"),
+            'r': []  # here go the page regions
+            }
     
     @property
     def xml(self) -> BeautifulSoup:
@@ -58,11 +64,12 @@ class BCULNewspaperPage(NewspaperPage):
     def get_ci_divs(self):
         return self.xml.findAll("block", {"blockType": lambda x: x in BCUL_CI_TYPES})
     
-    def get_image_divs(self):
-        return self.xml.findAll("block", {"blockType": BCUL_IMAGE_TYPE})
-    
     def parse(self):
-        pass
+        doc = self.xml
+        text_blocks = doc.findAll("block", {"blockType": "Text"})
+        page_data = [parse_textblock(tb, self.id) for tb in text_blocks]
+        self.page_data["cc"] = True
+        self.page_data["r"] = page_data
 
 
 class BCULNewspaperIssue(NewspaperIssue):

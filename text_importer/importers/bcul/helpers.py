@@ -50,4 +50,39 @@ def get_div_coords(div):
     if div is None:
         return None
     b, l, r, t = int(div.get('b')), int(div.get('l')), int(div.get('r')), int(div.get('t'))
-    return [l, t, r-l, b-t]
+    return [l, t, r - l, b - t]
+
+
+def parse_token(t):
+    coords = get_div_coords(t)
+    tx = t.getText()
+    return {
+        "c": coords,
+        "tx": tx
+        }
+
+
+def parse_textline(line):
+    line_ci = {
+        "c": get_div_coords(line)
+        }
+    tokens = [parse_token(t) for t in line.findAll("charParams")]
+    
+    line_ci['t'] = tokens
+    return line_ci
+
+
+def parse_textblock(block, page_id):
+    coordinates = get_div_coords(block)
+    
+    lines = [parse_textline(line) for line in block.findAll("line")]
+    paragraph = {
+        "c": coordinates,
+        "l": lines,
+        }
+    region = {
+        "c": coordinates,
+        "p": [paragraph],
+        "pOf": page_id
+        }
+    return region
