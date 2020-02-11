@@ -31,8 +31,6 @@ def dir2issue(path: str, access_rights: dict) -> Optional[BCULIssueDir]:
     :param dict access_rights: Dictionary for access rights.
     :return: New ``Rero2IssueDir`` object.
     """
-    # Get all files in issue directory
-    files = os.listdir(path)
     mit_file = find_mit_file(path)
     if mit_file is None:
         logger.error("Could not find MIT file in {}".format(path))

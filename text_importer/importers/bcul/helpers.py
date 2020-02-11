@@ -12,7 +12,7 @@ def parse_info(mit_filename: str) -> Tuple[date, bytes]:
     """
     basename = os.path.splitext(os.path.basename(mit_filename.split('/')[-1]))[0]
     split = basename.split('_')
-    year, month, day = int(split[-4]), int(split[-3]), int(split[-2])
+    year, month, day = int(split[1]), int(split[2]), int(split[3])
     return datetime(year, month, day).date(), split[0]
 
 
@@ -46,9 +46,8 @@ def get_page_number(exif_file: str) -> int:
         raise ValueError("Could not get page number from {}".format(exif_file))
 
 
-def get_image_coords(image_div):
-    rect_div = image_div.find("rect")
-    if rect_div is None:
+def get_div_coords(div):
+    if div is None:
         return None
-    b, l, r, t = rect_div.get('b'), rect_div.get('l'), rect_div.get('r'), rect_div.get('t')
-    return [b, l, r, t]
+    b, l, r, t = int(div.get('b')), int(div.get('l')), int(div.get('r')), int(div.get('t'))
+    return [l, t, r-l, b-t]

@@ -5,10 +5,13 @@ from time import strftime
 
 from bs4 import BeautifulSoup
 
-from text_importer.importers.bcul.helpers import find_mit_file, get_page_number, get_image_coords
+from text_importer.importers.bcul.helpers import find_mit_file, get_page_number, get_div_coords
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
+from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
 
 logger = logging.getLogger(__name__)
+
+BCUL_IMAGE_TYPE = "Picture"
 
 
 class BCULNewspaperPage(NewspaperPage):
@@ -47,7 +50,7 @@ class BCULNewspaperPage(NewspaperPage):
         self.issue = issue
     
     def get_image_divs(self):
-        return self.xml.findAll("block", {"blockType": "Picture"})
+        return self.xml.findAll("block", {"blockType": BCUL_IMAGE_TYPE})
     
     def parse(self):
         pass
@@ -133,18 +136,32 @@ class BCULNewspaperIssue(NewspaperIssue):
             self._find_pages_xml()
     
     def _find_content_items(self):
-        for n, page in enumerate(sorted(self.pages, key=lambda x: x.id)):
+        # First add the pages as content items
+        for n, page in enumerate(sorted(self.pages, key=lambda x: x.number)):
             ci_id = self.id + '-i' + str(n + 1).zfill(4)
             ci = {
                 'm': {
                     'id': ci_id,
-                    'pp': [n + 1],
+                    'pp': [page.number],
                     'tp': 'page',
                     }
                 }
             self.content_items.append(ci)
     
-    def _find_images(self):
+    def _find_images(self, start_counter):
         # Get all images
-        image_divs = [(x, p.number, get_image_coords(x)) for p in self.pages for x in p.get_image_divs()]
-        # TODO: continue this
+        for p in sorted(self.pages, key=lambda x: x.number):
+            page_images = [get_div_coords(div) for div in p.get_image_divs()]  # Get page
+            for im in sorted(page_images):
+                ci_id = self.id + '-i' + str(start_counter).zfill(4)
+                
+                ci = {
+                    'm': {
+                        'id': ci_id,
+                        'pp': [p.number],
+                        'tp': CONTENTITEM_TYPE_IMAGE,
+                        'c': im,
+                        }
+                    }
+                self.content_items.append(ci)
+                start_counter += 1
