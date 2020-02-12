@@ -15,7 +15,8 @@ from text_importer.importers import (CONTENTITEM_TYPE_ADVERTISEMENT,
                                      CONTENTITEM_TYPE_TABLE,
                                      CONTENTITEM_TYPE_WEATHER)
 from text_importer.importers.lux.helpers import convert_coordinates, encode_ark, section_is_article, div_has_body, \
-    find_section_articles, remove_section_cis, parse_style
+    find_section_articles, remove_section_cis
+from text_importer.importers.mets_alto.alto import parse_style
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage,
                                                parse_mets_amdsec)
