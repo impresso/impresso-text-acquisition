@@ -55,9 +55,8 @@ class MetsAltoNewspaperPage(NewspaperPage):
         alto_doc = BeautifulSoup(raw_xml, 'xml')
         return alto_doc
     
-    # TODO: decide whether to remove this
     def _convert_coordinates(self, page_data: List[dict]) -> Tuple[bool, List[dict]]:
-        return False, page_data
+        return True, page_data
     
     @abstractmethod
     def add_issue(self, issue):
@@ -78,6 +77,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
         self.page_data['cc'], self.page_data["r"] = self._convert_coordinates(
                 page_data
                 )
+        # Add notes for missing coordinates in SWA
         if len(notes) > 0:
             self.page_data['n'] = notes
 

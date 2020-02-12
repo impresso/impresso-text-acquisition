@@ -101,8 +101,6 @@ def detect_issues(base_dir: str, access_rights: str, csv_file: str = 'impresso_i
     This function expects the directory structure that SWA used to
     organize the dump of Alto OCR data.
 
-    .. todo::
-
         The access rights information is not in place yet, but needs
         to be specified by the content provider (SWA).
 
@@ -137,8 +135,6 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> List[SwaIs
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
-
-    .. todo::
 
         The access rights information is not in place yet, but needs
         to be specified by the content provider (SWA).

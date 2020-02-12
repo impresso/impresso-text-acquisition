@@ -143,7 +143,8 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
             pge_no = p["comp_page_no"]
             if pge_no not in content_item['m']['pp']:
                 content_item['m']['pp'].append(pge_no)
-                # TODO: add coordinates for images as well as iiif_link
+        
+        # TODO: add coordinates for images as well as iiif_link. Since for now none of the issues we have have images, it cannot be done
         return content_item
     
     def _parse_content_items(self) -> List[dict]:
