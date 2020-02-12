@@ -63,6 +63,10 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
     
     @property
     def xml(self) -> BeautifulSoup:
+        """ Redefined as for some issues, the pages are in gz format
+        
+        :return:
+        """
         if not self.is_gzip:
             return super(BnfNewspaperPage, self).xml
         else:
@@ -243,14 +247,19 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
     
     def _parse_mets(self):
         """Parses the METS file for the current Issue"""
+        
+        # First get all the divs by type
         by_type = self._get_divs_by_type()
         item_counter = 1
         content_items = []
+        
+        # Then start parsing them
         for div_type, divs in by_type.items():
             for div_id, div_label in divs:
                 cis, item_counter = self._parse_div(div_id, div_type, div_label, item_counter)
                 content_items += cis
         
+        # Finally add the pages and iiif link
         for x in content_items:
             x['m']['pp'] = list(set(c['comp_page_no'] for c in x['l']['parts']))
             if x['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
