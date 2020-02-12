@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alto xmlns="http://www.loc.gov/standards/alto/ns-v3#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" SCHEMAVERSION="alto_bnf-v2_0" xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v3# http://bibnum.bnf.fr/schema/alto_bnf-v2_0.xsd" xmlns:xlink="http://www.w3.org/TR/xlink">
+  <Description>
+    <MeasurementUnit>pixel</MeasurementUnit>
+    <sourceImageInformation>
+      <fileName>00000010.jp2</fileName>
+      <fileIdentifier>ark:/12148/bpt6k47010817/f10</fileIdentifier>
+      <documentIdentifier documentIdentifierLocation="NUM">4701081</documentIdentifier>
+    </sourceImageInformation>
+    <OCRProcessing ID="OCR_1">
+      <ocrProcessingStep>
+        <processingDateTime>2019-01-29</processingDateTime>
+        <processingStepDescription>[001_OCR_BRUT]OCR BRUT 100.00 %</processingStepDescription>
+        <processingStepDescription>[002_CHARS]{0}</processingStepDescription>
+        <processingStepDescription>[003_CHARS_USED]{0}</processingStepDescription>
+        <processingStepDescription>[004_CHARS_SUSPECTS_USED]{0}</processingStepDescription>
+        <processingStepDescription>[005_CHARS_UNUSED]{0}</processingStepDescription>
+        <processingStepDescription>[006_CHARS_SUSPECTS_UNUSED]{0}</processingStepDescription>
+        <processingStepDescription>[007_STRINGS]{0}</processingStepDescription>
+        <processingStepDescription>[008_STRINGS_USED]{0}</processingStepDescription>
+        <processingStepDescription>[009_STRINGS_SUSPECTS_UNUSED]{0}</processingStepDescription>
+        <processingStepDescription>[010_CHARS_LETTERS]{0}</processingStepDescription>
+        <processingStepDescription>[011_CHARS_PUNCTUATION]{0}</processingStepDescription>
+        <processingStepDescription>[012_CHARS_DIGITS]{0}</processingStepDescription>
+        <processingStepDescription>[013_CHARS_SUSPECT]{0}</processingStepDescription>
+        <processingStepDescription>[022_CHARS_UNUSED_BY_BLOCK]{0}</processingStepDescription>
+        <processingStepDescription>[023_BLOCKS_SUSPECTS]{0}</processingStepDescription>
+        <processingStepDescription>[111_LIGS_DETECTED_CURV]{0}</processingStepDescription>
+      </ocrProcessingStep>
+    </OCRProcessing>
+  </Description>
+  <Styles>
+    <TextStyle FONTSIZE="8" ID="TXT_2" FONTFAMILY="Times"/>
+  </Styles>
+  <Tags>
+    <StructureTag DESCRIPTION="Voici le 100e Numéro DE MARIE-CLAIRE ET C'EST Colette QUI L'A FAIT" TYPE="Structural" ID="TAG_ST001" LABEL="title"/>
+  </Tags>
+  <Layout>
+    <Page ID="PAG_10" HEIGHT="5004" WIDTH="7618" PHYSICAL_IMG_NR="10" QUALITY="OK" ACCURACY="100.00">
+      <PrintSpace HPOS="161" VPOS="30" HEIGHT="4862" WIDTH="7305" ID="PAG_10_PrintSpace">
+        <ComposedBlock ID="PAG_10_CB000001" HPOS="161" VPOS="30" HEIGHT="4862" WIDTH="7305">
+        <TextBlock HPOS="4968" VPOS="192" HEIGHT="1148" WIDTH="2153" ID="PAG_10_TB000001" TAGREFS="TAG_ST001" LANG="fr" STYLEREFS="TXT_2">
+          <TextLine HPOS="4968" VPOS="192" HEIGHT="1148" WIDTH="2153" ID="PAG_10_TL000001" STYLEREFS="TXT_2">
+            <String HPOS="4968" VPOS="192" HEIGHT="1148" WIDTH="192" ID="PAG_10_ST000001" WC="1" CONTENT="Voici" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000001" HPOS="5160" VPOS="192" WIDTH="1"/>
+            <String HPOS="5160" VPOS="192" HEIGHT="1148" WIDTH="96" ID="PAG_10_ST000002" WC="1" CONTENT="le" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000002" HPOS="5256" VPOS="192" WIDTH="1"/>
+            <String HPOS="5256" VPOS="192" HEIGHT="1148" WIDTH="160" ID="PAG_10_ST000003" WC="1" CONTENT="100e" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000003" HPOS="5416" VPOS="192" WIDTH="1"/>
+            <String HPOS="5416" VPOS="192" HEIGHT="1148" WIDTH="224" ID="PAG_10_ST000004" WC="1" CONTENT="Numéro" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000004" HPOS="5640" VPOS="192" WIDTH="1"/>
+            <String HPOS="5640" VPOS="192" HEIGHT="1148" WIDTH="96" ID="PAG_10_ST000005" WC="1" CONTENT="DE" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000005" HPOS="5736" VPOS="192" WIDTH="1"/>
+            <String HPOS="5736" VPOS="192" HEIGHT="1148" WIDTH="417" ID="PAG_10_ST000006" WC="1" CONTENT="MARIE-CLAIRE" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000006" HPOS="6153" VPOS="192" WIDTH="1"/>
+            <String HPOS="6153" VPOS="192" HEIGHT="1148" WIDTH="96" ID="PAG_10_ST000007" WC="1" CONTENT="ET" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000007" HPOS="6249" VPOS="192" WIDTH="1"/>
+            <String HPOS="6249" VPOS="192" HEIGHT="1148" WIDTH="192" ID="PAG_10_ST000008" WC="1" CONTENT="C'EST" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000008" HPOS="6441" VPOS="192" WIDTH="1"/>
+            <String HPOS="6441" VPOS="192" HEIGHT="1148" WIDTH="257" ID="PAG_10_ST000009" WC="1" CONTENT="Colette" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000009" HPOS="6698" VPOS="192" WIDTH="1"/>
+            <String HPOS="6698" VPOS="192" HEIGHT="1148" WIDTH="128" ID="PAG_10_ST000010" WC="1" CONTENT="QUI" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000010" HPOS="6826" VPOS="192" WIDTH="1"/>
+            <String HPOS="6826" VPOS="192" HEIGHT="1148" WIDTH="128" ID="PAG_10_ST000011" WC="1" CONTENT="L'A" STYLEREFS="TXT_2"/>
+            <SP ID="PAG_10_SP000011" HPOS="6954" VPOS="192" WIDTH="1"/>
+            <String HPOS="6954" VPOS="192" HEIGHT="1148" WIDTH="167" ID="PAG_10_ST000012" WC="1" CONTENT="FAIT" STYLEREFS="TXT_2"/>
+          </TextLine>
+        </TextBlock>
+        <Illustration ID="PAG_10_IL000001" HPOS="161" VPOS="30" HEIGHT="4862" WIDTH="7305"/>
+        </ComposedBlock>
+      </PrintSpace>
+    </Page>
+  </Layout>
+</alto>

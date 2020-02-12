@@ -1,0 +1,3371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mets xmlns="http://www.loc.gov/METS/" xmlns:mods="http://www.loc.gov/mods/v3" xmlns:premis="info:lc/xmlns/premis-v2" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:spar_dc="http://bibnum.bnf.fr/ns/spar_dc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-2.xsd http://bibnum.bnf.fr/ns/spar_dc http://bibnum.bnf.fr/ns/spar_dc.xsd http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-6.xsd">
+    <dmdSec ID="DMD.1">
+        <mdRef LOCTYPE="ARK" xlink:type="simple" xlink:href="ark:/12148/bc6p04rdh28" MDTYPE="DC" MIMETYPE="text/xml"/></dmdSec>
+    <dmdSec ID="DMD.2">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="DC">
+            <xmlData>
+                <spar_dc:spar_dc>
+                    <dc:title>1915-12-01 (Année 12, Numéro 78)</dc:title>
+                    <dc:description xsi:type="spar_dc:sequentialDesignation1">Année 12</dc:description>
+                    <dc:description xsi:type="spar_dc:sequentialDesignation2">Numéro 78</dc:description>
+                    <dc:type>periodical</dc:type>
+                    <dc:date>1915-12-01</dc:date>
+                    <dc:publisher>[s.n.]</dc:publisher>
+                    <dc:relation xsi:type="spar_dc:ark">ark:/12148/cb34429265b</dc:relation>
+                    <dcterms:provenance>BnF</dcterms:provenance>
+                </spar_dc:spar_dc>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.3">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Lettres du Front</mods:title>
+                        <mods:subTitle>Ne pas être Jobards</mods:subTitle>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>Sergent Pangloss</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.4">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Le théâtre et la guerre</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.5">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Propos d'un Grincheux</mods:title>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>Albert Savarus</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.6">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>" LE NOM DU MONSIEUR " !</mods:title>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>Gustave Téry</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.7">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>LE PORTUGAL ET LA GUERRE</mods:title>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>A bel Servien.</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.8">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Comment les Allemands estiment leurs succès</mods:title>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>Général Verraux</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.9">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>LA RÉPONSE DE M. RIBOT</mods:title>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>G. T.</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.10">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Les Communiqués</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.11">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>15 heures.</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.12">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>23 heures.</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.13">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:classification>freead</mods:classification>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.14">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>NE GASPILLONS PAS L'EMPRUNT</mods:title>
+                        <mods:subTitle>On nous écrit</mods:subTitle>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.15">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>A la Chambre</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.16">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>L'appel de la classe 17</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.17">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Hors d'Œuvre</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.18">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Féminisme</mods:title>
+                        <mods:subTitle>" AU CHARBON "</mods:subTitle>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>ZETTE</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.19">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Dans la Ville Eternelle</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.20">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>La croisade de M. Ford</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.21">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Le pantalon de l'escouade</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.22">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>La Vie chère</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.23">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Citation</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.24">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>« Langage poilu »</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.25">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Nouveaux scandales</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.26">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Question d'actualité</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.27">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Les jeunes classes</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.28">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Incurie</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.29">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Définition</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.31">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Le " Sourire de Reims " est à Reims</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.32">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>LE COURRIER DE SERBIE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.33">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Les délégués suédois</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.34">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>AU PARLEMENT</mods:title>
+                        <mods:subTitle>Des économies</mods:subTitle>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.35">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>LA RÉFORME du Service de santé (1)</mods:title>
+                        <mods:subTitle>APRÈS UN AN DE GUERRE Le service de santé officine d'embuscade</mods:subTitle>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>Docteur Doyer</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.36">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>L'Œuvre des Réfugiés</mods:title>
+                        <mods:subTitle>SOUVENIRS ET NOUVELLES DES PAYS ENVAHIS</mods:subTitle>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.37">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Dans les régions envahies</mods:title>
+                        <mods:subTitle>Les réfugiés du littoral</mods:subTitle>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>A Cortilliot</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.38">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Il y a des juges... en Belgique</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.39">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Communications postales avec la Belgique</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.40">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>BELGES ET JAPONAIS</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.41">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>EN ALSACE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.42">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>On nous écrit:</mods:title>
+                        <mods:subTitle>Les réfugiés des départements envahis</mods:subTitle>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.43">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>L'EMPRUNT DE LA VICTOIRE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.45">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>LA VIE CHÈRE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.46">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>LES TRIBUNAUX</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.47">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>POUR LES VICTIMES DE LA GUERRE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.48">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Notez ceci :</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.49">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>NOUVELLES DE LA DERNIÈRE HEURE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.50">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>A ATHENES</mods:title>
+                    </mods:titleInfo>
+                    <mods:name type="personal">
+                        <mods:namePart>— ACHILLE PLISTA.</mods:namePart>
+                        <mods:role>
+                            <mods:roleTerm type="text" authority="marcrelator">Author</mods:roleTerm>
+                        </mods:role>
+                    </mods:name>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.51">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>TRIPLE TORPILLAGE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.52">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>L'ARBRE DE NOEL DES PRISONNIERS</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.53">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>LA GUERRE EN SERBIE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.54">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>COMMUNIQUE BELGE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.55">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>IL ETAIT TEMPS D'Y SONGER</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.56">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Importants succès russes près de Dvinsk</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.57">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Violente contre-attaque repoussée par les Italiens</mods:title>
+                        <mods:subTitle>COMMUNIQUE ITALIEN</mods:subTitle>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.58">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>Chez nos alliés</mods:title>
+                        <mods:subTitle>Le recrutement financier</mods:subTitle>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.59">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>ZEPPELIN DETRUIT ?</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.60">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>N EXPORTONS PLUS NOTRE BEURRE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.61">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>UN BON EXEMPLE</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.62">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>AU « JOURNAL OFFICIEL »</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.63">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>COURRIER DES THÉATRES</mods:title>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.64">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>FEUILLETON DE L' « ŒUVRE » du 1er décembre 1915</mods:title>
+                    </mods:titleInfo>
+                    <mods:classification>novel</mods:classification>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <dmdSec ID="DMD.65">
+        <mdWrap MIMETYPE="text/xml" MDTYPE="MODS">
+            <xmlData>
+                <mods:mods>
+                    <mods:titleInfo>
+                        <mods:title>26 La Poilue</mods:title>
+                        <mods:subTitle>PAR Une PREMIÈRE de la rue de la Paix</mods:subTitle>
+                    </mods:titleInfo>
+                </mods:mods>
+            </xmlData>
+        </mdWrap>
+    </dmdSec>
+    <fileSec>
+        <fileGrp USE="ocr" ID="GRP.1">
+            <file CHECKSUMTYPE="MD5" CHECKSUM="e877b4b50c1137ed59eb30e3722d2654" ID="ocr.1">
+                <FLocat xlink:type="simple" LOCTYPE="URL" xlink:href="../ocr/X0000001.xml"/></file>
+            <file CHECKSUMTYPE="MD5" CHECKSUM="ab1eedf3772a0604299af7a6a510ee60" ID="ocr.2">
+                <FLocat xlink:type="simple" LOCTYPE="URL" xlink:href="../ocr/X0000002.xml"/></file>
+            <file CHECKSUMTYPE="MD5" CHECKSUM="fe9a0210a6eafa2e092d0471bd78631b" ID="ocr.3">
+                <FLocat xlink:type="simple" LOCTYPE="URL" xlink:href="../ocr/X0000003.xml"/></file>
+            <file CHECKSUMTYPE="MD5" CHECKSUM="3eea939293b272c778bdb63532ae77aa" ID="ocr.4">
+                <FLocat xlink:type="simple" LOCTYPE="URL" xlink:href="../ocr/X0000004.xml"/></file>
+        </fileGrp>
+    </fileSec>
+    <structMap LABEL="Logical Structure" TYPE="logical">
+        <div ID="DIV.10" TYPE="NEWSPAPER" DMDID="DMD.1">
+            <div ID="DIV.11" TYPE="ISSUE" DMDID="DMD.2">
+                <div ID="DIV.12" TYPE="TITLESECTION" ORDER="1">
+                    <div ID="DIV.13" TYPE="HEADLINE" ORDER="1">
+                        <fptr>
+                            <seq>
+                                <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000001"/></seq>
+                        </fptr>
+                    </div>
+                    <div ID="DIV.14" TYPE="TEXTBLOCK" ORDER="2">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000002"/></fptr>
+                    </div>
+                    <div ID="DIV.15" TYPE="TEXTBLOCK" ORDER="3">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000003"/></fptr>
+                    </div>
+                    <div ID="DIV.16" TYPE="TEXTBLOCK" ORDER="4">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000004"/></fptr>
+                    </div>
+                    <div ID="DIV.17" TYPE="TEXTBLOCK" ORDER="5">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000005"/></fptr>
+                    </div>
+                    <div ID="DIV.18" TYPE="TEXTBLOCK" ORDER="6">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000006"/></fptr>
+                    </div>
+                    <div ID="DIV.19" TYPE="TEXTBLOCK" ORDER="7">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000007"/></fptr>
+                    </div>
+                    <div ID="DIV.20" TYPE="TEXTBLOCK" ORDER="8">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000008"/></fptr>
+                    </div>
+                    <div ID="DIV.21" TYPE="TEXTBLOCK" ORDER="9">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000009"/></fptr>
+                    </div>
+                    <div ID="DIV.22" TYPE="TEXTBLOCK" ORDER="10">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000010"/></fptr>
+                    </div>
+                    <div ID="DIV.23" TYPE="TEXTBLOCK" ORDER="11">
+                        <fptr>
+                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000011"/></fptr>
+                    </div>
+                </div>
+                <div ID="DIV.24" TYPE="CONTENT" ORDER="2">
+                    <div ID="DIV.25" DMDID="DMD.3" TYPE="ARTICLE" ORDER="1" LABEL="Lettres du Front : Ne pas être Jobards">
+                        <div ID="DIV.26" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.27" TYPE="TITLE" ORDER="1" LABEL="Lettres du Front">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000012"/></seq>
+                                </fptr>
+                            </div>
+                            <div ID="DIV.28" TYPE="SUBTITLE" ORDER="2" LABEL="Ne pas être Jobards">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000013"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.29" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.30" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000014"/></fptr>
+                            </div>
+                            <div ID="DIV.31" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000015"/></fptr>
+                            </div>
+                            <div ID="DIV.32" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000016"/></fptr>
+                            </div>
+                            <div ID="DIV.33" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000017"/></fptr>
+                            </div>
+                            <div ID="DIV.34" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000018"/></fptr>
+                            </div>
+                            <div ID="DIV.35" TYPE="PARAGRAPH" ORDER="6">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000019"/></fptr>
+                            </div>
+                            <div ID="DIV.36" TYPE="PARAGRAPH" ORDER="7">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000020"/></fptr>
+                            </div>
+                            <div ID="DIV.37" TYPE="PARAGRAPH" ORDER="8">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000021"/></fptr>
+                            </div>
+                            <div ID="DIV.38" TYPE="PARAGRAPH" ORDER="9">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000022"/></fptr>
+                            </div>
+                            <div ID="DIV.39" TYPE="PARAGRAPH" ORDER="10">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000023"/></fptr>
+                            </div>
+                            <div ID="DIV.40" TYPE="PARAGRAPH" ORDER="11">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000024"/></fptr>
+                            </div>
+                            <div ID="DIV.41" TYPE="PARAGRAPH" ORDER="12">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000025"/></fptr>
+                            </div>
+                            <div ID="DIV.42" TYPE="PARAGRAPH" ORDER="13">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000026"/></fptr>
+                            </div>
+                            <div ID="DIV.43" TYPE="PARAGRAPH" ORDER="14">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000027"/></fptr>
+                            </div>
+                            <div ID="DIV.44" TYPE="PARAGRAPH" ORDER="15">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000028"/></fptr>
+                            </div>
+                            <div ID="DIV.45" TYPE="PARAGRAPH" ORDER="16">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000029"/></fptr>
+                            </div>
+                            <div ID="DIV.46" TYPE="PARAGRAPH" ORDER="17">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000030"/></fptr>
+                            </div>
+                            <div ID="DIV.47" TYPE="PARAGRAPH" ORDER="18">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000031"/></fptr>
+                            </div>
+                            <div ID="DIV.48" TYPE="PARAGRAPH" ORDER="19">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000032"/></fptr>
+                            </div>
+                            <div ID="DIV.49" TYPE="PARAGRAPH" ORDER="20">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000033"/></fptr>
+                            </div>
+                            <div ID="DIV.50" TYPE="PARAGRAPH" ORDER="21">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000034"/></fptr>
+                            </div>
+                            <div ID="DIV.51" TYPE="PARAGRAPH" ORDER="22">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000035"/></fptr>
+                            </div>
+                            <div ID="DIV.52" TYPE="PARAGRAPH" ORDER="23">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000036"/></fptr>
+                            </div>
+                            <div ID="DIV.53" TYPE="PARAGRAPH" ORDER="24">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000037"/></fptr>
+                            </div>
+                            <div ID="DIV.54" TYPE="PARAGRAPH" ORDER="25">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000038"/></fptr>
+                            </div>
+                            <div ID="DIV.55" TYPE="PARAGRAPH" ORDER="26">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000039"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.56" DMDID="DMD.4" TYPE="ARTICLE" ORDER="2" LABEL="Le théâtre et la guerre">
+                        <div ID="DIV.57" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.58" TYPE="TITLE" ORDER="1" LABEL="Le théâtre et la guerre">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000040"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.59" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.60" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000041"/></fptr>
+                            </div>
+                            <div ID="DIV.61" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000042"/></fptr>
+                            </div>
+                            <div ID="DIV.62" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000043"/></fptr>
+                            </div>
+                            <div ID="DIV.63" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000044"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.64" DMDID="DMD.5" TYPE="ARTICLE" ORDER="3" LABEL="Propos d'un Grincheux">
+                        <div ID="DIV.65" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.66" TYPE="TITLE" ORDER="1" LABEL="Propos d'un Grincheux">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000045"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.67" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.68" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000046"/></fptr>
+                            </div>
+                            <div ID="DIV.69" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000047"/></fptr>
+                            </div>
+                            <div ID="DIV.70" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000048"/></fptr>
+                            </div>
+                            <div ID="DIV.71" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000049"/></fptr>
+                            </div>
+                            <div ID="DIV.72" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000050"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.73" DMDID="DMD.6" TYPE="ARTICLE" ORDER="4" LABEL="&quot; LE NOM DU MONSIEUR &quot; !">
+                        <div ID="DIV.74" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.75" TYPE="TITLE" ORDER="1" LABEL="&quot; LE NOM DU MONSIEUR &quot; !">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000051"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.76" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.77" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000052"/></fptr>
+                            </div>
+                            <div ID="DIV.78" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000053"/></fptr>
+                            </div>
+                            <div ID="DIV.79" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000054"/></fptr>
+                            </div>
+                            <div ID="DIV.80" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000055"/></fptr>
+                            </div>
+                            <div ID="DIV.81" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000056"/></fptr>
+                            </div>
+                            <div ID="DIV.82" TYPE="PARAGRAPH" ORDER="6">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000057"/></fptr>
+                            </div>
+                            <div ID="DIV.83" TYPE="PARAGRAPH" ORDER="7">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000058"/></fptr>
+                            </div>
+                            <div ID="DIV.84" TYPE="PARAGRAPH" ORDER="8">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000059"/></fptr>
+                            </div>
+                            <div ID="DIV.85" TYPE="PARAGRAPH" ORDER="9">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000060"/></fptr>
+                            </div>
+                            <div ID="DIV.86" TYPE="PARAGRAPH" ORDER="10">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000061"/></fptr>
+                            </div>
+                            <div ID="DIV.87" TYPE="PARAGRAPH" ORDER="11">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000062"/></fptr>
+                            </div>
+                            <div ID="DIV.88" TYPE="PARAGRAPH" ORDER="12">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000063"/></fptr>
+                            </div>
+                            <div ID="DIV.89" TYPE="PARAGRAPH" ORDER="13">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000064"/></fptr>
+                            </div>
+                            <div ID="DIV.90" TYPE="PARAGRAPH" ORDER="14">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000065"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.91" DMDID="DMD.7" TYPE="ARTICLE" ORDER="5" LABEL="LE PORTUGAL ET LA GUERRE">
+                        <div ID="DIV.92" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.93" TYPE="TITLE" ORDER="1" LABEL="LE PORTUGAL ET LA GUERRE">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000066"/>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000067"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.94" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.95" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000068"/></fptr>
+                            </div>
+                            <div ID="DIV.96" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000069"/></fptr>
+                            </div>
+                            <div ID="DIV.97" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000070"/></fptr>
+                            </div>
+                            <div ID="DIV.98" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000071"/></fptr>
+                            </div>
+                            <div ID="DIV.99" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000072"/></fptr>
+                            </div>
+                            <div ID="DIV.100" TYPE="PARAGRAPH" ORDER="6">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000073"/></fptr>
+                            </div>
+                            <div ID="DIV.101" TYPE="PARAGRAPH" ORDER="7">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000074"/></fptr>
+                            </div>
+                            <div ID="DIV.102" TYPE="PARAGRAPH" ORDER="8">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000075"/></fptr>
+                            </div>
+                            <div ID="DIV.103" TYPE="PARAGRAPH" ORDER="9">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000076"/></fptr>
+                            </div>
+                            <div ID="DIV.104" TYPE="PARAGRAPH" ORDER="10">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000077"/></fptr>
+                            </div>
+                            <div ID="DIV.105" TYPE="PARAGRAPH" ORDER="11">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000078"/></fptr>
+                            </div>
+                            <div ID="DIV.106" TYPE="PARAGRAPH" ORDER="12">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000079"/></fptr>
+                            </div>
+                            <div ID="DIV.107" TYPE="PARAGRAPH" ORDER="13">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000080"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.108" DMDID="DMD.8" TYPE="ARTICLE" ORDER="6" LABEL="Comment les Allemands estiment leurs succès">
+                        <div ID="DIV.109" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.110" TYPE="TITLE" ORDER="1" LABEL="Comment les Allemands estiment leurs succès">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000081"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.111" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.112" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000082"/></fptr>
+                            </div>
+                            <div ID="DIV.113" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000083"/></fptr>
+                            </div>
+                            <div ID="DIV.114" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000084"/></fptr>
+                            </div>
+                            <div ID="DIV.115" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000085"/></fptr>
+                            </div>
+                            <div ID="DIV.116" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000086"/></fptr>
+                            </div>
+                            <div ID="DIV.117" TYPE="PARAGRAPH" ORDER="6">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000087"/></fptr>
+                            </div>
+                            <div ID="DIV.118" TYPE="PARAGRAPH" ORDER="7">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000088"/></fptr>
+                            </div>
+                            <div ID="DIV.119" TYPE="PARAGRAPH" ORDER="8">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000089"/></fptr>
+                            </div>
+                            <div ID="DIV.120" TYPE="PARAGRAPH" ORDER="9">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000090"/></fptr>
+                            </div>
+                            <div ID="DIV.121" TYPE="PARAGRAPH" ORDER="10">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000091"/></fptr>
+                            </div>
+                            <div ID="DIV.122" TYPE="PARAGRAPH" ORDER="11">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000092"/></fptr>
+                            </div>
+                            <div ID="DIV.123" TYPE="PARAGRAPH" ORDER="12">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000093"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.124" DMDID="DMD.9" TYPE="ARTICLE" ORDER="7" LABEL="LA RÉPONSE DE M. RIBOT">
+                        <div ID="DIV.125" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.126" TYPE="TITLE" ORDER="1" LABEL="LA RÉPONSE DE M. RIBOT">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000094"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.127" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.128" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000095"/></fptr>
+                            </div>
+                            <div ID="DIV.129" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000096"/></fptr>
+                            </div>
+                            <div ID="DIV.130" TYPE="INSIDEHEADING" ORDER="3">
+                                <div ID="DIV.131" TYPE="TITLE" ORDER="1" LABEL="Réponse">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000097"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.132" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000098"/></fptr>
+                            </div>
+                            <div ID="DIV.133" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000099"/></fptr>
+                            </div>
+                            <div ID="DIV.134" TYPE="PARAGRAPH" ORDER="6">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000100"/></fptr>
+                            </div>
+                            <div ID="DIV.135" TYPE="PARAGRAPH" ORDER="7">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000101"/></fptr>
+                            </div>
+                            <div ID="DIV.136" TYPE="PARAGRAPH" ORDER="8">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000102"/></fptr>
+                            </div>
+                            <div ID="DIV.137" TYPE="PARAGRAPH" ORDER="9">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000103"/></fptr>
+                            </div>
+                            <div ID="DIV.138" TYPE="PARAGRAPH" ORDER="10">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000104"/></fptr>
+                            </div>
+                            <div ID="DIV.139" TYPE="PARAGRAPH" ORDER="11">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000105"/></fptr>
+                            </div>
+                            <div ID="DIV.140" TYPE="PARAGRAPH" ORDER="12">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000106"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.141" DMDID="DMD.10" TYPE="SECTION" ORDER="8" LABEL="Les Communiqués">
+                        <div ID="DIV.142" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.143" TYPE="TITLE" ORDER="1" LABEL="Les Communiqués">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000107"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.144" DMDID="DMD.11" TYPE="ARTICLE" ORDER="2" LABEL="15 heures.">
+                            <div ID="DIV.145" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.146" TYPE="TITLE" ORDER="1" LABEL="15 heures.">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000108"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.147" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.148" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000109"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.149" DMDID="DMD.12" TYPE="ARTICLE" ORDER="3" LABEL="23 heures.">
+                            <div ID="DIV.150" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.151" TYPE="TITLE" ORDER="1" LABEL="23 heures.">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000110"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.152" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.153" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000111"/></fptr>
+                                </div>
+                                <div ID="DIV.154" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000112"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.155" DMDID="DMD.13" TYPE="ARTICLE" ORDER="9" LABEL="Annonces">
+                        <div ID="DIV.156" TYPE="BODY" ORDER="1">
+                            <div ID="DIV.157" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000113"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.158" DMDID="DMD.14" TYPE="ARTICLE" ORDER="10" LABEL="NE GASPILLONS PAS L'EMPRUNT : On nous écrit">
+                        <div ID="DIV.159" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.160" TYPE="TITLE" ORDER="1" LABEL="NE GASPILLONS PAS L'EMPRUNT">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000114"/></seq>
+                                </fptr>
+                            </div>
+                            <div ID="DIV.161" TYPE="SUBTITLE" ORDER="2" LABEL="On nous écrit">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000115"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.162" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.163" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000116"/></fptr>
+                            </div>
+                            <div ID="DIV.164" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000117"/></fptr>
+                            </div>
+                            <div ID="DIV.165" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.1" BEGIN="PAG_1_TB000118"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.166" DMDID="DMD.15" TYPE="SECTION" ORDER="11" LABEL="A la Chambre">
+                        <div ID="DIV.167" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.168" TYPE="TITLE" ORDER="1" LABEL="A la Chambre">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000001"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.169" DMDID="DMD.16" TYPE="ARTICLE" ORDER="2" LABEL="L'appel de la classe 17">
+                            <div ID="DIV.170" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.171" TYPE="TITLE" ORDER="1" LABEL="L'appel de la classe 17">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000002"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.172" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.173" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000003"/></fptr>
+                                </div>
+                                <div ID="DIV.174" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000004"/></fptr>
+                                </div>
+                                <div ID="DIV.175" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000005"/></fptr>
+                                </div>
+                                <div ID="DIV.176" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000006"/></fptr>
+                                </div>
+                                <div ID="DIV.177" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000007"/></fptr>
+                                </div>
+                                <div ID="DIV.178" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000008"/></fptr>
+                                </div>
+                                <div ID="DIV.179" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000009"/></fptr>
+                                </div>
+                                <div ID="DIV.180" TYPE="PARAGRAPH" ORDER="8">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000010"/></fptr>
+                                </div>
+                                <div ID="DIV.181" TYPE="PARAGRAPH" ORDER="9">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000011"/></fptr>
+                                </div>
+                                <div ID="DIV.182" TYPE="PARAGRAPH" ORDER="10">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000012"/></fptr>
+                                </div>
+                                <div ID="DIV.183" TYPE="PARAGRAPH" ORDER="11">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000013"/></fptr>
+                                </div>
+                                <div ID="DIV.184" TYPE="PARAGRAPH" ORDER="12">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000014"/></fptr>
+                                </div>
+                                <div ID="DIV.185" TYPE="PARAGRAPH" ORDER="13">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000015"/></fptr>
+                                </div>
+                                <div ID="DIV.186" TYPE="PARAGRAPH" ORDER="14">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000016"/></fptr>
+                                </div>
+                                <div ID="DIV.187" TYPE="PARAGRAPH" ORDER="15">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000017"/></fptr>
+                                </div>
+                                <div ID="DIV.188" TYPE="PARAGRAPH" ORDER="16">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000018"/></fptr>
+                                </div>
+                                <div ID="DIV.189" TYPE="PARAGRAPH" ORDER="17">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000019"/></fptr>
+                                </div>
+                                <div ID="DIV.190" TYPE="PARAGRAPH" ORDER="18">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000020"/></fptr>
+                                </div>
+                                <div ID="DIV.191" TYPE="PARAGRAPH" ORDER="19">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000021"/></fptr>
+                                </div>
+                                <div ID="DIV.192" TYPE="PARAGRAPH" ORDER="20">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000022"/></fptr>
+                                </div>
+                                <div ID="DIV.193" TYPE="PARAGRAPH" ORDER="21">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000023"/></fptr>
+                                </div>
+                                <div ID="DIV.194" TYPE="PARAGRAPH" ORDER="22">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000024"/></fptr>
+                                </div>
+                                <div ID="DIV.195" TYPE="PARAGRAPH" ORDER="23">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000025"/></fptr>
+                                </div>
+                                <div ID="DIV.196" TYPE="PARAGRAPH" ORDER="24">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000026"/></fptr>
+                                </div>
+                                <div ID="DIV.197" TYPE="PARAGRAPH" ORDER="25">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000027"/></fptr>
+                                </div>
+                                <div ID="DIV.198" TYPE="PARAGRAPH" ORDER="26">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000028"/></fptr>
+                                </div>
+                                <div ID="DIV.199" TYPE="PARAGRAPH" ORDER="27">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000029"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.200" DMDID="DMD.17" TYPE="SECTION" ORDER="12" LABEL="Hors d'Œuvre">
+                        <div ID="DIV.201" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.202" TYPE="TITLE" ORDER="1" LABEL="Hors d'Œuvre">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000030"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.203" DMDID="DMD.18" TYPE="ARTICLE" ORDER="2" LABEL="Féminisme : &quot; AU CHARBON &quot;">
+                            <div ID="DIV.204" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.205" TYPE="TITLE" ORDER="1" LABEL="Féminisme">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000031"/></seq>
+                                    </fptr>
+                                </div>
+                                <div ID="DIV.206" TYPE="SUBTITLE" ORDER="2" LABEL="&quot; AU CHARBON &quot;">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000032"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.207" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.208" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000033"/></fptr>
+                                </div>
+                                <div ID="DIV.209" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000034"/></fptr>
+                                </div>
+                                <div ID="DIV.210" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000035"/></fptr>
+                                </div>
+                                <div ID="DIV.211" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000036"/></fptr>
+                                </div>
+                                <div ID="DIV.212" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000037"/></fptr>
+                                </div>
+                                <div ID="DIV.213" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000038"/></fptr>
+                                </div>
+                                <div ID="DIV.214" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000039"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.215" DMDID="DMD.19" TYPE="ARTICLE" ORDER="3" LABEL="Dans la Ville Eternelle">
+                            <div ID="DIV.216" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.217" TYPE="TITLE" ORDER="1" LABEL="Dans la Ville Eternelle">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000040"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.218" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.219" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000041"/></fptr>
+                                </div>
+                                <div ID="DIV.220" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000042"/></fptr>
+                                </div>
+                                <div ID="DIV.221" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000043"/></fptr>
+                                </div>
+                                <div ID="DIV.222" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000044"/></fptr>
+                                </div>
+                                <div ID="DIV.223" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000045"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.224" DMDID="DMD.20" TYPE="ARTICLE" ORDER="4" LABEL="La croisade de M. Ford">
+                            <div ID="DIV.225" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.226" TYPE="TITLE" ORDER="1" LABEL="La croisade de M. Ford">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000046"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.227" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.228" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000047"/></fptr>
+                                </div>
+                                <div ID="DIV.229" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000048"/></fptr>
+                                </div>
+                                <div ID="DIV.230" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000049"/></fptr>
+                                </div>
+                                <div ID="DIV.231" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000050"/></fptr>
+                                </div>
+                                <div ID="DIV.232" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000051"/></fptr>
+                                </div>
+                                <div ID="DIV.233" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000052"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.234" DMDID="DMD.21" TYPE="ARTICLE" ORDER="5" LABEL="Le pantalon de l'escouade">
+                            <div ID="DIV.235" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.236" TYPE="TITLE" ORDER="1" LABEL="Le pantalon de l'escouade">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000053"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.237" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.238" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000054"/></fptr>
+                                </div>
+                                <div ID="DIV.239" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000055"/></fptr>
+                                </div>
+                                <div ID="DIV.240" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000056"/></fptr>
+                                </div>
+                                <div ID="DIV.241" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000057"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.242" DMDID="DMD.22" TYPE="ARTICLE" ORDER="6" LABEL="La Vie chère">
+                            <div ID="DIV.243" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.244" TYPE="TITLE" ORDER="1" LABEL="La Vie chère">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000058"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.245" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.246" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000059"/></fptr>
+                                </div>
+                                <div ID="DIV.247" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000060"/></fptr>
+                                </div>
+                                <div ID="DIV.248" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000061"/></fptr>
+                                </div>
+                                <div ID="DIV.249" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000062"/></fptr>
+                                </div>
+                                <div ID="DIV.250" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000063"/></fptr>
+                                </div>
+                                <div ID="DIV.251" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000064"/></fptr>
+                                </div>
+                                <div ID="DIV.252" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000065"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.253" DMDID="DMD.23" TYPE="ARTICLE" ORDER="7" LABEL="Citation">
+                            <div ID="DIV.254" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.255" TYPE="TITLE" ORDER="1" LABEL="Citation">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000066"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.256" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.257" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000067"/></fptr>
+                                </div>
+                                <div ID="DIV.258" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000068"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.259" DMDID="DMD.24" TYPE="ARTICLE" ORDER="8" LABEL="« Langage poilu »">
+                            <div ID="DIV.260" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.261" TYPE="TITLE" ORDER="1" LABEL="« Langage poilu »">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000069"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.262" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.263" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000070"/></fptr>
+                                </div>
+                                <div ID="DIV.264" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000071"/></fptr>
+                                </div>
+                                <div ID="DIV.265" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000072"/></fptr>
+                                </div>
+                                <div ID="DIV.266" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000073"/></fptr>
+                                </div>
+                                <div ID="DIV.267" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000074"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.268" DMDID="DMD.25" TYPE="ARTICLE" ORDER="9" LABEL="Nouveaux scandales">
+                            <div ID="DIV.269" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.270" TYPE="TITLE" ORDER="1" LABEL="Nouveaux scandales">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000075"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.271" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.272" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000076"/></fptr>
+                                </div>
+                                <div ID="DIV.273" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000077"/></fptr>
+                                </div>
+                                <div ID="DIV.274" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000078"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.275" DMDID="DMD.26" TYPE="ARTICLE" ORDER="10" LABEL="Question d'actualité">
+                            <div ID="DIV.276" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.277" TYPE="TITLE" ORDER="1" LABEL="Question d'actualité">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000079"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.278" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.279" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000080"/></fptr>
+                                </div>
+                                <div ID="DIV.280" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000081"/></fptr>
+                                </div>
+                                <div ID="DIV.281" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000082"/></fptr>
+                                </div>
+                                <div ID="DIV.282" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000083"/></fptr>
+                                </div>
+                                <div ID="DIV.283" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000084"/></fptr>
+                                </div>
+                                <div ID="DIV.284" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000085"/></fptr>
+                                </div>
+                                <div ID="DIV.285" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000086"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.286" DMDID="DMD.27" TYPE="ARTICLE" ORDER="11" LABEL="Les jeunes classes">
+                            <div ID="DIV.287" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.288" TYPE="TITLE" ORDER="1" LABEL="Les jeunes classes">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000087"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.289" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.290" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000088"/></fptr>
+                                </div>
+                                <div ID="DIV.291" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000089"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.292" DMDID="DMD.28" TYPE="ARTICLE" ORDER="12" LABEL="Incurie">
+                            <div ID="DIV.293" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.294" TYPE="TITLE" ORDER="1" LABEL="Incurie">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000090"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.295" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.296" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000091"/></fptr>
+                                </div>
+                                <div ID="DIV.297" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000092"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.298" DMDID="DMD.29" TYPE="ARTICLE" ORDER="13" LABEL="Définition">
+                            <div ID="DIV.299" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.300" TYPE="TITLE" ORDER="1" LABEL="Définition">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000093"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.301" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.302" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000094"/></fptr>
+                                </div>
+                                <div ID="DIV.303" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000095"/></fptr>
+                                </div>
+                                <div ID="DIV.304" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000096"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.305" DMDID="DMD.13" TYPE="ARTICLE" ORDER="13" LABEL="Annonces">
+                        <div ID="DIV.306" TYPE="BODY" ORDER="1">
+                            <div ID="DIV.307" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000097"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.308" DMDID="DMD.31" TYPE="ARTICLE" ORDER="14" LABEL="Le &quot; Sourire de Reims &quot; est à Reims">
+                        <div ID="DIV.309" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.310" TYPE="TITLE" ORDER="1" LABEL="Le &quot; Sourire de Reims &quot; est à Reims">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000098"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.311" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.312" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000099"/></fptr>
+                            </div>
+                            <div ID="DIV.313" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000100"/></fptr>
+                            </div>
+                            <div ID="DIV.314" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000101"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.315" DMDID="DMD.32" TYPE="ARTICLE" ORDER="15" LABEL="LE COURRIER DE SERBIE">
+                        <div ID="DIV.316" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.317" TYPE="TITLE" ORDER="1" LABEL="LE COURRIER DE SERBIE">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000102"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.318" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.319" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000103"/></fptr>
+                            </div>
+                            <div ID="DIV.320" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000104"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.321" DMDID="DMD.33" TYPE="ARTICLE" ORDER="16" LABEL="Les délégués suédois">
+                        <div ID="DIV.322" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.323" TYPE="TITLE" ORDER="1" LABEL="Les délégués suédois">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000105"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.324" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.325" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000106"/></fptr>
+                            </div>
+                            <div ID="DIV.326" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000107"/></fptr>
+                            </div>
+                            <div ID="DIV.327" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000108"/></fptr>
+                            </div>
+                            <div ID="DIV.328" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000109"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.329" DMDID="DMD.34" TYPE="ARTICLE" ORDER="17" LABEL="AU PARLEMENT : Des économies">
+                        <div ID="DIV.330" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.331" TYPE="TITLE" ORDER="1" LABEL="AU PARLEMENT">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000110"/></seq>
+                                </fptr>
+                            </div>
+                            <div ID="DIV.332" TYPE="SUBTITLE" ORDER="2" LABEL="Des économies">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000111"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.333" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.334" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000112"/></fptr>
+                            </div>
+                            <div ID="DIV.335" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000113"/></fptr>
+                            </div>
+                            <div ID="DIV.336" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000114"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.337" DMDID="DMD.35" TYPE="ARTICLE" ORDER="18" LABEL="LA RÉFORME du Service de santé (1) : APRÈS UN AN DE GUERRE Le service de santé officine d'embuscade">
+                        <div ID="DIV.338" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.339" TYPE="TITLE" ORDER="1" LABEL="LA RÉFORME du Service de santé (1)">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000115"/></seq>
+                                </fptr>
+                            </div>
+                            <div ID="DIV.340" TYPE="SUBTITLE" ORDER="2" LABEL="APRÈS UN AN DE GUERRE Le service de santé officine d'embuscade">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000116"/>
+                                        <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000117"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.341" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.342" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000118"/></fptr>
+                            </div>
+                            <div ID="DIV.343" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000119"/></fptr>
+                            </div>
+                            <div ID="DIV.344" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000120"/></fptr>
+                            </div>
+                            <div ID="DIV.345" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000121"/></fptr>
+                            </div>
+                            <div ID="DIV.346" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000122"/></fptr>
+                            </div>
+                            <div ID="DIV.347" TYPE="PARAGRAPH" ORDER="6">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000123"/></fptr>
+                            </div>
+                            <div ID="DIV.348" TYPE="PARAGRAPH" ORDER="7">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000124"/></fptr>
+                            </div>
+                            <div ID="DIV.349" TYPE="PARAGRAPH" ORDER="8">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000125"/></fptr>
+                            </div>
+                            <div ID="DIV.350" TYPE="PARAGRAPH" ORDER="9">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000126"/></fptr>
+                            </div>
+                            <div ID="DIV.351" TYPE="PARAGRAPH" ORDER="10">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000127"/></fptr>
+                            </div>
+                            <div ID="DIV.352" TYPE="PARAGRAPH" ORDER="11">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000128"/></fptr>
+                            </div>
+                            <div ID="DIV.353" TYPE="PARAGRAPH" ORDER="12">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000129"/></fptr>
+                            </div>
+                            <div ID="DIV.354" TYPE="PARAGRAPH" ORDER="13">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000130"/></fptr>
+                            </div>
+                            <div ID="DIV.355" TYPE="PARAGRAPH" ORDER="14">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000131"/></fptr>
+                            </div>
+                            <div ID="DIV.356" TYPE="PARAGRAPH" ORDER="15">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000132"/></fptr>
+                            </div>
+                            <div ID="DIV.357" TYPE="PARAGRAPH" ORDER="16">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.2" BEGIN="PAG_2_TB000133"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.358" DMDID="DMD.36" TYPE="SECTION" ORDER="19" LABEL="L'Œuvre des Réfugiés : SOUVENIRS ET NOUVELLES DES PAYS ENVAHIS">
+                        <div ID="DIV.359" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.360" TYPE="TITLE" ORDER="1" LABEL="L'Œuvre des Réfugiés">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000001"/></seq>
+                                </fptr>
+                            </div>
+                            <div ID="DIV.361" TYPE="SUBTITLE" ORDER="2" LABEL="SOUVENIRS ET NOUVELLES DES PAYS ENVAHIS">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000002"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.362" DMDID="DMD.37" TYPE="ARTICLE" ORDER="2" LABEL="Dans les régions envahies : Les réfugiés du littoral">
+                            <div ID="DIV.363" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.364" TYPE="TITLE" ORDER="1" LABEL="Dans les régions envahies">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000003"/></seq>
+                                    </fptr>
+                                </div>
+                                <div ID="DIV.365" TYPE="SUBTITLE" ORDER="2" LABEL="Les réfugiés du littoral">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000004"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.366" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.367" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000005"/></fptr>
+                                </div>
+                                <div ID="DIV.368" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000006"/></fptr>
+                                </div>
+                                <div ID="DIV.369" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000007"/></fptr>
+                                </div>
+                                <div ID="DIV.370" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000008"/></fptr>
+                                </div>
+                                <div ID="DIV.371" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000009"/></fptr>
+                                </div>
+                                <div ID="DIV.372" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000010"/></fptr>
+                                </div>
+                                <div ID="DIV.373" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000011"/></fptr>
+                                </div>
+                                <div ID="DIV.374" TYPE="PARAGRAPH" ORDER="8">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000012"/></fptr>
+                                </div>
+                                <div ID="DIV.375" TYPE="PARAGRAPH" ORDER="9">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000013"/></fptr>
+                                </div>
+                                <div ID="DIV.376" TYPE="PARAGRAPH" ORDER="10">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000014"/></fptr>
+                                </div>
+                                <div ID="DIV.377" TYPE="PARAGRAPH" ORDER="11">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000015"/></fptr>
+                                </div>
+                                <div ID="DIV.378" TYPE="PARAGRAPH" ORDER="12">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000016"/></fptr>
+                                </div>
+                                <div ID="DIV.379" TYPE="PARAGRAPH" ORDER="13">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000017"/></fptr>
+                                </div>
+                                <div ID="DIV.380" TYPE="PARAGRAPH" ORDER="14">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000018"/></fptr>
+                                </div>
+                                <div ID="DIV.381" TYPE="PARAGRAPH" ORDER="15">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000019"/></fptr>
+                                </div>
+                                <div ID="DIV.382" TYPE="PARAGRAPH" ORDER="16">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000020"/></fptr>
+                                </div>
+                                <div ID="DIV.383" TYPE="PARAGRAPH" ORDER="17">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000021"/></fptr>
+                                </div>
+                                <div ID="DIV.384" TYPE="PARAGRAPH" ORDER="18">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000022"/></fptr>
+                                </div>
+                                <div ID="DIV.385" TYPE="PARAGRAPH" ORDER="19">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000023"/></fptr>
+                                </div>
+                                <div ID="DIV.386" TYPE="PARAGRAPH" ORDER="20">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000024"/></fptr>
+                                </div>
+                                <div ID="DIV.387" TYPE="PARAGRAPH" ORDER="21">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000025"/></fptr>
+                                </div>
+                                <div ID="DIV.388" TYPE="PARAGRAPH" ORDER="22">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000026"/></fptr>
+                                </div>
+                                <div ID="DIV.389" TYPE="PARAGRAPH" ORDER="23">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000027"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.390" DMDID="DMD.38" TYPE="ARTICLE" ORDER="3" LABEL="Il y a des juges... en Belgique">
+                            <div ID="DIV.391" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.392" TYPE="TITLE" ORDER="1" LABEL="Il y a des juges... en Belgique">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000028"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.393" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.394" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000029"/></fptr>
+                                </div>
+                                <div ID="DIV.395" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000030"/></fptr>
+                                </div>
+                                <div ID="DIV.396" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000031"/></fptr>
+                                </div>
+                                <div ID="DIV.397" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000032"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.398" DMDID="DMD.39" TYPE="ARTICLE" ORDER="4" LABEL="Communications postales avec la Belgique">
+                            <div ID="DIV.399" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.400" TYPE="TITLE" ORDER="1" LABEL="Communications postales avec la Belgique">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000033"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.401" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.402" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000034"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.403" DMDID="DMD.40" TYPE="ARTICLE" ORDER="5" LABEL="BELGES ET JAPONAIS">
+                            <div ID="DIV.404" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.405" TYPE="TITLE" ORDER="1" LABEL="BELGES ET JAPONAIS">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000035"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.406" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.407" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000036"/></fptr>
+                                </div>
+                                <div ID="DIV.408" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000037"/></fptr>
+                                </div>
+                                <div ID="DIV.409" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000038"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.410" DMDID="DMD.41" TYPE="ARTICLE" ORDER="6" LABEL="EN ALSACE">
+                            <div ID="DIV.411" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.412" TYPE="TITLE" ORDER="1" LABEL="EN ALSACE">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000039"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.413" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.414" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000040"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.415" DMDID="DMD.42" TYPE="ARTICLE" ORDER="7" LABEL="On nous écrit: : Les réfugiés des départements envahis">
+                            <div ID="DIV.416" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.417" TYPE="TITLE" ORDER="1" LABEL="On nous écrit:">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000041"/></seq>
+                                    </fptr>
+                                </div>
+                                <div ID="DIV.418" TYPE="SUBTITLE" ORDER="2" LABEL="Les réfugiés des départements envahis">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000042"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.419" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.420" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000043"/></fptr>
+                                </div>
+                                <div ID="DIV.421" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000044"/></fptr>
+                                </div>
+                                <div ID="DIV.422" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000045"/></fptr>
+                                </div>
+                                <div ID="DIV.423" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000046"/></fptr>
+                                </div>
+                                <div ID="DIV.424" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000047"/></fptr>
+                                </div>
+                                <div ID="DIV.425" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000048"/></fptr>
+                                </div>
+                                <div ID="DIV.426" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000049"/></fptr>
+                                </div>
+                                <div ID="DIV.427" TYPE="PARAGRAPH" ORDER="8">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000050"/></fptr>
+                                </div>
+                                <div ID="DIV.428" TYPE="PARAGRAPH" ORDER="9">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000051"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.429" DMDID="DMD.43" TYPE="ARTICLE" ORDER="20" LABEL="L'EMPRUNT DE LA VICTOIRE">
+                        <div ID="DIV.430" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.431" TYPE="TITLE" ORDER="1" LABEL="L'EMPRUNT DE LA VICTOIRE">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000052"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.432" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.433" TYPE="INSIDEHEADING" ORDER="1">
+                                <div ID="DIV.434" TYPE="TITLE" ORDER="1" LABEL="Les poilus de 70 versent 12 millions">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000053"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.435" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000054"/></fptr>
+                            </div>
+                            <div ID="DIV.436" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000055"/></fptr>
+                            </div>
+                            <div ID="DIV.437" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000056"/></fptr>
+                            </div>
+                            <div ID="DIV.438" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000057"/></fptr>
+                            </div>
+                            <div ID="DIV.439" TYPE="INSIDEHEADING" ORDER="6">
+                                <div ID="DIV.440" TYPE="TITLE" ORDER="1" LABEL="Au Pavillon de Flore">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000058"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.441" TYPE="PARAGRAPH" ORDER="7">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000059"/></fptr>
+                            </div>
+                            <div ID="DIV.442" TYPE="INSIDEHEADING" ORDER="8">
+                                <div ID="DIV.443" TYPE="TITLE" ORDER="1" LABEL="Chez nos alliés">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000060"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.444" TYPE="PARAGRAPH" ORDER="9">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000061"/></fptr>
+                            </div>
+                            <div ID="DIV.445" TYPE="PARAGRAPH" ORDER="10">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000062"/></fptr>
+                            </div>
+                            <div ID="DIV.446" TYPE="PARAGRAPH" ORDER="11">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000063"/></fptr>
+                            </div>
+                            <div ID="DIV.447" TYPE="INSIDEHEADING" ORDER="12">
+                                <div ID="DIV.448" TYPE="TITLE" ORDER="1" LABEL="Chez les neutres">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000064"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.449" TYPE="PARAGRAPH" ORDER="13">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000065"/></fptr>
+                            </div>
+                            <div ID="DIV.450" TYPE="INSIDEHEADING" ORDER="14">
+                                <div ID="DIV.451" TYPE="TITLE" ORDER="1" LABEL="Les Caisses d'épargne et l'Emprunt">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000066"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.452" TYPE="PARAGRAPH" ORDER="15">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000067"/></fptr>
+                            </div>
+                            <div ID="DIV.453" TYPE="PARAGRAPH" ORDER="16">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000068"/></fptr>
+                            </div>
+                            <div ID="DIV.454" TYPE="PARAGRAPH" ORDER="17">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000069"/></fptr>
+                            </div>
+                            <div ID="DIV.455" TYPE="PARAGRAPH" ORDER="18">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000070"/></fptr>
+                            </div>
+                            <div ID="DIV.456" TYPE="PARAGRAPH" ORDER="19">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000071"/></fptr>
+                            </div>
+                            <div ID="DIV.457" TYPE="PARAGRAPH" ORDER="20">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000072"/></fptr>
+                            </div>
+                            <div ID="DIV.458" TYPE="PARAGRAPH" ORDER="21">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000073"/></fptr>
+                            </div>
+                            <div ID="DIV.459" TYPE="PARAGRAPH" ORDER="22">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000074"/></fptr>
+                            </div>
+                            <div ID="DIV.460" TYPE="INSIDEHEADING" ORDER="23">
+                                <div ID="DIV.461" TYPE="TITLE" ORDER="1" LABEL="Les Assurances et l'emprunt">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000075"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.462" TYPE="PARAGRAPH" ORDER="24">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000076"/></fptr>
+                            </div>
+                            <div ID="DIV.463" TYPE="PARAGRAPH" ORDER="25">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000077"/></fptr>
+                            </div>
+                            <div ID="DIV.464" TYPE="PARAGRAPH" ORDER="26">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000078"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.465" DMDID="DMD.13" TYPE="ARTICLE" ORDER="21" LABEL="Annonces">
+                        <div ID="DIV.466" TYPE="BODY" ORDER="1">
+                            <div ID="DIV.467" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000079"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.468" DMDID="DMD.45" TYPE="ARTICLE" ORDER="22" LABEL="LA VIE CHÈRE">
+                        <div ID="DIV.469" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.470" TYPE="TITLE" ORDER="1" LABEL="LA VIE CHÈRE">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000080"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.471" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.472" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000081"/></fptr>
+                            </div>
+                            <div ID="DIV.473" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000082"/></fptr>
+                            </div>
+                            <div ID="DIV.474" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000083"/></fptr>
+                            </div>
+                            <div ID="DIV.475" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000084"/></fptr>
+                            </div>
+                            <div ID="DIV.476" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000085"/></fptr>
+                            </div>
+                            <div ID="DIV.477" TYPE="TABLE" ORDER="6">
+                                <div ID="DIV.478" TYPE="TABLECONTENT" ORDER="1">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000086"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000087"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000088"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000089"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000090"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000091"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000092"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000093"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000094"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.488" DMDID="DMD.46" TYPE="ARTICLE" ORDER="23" LABEL="LES TRIBUNAUX">
+                        <div ID="DIV.489" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.490" TYPE="TITLE" ORDER="1" LABEL="LES TRIBUNAUX">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000095"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.491" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.492" TYPE="INSIDEHEADING" ORDER="1">
+                                <div ID="DIV.493" TYPE="TITLE" ORDER="1" LABEL="Les contrats commerciaux et la guerre">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000096"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.494" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000097"/></fptr>
+                            </div>
+                            <div ID="DIV.495" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000098"/></fptr>
+                            </div>
+                            <div ID="DIV.496" TYPE="INSIDEHEADING" ORDER="4">
+                                <div ID="DIV.497" TYPE="TITLE" ORDER="1" LABEL="TRIBUNAL CIVIL La guerre et le chauffage central">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000099"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000100"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.498" TYPE="PARAGRAPH" ORDER="5">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000101"/></fptr>
+                            </div>
+                            <div ID="DIV.499" TYPE="PARAGRAPH" ORDER="6">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000102"/></fptr>
+                            </div>
+                            <div ID="DIV.500" TYPE="PARAGRAPH" ORDER="7">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000103"/></fptr>
+                            </div>
+                            <div ID="DIV.501" TYPE="PARAGRAPH" ORDER="8">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000104"/></fptr>
+                            </div>
+                            <div ID="DIV.502" TYPE="PARAGRAPH" ORDER="9">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000105"/></fptr>
+                            </div>
+                            <div ID="DIV.503" TYPE="PARAGRAPH" ORDER="10">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000106"/></fptr>
+                            </div>
+                            <div ID="DIV.504" TYPE="PARAGRAPH" ORDER="11">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000107"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.505" DMDID="DMD.47" TYPE="ARTICLE" ORDER="24" LABEL="POUR LES VICTIMES DE LA GUERRE">
+                        <div ID="DIV.506" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.507" TYPE="TITLE" ORDER="1" LABEL="POUR LES VICTIMES DE LA GUERRE">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000108"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.508" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.509" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000109"/></fptr>
+                            </div>
+                            <div ID="DIV.510" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000110"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.511" DMDID="DMD.48" TYPE="ARTICLE" ORDER="25" LABEL="Notez ceci :">
+                        <div ID="DIV.512" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.513" TYPE="TITLE" ORDER="1" LABEL="Notez ceci :">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000111"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.514" TYPE="BODY" ORDER="2">
+                            <div ID="DIV.515" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000112"/></fptr>
+                            </div>
+                            <div ID="DIV.516" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000113"/></fptr>
+                            </div>
+                            <div ID="DIV.517" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000114"/></fptr>
+                            </div>
+                            <div ID="DIV.518" TYPE="PARAGRAPH" ORDER="4">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.3" BEGIN="PAG_3_TB000115"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.519" DMDID="DMD.49" TYPE="SECTION" ORDER="26" LABEL="NOUVELLES DE LA DERNIÈRE HEURE">
+                        <div ID="DIV.520" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.521" TYPE="TITLE" ORDER="1" LABEL="NOUVELLES DE LA DERNIÈRE HEURE">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000001"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.522" DMDID="DMD.50" TYPE="ARTICLE" ORDER="2" LABEL="A ATHENES">
+                            <div ID="DIV.523" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.524" TYPE="TITLE" ORDER="1" LABEL="A ATHENES">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000002"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.525" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.526" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000003"/></fptr>
+                                </div>
+                                <div ID="DIV.527" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000004"/></fptr>
+                                </div>
+                                <div ID="DIV.528" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000005"/></fptr>
+                                </div>
+                                <div ID="DIV.529" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000006"/></fptr>
+                                </div>
+                                <div ID="DIV.530" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000007"/></fptr>
+                                </div>
+                                <div ID="DIV.531" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000008"/></fptr>
+                                </div>
+                                <div ID="DIV.532" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000009"/></fptr>
+                                </div>
+                                <div ID="DIV.533" TYPE="PARAGRAPH" ORDER="8">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000010"/></fptr>
+                                </div>
+                                <div ID="DIV.534" TYPE="PARAGRAPH" ORDER="9">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000011"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.535" DMDID="DMD.51" TYPE="ARTICLE" ORDER="3" LABEL="TRIPLE TORPILLAGE">
+                            <div ID="DIV.536" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.537" TYPE="TITLE" ORDER="1" LABEL="TRIPLE TORPILLAGE">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000012"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.538" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.539" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000013"/></fptr>
+                                </div>
+                                <div ID="DIV.540" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000014"/></fptr>
+                                </div>
+                                <div ID="DIV.541" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000015"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.542" DMDID="DMD.52" TYPE="ARTICLE" ORDER="4" LABEL="L'ARBRE DE NOEL DES PRISONNIERS">
+                            <div ID="DIV.543" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.544" TYPE="TITLE" ORDER="1" LABEL="L'ARBRE DE NOEL DES PRISONNIERS">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000016"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000017"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.545" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.546" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000018"/></fptr>
+                                </div>
+                                <div ID="DIV.547" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000019"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.548" DMDID="DMD.53" TYPE="ARTICLE" ORDER="5" LABEL="LA GUERRE EN SERBIE">
+                            <div ID="DIV.549" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.550" TYPE="TITLE" ORDER="1" LABEL="LA GUERRE EN SERBIE">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000020"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.551" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.552" TYPE="INSIDEHEADING" ORDER="1">
+                                    <div ID="DIV.553" TYPE="TITLE" ORDER="1" LABEL="Devant Monastir">
+                                        <fptr>
+                                            <seq>
+                                                <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000021"/></seq>
+                                        </fptr>
+                                    </div>
+                                </div>
+                                <div ID="DIV.554" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000022"/></fptr>
+                                </div>
+                                <div ID="DIV.555" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000023"/></fptr>
+                                </div>
+                                <div ID="DIV.556" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000024"/></fptr>
+                                </div>
+                                <div ID="DIV.557" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000025"/></fptr>
+                                </div>
+                                <div ID="DIV.558" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000026"/></fptr>
+                                </div>
+                                <div ID="DIV.559" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000027"/></fptr>
+                                </div>
+                                <div ID="DIV.560" TYPE="INSIDEHEADING" ORDER="8">
+                                    <div ID="DIV.561" TYPE="TITLE" ORDER="1" LABEL="Front français">
+                                        <fptr>
+                                            <seq>
+                                                <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000028"/></seq>
+                                        </fptr>
+                                    </div>
+                                </div>
+                                <div ID="DIV.562" TYPE="PARAGRAPH" ORDER="9">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000029"/></fptr>
+                                </div>
+                                <div ID="DIV.563" TYPE="PARAGRAPH" ORDER="10">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000030"/></fptr>
+                                </div>
+                                <div ID="DIV.564" TYPE="PARAGRAPH" ORDER="11">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000031"/></fptr>
+                                </div>
+                                <div ID="DIV.565" TYPE="PARAGRAPH" ORDER="12">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000032"/></fptr>
+                                </div>
+                                <div ID="DIV.566" TYPE="PARAGRAPH" ORDER="13">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000033"/></fptr>
+                                </div>
+                                <div ID="DIV.567" TYPE="PARAGRAPH" ORDER="14">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000034"/></fptr>
+                                </div>
+                                <div ID="DIV.568" TYPE="PARAGRAPH" ORDER="15">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000035"/></fptr>
+                                </div>
+                                <div ID="DIV.569" TYPE="INSIDEHEADING" ORDER="16">
+                                    <div ID="DIV.570" TYPE="TITLE" ORDER="1" LABEL="L'exode">
+                                        <fptr>
+                                            <seq>
+                                                <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000036"/></seq>
+                                        </fptr>
+                                    </div>
+                                </div>
+                                <div ID="DIV.571" TYPE="PARAGRAPH" ORDER="17">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000037"/></fptr>
+                                </div>
+                                <div ID="DIV.572" TYPE="PARAGRAPH" ORDER="18">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000038"/></fptr>
+                                </div>
+                                <div ID="DIV.573" TYPE="PARAGRAPH" ORDER="19">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000039"/></fptr>
+                                </div>
+                                <div ID="DIV.574" TYPE="PARAGRAPH" ORDER="20">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000040"/></fptr>
+                                </div>
+                                <div ID="DIV.575" TYPE="PARAGRAPH" ORDER="21">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000041"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.576" DMDID="DMD.54" TYPE="ARTICLE" ORDER="6" LABEL="COMMUNIQUE BELGE">
+                            <div ID="DIV.577" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.578" TYPE="TITLE" ORDER="1" LABEL="COMMUNIQUE BELGE">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000042"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.579" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.580" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000043"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.581" DMDID="DMD.55" TYPE="ARTICLE" ORDER="7" LABEL="IL ETAIT TEMPS D'Y SONGER">
+                            <div ID="DIV.582" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.583" TYPE="TITLE" ORDER="1" LABEL="IL ETAIT TEMPS D'Y SONGER">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000044"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.584" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.585" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000045"/></fptr>
+                                </div>
+                                <div ID="DIV.586" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000046"/></fptr>
+                                </div>
+                                <div ID="DIV.587" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000047"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.588" DMDID="DMD.56" TYPE="ARTICLE" ORDER="8" LABEL="Importants succès russes près de Dvinsk">
+                            <div ID="DIV.589" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.590" TYPE="TITLE" ORDER="1" LABEL="Importants succès russes près de Dvinsk">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000048"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000049"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.591" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.592" TYPE="INSIDEHEADING" ORDER="1">
+                                    <div ID="DIV.593" TYPE="TITLE" ORDER="1" LABEL="COMMUNIQUE RUSSE">
+                                        <fptr>
+                                            <seq>
+                                                <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000050"/></seq>
+                                        </fptr>
+                                    </div>
+                                </div>
+                                <div ID="DIV.594" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000051"/></fptr>
+                                </div>
+                                <div ID="DIV.595" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000052"/></fptr>
+                                </div>
+                                <div ID="DIV.596" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000053"/></fptr>
+                                </div>
+                                <div ID="DIV.597" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000054"/></fptr>
+                                </div>
+                                <div ID="DIV.598" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000055"/></fptr>
+                                </div>
+                                <div ID="DIV.599" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000056"/></fptr>
+                                </div>
+                                <div ID="DIV.600" TYPE="PARAGRAPH" ORDER="8">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000057"/></fptr>
+                                </div>
+                                <div ID="DIV.601" TYPE="PARAGRAPH" ORDER="9">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000058"/></fptr>
+                                </div>
+                                <div ID="DIV.602" TYPE="PARAGRAPH" ORDER="10">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000059"/></fptr>
+                                </div>
+                                <div ID="DIV.603" TYPE="PARAGRAPH" ORDER="11">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000060"/></fptr>
+                                </div>
+                                <div ID="DIV.604" TYPE="INSIDEHEADING" ORDER="12">
+                                    <div ID="DIV.605" TYPE="TITLE" ORDER="1" LABEL="Les Russes devant Tukkum">
+                                        <fptr>
+                                            <seq>
+                                                <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000061"/></seq>
+                                        </fptr>
+                                    </div>
+                                </div>
+                                <div ID="DIV.606" TYPE="PARAGRAPH" ORDER="13">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000062"/></fptr>
+                                </div>
+                                <div ID="DIV.607" TYPE="PARAGRAPH" ORDER="14">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000063"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.608" DMDID="DMD.57" TYPE="ARTICLE" ORDER="9" LABEL="Violente contre-attaque repoussée par les Italiens : COMMUNIQUE ITALIEN">
+                            <div ID="DIV.609" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.610" TYPE="TITLE" ORDER="1" LABEL="Violente contre-attaque repoussée par les Italiens">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000064"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000065"/></seq>
+                                    </fptr>
+                                </div>
+                                <div ID="DIV.611" TYPE="SUBTITLE" ORDER="2" LABEL="COMMUNIQUE ITALIEN">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000066"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.612" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.613" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000067"/></fptr>
+                                </div>
+                                <div ID="DIV.614" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000068"/></fptr>
+                                </div>
+                                <div ID="DIV.615" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000069"/></fptr>
+                                </div>
+                                <div ID="DIV.616" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000070"/></fptr>
+                                </div>
+                                <div ID="DIV.617" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000071"/></fptr>
+                                </div>
+                                <div ID="DIV.618" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000072"/></fptr>
+                                </div>
+                                <div ID="DIV.619" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000073"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.620" DMDID="DMD.58" TYPE="ARTICLE" ORDER="10" LABEL="Chez nos alliés : Le recrutement financier">
+                            <div ID="DIV.621" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.622" TYPE="TITLE" ORDER="1" LABEL="Chez nos alliés">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000074"/></seq>
+                                    </fptr>
+                                </div>
+                                <div ID="DIV.623" TYPE="SUBTITLE" ORDER="2" LABEL="Le recrutement financier">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000075"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.624" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.625" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000076"/></fptr>
+                                </div>
+                                <div ID="DIV.626" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000077"/></fptr>
+                                </div>
+                                <div ID="DIV.627" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000078"/></fptr>
+                                </div>
+                                <div ID="DIV.628" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000079"/></fptr>
+                                </div>
+                                <div ID="DIV.629" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000080"/></fptr>
+                                </div>
+                                <div ID="DIV.630" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000081"/></fptr>
+                                </div>
+                                <div ID="DIV.631" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000082"/></fptr>
+                                </div>
+                                <div ID="DIV.632" TYPE="PARAGRAPH" ORDER="8">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000083"/></fptr>
+                                </div>
+                                <div ID="DIV.633" TYPE="PARAGRAPH" ORDER="9">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000084"/></fptr>
+                                </div>
+                                <div ID="DIV.634" TYPE="PARAGRAPH" ORDER="10">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000085"/></fptr>
+                                </div>
+                                <div ID="DIV.635" TYPE="PARAGRAPH" ORDER="11">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000086"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.636" DMDID="DMD.59" TYPE="ARTICLE" ORDER="11" LABEL="ZEPPELIN DETRUIT ?">
+                            <div ID="DIV.637" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.638" TYPE="TITLE" ORDER="1" LABEL="ZEPPELIN DETRUIT ?">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000087"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.639" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.640" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000088"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.641" DMDID="DMD.60" TYPE="ARTICLE" ORDER="12" LABEL="N EXPORTONS PLUS NOTRE BEURRE">
+                            <div ID="DIV.642" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.643" TYPE="TITLE" ORDER="1" LABEL="N EXPORTONS PLUS NOTRE BEURRE">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000089"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000090"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.644" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.645" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000091"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.646" DMDID="DMD.61" TYPE="ARTICLE" ORDER="13" LABEL="UN BON EXEMPLE">
+                            <div ID="DIV.647" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.648" TYPE="TITLE" ORDER="1" LABEL="UN BON EXEMPLE">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000092"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.649" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.650" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000093"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.651" DMDID="DMD.62" TYPE="ARTICLE" ORDER="14" LABEL="AU « JOURNAL OFFICIEL »">
+                            <div ID="DIV.652" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.653" TYPE="TITLE" ORDER="1" LABEL="AU « JOURNAL OFFICIEL »">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000094"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.654" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.655" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000095"/></fptr>
+                                </div>
+                                <div ID="DIV.656" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000096"/></fptr>
+                                </div>
+                                <div ID="DIV.657" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000097"/></fptr>
+                                </div>
+                                <div ID="DIV.658" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000098"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                        <div ID="DIV.659" DMDID="DMD.63" TYPE="ARTICLE" ORDER="15" LABEL="COURRIER DES THÉATRES">
+                            <div ID="DIV.660" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.661" TYPE="TITLE" ORDER="1" LABEL="COURRIER DES THÉATRES">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000099"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.662" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.663" TYPE="PARAGRAPH" ORDER="1">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000100"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.664" TYPE="ARTICLE" ORDER="27">
+                        <div ID="DIV.665" TYPE="BODY" ORDER="1">
+                            <div ID="DIV.666" TYPE="PARAGRAPH" ORDER="1">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000101"/></fptr>
+                            </div>
+                            <div ID="DIV.667" TYPE="PARAGRAPH" ORDER="2">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000102"/></fptr>
+                            </div>
+                            <div ID="DIV.668" TYPE="PARAGRAPH" ORDER="3">
+                                <fptr>
+                                    <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000103"/></fptr>
+                            </div>
+                        </div>
+                    </div>
+                    <div ID="DIV.669" DMDID="DMD.64" TYPE="SECTION" ORDER="28" LABEL="FEUILLETON DE L' « ŒUVRE » du 1er décembre 1915">
+                        <div ID="DIV.670" TYPE="HEADING" ORDER="1">
+                            <div ID="DIV.671" TYPE="TITLE" ORDER="1" LABEL="FEUILLETON DE L' « ŒUVRE » du 1er décembre 1915">
+                                <fptr>
+                                    <seq>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000104"/></seq>
+                                </fptr>
+                            </div>
+                        </div>
+                        <div ID="DIV.672" DMDID="DMD.65" TYPE="ARTICLE" ORDER="2" LABEL="26 La Poilue : PAR Une PREMIÈRE de la rue de la Paix">
+                            <div ID="DIV.673" TYPE="HEADING" ORDER="1">
+                                <div ID="DIV.674" TYPE="TITLE" ORDER="1" LABEL="26 La Poilue">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000105"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000106"/></seq>
+                                    </fptr>
+                                </div>
+                                <div ID="DIV.675" TYPE="SUBTITLE" ORDER="2" LABEL="PAR Une PREMIÈRE de la rue de la Paix">
+                                    <fptr>
+                                        <seq>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000107"/>
+                                            <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000108"/></seq>
+                                    </fptr>
+                                </div>
+                            </div>
+                            <div ID="DIV.676" TYPE="BODY" ORDER="2">
+                                <div ID="DIV.677" TYPE="INSIDEHEADING" ORDER="1">
+                                    <div ID="DIV.678" TYPE="TITLE" ORDER="1" LABEL="DEUXIEME PARTIE VI Les conseils de Fénia">
+                                        <fptr>
+                                            <seq>
+                                                <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000109"/>
+                                                <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000110"/>
+                                                <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000111"/></seq>
+                                        </fptr>
+                                    </div>
+                                </div>
+                                <div ID="DIV.679" TYPE="PARAGRAPH" ORDER="2">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000112"/></fptr>
+                                </div>
+                                <div ID="DIV.680" TYPE="PARAGRAPH" ORDER="3">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000113"/></fptr>
+                                </div>
+                                <div ID="DIV.681" TYPE="PARAGRAPH" ORDER="4">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000114"/></fptr>
+                                </div>
+                                <div ID="DIV.682" TYPE="PARAGRAPH" ORDER="5">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000115"/></fptr>
+                                </div>
+                                <div ID="DIV.683" TYPE="PARAGRAPH" ORDER="6">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000116"/></fptr>
+                                </div>
+                                <div ID="DIV.684" TYPE="PARAGRAPH" ORDER="7">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000117"/></fptr>
+                                </div>
+                                <div ID="DIV.685" TYPE="PARAGRAPH" ORDER="8">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000118"/></fptr>
+                                </div>
+                                <div ID="DIV.686" TYPE="PARAGRAPH" ORDER="9">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000119"/></fptr>
+                                </div>
+                                <div ID="DIV.687" TYPE="PARAGRAPH" ORDER="10">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000120"/></fptr>
+                                </div>
+                                <div ID="DIV.688" TYPE="PARAGRAPH" ORDER="11">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000121"/></fptr>
+                                </div>
+                                <div ID="DIV.689" TYPE="PARAGRAPH" ORDER="12">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000122"/></fptr>
+                                </div>
+                                <div ID="DIV.690" TYPE="PARAGRAPH" ORDER="13">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000123"/></fptr>
+                                </div>
+                                <div ID="DIV.691" TYPE="PARAGRAPH" ORDER="14">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000124"/></fptr>
+                                </div>
+                                <div ID="DIV.692" TYPE="PARAGRAPH" ORDER="15">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000125"/></fptr>
+                                </div>
+                                <div ID="DIV.693" TYPE="PARAGRAPH" ORDER="16">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000126"/></fptr>
+                                </div>
+                                <div ID="DIV.694" TYPE="PARAGRAPH" ORDER="17">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000127"/></fptr>
+                                </div>
+                                <div ID="DIV.695" TYPE="PARAGRAPH" ORDER="18">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000128"/></fptr>
+                                </div>
+                                <div ID="DIV.696" TYPE="PARAGRAPH" ORDER="19">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000129"/></fptr>
+                                </div>
+                                <div ID="DIV.697" TYPE="PARAGRAPH" ORDER="20">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000130"/></fptr>
+                                </div>
+                                <div ID="DIV.698" TYPE="PARAGRAPH" ORDER="21">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000131"/></fptr>
+                                </div>
+                                <div ID="DIV.699" TYPE="PARAGRAPH" ORDER="22">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000132"/></fptr>
+                                </div>
+                                <div ID="DIV.700" TYPE="PARAGRAPH" ORDER="23">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000133"/></fptr>
+                                </div>
+                                <div ID="DIV.701" TYPE="PARAGRAPH" ORDER="24">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000134"/></fptr>
+                                </div>
+                                <div ID="DIV.702" TYPE="PARAGRAPH" ORDER="25">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000135"/></fptr>
+                                </div>
+                                <div ID="DIV.703" TYPE="PARAGRAPH" ORDER="26">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000136"/></fptr>
+                                </div>
+                                <div ID="DIV.704" TYPE="PARAGRAPH" ORDER="27">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000137"/></fptr>
+                                </div>
+                                <div ID="DIV.705" TYPE="PARAGRAPH" ORDER="28">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000138"/></fptr>
+                                </div>
+                                <div ID="DIV.706" TYPE="PARAGRAPH" ORDER="29">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000139"/></fptr>
+                                </div>
+                                <div ID="DIV.707" TYPE="PARAGRAPH" ORDER="30">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000140"/></fptr>
+                                </div>
+                                <div ID="DIV.708" TYPE="PARAGRAPH" ORDER="31">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000141"/></fptr>
+                                </div>
+                                <div ID="DIV.709" TYPE="PARAGRAPH" ORDER="32">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000142"/></fptr>
+                                </div>
+                                <div ID="DIV.710" TYPE="PARAGRAPH" ORDER="33">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000143"/></fptr>
+                                </div>
+                                <div ID="DIV.711" TYPE="PARAGRAPH" ORDER="34">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000144"/></fptr>
+                                </div>
+                                <div ID="DIV.712" TYPE="PARAGRAPH" ORDER="35">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000145"/></fptr>
+                                </div>
+                                <div ID="DIV.713" TYPE="PARAGRAPH" ORDER="36">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000146"/></fptr>
+                                </div>
+                                <div ID="DIV.714" TYPE="PARAGRAPH" ORDER="37">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000147"/></fptr>
+                                </div>
+                                <div ID="DIV.715" TYPE="PARAGRAPH" ORDER="38">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000148"/></fptr>
+                                </div>
+                                <div ID="DIV.716" TYPE="PARAGRAPH" ORDER="39">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000149"/></fptr>
+                                </div>
+                                <div ID="DIV.717" TYPE="PARAGRAPH" ORDER="40">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000150"/></fptr>
+                                </div>
+                                <div ID="DIV.718" TYPE="PARAGRAPH" ORDER="41">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000151"/></fptr>
+                                </div>
+                                <div ID="DIV.719" TYPE="PARAGRAPH" ORDER="42">
+                                    <fptr>
+                                        <area BETYPE="IDREF" FILEID="ocr.4" BEGIN="PAG_4_TB000152"/></fptr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </structMap>
+</mets>
