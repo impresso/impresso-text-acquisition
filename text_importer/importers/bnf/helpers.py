@@ -56,14 +56,33 @@ def get_journal_name(archive_path):
     return journal
 
 
-def parse_date(date_string: str, formats: List[str]) -> datetime.date:
+def is_multi_date(date_string: str) -> bool:
+    return len(date_string) > 10
+
+
+def get_first_date(date_string: str, separators: List[str]) -> str:
+    for s in separators:
+        if len(date_string.split(s)) == 2:
+            date_string = date_string.split(s)[0]  # Take first date
+            return date_string
+
+
+def parse_date(date_string: str, formats: List[str], separators: List[str]) -> datetime.date:
     """ Parses a date given a list of formats
     
     :param date_string:
     :param formats:
+    :param separators:
     :return:
     """
     date = None
+    # Dates have at least 10 characters. Some (very rarely) issues have only year/month
+    if len(date_string) < 10:
+        raise ValueError("Could not parse date {}".format(date_string))
+    elif is_multi_date(date_string):  # Here we potentially have two dates, take the first one
+        logger.info(f"Got two dates {date_string}")
+        date_string = get_first_date(date_string, separators)
+    
     for f in formats:
         try:
             date = datetime.strptime(date_string, f).date()

@@ -44,6 +44,7 @@ canonical identifiers for the issue and its pages.
 """
 
 DATE_FORMATS = ["%Y-%m-%d", "%Y/%m/%d"]
+DATE_SEPARATORS = ["/", "-"]
 
 
 def dir2issue(issue_path: str) -> BnfIssueDir:
@@ -65,14 +66,15 @@ def dir2issue(issue_path: str) -> BnfIssueDir:
         try:
             issue_info = get_dmd_sec(manifest, 2)  # Issue info is in dmdSec of id 2
             journal = get_journal_name(issue_path)
-            np_date = parse_date(issue_info.find("date").contents[0], DATE_FORMATS)
+            np_date = parse_date(issue_info.find("date").contents[0], DATE_FORMATS, DATE_SEPARATORS)
             edition = "a"
             rights = "open_public"
             issue = BnfIssueDir(journal=journal, date=np_date, edition=edition, path=issue_path, rights=rights)
-        except Exception as e:
-            raise ValueError(f"Could not parse issue at {issue_path}")
+        except ValueError as e:
+            print(e)
+            logger.error(f"Could not parse issue at {issue_path}")
     else:
-        raise ValueError(f"Could not find manifest in {issue_path}")
+        logger.error(f"Could not find manifest in {issue_path}")
     return issue
 
 
@@ -95,7 +97,10 @@ def detect_issues(base_dir: str, access_rights: str = None):
         ]
     
     issue_dirs = [dir2issue(_dir) for _dir in issue_dirs]
-    return issue_dirs
+    initial_length = len(issue_dirs)
+    issue_dirs = [i for i in issue_dirs if i is not None]
+    logger.info(f"Removed {initial_length - len(issue_dirs)} problematic issues")
+    return [i for i in issue_dirs if i is not None]
 
 
 def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[List[BnfIssueDir]]:
