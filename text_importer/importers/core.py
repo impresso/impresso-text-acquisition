@@ -18,6 +18,7 @@ import os
 import random
 import shutil
 from copy import copy
+from itertools import groupby
 from json import JSONDecodeError
 from pathlib import Path
 from time import strftime
@@ -30,10 +31,9 @@ from impresso_commons.text.rebuilder import cleanup
 from impresso_commons.utils import chunk
 from impresso_commons.utils.s3 import get_s3_resource
 from smart_open import smart_open as smart_open_function
-from itertools import groupby
+
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers.olive.classes import OliveNewspaperIssue
-from text_importer.importers.bnf.classes import BnfNewspaperIssue
 from text_importer.importers.swa.classes import SWANewspaperIssue
 
 logger = logging.getLogger(__name__)
@@ -70,11 +70,6 @@ def dir2issue(
             np_issue = OliveNewspaperIssue(
                     issue,
                     image_dirs=image_dirs,
-                    temp_dir=temp_dir
-                    )
-        elif issue_class is BnfNewspaperIssue:
-            np_issue = BnfNewspaperIssue(
-                    issue,
                     temp_dir=temp_dir
                     )
         elif issue_class is SWANewspaperIssue:
