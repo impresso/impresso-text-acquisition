@@ -1,17 +1,15 @@
 import logging
 import os
 from collections import namedtuple
-from datetime import datetime
-from glob import glob
 from typing import List, Optional
-from zipfile import ZipFile
 
 from bs4 import BeautifulSoup
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
 
 from text_importer.importers.mets_alto.mets import get_dmd_sec
-from text_importer.importers.bnf.helpers import get_journal_name
+from text_importer.importers.bnf.helpers import get_journal_name, parse_date
+
 logger = logging.getLogger(__name__)
 
 BnfIssueDir = namedtuple(
@@ -20,7 +18,6 @@ BnfIssueDir = namedtuple(
             'date',
             'edition',
             'path',
-            'issue_path',
             'rights'
             ]
         )
@@ -46,46 +43,36 @@ canonical identifiers for the issue and its pages.
 >>> i = BnfIssueDir(journal='Marie-Claire', date=datetime.date(1938, 3, 11), edition='a', path='./BNF/files/4701034.zip', rights='open_public')
 """
 
-
-def get_issue_paths(archive_path: str) -> List[str]:
-    """ Given a journal archives, scans it for all issues and returns the path of each issue within this archive
-    
-    :param str archive_path: Path of archive
-    :return:
-    """
-    archive = ZipFile(archive_path)
-    return [x for x in archive.namelist() if (len(x.split('/')) == 3 and x[-1] == "/")]
+DATE_FORMATS = ["%Y-%m-%d", "%Y/%m/%d"]
 
 
-def dir2issue(archive_path: str, issue_path: str, date_format: str = "%Y-%m-%d") -> BnfIssueDir:
+def dir2issue(issue_path: str) -> BnfIssueDir:
     """ Creates a `BnfIssueDir` object from an archive path
     
     .. note ::
         This function is called internally by `detect_issues`
     
-    :param str archive_path: Path of issue archive
     :param str issue_path: The path of the issue within the archive
-    :param str date_format: Date formatting (default `%Y-%m-%d`
     :return: New ``BnfIssueDir`` object
     """
-    archive = ZipFile(archive_path)
     manifest_file = os.path.join(issue_path, "manifest.xml")
     
     issue = None
-    if manifest_file in archive.namelist():
-        manifest = BeautifulSoup(archive.open(manifest_file).read(), "xml")
+    if os.path.isfile(manifest_file):
+        with open(manifest_file) as f:
+            manifest = BeautifulSoup(f, "xml")
+        
         try:
             issue_info = get_dmd_sec(manifest, 2)  # Issue info is in dmdSec of id 2
-            journal = get_journal_name(archive_path)
-            np_date = datetime.strptime(issue_info.find("date").contents[0], date_format).date()
+            journal = get_journal_name(issue_path)
+            np_date = parse_date(issue_info.find("date").contents[0], DATE_FORMATS)
             edition = "a"
             rights = "open_public"
-            issue = BnfIssueDir(journal=journal, date=np_date, edition=edition,
-                                path=archive_path, issue_path=issue_path, rights=rights)
+            issue = BnfIssueDir(journal=journal, date=np_date, edition=edition, path=issue_path, rights=rights)
         except Exception as e:
-            logger.error(f"Got error {e} when importing {archive_path}")
+            raise ValueError(f"Could not parse issue at {issue_path}")
     else:
-        logger.warning(f"Could not find manifest in {archive_path}")
+        raise ValueError(f"Could not find manifest in {issue_path}")
     return issue
 
 
@@ -98,18 +85,16 @@ def detect_issues(base_dir: str, access_rights: str = None):
     :param str access_rights: Not used for this imported, but argument is kept for normality
     :return: List of `BnfIssueDir` instances, to be imported.
     """
-    zip_files = glob(os.path.join(base_dir, "*.zip"))
-    # dir_path, dirs, files = next(os.walk(base_dir))
-    # batches_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
+    dir_path, dirs, files = next(os.walk(base_dir))
     
-    issue_archives = [
-        (f, path)
-        for f in zip_files
-        for path in get_issue_paths(f)
+    journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
+    issue_dirs = [
+        os.path.join(journal, _dir)
+        for journal in journal_dirs
+        for _dir in os.listdir(journal)
         ]
     
-    issue_dirs = [dir2issue(archive, path) for archive, path in issue_archives]
-    issue_dirs = [issue for issue in issue_dirs if issue is not None]
+    issue_dirs = [dir2issue(_dir) for _dir in issue_dirs]
     return issue_dirs
 
 

@@ -1,6 +1,8 @@
 """Set of helper functions for BNF importer"""
 import logging
 import os
+from datetime import datetime
+from typing import List
 from zipfile import ZipFile
 
 from impresso_commons.path import IssueDir
@@ -79,18 +81,30 @@ def extract_bnf_archive(dest_dir: str, issue_dir: IssueDir) -> ZipArchive:
         raise ValueError(msg)
 
 
-def is_int(s):
-    try:
-        int(s)
-        return True
-    except ValueError as e:
-        return False
-
-
 def get_journal_name(archive_path):
-    split = os.path.splitext(os.path.basename(archive_path))[0].split('-')
-    if is_int(split[-1]):
-        journal = "".join(split[:-1]).lower()
-    else:
-        journal = "".join(split).lower()
+    """ Returns the Journal name from the path of the issue. It assumes the journal name is one directory above the issue
+    
+    :param archive_path:
+    :return:
+    """
+    journal = archive_path.split('/')[-2].split('-')
+    journal = "".join(journal).lower()
     return journal
+
+
+def parse_date(date_string: str, formats: List[str]) -> datetime.date:
+    """ Parses a date given a list of formats
+    
+    :param date_string:
+    :param formats:
+    :return:
+    """
+    date = None
+    for f in formats:
+        try:
+            date = datetime.strptime(date_string, f).date()
+        except ValueError as e:
+            pass
+    if date is None:
+        raise ValueError("Could not parse date {}".format(date_string))
+    return date
