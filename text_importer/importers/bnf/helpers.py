@@ -1,16 +1,10 @@
 """Set of helper functions for BNF importer"""
 import logging
-import os
 from datetime import datetime
 from typing import List
-from zipfile import ZipFile
 
-from impresso_commons.path import IssueDir
-from impresso_commons.path.path_fs import canonical_path
-
-from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE, CONTENTITEM_TYPE_OBITUARY, \
-    CONTENTITEM_TYPE_ADVERTISEMENT, CONTENTITEM_TYPE_ARTICLE
-from text_importer.importers.classes import ZipArchive
+from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT, CONTENTITEM_TYPE_ARTICLE, CONTENTITEM_TYPE_IMAGE, \
+    CONTENTITEM_TYPE_OBITUARY, CONTENTITEM_TYPE_TABLE
 
 BNF_CONTENT_TYPES = ["article", "advertisement", "illustration", "ornament", "freead",
                      "table"]  # BNF types that do not have a direct `area` descendant
@@ -49,36 +43,6 @@ def add_div(_dict: dict, _type: str, div_id: str, label: str) -> dict:
     else:
         logger.warning(f"Tried to add div of type {_type}")
     return _dict
-
-
-def extract_bnf_archive(dest_dir: str, issue_dir: IssueDir) -> ZipArchive:
-    """Extracts the archive of the given BNFIssueDir into the destination dir
-
-    :param str dest_dir: The destination directory
-    :param IssueDir issue_dir: The IssueDir of the BNF issue
-    :return: ZipArchive: Object used to read the extracted data
-    """
-    issue_id = canonical_path(issue_dir, path_type='dir').replace('/', '-')
-    if os.path.isfile(issue_dir.path):
-        archive_tmp_path = os.path.join(
-                dest_dir,
-                canonical_path(issue_dir, path_type='dir')
-                )
-        
-        try:
-            archive = ZipFile(issue_dir.path)
-            
-            logger.debug((
-                f"Contents of archive for {issue_id}:"
-                f" {archive.namelist()}"
-            ))
-            return ZipArchive(archive, archive_tmp_path)
-        except Exception as e:
-            msg = f"Bad Zipfile for {issue_id}, failed with error : {e}"
-            raise ValueError(msg)
-    else:
-        msg = f"Could not find archive {issue_dir.path} for {issue_id}"
-        raise ValueError(msg)
 
 
 def get_journal_name(archive_path):
