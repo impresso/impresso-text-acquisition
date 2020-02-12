@@ -21,45 +21,53 @@ def parse_printspace(element: Tag, mappings: Dict[str, str]) -> List[dict]:
     :rtype: List[dict]
 
     """
-
+    
     regions = []
-
+    notes = []
     for block in element.children:
-
+        
         if isinstance(block, bs4.element.NavigableString):
             continue
-
+        
         block_id = block.get('ID')
         if block.name == "ComposedBlock":
-            cb_regions = parse_printspace(block, mappings)
+            cb_regions, new_notes = parse_printspace(block, mappings)
             regions += cb_regions
+            notes += new_notes
         else:
             if block_id in mappings:
                 part_of_contentitem = mappings[block_id]
             else:
                 part_of_contentitem = None
-
+            
             coordinates = distill_coordinates(block)
-
-            lines = [
+            
+            tmp = [
                 parse_textline(line_element)
                 for line_element in block.findAll('TextLine')
-            ]
-
+                ]
+            
+            if len(tmp) > 0:
+                lines, new_notes = list(zip(*tmp))
+                new_notes = [i for n in new_notes for i in n]
+            else:
+                lines, new_notes = [], []
+            
             paragraph = {
                 "c": coordinates,
                 "l": lines
-            }
-
+                }
+            
             region = {
                 "c": coordinates,
                 "p": [paragraph]
-            }
-
+                }
+            
             if part_of_contentitem:
                 region['pOf'] = part_of_contentitem
+            notes += new_notes
             regions.append(region)
-    return regions
+    return regions, notes
 
 
 def parse_div_parts(div: Tag) -> List[dict]:
@@ -71,28 +79,28 @@ def parse_div_parts(div: Tag) -> List[dict]:
     """
     parts = []
     for child in div.children:
-
+        
         if isinstance(child, NavigableString):
             continue
         elif isinstance(child, Tag):
             type_attr = child.get('TYPE')
             comp_role = type_attr.lower() if type_attr else None
-
+            
             if comp_role not in BNF_CONTENT_TYPES:
                 areas = child.findAll('area')
                 for area in areas:
                     comp_id = area.get('BEGIN')
                     comp_fileid = area.get('FILEID')
                     comp_page_no = int(comp_fileid.split(".")[1])
-
+                    
                     parts.append(
                             {
                                 'comp_role': comp_role,
                                 'comp_id': comp_id,
                                 'comp_fileid': comp_fileid,
                                 'comp_page_no': comp_page_no
-                            }
-                    )
+                                }
+                            )
     return parts
 
 
@@ -115,7 +123,7 @@ def parse_embedded_cis(div: Tag,
     """
     new_cis = []
     for child in div.children:
-
+        
         if isinstance(child, NavigableString):
             continue
         elif isinstance(child, Tag):
@@ -127,14 +135,14 @@ def parse_embedded_cis(div: Tag,
                 else:
                     logger.warning(f"Type {comp_role} does not have translation")
                     impresso_type = comp_role
-
+                
                 metadata = {
                     'id': "{}-i{}".format(issue_id, str(counter).zfill(4)),
                     'tp': impresso_type,
                     'pp': [],
-                }
+                    }
                 lab = child.get('LABEL') or label
-
+                
                 if lab is not None:
                     metadata['t'] = lab
                 # Check if the parent exists (sometimes tables are embedded into articles, but the articles are empty)
@@ -143,7 +151,7 @@ def parse_embedded_cis(div: Tag,
                 new_ci = {
                     'm': metadata,
                     'l': {'parts': parse_div_parts(child)}
-                }
+                    }
                 new_cis.append(new_ci)
                 counter += 1
     return new_cis, counter

@@ -11,7 +11,7 @@ from text_importer.importers import CONTENTITEM_TYPE_IMAGE
 from text_importer.importers.bnf.helpers import BNF_CONTENT_TYPES, add_div, type_translation
 from text_importer.importers.bnf.parsers import parse_div_parts, parse_embedded_cis, parse_printspace
 from text_importer.importers.mets_alto import MetsAltoNewspaperIssue, MetsAltoNewspaperPage
-from text_importer.importers.mets_alto.alto import distill_coordinates
+from text_importer.importers.mets_alto.alto import distill_coordinates, parse_style
 from text_importer.utils import get_issue_schema, get_page_schema
 import gzip
 
@@ -34,6 +34,15 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
         super().__init__(_id, n, filename, basedir)
         self.ark_link = self.xml.find("fileIdentifier").getText()
     
+    def _parse_font_styles(self):
+        style_divs = self.xml.findAll("TextStyle")
+        
+        styles = []
+        for d in style_divs:
+            styles.append(parse_style(d))
+        
+        self.page_data['s'] = styles
+    
     def add_issue(self, issue: MetsAltoNewspaperIssue):
         """Sets the `issue` attribute for the current Page.
 
@@ -42,6 +51,7 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
         self.issue = issue
         iiif_url = os.path.join(IIIF_ENDPOINT_URL, self.ark_link, IIIF_MANIFEST_SUFFIX)
         self.page_data['iiif'] = iiif_url
+        self._parse_font_styles()
     
     def parse(self):
         """Parses the page into JSON, using the parent issue's content items
@@ -56,10 +66,12 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
                     mappings[part['comp_id']] = ci_id
         
         pselement = doc.find('PrintSpace')
-        page_data = parse_printspace(pselement, mappings)
+        page_data, notes = parse_printspace(pselement, mappings)
         self.page_data['cc'], self.page_data["r"] = self._convert_coordinates(
                 page_data
                 )
+        if len(notes) > 0:
+            self.page_data['n'] = notes
     
     @property
     def xml(self) -> BeautifulSoup:
