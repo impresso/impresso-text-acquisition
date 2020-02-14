@@ -1,7 +1,7 @@
 """Set of helper functions for BNF importer"""
 import logging
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
 from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT, CONTENTITEM_TYPE_ARTICLE, CONTENTITEM_TYPE_IMAGE, \
     CONTENTITEM_TYPE_OBITUARY, CONTENTITEM_TYPE_TABLE
@@ -60,14 +60,13 @@ def is_multi_date(date_string: str) -> bool:
     return len(date_string) > 10
 
 
-def get_first_date(date_string: str, separators: List[str]) -> str:
+def get_dates(date_string: str, separators: List[str]) -> Tuple[str, str]:
     for s in separators:
         if len(date_string.split(s)) == 2:
-            date_string = date_string.split(s)[0]  # Take first date
-            return date_string
+            return date_string.split(s)
 
 
-def parse_date(date_string: str, formats: List[str], separators: List[str]) -> datetime.date:
+def parse_date(date_string: str, formats: List[str], separators: List[str]) -> Tuple[datetime.date, datetime.date]:
     """ Parses a date given a list of formats
     
     :param date_string:
@@ -75,19 +74,22 @@ def parse_date(date_string: str, formats: List[str], separators: List[str]) -> d
     :param separators:
     :return:
     """
-    date = None
+    date, secondary = None, None
+    sec_date_string = None
     # Dates have at least 10 characters. Some (very rarely) issues have only year/month
     if len(date_string) < 10:
         raise ValueError("Could not parse date {}".format(date_string))
     elif is_multi_date(date_string):  # Here we potentially have two dates, take the first one
         logger.info(f"Got two dates {date_string}")
-        date_string = get_first_date(date_string, separators)
+        date_string, sec_date_string = get_dates(date_string, separators)
     
     for f in formats:
         try:
             date = datetime.strptime(date_string, f).date()
+            if sec_date_string is not None:
+                secondary = datetime.strptime(sec_date_string, f).date()
         except ValueError as e:
             pass
     if date is None:
         raise ValueError("Could not parse date {}".format(date_string))
-    return date
+    return date, secondary

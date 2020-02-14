@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from collections import namedtuple
@@ -7,8 +8,9 @@ from bs4 import BeautifulSoup
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
 
-from text_importer.importers.mets_alto.mets import get_dmd_sec
 from text_importer.importers.bnf.helpers import get_journal_name, parse_date
+from text_importer.importers.mets_alto.mets import get_dmd_sec
+from text_importer.utils import get_access_right
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +20,8 @@ BnfIssueDir = namedtuple(
             'date',
             'edition',
             'path',
-            'rights'
+            'rights',
+            'secondary_date'
             ]
         )
 """A light-weight data structure to represent a newspaper issue.
@@ -47,13 +50,14 @@ DATE_FORMATS = ["%Y-%m-%d", "%Y/%m/%d"]
 DATE_SEPARATORS = ["/", "-"]
 
 
-def dir2issue(issue_path: str) -> BnfIssueDir:
+def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
     """ Creates a `BnfIssueDir` object from an archive path
     
     .. note ::
         This function is called internally by `detect_issues`
     
     :param str issue_path: The path of the issue within the archive
+    :param dict access_rights_dict:
     :return: New ``BnfIssueDir`` object
     """
     manifest_file = os.path.join(issue_path, "manifest.xml")
@@ -66,12 +70,13 @@ def dir2issue(issue_path: str) -> BnfIssueDir:
         try:
             issue_info = get_dmd_sec(manifest, 2)  # Issue info is in dmdSec of id 2
             journal = get_journal_name(issue_path)
-            np_date = parse_date(issue_info.find("date").contents[0], DATE_FORMATS, DATE_SEPARATORS)
+            np_date, secondary_date = parse_date(issue_info.find("date").contents[0], DATE_FORMATS, DATE_SEPARATORS)
             edition = "a"
-            rights = "open_public"
-            issue = BnfIssueDir(journal=journal, date=np_date, edition=edition, path=issue_path, rights=rights)
+            rights = get_access_right(journal, np_date, access_rights_dict)
+            issue = BnfIssueDir(journal=journal, date=np_date, edition=edition, path=issue_path, rights=rights,
+                                secondary_date=secondary_date)
         except ValueError as e:
-            print(e)
+            logger.info(e)
             logger.error(f"Could not parse issue at {issue_path}")
     else:
         logger.error(f"Could not find manifest in {issue_path}")
@@ -96,7 +101,9 @@ def detect_issues(base_dir: str, access_rights: str = None):
         for _dir in os.listdir(journal)
         ]
     
-    issue_dirs = [dir2issue(_dir) for _dir in issue_dirs]
+    with open(access_rights, 'r') as f:
+        access_rights_dict = json.load(f)
+    issue_dirs = [dir2issue(_dir, access_rights_dict) for _dir in issue_dirs]
     initial_length = len(issue_dirs)
     issue_dirs = [i for i in issue_dirs if i is not None]
     logger.info(f"Removed {initial_length - len(issue_dirs)} problematic issues")

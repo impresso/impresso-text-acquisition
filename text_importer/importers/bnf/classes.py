@@ -72,7 +72,7 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
                 )
         if len(notes) > 0:
             self.page_data['n'] = notes
-    
+        
     @property
     def xml(self) -> BeautifulSoup:
         """ Redefined as for some issues, the pages are in gz format
@@ -97,6 +97,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
     
     def __init__(self, issue_dir: IssueDir):
         self.issue_uid = os.path.basename(issue_dir.path)
+        self.secondary_date = issue_dir.secondary_date
         super().__init__(issue_dir)
     
     @property
@@ -278,10 +279,14 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                 x['m']['iiif_link'] = self._get_iiif_link(x['m']['pp'], x['l']['parts'])
         
         self.pages = list(self.pages.values())
+        
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "i": content_items,
             "id": self.id,
             "ar": self.rights,
-            "pp": [p.id for p in self.pages]  # TODO: styles
+            "pp": [p.id for p in self.pages]
             }
+        # Note for newspapers with two dates (197 cases)
+        if self.secondary_date is not None:
+            self.issue_data['n'] = ["Secondary date {}".format(self.secondary_date)]

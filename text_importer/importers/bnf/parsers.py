@@ -12,7 +12,7 @@ from text_importer.importers.mets_alto.alto import parse_textline, distill_coord
 logger = logging.getLogger(__name__)
 
 
-def parse_printspace(element: Tag, mappings: Dict[str, str]) -> List[dict]:
+def parse_printspace(element: Tag, mappings: Dict[str, str]) -> Tuple[List[dict], Optional[List[str]]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
     :param Tag element: Input XML element (``<PrintSpace>``).
