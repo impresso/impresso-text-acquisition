@@ -25,7 +25,7 @@ author = 'Matteo Romanello & Impresso team'
 # The full version, including alpha/beta/rc tags
 release = ''
 
-
+master_doc = 'index'
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -34,7 +34,7 @@ release = ''
 extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosectionlabel'
+    'sphinx.ext.autosectionlabel',
     'sphinx.ext.todo',
 ]
 

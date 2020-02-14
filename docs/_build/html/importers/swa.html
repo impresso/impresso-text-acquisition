@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Write your own importer" href="../custom_importer.html" />
+    <link rel="next" title="British Library Mets/Alto importer" href="bl.html" />
     <link rel="prev" title="RERO Mets/Alto importer" href="rero.html" /> 
 </head>
 
@@ -83,7 +83,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../importers.html">TextImporter</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
@@ -95,14 +95,16 @@
 <li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.swa.detect">Detect functions</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-files">Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Write your own importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Writing a new importer</a></li>
 </ul>
 
             
@@ -177,71 +179,94 @@ It was developed to handle OCR newspaper data in Alto format provided by the <a 
 <span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.swa.classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="text_importer.importers.swa.classes.SWANewspaperIssue">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.swa.classes.</code><code class="sig-name descname">SWANewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: text_importer.importers.swa.detect.IssueDirectory</em>, <em class="sig-param">temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperIssue" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">text_importer.importers.swa.classes.</code><code class="descname">SWANewspaperIssue</code><span class="sig-paren">(</span><em>issue_dir: text_importer.importers.swa.detect.IssueDirectory</em>, <em>temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperIssue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a SWA Newspaper Issue.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>SWA is in ALTO format, but there isn’t any Mets file. So in that case,
+<p class="first admonition-title">Note</p>
+<p class="last">SWA is in ALTO format, but there isn’t any Mets file. So in that case,
 issues are simply a collection of pages.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>issue_dir</strong> (<em>SwaIssueDir</em>) – SwaIssueDir of the current Issue</p></li>
-<li><p><strong>temp_dir</strong> (<em>str</em>) – Temporary directory to extract archives</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>issue_dir</strong> (<em>SwaIssueDir</em>) – SwaIssueDir of the current Issue</li>
+<li><strong>temp_dir</strong> (<em>str</em>) – Temporary directory to extract archives</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
 <dt id="text_importer.importers.swa.classes.SWANewspaperPage">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.swa.classes.</code><code class="sig-name descname">SWANewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">number: int</em>, <em class="sig-param">alto_path: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">text_importer.importers.swa.classes.</code><code class="descname">SWANewspaperPage</code><span class="sig-paren">(</span><em>_id: str</em>, <em>number: int</em>, <em>alto_path: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a newspaper page in SWA data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>alto_path</strong> (<em>str</em>) – Full path to the Alto XML file.</p></li>
-<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p></li>
-<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
-</ul>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>alto_path</strong> (<em>str</em>) – Full path to the Alto XML file.</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="text_importer.importers.swa.classes.SWANewspaperPage.add_issue">
-<code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_issue</code><span class="sig-paren">(</span><em>issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the newspaper issue.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="text_importer.importers.swa.classes.SWANewspaperPage.ci_id">
-<em class="property">property </em><code class="sig-name descname">ci_id</code><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage.ci_id" title="Permalink to this definition">¶</a></dt>
+<code class="descname">ci_id</code><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage.ci_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the content item ID of the page.</p>
 <p>Given that SWA data do not entail article-level segmentation,
 each page is considered as a content item. Thus, to mint the content
 item ID we take the canonical page ID and simply replace the “p”
 prefix with “i”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>str Content item id</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str Content item id</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="text_importer.importers.swa.classes.SWANewspaperPage.file_exists">
+<code class="descname">file_exists</code><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage.file_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the ALTO file exists for this page</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="text_importer.importers.swa.classes.SWANewspaperPage.parse">
-<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
+<code class="descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.swa.classes.SWANewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process the page file and transform into canonical format.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This lazy behavior means that the page contents are not processed
+<p class="first admonition-title">Note</p>
+<p class="last">This lazy behavior means that the page contents are not processed
 upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
 method is called.</p>
 </div>
@@ -254,29 +279,33 @@ method is called.</p>
 <span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.swa.detect" title="Permalink to this headline">¶</a></h2>
 <dl class="attribute">
 <dt id="text_importer.importers.swa.detect.SwaIssueDir">
-<code class="sig-prename descclassname">text_importer.importers.swa.detect.</code><code class="sig-name descname">SwaIssueDir</code><a class="headerlink" href="#text_importer.importers.swa.detect.SwaIssueDir" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.swa.detect.</code><code class="descname">SwaIssueDir</code><a class="headerlink" href="#text_importer.importers.swa.detect.SwaIssueDir" title="Permalink to this definition">¶</a></dt>
 <dd><p>A light-weight data structure to represent a SWA newspaper issue.</p>
 <p>This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
 canonical identifiers for the issue and its pages.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In case of newspaper published multiple times per day, a lowercase letter
+<p class="first admonition-title">Note</p>
+<p class="last">In case of newspaper published multiple times per day, a lowercase letter
 is used to indicate the edition number: ‘a’ for the first, ‘b’ for the
 second, etc.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>journal</strong> (<em>str</em>) – Newspaper ID</p></li>
-<li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date</p></li>
-<li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.)</p></li>
-<li><p><strong>path</strong> (<em>str</em>) – Path to the archive holding issue’s data</p></li>
-<li><p><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.)</p></li>
-<li><p><strong>pages</strong> (<em>list</em>) – List of tuples (page_canonical_id, alto_path), alto_path is the path from within the archive</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>journal</strong> (<em>str</em>) – Newspaper ID</li>
+<li><strong>date</strong> (<em>datetime.date</em>) – Publication date</li>
+<li><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.)</li>
+<li><strong>path</strong> (<em>str</em>) – Path to the archive holding issue’s data</li>
+<li><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.)</li>
+<li><strong>pages</strong> (<em>list</em>) – List of tuples (page_canonical_id, alto_path), alto_path is the path from within the archive</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">IssueDirectory</span><span class="p">(</span><span class="n">journal</span><span class="o">=</span><span class="s1">&#39;arbeitgeber&#39;</span><span class="p">,</span> <span class="n">date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">1908</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">edition</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;./SWA/impresso_ocr/schwar_000059110_DSV01_1908.zip&#39;</span><span class="p">,</span> <span class="n">rights</span><span class="o">=</span><span class="s1">&#39;open_public&#39;</span><span class="p">,</span>                         <span class="n">pages</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;arbeitgeber-1908-07-04-a-p0001&#39;</span><span class="p">,</span> <span class="s1">&#39;schwar_000059110_DSV01_1908/ocr/schwar_000059110_DSV01_1908_alto/BAU_1_000059110_1908_0001.xml&#39;</span><span class="p">),</span> <span class="o">...</span><span class="p">])</span>
 </pre></div>
@@ -286,76 +315,84 @@ second, etc.</p>
 
 <dl class="function">
 <dt id="text_importer.importers.swa.detect.detect_issues">
-<code class="sig-prename descclassname">text_importer.importers.swa.detect.</code><code class="sig-name descname">detect_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">access_rights: str</em>, <em class="sig-param">csv_file: str = 'impresso_ids.zip'</em>, <em class="sig-param">archives_dir: str = 'impresso_ocr'</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.swa.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.swa.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.swa.detect.</code><code class="descname">detect_issues</code><span class="sig-paren">(</span><em>base_dir: str</em>, <em>access_rights: str</em>, <em>csv_file: str = 'impresso_ids.zip'</em>, <em>archives_dir: str = 'impresso_ocr'</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.swa.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.swa.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect newspaper issues to import within the filesystem.</p>
 <p>This function expects the directory structure that SWA used to
 organize the dump of Alto OCR data.</p>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>The access rights information is not in place yet, but needs
-to be specified by the content provider (SWA).</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
-<li><p><strong>csv_file</strong> (<em>str</em>) – Compressed csv file holding Issue and page identifiers with alto paths (impresso_ids.zip as default)</p></li>
-<li><p><strong>archives_dir</strong> (<em>str</em>) – Directory where archives are stored (impresso_ocr/ as default)</p></li>
+<blockquote>
+<div>The access rights information is not in place yet, but needs
+to be specified by the content provider (SWA).</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</li>
+<li><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</li>
+<li><strong>csv_file</strong> (<em>str</em>) – Compressed csv file holding Issue and page identifiers with alto paths (impresso_ids.zip as default)</li>
+<li><strong>archives_dir</strong> (<em>str</em>) – Directory where archives are stored (impresso_ocr/ as default)</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">SwaIssueDir</span></code> instances, to be imported.</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of <code class="docutils literal notranslate"><span class="pre">SwaIssueDir</span></code> instances, to be imported.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.swa.detect.get_issuedir">
-<code class="sig-prename descclassname">text_importer.importers.swa.detect.</code><code class="sig-name descname">get_issuedir</code><span class="sig-paren">(</span><em class="sig-param">row: pandas.core.series.Series</em>, <em class="sig-param">archives_full_dir: str</em><span class="sig-paren">)</span> &#x2192; Optional[text_importer.importers.swa.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.swa.detect.get_issuedir" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.swa.detect.</code><code class="descname">get_issuedir</code><span class="sig-paren">(</span><em>row: pandas.core.series.Series</em>, <em>archives_full_dir: str</em>, <em>access_rights: dict</em><span class="sig-paren">)</span> &#x2192; Optional[text_importer.importers.swa.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.swa.detect.get_issuedir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a <code class="docutils literal notranslate"><span class="pre">SwaIssueDir</span></code> from a row of the csv file</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function is called internally by <a class="reference internal" href="#text_importer.importers.swa.detect.detect_issues" title="text_importer.importers.swa.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a></p>
+<p class="first admonition-title">Note</p>
+<p class="last">This function is called internally by <a class="reference internal" href="#text_importer.importers.swa.detect.detect_issues" title="text_importer.importers.swa.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a></p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>row</strong> (<em>pd.Series</em>) – Path of issue.</p></li>
-<li><p><strong>archives_full_dir</strong> (<em>str</em>) – Path to archive for current issue</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>row</strong> (<em>pd.Series</em>) – Path of issue.</li>
+<li><strong>archives_full_dir</strong> (<em>str</em>) – Path to archive for current issue</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>New `` object.</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">New `` object.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.swa.detect.select_issues">
-<code class="sig-prename descclassname">text_importer.importers.swa.detect.</code><code class="sig-name descname">select_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.swa.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.swa.detect.select_issues" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.swa.detect.</code><code class="descname">select_issues</code><span class="sig-paren">(</span><em>base_dir: str</em>, <em>config: dict</em>, <em>access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.swa.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.swa.detect.select_issues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
 <p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.swa.detect.detect_issues" title="text_importer.importers.swa.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
 import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
 further details on how to configure filtering.</p>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<p>The access rights information is not in place yet, but needs
-to be specified by the content provider (SWA).</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
+<blockquote>
+<div>The access rights information is not in place yet, but needs
+to be specified by the content provider (SWA).</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</li>
+<li><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</li>
+<li><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of <code class="docutils literal notranslate"><span class="pre">SwaIssueDir</span></code> instances, to be imported.</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of <code class="docutils literal notranslate"><span class="pre">SwaIssueDir</span></code> instances, to be imported.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -369,7 +406,7 @@ to be specified by the content provider (SWA).</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../custom_importer.html" class="btn btn-neutral float-right" title="Write your own importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="bl.html" class="btn btn-neutral float-right" title="British Library Mets/Alto importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="rero.html" class="btn btn-neutral float-left" title="RERO Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

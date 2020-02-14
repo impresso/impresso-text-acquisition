@@ -7,7 +7,6 @@ Available importers
 The *Impresso TextImporter* already supports a number of formats (and flavours of standard formats), while a few others
 are currently being developed.
 
-<<<<<<< HEAD
 The following importer CLI scripts are already available:
 
 - :py:mod:`text_importer.scripts.oliveimporter`: importer for the *Olive XML format*, used by
@@ -21,6 +20,7 @@ The following importer CLI scripts are already available:
 - :py:mod:`text_importer.scripts.swaimporter.py`: ALTO flavor of the `Basel University Library`.
 - :py:mod:`text_importer.scripts.blimporter`: importer for the Mets/ALTO flavor used by the `British Library (BL) <https://www.bl.uk/>`_
   to encode and deliver its newspaper data.
+
 For further details on any of these implementations, please do refer to its documentation:
 
 .. toctree::
@@ -31,6 +31,8 @@ For further details on any of these implementations, please do refer to its docu
    importers/lux
    importers/rero
    importers/swa
+   importers/bl
+   importers/bnf
 
 Command-line interface
 ----------------------
@@ -62,7 +64,7 @@ This JSON file contains three properties:
 
 Here is a simple configuration file:
 
-.. code-block::
+.. code-block:: python
 
   {
     "newspapers": {
@@ -75,7 +77,7 @@ Here is a simple configuration file:
 This is what a more complex config file looks like (only contents for the decade 1950-1960 of GDL are processed):
 
 
-.. code-block::
+.. code-block:: python
 
   {
     "newspapers": {
