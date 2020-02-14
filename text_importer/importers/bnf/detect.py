@@ -48,6 +48,10 @@ canonical identifiers for the issue and its pages.
 
 DATE_FORMATS = ["%Y-%m-%d", "%Y/%m/%d"]
 DATE_SEPARATORS = ["/", "-"]
+"""
+In BNF data, dates can be given in two different formats (separated with `-` or `/`). Also, an issue can have two dates,
+separated by either `-` or `/`
+"""
 
 
 def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:

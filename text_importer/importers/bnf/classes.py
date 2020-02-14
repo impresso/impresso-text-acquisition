@@ -1,19 +1,20 @@
 import codecs
+import gzip
 import logging
 import os
+from glob import glob
 from time import strftime
 from typing import Dict, List, Tuple
 
 from bs4 import BeautifulSoup
 from impresso_commons.path import IssueDir
-from glob import glob
+
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE
 from text_importer.importers.bnf.helpers import BNF_CONTENT_TYPES, add_div, type_translation
 from text_importer.importers.bnf.parsers import parse_div_parts, parse_embedded_cis, parse_printspace
 from text_importer.importers.mets_alto import MetsAltoNewspaperIssue, MetsAltoNewspaperPage
 from text_importer.importers.mets_alto.alto import distill_coordinates, parse_style
 from text_importer.utils import get_issue_schema, get_page_schema
-import gzip
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -35,6 +36,7 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
         self.ark_link = self.xml.find("fileIdentifier").getText()
     
     def _parse_font_styles(self):
+        """ Parses the styles at page level"""
         style_divs = self.xml.findAll("TextStyle")
         
         styles = []
@@ -54,8 +56,7 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
         self._parse_font_styles()
     
     def parse(self):
-        """Parses the page into JSON, using the parent issue's content items
-        """
+        """Parses the page into JSON, using the parent issue's content items"""
         doc = self.xml
         
         mappings = {}
@@ -72,7 +73,7 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
                 )
         if len(notes) > 0:
             self.page_data['n'] = notes
-        
+    
     @property
     def xml(self) -> BeautifulSoup:
         """ Redefined as for some issues, the pages are in gz format
@@ -101,7 +102,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         super().__init__(issue_dir)
     
     @property
-    def xml(self):
+    def xml(self) -> BeautifulSoup:
         """Returns a BeautifulSoup object with Mets XML file of the issue."""
         mets_regex = os.path.join(self.path, "toc", f"*{self.issue_uid}.xml")
         mets_file = glob(mets_regex)
@@ -184,7 +185,13 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         
         return by_type
     
-    def _flatten_sections(self, by_type, struct_content):
+    def _flatten_sections(self, by_type: dict, struct_content) -> Dict[str, List[Tuple[str, str]]]:
+        """ Flattens the sections of the issue (i.e. make the children parts standalone CIs)
+        
+        :param by_type:
+        :param struct_content:
+        :return:
+        """
         # Flatten the sections
         for div_id, lab in by_type['section']:
             div = struct_content.find("div", {"ID": div_id})  # Get all divs of this section
@@ -238,7 +245,13 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
             embedded.append(ci)
         return embedded, item_counter
     
-    def _get_iiif_link(self, ci_id, parts):
+    def _get_image_iiif_link(self, ci_id: str, parts: List) -> str:
+        """ Gets the image iiif link given the ID of the CI (
+        
+        :param str ci_id: The ID of the image CI
+        :param list parts: Parts of the image
+        :return: The IIIF link to the image
+        """
         image_part = [p for p in parts if p['comp_role'] == CONTENTITEM_TYPE_IMAGE]
         iiif_link = None
         if len(image_part) == 0:
@@ -276,7 +289,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         for x in content_items:
             x['m']['pp'] = list(set(c['comp_page_no'] for c in x['l']['parts']))
             if x['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
-                x['m']['iiif_link'] = self._get_iiif_link(x['m']['pp'], x['l']['parts'])
+                x['m']['iiif_link'] = self._get_image_iiif_link(x['m']['id'], x['l']['parts'])
         
         self.pages = list(self.pages.values())
         
