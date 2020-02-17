@@ -98,19 +98,3 @@ def remove_section_cis(content_items, sections):
     return new_cis, to_remove
 
 
-def parse_style(style_div):
-    font_family = style_div.get("FONTFAMILY")
-    font_size = style_div.get("FONTSIZE")
-    font_style = style_div.get("FONTSTYLE")
-    font_id = style_div.get("ID")
-    
-    font_name = font_family
-    if font_style is not None:
-        font_name = "{}-{}".format(font_name, font_style)
-    
-    style = {
-        "id": font_id,
-        "fs": float(font_size),
-        "f": font_name
-        }
-    return style

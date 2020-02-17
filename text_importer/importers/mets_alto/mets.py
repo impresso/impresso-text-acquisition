@@ -46,3 +46,7 @@ def parse_mets_amdsec(mets_doc, x_res: str, y_res: str, x_res_default=300, y_res
                     'y_resolution': y_res_default
                     }
     return image_properties_dict
+
+
+def get_dmd_sec(mets_doc, _id):
+    return mets_doc.find("dmdSec", {"ID": f"DMD.{_id}"})

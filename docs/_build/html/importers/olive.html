@@ -97,10 +97,12 @@
 <li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-files">Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
 </ul>
 </li>
@@ -178,63 +180,72 @@
 <p>Classes to handle the Olive XML OCR format.</p>
 <dl class="class">
 <dt id="text_importer.importers.olive.classes.OliveNewspaperIssue">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.olive.classes.</code><code class="sig-name descname">OliveNewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em class="sig-param">image_dirs: str</em>, <em class="sig-param">temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">text_importer.importers.olive.classes.</code><code class="descname">OliveNewspaperIssue</code><span class="sig-paren">(</span><em>issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em>image_dirs: str</em>, <em>temp_dir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a newspaper issue in Olive format.</p>
 <p>Upon object initialization the following things happen:</p>
 <ul class="simple">
-<li><p>the Zip archive containing the issue is uncompressed</p></li>
-<li><p>the ToC file is parsed to determine the logical structure of the issue</p></li>
-<li><p>page objects (instances of <code class="docutils literal notranslate"><span class="pre">OliveNewspaperPage</span></code>) are initialised.</p></li>
+<li>the Zip archive containing the issue is uncompressed</li>
+<li>the ToC file is parsed to determine the logical structure of the issue</li>
+<li>page objects (instances of <code class="docutils literal notranslate"><span class="pre">OliveNewspaperPage</span></code>) are initialised.</li>
 </ul>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Description of parameter <cite>issue_dir</cite>.</p></li>
-<li><p><strong>image_dirs</strong> (<em>str</em>) – Path to the directory with the page images. Multiple
-paths should be separated by comma (“,”).</p></li>
-<li><p><strong>temp_dir</strong> (<em>str</em>) – Description of parameter <cite>temp_dir</cite>.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>issue_dir</strong> (<em>IssueDir</em>) – Description of parameter <cite>issue_dir</cite>.</li>
+<li><strong>image_dirs</strong> (<em>str</em>) – Path to the directory with the page images. Multiple
+paths should be separated by comma (“,”).</li>
+<li><strong>temp_dir</strong> (<em>str</em>) – Description of parameter <cite>temp_dir</cite>.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
 <dt id="text_importer.importers.olive.classes.OliveNewspaperPage">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.olive.classes.</code><code class="sig-name descname">OliveNewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">n: int</em>, <em class="sig-param">toc_data: dict</em>, <em class="sig-param">image_info</em>, <em class="sig-param">page_xml</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperPage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">text_importer.importers.olive.classes.</code><code class="descname">OliveNewspaperPage</code><span class="sig-paren">(</span><em>_id: str</em>, <em>n: int</em>, <em>toc_data: dict</em>, <em>image_info</em>, <em>page_xml</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperPage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class representing a page in Olive format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID.</p></li>
-<li><p><strong>n</strong> (<em>int</em>) – Page number.</p></li>
-<li><p><strong>toc_data</strong> (<em>dict</em>) – Metadata about content items in the newspaper issue.</p></li>
-<li><p><strong>image_info</strong> (<em>dict</em>) – Metadata about the page image.</p></li>
-<li><p><strong>page_xml</strong> (<em>str</em>) – Path to the Olive XML file of the page.</p></li>
-<li><p><strong>_id</strong> – Canonical page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p></li>
-<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>_id</strong> (<em>str</em>) – Canonical page ID.</li>
+<li><strong>n</strong> (<em>int</em>) – Page number.</li>
+<li><strong>toc_data</strong> (<em>dict</em>) – Metadata about content items in the newspaper issue.</li>
+<li><strong>image_info</strong> (<em>dict</em>) – Metadata about the page image.</li>
+<li><strong>page_xml</strong> (<em>str</em>) – Path to the Olive XML file of the page.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="text_importer.importers.olive.classes.OliveNewspaperPage.add_issue">
-<code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_issue</code><span class="sig-paren">(</span><em>issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the newspaper issue.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="text_importer.importers.olive.classes.OliveNewspaperPage.parse">
-<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
+<code class="descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.classes.OliveNewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process the page file and transform into canonical format.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This lazy behavior means that the page contents are not processed
+<p class="first admonition-title">Note</p>
+<p class="last">This lazy behavior means that the page contents are not processed
 upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
 method is called.</p>
 </div>
@@ -247,28 +258,32 @@ method is called.</p>
 <span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.olive.detect" title="Permalink to this headline">¶</a></h2>
 <dl class="attribute">
 <dt id="text_importer.importers.olive.detect.OliveIssueDir">
-<code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">OliveIssueDir</code><a class="headerlink" href="#text_importer.importers.olive.detect.OliveIssueDir" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.detect.</code><code class="descname">OliveIssueDir</code><a class="headerlink" href="#text_importer.importers.olive.detect.OliveIssueDir" title="Permalink to this definition">¶</a></dt>
 <dd><p>A light-weight data structure to represent a newspaper issue.</p>
 <p>This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
 canonical identifiers for the issue and its pages.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In case of newspaper published multiple times per day, a lowercase letter
+<p class="first admonition-title">Note</p>
+<p class="last">In case of newspaper published multiple times per day, a lowercase letter
 is used to indicate the edition number: ‘a’ for the first, ‘b’ for the
 second, etc.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>journal</strong> (<em>str</em>) – Newspaper ID</p></li>
-<li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date</p></li>
-<li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.)</p></li>
-<li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing OCR data</p></li>
-<li><p><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.)</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>journal</strong> (<em>str</em>) – Newspaper ID</li>
+<li><strong>date</strong> (<em>datetime.date</em>) – Publication date</li>
+<li><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.)</li>
+<li><strong>path</strong> (<em>str</em>) – Path to the directory containing OCR data</li>
+<li><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.)</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">date</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">OliveIssueDir</span><span class="p">(</span><span class="s1">&#39;GDL&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./GDL-1900-01-01/&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">)</span>
 </pre></div>
@@ -278,66 +293,78 @@ second, etc.</p>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.detect.dir2olivedir">
-<code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">dir2olivedir</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em class="sig-param">access_rights: dict</em><span class="sig-paren">)</span> &#x2192; text_importer.importers.olive.detect.OliveIssueDirectory<a class="headerlink" href="#text_importer.importers.olive.detect.dir2olivedir" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.detect.</code><code class="descname">dir2olivedir</code><span class="sig-paren">(</span><em>issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em>access_rights: dict</em><span class="sig-paren">)</span> &#x2192; text_importer.importers.olive.detect.OliveIssueDirectory<a class="headerlink" href="#text_importer.importers.olive.detect.dir2olivedir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function that injects access rights info into an <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code>.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function is called internally by <a class="reference internal" href="#text_importer.importers.olive.detect.olive_detect_issues" title="text_importer.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a>.</p>
+<p class="first admonition-title">Note</p>
+<p class="last">This function is called internally by <a class="reference internal" href="#text_importer.importers.olive.detect.olive_detect_issues" title="text_importer.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a>.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Input <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code> object.</p></li>
-<li><p><strong>access_rights</strong> (<em>dict</em>) – Access rights information.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>issue_dir</strong> (<em>IssueDir</em>) – Input <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code> object.</li>
+<li><strong>access_rights</strong> (<em>dict</em>) – Access rights information.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>New <code class="docutils literal notranslate"><span class="pre">OliveIssueDir</span></code> object.</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">New <code class="docutils literal notranslate"><span class="pre">OliveIssueDir</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.detect.olive_detect_issues">
-<code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">olive_detect_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">access_rights: str</em>, <em class="sig-param">journal_filter: set = None</em>, <em class="sig-param">exclude: bool = False</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.olive.detect.OliveIssueDirectory]<a class="headerlink" href="#text_importer.importers.olive.detect.olive_detect_issues" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.detect.</code><code class="descname">olive_detect_issues</code><span class="sig-paren">(</span><em>base_dir: str</em>, <em>access_rights: str</em>, <em>journal_filter: set = None</em>, <em>exclude: bool = False</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.olive.detect.OliveIssueDirectory]<a class="headerlink" href="#text_importer.importers.olive.detect.olive_detect_issues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect newspaper issues to import within the filesystem.</p>
 <p>This function expects the directory structure that RERO used to
 organize the dump of Olive OCR data.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
-<li><p><strong>journal_filter</strong> (<em>set</em>) – IDs of newspapers to consider.</p></li>
-<li><p><strong>exclude</strong> (<em>bool</em>) – Whether <code class="docutils literal notranslate"><span class="pre">journal_filter</span></code> should determine exclusion.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</li>
+<li><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</li>
+<li><strong>journal_filter</strong> (<em>set</em>) – IDs of newspapers to consider.</li>
+<li><strong>exclude</strong> (<em>bool</em>) – Whether <code class="docutils literal notranslate"><span class="pre">journal_filter</span></code> should determine exclusion.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of <cite>OliveIssueDir</cite> instances, to be imported.</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of <cite>OliveIssueDir</cite> instances, to be imported.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.detect.olive_select_issues">
-<code class="sig-prename descclassname">text_importer.importers.olive.detect.</code><code class="sig-name descname">olive_select_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.olive.detect.OliveIssueDirectory]<a class="headerlink" href="#text_importer.importers.olive.detect.olive_select_issues" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.detect.</code><code class="descname">olive_select_issues</code><span class="sig-paren">(</span><em>base_dir: str</em>, <em>config: dict</em>, <em>access_rights: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.olive.detect.OliveIssueDirectory]<a class="headerlink" href="#text_importer.importers.olive.detect.olive_select_issues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
 <p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.olive.detect.olive_detect_issues" title="text_importer.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a> with the only
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
 import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
 further details on how to configure filtering.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</li>
+<li><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</li>
+<li><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of <cite>OliveIssueDir</cite> instances, to be imported.</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of <cite>OliveIssueDir</cite> instances, to be imported.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -346,81 +373,88 @@ further details on how to configure filtering.</p>
 <p>Functions to parse Olive XML data.</p>
 <dl class="function">
 <dt id="text_importer.importers.olive.parsers.olive_image_parser">
-<code class="sig-prename descclassname">text_importer.importers.olive.parsers.</code><code class="sig-name descname">olive_image_parser</code><span class="sig-paren">(</span><em class="sig-param">text: bytes</em><span class="sig-paren">)</span> &#x2192; Optional[dict]<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_image_parser" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.parsers.</code><code class="descname">olive_image_parser</code><span class="sig-paren">(</span><em>text: bytes</em><span class="sig-paren">)</span> &#x2192; Optional[dict]<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_image_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the Olive XML file contaning image metadata.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> (<em>bytes</em>) – Content of the XML file to parse.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dictionary of image metadata.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Optional[dict]</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>bytes</em>) – Content of the XML file to parse.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary of image metadata.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Optional[dict]</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.parsers.olive_parser">
-<code class="sig-prename descclassname">text_importer.importers.olive.parsers.</code><code class="sig-name descname">olive_parser</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_parser" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.parsers.</code><code class="descname">olive_parser</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse an Olive XML file (e.g. from Le Temps corpus).</p>
 <p>The main logic implemented here was derived from
 &lt;<a class="reference external" href="https://github.com/dhlab-epfl/LeTemps-preprocessing/">https://github.com/dhlab-epfl/LeTemps-preprocessing/</a>&gt;. Each XML file
 corresponds to one article, as detected by Olive.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> (<em>string</em>) – content of the xml file to parse</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dictionary with keys: <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">r</span></code>, <code class="docutils literal notranslate"><span class="pre">stats</span></code>, <code class="docutils literal notranslate"><span class="pre">legacy</span></code>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>string</em>) – content of the xml file to parse</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary with keys: <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">r</span></code>, <code class="docutils literal notranslate"><span class="pre">stats</span></code>, <code class="docutils literal notranslate"><span class="pre">legacy</span></code>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.parsers.olive_toc_parser">
-<code class="sig-prename descclassname">text_importer.importers.olive.parsers.</code><code class="sig-name descname">olive_toc_parser</code><span class="sig-paren">(</span><em class="sig-param">toc_path: str</em>, <em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em class="sig-param">encoding: str = 'windows-1252'</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_toc_parser" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.parsers.</code><code class="descname">olive_toc_parser</code><span class="sig-paren">(</span><em>toc_path: str</em>, <em>issue_dir: impresso_commons.path.path_fs.IssueDirectory</em>, <em>encoding: str = 'windows-1252'</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.parsers.olive_toc_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the TOC.xml file (Olive format).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>toc_path</strong> (<em>str</em>) – Path to the ToC XML file.</p></li>
-<li><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Corresponding <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code> object.</p></li>
-<li><p><strong>encoding</strong> (<em>str</em>) – XML file encoding.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>toc_path</strong> (<em>str</em>) – Path to the ToC XML file.</li>
+<li><strong>issue_dir</strong> (<em>IssueDir</em>) – Corresponding <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code> object.</li>
+<li><strong>encoding</strong> (<em>str</em>) – XML file encoding.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dictionary where keys are content item IDs and values their
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A dictionary where keys are content item IDs and values their
 metadata.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.parsers.parse_styles">
-<code class="sig-prename descclassname">text_importer.importers.olive.parsers.</code><code class="sig-name descname">parse_styles</code><span class="sig-paren">(</span><em class="sig-param">text: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="headerlink" href="#text_importer.importers.olive.parsers.parse_styles" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.parsers.</code><code class="descname">parse_styles</code><span class="sig-paren">(</span><em>text: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="headerlink" href="#text_importer.importers.olive.parsers.parse_styles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turn Olive style file into a dictionary.</p>
 <p>Style IDs may be referred to within the <code class="docutils literal notranslate"><span class="pre">s</span></code> property of token elements
 as defined in the impresso JSON schema for newspaper pages (see
 <a class="reference external" href="https://github.com/impresso/impresso-schemas/blob/master/docs/page.schema.md">documentation</a>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – textual content of file <cite>styleGallery.txt</cite></p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A list of styles; each style has ID, font, font size, color (rgb).</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[dict]</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>text</strong> (<em>str</em>) – textual content of file <cite>styleGallery.txt</cite></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A list of styles; each style has ID, font, font size, color (rgb).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">List[dict]</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -431,206 +465,233 @@ as defined in the impresso JSON schema for newspaper pages (see
 <code class="docutils literal notranslate"><span class="pre">OliveNewspaperIssue</span></code> and <code class="docutils literal notranslate"><span class="pre">OliveNewspaperPage</span></code>.</p>
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.combine_article_parts">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">combine_article_parts</code><span class="sig-paren">(</span><em class="sig-param">article_parts: List[dict]</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.combine_article_parts" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">combine_article_parts</code><span class="sig-paren">(</span><em>article_parts: List[dict]</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.combine_article_parts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge article parts into a single element.</p>
 <p>Olive format splits an article into multiple components whenever it spans
 over multiple pages. Thus, it is necessary to recompose multiple parts.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>article_parts</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – one or more article parts</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dictionary, with keys <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">fulltext</span></code>, <code class="docutils literal notranslate"><span class="pre">stats</span></code>,
-<code class="docutils literal notranslate"><span class="pre">legacy</span></code>.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>article_parts</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – one or more article parts</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary, with keys <code class="docutils literal notranslate"><span class="pre">meta</span></code>, <code class="docutils literal notranslate"><span class="pre">fulltext</span></code>, <code class="docutils literal notranslate"><span class="pre">stats</span></code>,
+<code class="docutils literal notranslate"><span class="pre">legacy</span></code>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.convert_image_coordinates">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">convert_image_coordinates</code><span class="sig-paren">(</span><em class="sig-param">image</em>, <em class="sig-param">page_xml</em>, <em class="sig-param">page_image_name</em>, <em class="sig-param">zip_archive</em>, <em class="sig-param">box_strategy</em>, <em class="sig-param">issue</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#text_importer.importers.olive.helpers.convert_image_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">convert_image_coordinates</code><span class="sig-paren">(</span><em>image</em>, <em>page_xml</em>, <em>page_image_name</em>, <em>zip_archive</em>, <em>box_strategy</em>, <em>issue</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#text_importer.importers.olive.helpers.convert_image_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert coordinates of an image.</p>
 <p><strong>NB</strong>: This conversions is necessary since the coordinates recorded in the
 XML file were computed on a different image than the one used for display
 in the impresso interface.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>image</strong> (<em>dict</em>) – Image metadata.</p></li>
-<li><p><strong>page_xml</strong> (<em>str</em>) – Content of Olive page XML.</p></li>
-<li><p><strong>page_image_name</strong> (<em>str</em>) – Name of page image file.</p></li>
-<li><p><strong>zip_archive</strong> (<em>ZipArchive</em>) – Olive Zip archive.</p></li>
-<li><p><strong>box_strategy</strong> (<em>str</em>) – Conversion strategy to apply.</p></li>
-<li><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><em>OliveNewspaperIssue</em></a>) – Newspaper issue the page belongs to.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>image</strong> (<em>dict</em>) – Image metadata.</li>
+<li><strong>page_xml</strong> (<em>str</em>) – Content of Olive page XML.</li>
+<li><strong>page_image_name</strong> (<em>str</em>) – Name of page image file.</li>
+<li><strong>zip_archive</strong> (<em>ZipArchive</em>) – Olive Zip archive.</li>
+<li><strong>box_strategy</strong> (<em>str</em>) – Conversion strategy to apply.</li>
+<li><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><em>OliveNewspaperIssue</em></a>) – Newspaper issue the page belongs to.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Whether the coordinate conversion was successful or not.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether the coordinate conversion was successful or not.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.convert_page_coordinates">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">convert_page_coordinates</code><span class="sig-paren">(</span><em class="sig-param">page</em>, <em class="sig-param">page_xml</em>, <em class="sig-param">page_image_name</em>, <em class="sig-param">zip_archive</em>, <em class="sig-param">box_strategy</em>, <em class="sig-param">issue</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#text_importer.importers.olive.helpers.convert_page_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">convert_page_coordinates</code><span class="sig-paren">(</span><em>page</em>, <em>page_xml</em>, <em>page_image_name</em>, <em>zip_archive</em>, <em>box_strategy</em>, <em>issue</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#text_importer.importers.olive.helpers.convert_page_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert coordinates of all elements in a page that have coordinates.</p>
 <p><strong>NB</strong>: This conversions is necessary since the coordinates recorded in the XML
 file were computed on a different image than the one used for display in
 the impresso interface.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>page</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperPage" title="text_importer.importers.olive.classes.OliveNewspaperPage"><em>OliveNewspaperPage</em></a>) – Page whose coordinates should be converted.</p></li>
-<li><p><strong>page_xml</strong> (<em>str</em>) – Content of Olive page XML.</p></li>
-<li><p><strong>page_image_name</strong> (<em>type</em>) – Name of page image file.</p></li>
-<li><p><strong>zip_archive</strong> (<em>ZipArchive</em>) – Olive Zip archive.</p></li>
-<li><p><strong>box_strategy</strong> (<em>str</em>) – Conversion strategy to apply.</p></li>
-<li><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><em>OliveNewspaperIssue</em></a>) – Newspaper issue the page belongs to.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>page</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperPage" title="text_importer.importers.olive.classes.OliveNewspaperPage"><em>OliveNewspaperPage</em></a>) – Page whose coordinates should be converted.</li>
+<li><strong>page_xml</strong> (<em>str</em>) – Content of Olive page XML.</li>
+<li><strong>page_image_name</strong> (<em>type</em>) – Name of page image file.</li>
+<li><strong>zip_archive</strong> (<em>ZipArchive</em>) – Olive Zip archive.</li>
+<li><strong>box_strategy</strong> (<em>str</em>) – Conversion strategy to apply.</li>
+<li><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><em>OliveNewspaperIssue</em></a>) – Newspaper issue the page belongs to.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Whether the coordinate conversion was successful or not.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>bool</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether the coordinate conversion was successful or not.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.merge_pseudo_tokens">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">merge_pseudo_tokens</code><span class="sig-paren">(</span><em class="sig-param">line: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.merge_pseudo_tokens" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">merge_pseudo_tokens</code><span class="sig-paren">(</span><em>line: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.merge_pseudo_tokens" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove pseudo tokens from a line.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>line</strong> (<em>dict</em>) – a line of OCR in JSON format.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A new line object (with different number of tokens).</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>dict</em>) – a line of OCR in JSON format.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A new line object (with different number of tokens).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.merge_tokens">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">merge_tokens</code><span class="sig-paren">(</span><em class="sig-param">tokens: List[dict], line: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.merge_tokens" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">merge_tokens</code><span class="sig-paren">(</span><em>tokens: List[dict], line: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.merge_tokens" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge two or more tokens into one.</p>
 <p>The resulting (merged) token will have new coordinates corresponding
 to the combination of coordinates of the input tokens.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tokens</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – Tokens to merge.</p></li>
-<li><p><strong>line</strong> (<em>str</em>) – The line of text to which the input tokens belong.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>tokens</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – Tokens to merge.</li>
+<li><strong>line</strong> (<em>str</em>) – The line of text to which the input tokens belong.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The new (merged) token.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The new (merged) token.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.normalize_hyphenation">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">normalize_hyphenation</code><span class="sig-paren">(</span><em class="sig-param">line: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.normalize_hyphenation" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">normalize_hyphenation</code><span class="sig-paren">(</span><em>line: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.normalize_hyphenation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Normalize end-of-line hyphenated words.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>line</strong> (<em>dict</em>) – A line of OCR.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A new line element.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>line</strong> (<em>dict</em>) – A line of OCR.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A new line element.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.normalize_line">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">normalize_line</code><span class="sig-paren">(</span><em class="sig-param">line: dict</em>, <em class="sig-param">lang: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.normalize_line" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">normalize_line</code><span class="sig-paren">(</span><em>line: dict</em>, <em>lang: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.olive.helpers.normalize_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply normalization to a line of OCR.</p>
 <p>The normalization rules that are applied depend on the language in which
 the text is written. This normalization is necessary because Olive, unlike
 e.g. Mets, does not encode explicitly the presence/absence of whitespaces.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>line</strong> (<em>dict</em>) – A line of OCR text.</p></li>
-<li><p><strong>lang</strong> (<em>str</em>) – Language of the text.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>line</strong> (<em>dict</em>) – A line of OCR text.</li>
+<li><strong>lang</strong> (<em>str</em>) – Language of the text.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A new line of text.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A new line of text.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.recompose_ToC">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">recompose_ToC</code><span class="sig-paren">(</span><em class="sig-param">original_toc_data: dict, articles: List[dict], images: List[dict]</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_ToC" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">recompose_ToC</code><span class="sig-paren">(</span><em>original_toc_data: dict, articles: List[dict], images: List[dict]</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_ToC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recompose the ToC of a newspaper issue.</p>
 <p>Function used by
 <a class="reference internal" href="#text_importer.importers.olive.classes.OliveNewspaperIssue" title="text_importer.importers.olive.classes.OliveNewspaperIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">OliveNewspaperIssue</span></code></a>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>original_toc_data</strong> (<em>dict</em>) – ToC data.</p></li>
-<li><p><strong>articles</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – List of content items in the issue.</p></li>
-<li><p><strong>images</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – List of images in the issue.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>original_toc_data</strong> (<em>dict</em>) – ToC data.</li>
+<li><strong>articles</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – List of content items in the issue.</li>
+<li><strong>images</strong> (<em>List</em><em>[</em><em>dict</em><em>]</em>) – List of images in the issue.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A new list of content items.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[dict]</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A new list of content items.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[dict]</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.olive.helpers.recompose_page">
-<code class="sig-prename descclassname">text_importer.importers.olive.helpers.</code><code class="sig-name descname">recompose_page</code><span class="sig-paren">(</span><em class="sig-param">page_id: str</em>, <em class="sig-param">info_from_toc: dict</em>, <em class="sig-param">page_elements: dict</em>, <em class="sig-param">clusters: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_page" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.olive.helpers.</code><code class="descname">recompose_page</code><span class="sig-paren">(</span><em>page_id: str</em>, <em>info_from_toc: dict</em>, <em>page_elements: dict</em>, <em>clusters: dict</em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#text_importer.importers.olive.helpers.recompose_page" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge a list of page elements into a single one.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>page_id</strong> (<em>str</em>) – page id</p></li>
-<li><p><strong>info_from_toc</strong> (<em>dict</em>) – a dictionary with page element IDs
-(articles, ads.) as keys, and dictionaries as values</p></li>
-<li><p><strong>page_elements</strong> (<em>dict</em>) – articles or advertisements</p></li>
-<li><p><strong>clusters</strong> (<em>dict</em>) – an inverted index of legacy ids; if an id is part of
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>page_id</strong> (<em>str</em>) – page id</li>
+<li><strong>info_from_toc</strong> (<em>dict</em>) – a dictionary with page element IDs
+(articles, ads.) as keys, and dictionaries as values</li>
+<li><strong>page_elements</strong> (<em>dict</em>) – articles or advertisements</li>
+<li><strong>clusters</strong> (<em>dict</em>) – an inverted index of legacy ids; if an id is part of
 multipart article, the id is found not as a key but in one of the
-values.</p></li>
+values.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A new page element.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A new page element.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It is here that an <code class="docutils literal notranslate"><span class="pre">n</span></code> attribute is assigned to each
+<p class="first admonition-title">Note</p>
+<p class="last">It is here that an <code class="docutils literal notranslate"><span class="pre">n</span></code> attribute is assigned to each
 region/paragraph/line/token.</p>
 </div>
 </dd></dl>
