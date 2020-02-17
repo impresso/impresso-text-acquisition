@@ -7,9 +7,10 @@ from typing import List, Optional
 
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
-
+import requests
 from text_importer.utils import get_access_right
 import pandas as pd
+from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +64,8 @@ sheet_translation = {
     'Gaulois': 'legaulois'
     }
 
+OECAEN_API = 'http://gallica.bnf.fr/ark:/12148/cb41193642z/date'
+
 
 def get_id(journal: str, date: datetime.date, edition: str):
     return "{}-{}-{:02}-{:02}-{}".format(journal, date.year, date.month, date.day, edition)
@@ -86,7 +89,7 @@ def parse_dir(_dir: str, journal: str) -> str:
     return "{}-{}-{}-{}-{}".format(journal, year, month, day, edition)
 
 
-def construct_ark_links(excel_file: str)-> dict:
+def construct_ark_links(excel_file: str) -> dict:
     """ Given the path of the excel file, creates a dict[str, str] mapping id to ark_link
     
     :param str excel_file:
@@ -95,7 +98,6 @@ def construct_ark_links(excel_file: str)-> dict:
     xls = pd.ExcelFile(excel_file)
     dfs = []
     for sheet in xls.sheet_names:
-        print(sheet)
         s = pd.read_excel(xls, sheet)
         journal = sheet_translation[sheet]
         s['id'] = s['CHEMIN_COMPLET'].apply(lambda x: parse_dir(x, journal))
@@ -103,6 +105,22 @@ def construct_ark_links(excel_file: str)-> dict:
     df = pd.concat(dfs)
     
     return dict(df[['id', 'ARK_DOCNUM']].values)
+
+
+def get_oe_caen_ark_link(date: datetime.date) -> str:
+    r = requests.get(OECAEN_API + "{}{:02}{:02}".format(date.year, date.month, date.day))
+    obj = BeautifulSoup(r.text, features='lxml')
+    return obj.findAll("meta", {'property': 'og:url'})[0].get('content')
+
+
+def get_ark_link(ark_links, journal, date, edition):
+    _id = get_id(journal, date, edition)
+    if _id in ark_links:
+        return ark_links[_id]
+    else:
+        assert journal == "oecaen" or journal == "oerennes"
+        link = get_oe_caen_ark_link(date)
+        return "/".join(link.split('/')[3:])
 
 
 def dir2issue(path: str, access_rights: dict, ark_links: dict) -> BnfEnIssueDir:
@@ -115,18 +133,15 @@ def dir2issue(path: str, access_rights: dict, ark_links: dict) -> BnfEnIssueDir:
     :return: New ``BnfEnIssueDir`` object
     """
     journal, issue = path.split('/')[-2:]
-    try:
-        
-        date, edition = issue.split('_')[:2]
-    except ValueError as e:
-        print(path, journal, issue)
-        raise e
+    
+    date, edition = issue.split('_')[:2]
     date = datetime.strptime(date, '%Y%m%d').date()
     journal = journal.lower().replace('-', '').strip()
     edition = EDITIONS_MAPPINGS[int(edition)]
     
+    #
     return BnfEnIssueDir(journal=journal, date=date, edition=edition, path=path,
-                         rights="open-public", ark_link=ark_links[get_id(journal, date, edition)])
+                         rights="open-public", ark_link=get_ark_link(ark_links, journal, date, edition))
 
 
 def detect_issues(base_dir: str, access_rights: str) -> List[BnfEnIssueDir]:
