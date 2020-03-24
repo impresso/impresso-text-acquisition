@@ -95,10 +95,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-files">Configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
 </ul>
 </li>
@@ -175,26 +178,29 @@
 <div class="section" id="module-text_importer.importers.mets_alto.classes">
 <span id="abstract-classes"></span><h2>Abstract classes<a class="headerlink" href="#module-text_importer.importers.mets_alto.classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="text_importer.importers.mets_alto.classes.MetsAltoNewPaperIssue">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.mets_alto.classes.</code><code class="sig-name descname">MetsAltoNewPaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewPaperIssue" title="Permalink to this definition">¶</a></dt>
+<dt id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue">
+<em class="property">class </em><code class="descclassname">text_importer.importers.mets_alto.classes.</code><code class="descname">MetsAltoNewspaperIssue</code><span class="sig-paren">(</span><em>issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic class representing a newspaper issue in Mets/Alto format.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>New Mets/Alto importers should sub-class this class and implement
+<p class="first admonition-title">Note</p>
+<p class="last">New Mets/Alto importers should sub-class this class and implement
 its abstract methods (i.e. <code class="docutils literal notranslate"><span class="pre">_find_pages()</span></code>, <code class="docutils literal notranslate"><span class="pre">_parse_mets()</span></code>).</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Description of parameter <cite>issue_dir</cite>.</p>
-</dd>
-</dl>
-<dl class="method">
-<dt id="text_importer.importers.mets_alto.classes.MetsAltoNewPaperIssue.xml">
-<em class="property">property </em><code class="sig-name descname">xml</code><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewPaperIssue.xml" title="Permalink to this definition">¶</a></dt>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>issue_dir</strong> (<em>IssueDir</em>) – Description of parameter <cite>issue_dir</cite>.</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.xml">
+<code class="descname">xml</code><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a BeautifulSoup object with Mets XML file of the issue.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>By default the issue Mets file is the only file containing
+<p class="first admonition-title">Note</p>
+<p class="last">By default the issue Mets file is the only file containing
 <cite>mets.xml</cite> in its file name and located in the directory
 <cite>self.path</cite>. Individual importers can overwrite this behavior
 if necessary.</p>
@@ -205,51 +211,58 @@ if necessary.</p>
 
 <dl class="class">
 <dt id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.mets_alto.classes.</code><code class="sig-name descname">MetsAltoNewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">n: int</em>, <em class="sig-param">filename: str</em>, <em class="sig-param">basedir: str</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">text_importer.importers.mets_alto.classes.</code><code class="descname">MetsAltoNewspaperPage</code><span class="sig-paren">(</span><em>_id: str</em>, <em>n: int</em>, <em>filename: str</em>, <em>basedir: str</em>, <em>encoding: str = 'utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic class representing a newspaper page in Alto format.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>New Mets/Alto importers should sub-classes this class and implement
+<p class="first admonition-title">Note</p>
+<p class="last">New Mets/Alto importers should sub-classes this class and implement
 its abstract methods (i.e. <a class="reference internal" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue" title="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_issue()</span></code></a>).</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID.</p></li>
-<li><p><strong>n</strong> (<em>int</em>) – Page number.</p></li>
-<li><p><strong>filename</strong> (<em>str</em>) – Name of the page Alto XML file.</p></li>
-<li><p><strong>basedir</strong> (<em>str</em>) – Base directory where Alto files are located.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>_id</strong> (<em>str</em>) – Canonical page ID.</li>
+<li><strong>n</strong> (<em>int</em>) – Page number.</li>
+<li><strong>filename</strong> (<em>str</em>) – Name of the page Alto XML file.</li>
+<li><strong>basedir</strong> (<em>str</em>) – Base directory where Alto files are located.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue">
-<em class="property">abstract </em><code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_issue</code><span class="sig-paren">(</span><em>issue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the newspaper issue.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.parse">
-<code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
+<code class="descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process the page file and transform into canonical format.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This lazy behavior means that the page contents are not processed
+<p class="first admonition-title">Note</p>
+<p class="last">This lazy behavior means that the page contents are not processed
 upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
 method is called.</p>
 </div>
 </dd></dl>
 
-<dl class="method">
+<dl class="attribute">
 <dt id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.xml">
-<em class="property">property </em><code class="sig-name descname">xml</code><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.xml" title="Permalink to this definition">¶</a></dt>
+<code class="descname">xml</code><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.xml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a BeautifulSoup object with Alto XML of the page.</p>
 </dd></dl>
 
@@ -260,21 +273,25 @@ method is called.</p>
 <span id="mets-parsing"></span><h2>Mets parsing<a class="headerlink" href="#module-text_importer.importers.mets_alto.mets" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="text_importer.importers.mets_alto.mets.parse_mets_amdsec">
-<code class="sig-prename descclassname">text_importer.importers.mets_alto.mets.</code><code class="sig-name descname">parse_mets_amdsec</code><span class="sig-paren">(</span><em class="sig-param">mets_doc</em>, <em class="sig-param">x_res: str</em>, <em class="sig-param">y_res: str</em>, <em class="sig-param">x_res_default=300</em>, <em class="sig-param">y_res_default=300</em><span class="sig-paren">)</span> &#x2192; Dict<a class="headerlink" href="#text_importer.importers.mets_alto.mets.parse_mets_amdsec" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>mets_doc</strong> – BeautifulSoup document of METS.xml</p></li>
-<li><p><strong>x_res</strong> – Field representing the X resolution</p></li>
-<li><p><strong>y_res</strong> – Field representing the Y resolution</p></li>
-<li><p><strong>x_res_default</strong> – Default X_res (300)</p></li>
-<li><p><strong>y_res_default</strong> – Default Y res (300)</p></li>
+<code class="descclassname">text_importer.importers.mets_alto.mets.</code><code class="descname">parse_mets_amdsec</code><span class="sig-paren">(</span><em>mets_doc</em>, <em>x_res: str</em>, <em>y_res: str</em>, <em>x_res_default=300</em>, <em>y_res_default=300</em><span class="sig-paren">)</span> &#x2192; Dict[KT, VT]<a class="headerlink" href="#text_importer.importers.mets_alto.mets.parse_mets_amdsec" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>mets_doc</strong> – BeautifulSoup document of METS.xml</li>
+<li><strong>x_res</strong> – Field representing the X resolution</li>
+<li><strong>y_res</strong> – Field representing the Y resolution</li>
+<li><strong>x_res_default</strong> – Default X_res (300)</li>
+<li><strong>y_res_default</strong> – Default Y res (300)</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>dict, containing the resolution for each image</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict, containing the resolution for each image</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
@@ -283,45 +300,66 @@ method is called.</p>
 <p>Utility functions to parse Alto XML files.</p>
 <dl class="function">
 <dt id="text_importer.importers.mets_alto.alto.distill_coordinates">
-<code class="sig-prename descclassname">text_importer.importers.mets_alto.alto.</code><code class="sig-name descname">distill_coordinates</code><span class="sig-paren">(</span><em class="sig-param">element: bs4.element.Tag</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="headerlink" href="#text_importer.importers.mets_alto.alto.distill_coordinates" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.mets_alto.alto.</code><code class="descname">distill_coordinates</code><span class="sig-paren">(</span><em>element: bs4.element.Tag</em><span class="sig-paren">)</span> &#x2192; List[int]<a class="headerlink" href="#text_importer.importers.mets_alto.alto.distill_coordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract image coordinates from any XML tag.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function assumes the following attributes to be present in the
+<p class="first admonition-title">Note</p>
+<p class="last">This function assumes the following attributes to be present in the
 input XML element: <code class="docutils literal notranslate"><span class="pre">HPOS</span></code>, <code class="docutils literal notranslate"><span class="pre">VPOS</span></code>. <code class="docutils literal notranslate"><span class="pre">WIDTH</span></code>, <code class="docutils literal notranslate"><span class="pre">HEIGHT</span></code>.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>element</strong> (<em>Tag</em>) – Input XML tag.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>An ordered list of coordinates (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>,
-<code class="docutils literal notranslate"><span class="pre">height</span></code>).</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[int]</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>element</strong> (<em>Tag</em>) – Input XML tag.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An ordered list of coordinates (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>,
+<code class="docutils literal notranslate"><span class="pre">height</span></code>).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">List[int]</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.mets_alto.alto.parse_printspace">
-<code class="sig-prename descclassname">text_importer.importers.mets_alto.alto.</code><code class="sig-name descname">parse_printspace</code><span class="sig-paren">(</span><em class="sig-param">element: bs4.element.Tag, mappings: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="headerlink" href="#text_importer.importers.mets_alto.alto.parse_printspace" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">text_importer.importers.mets_alto.alto.</code><code class="descname">parse_printspace</code><span class="sig-paren">(</span><em>element: bs4.element.Tag, mappings: Dict[str, str]</em><span class="sig-paren">)</span> &#x2192; Tuple[List[dict], List[str]]<a class="headerlink" href="#text_importer.importers.mets_alto.alto.parse_printspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse the <code class="docutils literal notranslate"><span class="pre">&lt;PrintSpace&gt;</span></code> element of an ALTO XML document.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>element</strong> (<em>Tag</em>) – Input XML element (<code class="docutils literal notranslate"><span class="pre">&lt;PrintSpace&gt;</span></code>).</p></li>
-<li><p><strong>mappings</strong> (<em>Dict</em><em>[</em><em>str</em><em>,</em><em>str</em><em>]</em>) – Description of parameter <cite>mappings</cite>.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>element</strong> (<em>Tag</em>) – Input XML element (<code class="docutils literal notranslate"><span class="pre">&lt;PrintSpace&gt;</span></code>).</li>
+<li><strong>mappings</strong> (<em>Dict</em><em>[</em><em>str</em><em>,</em><em>str</em><em>]</em>) – Description of parameter <cite>mappings</cite>.</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Description of returned object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>List[dict]</p>
-</dd>
-</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Description of returned object.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[dict]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="text_importer.importers.mets_alto.alto.parse_style">
+<code class="descclassname">text_importer.importers.mets_alto.alto.</code><code class="descname">parse_style</code><span class="sig-paren">(</span><em>style_div</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.alto.parse_style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses the font-style information in the ALTO files (BNL and BNF)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>style_div</strong> – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

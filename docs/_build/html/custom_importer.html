@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="RERO Mets/Alto importer" href="importers/rero.html" /> 
+    <link rel="prev" title="BNF Mets/Alto importer" href="importers/bnf.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -163,8 +163,8 @@
 <p>Writing a new importer is easy and entails implementing two
 pieces of code:</p>
 <ol class="arabic simple">
-<li><p>implementing <strong>functions to detect the data</strong> to import;</p></li>
-<li><p>implementing from scratch <strong>classes that handle the conversion into JSON</strong> of your OCR format or adapt one of the existing importers.</p></li>
+<li>implementing <strong>functions to detect the data</strong> to import;</li>
+<li>implementing from scratch <strong>classes that handle the conversion into JSON</strong> of your OCR format or adapt one of the existing importers.</li>
 </ol>
 <p>Once these two pieces of code are in place, they can be plugged into the functions defined in <a class="reference internal" href="importers.html#module-text_importer.importers.generic_importer" title="text_importer.importers.generic_importer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.generic_importer</span></code></a> so as to create a dedicated CLI script for your specific format.</p>
 <p>For example, this is the content of <code class="docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>:</p>
@@ -183,20 +183,20 @@ pieces of code:</p>
 </div>
 <p><strong>How should the code of a new text importer be structured?</strong> We recommend to comply to the following structure:</p>
 <ul class="simple">
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.detect</span></code> will contain functions to find the data to be imported;</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.helpers</span></code> (optional) will contain ancillary functions;</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.parsers</span></code> (optional) will contain functions/classes to parse the data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer/scripts/&lt;new_importer&gt;.py</span></code>: will contain a CLI script to run the importer.</p></li>
+<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.detect</span></code> will contain functions to find the data to be imported;</li>
+<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.helpers</span></code> (optional) will contain ancillary functions;</li>
+<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.importers.&lt;new_importer&gt;.parsers</span></code> (optional) will contain functions/classes to parse the data.</li>
+<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer/scripts/&lt;new_importer&gt;.py</span></code>: will contain a CLI script to run the importer.</li>
 </ul>
 </div>
 <div class="section" id="detect-data-to-import">
 <h2>Detect data to import<a class="headerlink" href="#detect-data-to-import" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>the importer needs to know which data should be imported</p></li>
-<li><p>information about the newspaper contents is often encoded as part of
+<li>the importer needs to know which data should be imported</li>
+<li>information about the newspaper contents is often encoded as part of
 folder names etc., thus it needs to be extracted and made explicit, by means
-of <a class="reference internal" href="architecture.html#canonical-identifiers"><span class="std std-ref">Canonical identifiers</span></a></p></li>
-<li><p>add some sample data to <code class="docutils literal notranslate"><span class="pre">text_importer/data/sample/&lt;new_format&gt;</span></code></p></li>
+of <a class="reference internal" href="architecture.html#canonical-identifiers"><span class="std std-ref">Canonical identifiers</span></a></li>
+<li>add some sample data to <code class="docutils literal notranslate"><span class="pre">text_importer/data/sample/&lt;new_format&gt;</span></code></li>
 </ul>
 <p>For example: <a class="reference internal" href="importers/olive.html#text_importer.importers.olive.detect.olive_detect_issues" title="text_importer.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a></p>
 </div>
@@ -206,17 +206,17 @@ of <a class="reference internal" href="architecture.html#canonical-identifiers">
 see <code class="xref py py-func docutils literal notranslate"><span class="pre">text_importer.importers.generic_importer.main()</span></code></p>
 <dl class="class">
 <dt id="text_importer.importers.classes.NewspaperIssue">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.classes.</code><code class="sig-name descname">NewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">text_importer.importers.classes.</code><code class="descname">NewspaperIssue</code><span class="sig-paren">(</span><em>issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract class representing a newspaper issue.</p>
 <p>Each text importer needs to define a subclass of <cite>NewspaperIssue</cite> which
 specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 <dl class="method">
 <dt id="text_importer.importers.classes.NewspaperIssue.to_json">
-<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue.to_json" title="Permalink to this definition">¶</a></dt>
+<code class="descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#text_importer.importers.classes.NewspaperIssue.to_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validates <code class="docutils literal notranslate"><span class="pre">self.issue_data</span></code> &amp; serializes it to string.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Validation adds a substantial overhead to computing time. For
+<p class="first admonition-title">Note</p>
+<p class="last">Validation adds a substantial overhead to computing time. For
 serialization of large amounts of issues it is recommendable to
 bypass schema validation.</p>
 </div>
@@ -226,38 +226,45 @@ bypass schema validation.</p>
 
 <dl class="class">
 <dt id="text_importer.importers.classes.NewspaperPage">
-<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.classes.</code><code class="sig-name descname">NewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">number: int</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">text_importer.importers.classes.</code><code class="descname">NewspaperPage</code><span class="sig-paren">(</span><em>_id: str</em>, <em>number: int</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Abstract class representing a newspaper page.</p>
 <p>Each text importer needs to define a subclass of <code class="docutils literal notranslate"><span class="pre">NewspaperPage</span></code> which
 specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p></li>
-<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>_id</strong> (<em>str</em>) – Canonical page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</li>
+<li><strong>number</strong> (<em>int</em>) – Page number.</li>
 </ul>
-</dd>
-</dl>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="method">
 <dt id="text_importer.importers.classes.NewspaperPage.add_issue">
-<em class="property">abstract </em><code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_issue</code><span class="sig-paren">(</span><em>issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the newspaper issue.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</p>
-</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue contaning this page.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="text_importer.importers.classes.NewspaperPage.parse">
-<em class="property">abstract </em><code class="sig-name descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
+<code class="descname">parse</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.parse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process the page file and transform into canonical format.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This lazy behavior means that the page contents are not processed
+<p class="first admonition-title">Note</p>
+<p class="last">This lazy behavior means that the page contents are not processed
 upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
 method is called.</p>
 </div>
@@ -265,11 +272,11 @@ method is called.</p>
 
 <dl class="method">
 <dt id="text_importer.importers.classes.NewspaperPage.to_json">
-<code class="sig-name descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.to_json" title="Permalink to this definition">¶</a></dt>
+<code class="descname">to_json</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#text_importer.importers.classes.NewspaperPage.to_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.page.data</span></code> &amp; serializes it to string.</p>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Validation adds a substantial overhead to computing time. For
+<p class="first admonition-title">Note</p>
+<p class="last">Validation adds a substantial overhead to computing time. For
 serialization of large amounts of pages it is recommendable to
 bypass schema validation.</p>
 </div>
@@ -289,8 +296,8 @@ defined <em>detect</em> functions, to the <code class="docutils literal notransl
 <p>Create a new test file named <code class="docutils literal notranslate"><span class="pre">test_&lt;new_importer&gt;_importer.py</span></code> and add it to <code class="docutils literal notranslate"><span class="pre">tests/importers/</span></code>.</p>
 <p>This file should contain at the very minimum a test called <code class="xref py py-func docutils literal notranslate"><span class="pre">test_import_issues()</span></code>, which</p>
 <ul class="simple">
-<li><p>detects input data from <code class="docutils literal notranslate"><span class="pre">text_importer/data/sample/&lt;new_format&gt;</span></code></p></li>
-<li><p>writes any output to <code class="docutils literal notranslate"><span class="pre">text_importer/data/out/</span></code>.</p></li>
+<li>detects input data from <code class="docutils literal notranslate"><span class="pre">text_importer/data/sample/&lt;new_format&gt;</span></code></li>
+<li>writes any output to <code class="docutils literal notranslate"><span class="pre">text_importer/data/out/</span></code>.</li>
 </ul>
 </div>
 </div>
@@ -304,7 +311,7 @@ defined <em>detect</em> functions, to the <code class="docutils literal notransl
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="importers/rero.html" class="btn btn-neutral float-left" title="RERO Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="importers/bnf.html" class="btn btn-neutral float-left" title="BNF Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

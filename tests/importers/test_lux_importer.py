@@ -21,11 +21,17 @@ def test_import_issues():
             )
     out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
     output_bucket = None  # this disables the s3 upload
-    
+
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
-    import_issues(issues, out_dir, s3_bucket=output_bucket, issue_class=LuxNewspaperIssue,
-                  image_dirs=None, temp_dir=None, chunk_size=None)
+    import_issues(
+        issues, out_dir,
+        s3_bucket=output_bucket,
+        issue_class=LuxNewspaperIssue,
+        image_dirs=None,
+        temp_dir=None,
+        chunk_size=None
+    )
 
 
 def test_selective_import():
@@ -44,7 +50,7 @@ def test_selective_import():
             )
     with open(cfg_file, 'r') as f:
         config = json.load(f)
-    
+
     inp_dir = pkg_resources.resource_filename(
             'text_importer',
             'data/sample_data/Luxembourg/'
@@ -59,7 +65,7 @@ def test_selective_import():
     """
     issues = lux_select_issues(base_dir=inp_dir, config=config, access_rights="")
     assert issues is not None and len(issues) > 0
-    
+
     logger.info(f'There are {len(issues)} to ingest')
     import_issues(issues, out_dir, s3_bucket=None, issue_class=LuxNewspaperIssue,
                   image_dirs=None, temp_dir=None, chunk_size=None)
