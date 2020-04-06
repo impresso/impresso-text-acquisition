@@ -16,6 +16,7 @@ chardet==3.0.4
 Click==7.0
 cloudpickle==1.2.1
 dask==2.2.0
+-e git+https://github.com/impresso/dask_k8.git@f9badd1c2de247db369f6eb62ff8c70579a4c9fd#egg=dask_k8
 decorator==4.4.0
 defusedxml==0.6.0
 Deprecated==1.2.6
