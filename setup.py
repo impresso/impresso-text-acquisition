@@ -20,7 +20,7 @@ setup(
     packages=find_packages(),
     package_data={
         'text_importer': [
-            'data/',
+            'data/', 'data/tests.log', 'impresso-schemas/json/newspaper/*.json'
         ]
     },
     entry_points={
@@ -34,6 +34,7 @@ setup(
         'bs4',
         'docopt',
         'impresso_commons',
+        'dask_k8',
         'pandas',
         'dask[complete]',
         'lxml',
@@ -42,5 +43,6 @@ setup(
     ],
     dependency_links=[
       'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons',
+      'https://github.com/impresso/dask_k8/tarball/master#egg=dask_k8',
       ]
 )
