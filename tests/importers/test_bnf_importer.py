@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def test_import_issues():
-    """Test the Olive XML importer with sample data."""
+    """Test the BNF importer with sample data."""
 
     inp_dir = pkg_resources.resource_filename(
             'text_importer',

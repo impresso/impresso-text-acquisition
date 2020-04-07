@@ -1,2 +1,3 @@
 include text_importer/impresso-schemas/json/newspaper/*.*
 include text_importer/data/*.*
+include text_importer/data/sample_data/BL/*.*

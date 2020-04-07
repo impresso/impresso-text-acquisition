@@ -1,5 +1,5 @@
 import logging
-
+import pathlib
 import pkg_resources
 
 from text_importer.importers.bl.classes import BlNewspaperIssue
@@ -18,6 +18,7 @@ def test_import_issues():
             )
     
     tmp_dir = pkg_resources.resource_filename('text_importer', 'data/temp/')
+    pathlib.Path(tmp_dir).mkdir(exist_ok=True)
     issues = detect_issues(
             base_dir=inp_dir,
             access_rights=None,
@@ -25,10 +26,15 @@ def test_import_issues():
             )
     assert issues is not None
     assert len(issues) > 0
-    
+
+    output_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
+    try:
+        pathlib.Path(output_dir).mkdir()
+    except:
+        pass
     result = import_issues(
             issues,
-            out_dir=pkg_resources.resource_filename('text_importer', 'data/out/'),
+            out_dir=output_dir,
             s3_bucket=None,
             issue_class=BlNewspaperIssue,
             image_dirs=None,
