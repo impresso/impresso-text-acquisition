@@ -18,6 +18,7 @@ setup(
     url='https://github.com/impresso/impresso-text-acquisition',
     version=VERSION,
     packages=find_packages(),
+    include_package_data=True,
     package_data={
         'text_importer': [
             'data/', 'data/tests.log', 'impresso-schemas/json/newspaper/*.json'
