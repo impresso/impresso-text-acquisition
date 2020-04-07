@@ -18,6 +18,7 @@ setup(
     url='https://github.com/impresso/impresso-text-acquisition',
     version=VERSION,
     packages=find_packages(),
+    include_package_data=True,
     package_data={
         'text_importer': [
             'data/', 'data/tests.log', 'impresso-schemas/json/newspaper/*.json'
@@ -42,7 +43,7 @@ setup(
         'python-jsonschema-objects',
     ],
     dependency_links=[
-      'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons',
-      'https://github.com/impresso/dask_k8/tarball/master#egg=dask_k8',
+      'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons-0.12.4',
+      'https://github.com/impresso/dask_k8/tarball/master#egg=dask_k8-0.1.1',
       ]
 )
