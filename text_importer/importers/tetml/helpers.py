@@ -4,14 +4,12 @@ These functions are mainly used within (i.e. called by) the classes
 ``TetmlNewspaperIssue`` and ``TetmlNewspaperPage``.
 """
 
-import copy
 import logging
-import time
-from operator import itemgetter
-from time import strftime
-from typing import List
-import lxml.etree
 from math import ceil, floor
+
+import sys
+import lxml.etree
+
 
 from text_importer.tokenization import insert_whitespace
 
@@ -70,13 +68,7 @@ def remove_page_number(jtoken: dict, i_line: int, i_word: int) -> bool:
 
 
 def word2json(
-    word,
-    pageheight,
-    pagewidth,
-    imageheight,
-    imagewidth,
-    placed_image_attribs,
-    filename=None,
+    word, pageheight, pagewidth, imageheight, imagewidth, placed_image_attribs, filename=None,
 ) -> dict:
     """
     Return dict with all information about the (hyphenated) TETML word element
@@ -152,8 +144,7 @@ def word2json(
         )
         result["c"] = coords1
 
-        result["tx"] = "".join(
-            c.text for c in boxes[0].findall(f"{TETPREFIX}Glyph"))
+        result["tx"] = "".join(c.text for c in boxes[0].findall(f"{TETPREFIX}Glyph"))
 
         # word part following hyphenation
         hyphenated = {
@@ -219,15 +210,7 @@ def word2json(
 
 
 def compute_box(
-    llx,
-    lly,
-    urx,
-    ury,
-    pageheight,
-    pagewidth,
-    imageheight,
-    imagewidth,
-    placedimage_attribs,
+    llx, lly, urx, ury, pageheight, pagewidth, imageheight, imagewidth, placedimage_attribs,
 ):
     """
     Compute IIIF box coordinates of input_box.
@@ -263,13 +246,10 @@ def compute_box(
     """
     pix = placedimage_attribs["x"]
     if int(pix) != 0:
-        logger.error(
-            f"#ERROR: placed image x coordinate is NOT 0 {placedimage_attribs}"
-        )
-        exit(3)
+        logger.error(f"POTENTIAL ERROR: placed image x coordinate is NOT 0 {placedimage_attribs}")
 
     ratioh = imageheight / (placedimage_attribs["height"])
-    ratiow = imagewidth / (placedimage_attribs["width"] - pix)
+    ratiow = imagewidth / (placedimage_attribs["width"])
 
     x = llx * ratiow
     y = (pageheight - ury) * ratioh
