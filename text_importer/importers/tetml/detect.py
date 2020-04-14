@@ -6,9 +6,7 @@ from impresso_commons.path.path_fs import IssueDir, detect_issues, select_issues
 
 from text_importer.utils import get_access_right
 
-TetmlIssueDir = namedtuple(
-    "TetmlIssueDirectory", ["journal", "date", "edition", "path", "rights"]
-)
+TetmlIssueDir = namedtuple("TetmlIssueDirectory", ["journal", "date", "edition", "path", "rights"])
 
 """A light-weight data structure to represent a newspaper issue.
 
@@ -44,6 +42,7 @@ def dir2tetmldir(issue_dir: IssueDir, access_rights: dict) -> TetmlIssueDir:
     :return: New ``TetmlIssueDir`` object.
     """
     ar = get_access_right(issue_dir.journal, issue_dir.date, access_rights)
+
     return TetmlIssueDir(
         issue_dir.journal, issue_dir.date, issue_dir.edition, issue_dir.path, rights=ar
     )
@@ -72,9 +71,7 @@ def tetml_detect_issues(
     return [dir2tetmldir(x, access_rights_dict) for x in issues]
 
 
-def tetml_select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> List[TetmlIssueDir]:
+def tetml_select_issues(base_dir: str, config: dict, access_rights: str) -> List[TetmlIssueDir]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`tetml_detect_issues` with the only

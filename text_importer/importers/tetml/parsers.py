@@ -23,10 +23,10 @@ def tetml_parser(
     tetml: str, filtering: bool = True, ignore_page_number: bool = True, language="de"
 ) -> dict:
     """
-    Parse an TETML file (e.g. from Swiss Federal Archive).
+    Parse a TETML file (e.g. from Swiss Federal Archive).
 
     The main logic implemented here was derived from
-    <https://github.com/impresso/nzz/>. A TETML file
+    https://github.com/impresso/nzz/. A TETML file
     corresponds loosely to one article given by the boundaries
     of the founding pdf.
 
@@ -39,17 +39,18 @@ def tetml_parser(
     parsed = lxml.etree.parse(tetml)
     root = parsed.getroot()
 
-    docmeta = get_metadata(root)
-
-    data = {"meta": docmeta}
-    data["meta"]["tetml_path"] = tetml
-
+    data = {}
+    # canonical metadata
     data["m"] = {}
     # use title of tetml file as provisionary title attribute
-    data["m"]["t"] = os.path.basename(data["meta"]["tetml_path"])
-
+    data["m"]["t"] = os.path.basename(tetml)
     data["m"]["l"] = language
+
+    # other metadata
+    docmeta = get_metadata(root)
+    data["meta"] = docmeta
     data["meta"]["id"] = data["m"]["t"].split(".")[0]
+    data["meta"]["tetml_path"] = tetml
 
     jpages = []
     data["pages"] = jpages
@@ -147,7 +148,9 @@ def tetml_parser(
                     jlines.append(jline)
                 else:
                     # may be caused by the removal of some words due to filter_special_symbols()
-                    error_msg = f"Empty LINE in the following file:{tetml}\n{lxml.etree.tostring(line)}"
+                    error_msg = (
+                        f"Empty LINE in the following file:{tetml}\n{lxml.etree.tostring(line)}"
+                    )
                     logger.info(error_msg)
 
             if jlines_coords_per_para:
@@ -160,8 +163,6 @@ def tetml_parser(
             jregioncoords = compute_bb(jparas_coords_per_region)
             jregion["c"] = jregioncoords
             jregions.append(jregion)
-
-
 
         jpages.append(jpage)
 

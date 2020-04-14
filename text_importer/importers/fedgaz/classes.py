@@ -5,11 +5,14 @@ import os
 
 from time import strftime
 from collections import namedtuple
+import pandas as pd
+
 import regex
 
 from impresso_commons.path import IssueDir
 from impresso_commons.path.path_fs import canonical_path
 
+from text_importer.importers.classes import NewspaperIssue
 from text_importer.importers.tetml import TetmlNewspaperIssue, TetmlNewspaperPage
 from text_importer.importers.tetml.parsers import tetml_parser
 from text_importer.importers.tetml.helpers import compute_bb
@@ -17,20 +20,30 @@ from text_importer.importers.tetml.helpers import compute_bb
 logger = logging.getLogger(__name__)
 
 IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
-TokPosition = namedtuple("TokPosition", "art page reg para line tok")
+
+
+class TokPosition(namedtuple("TokPosition", "art page reg para line tok")):
+    """Create a an identifier to store the position of the fuzzy match.
+
+    :param int art: Article number.
+    :param int page: Page number.
+    :param int reg: Region number.
+    :param int para: Paragraph number.
+    :param int line: Line number.
+    :param int tok: Token number.
+    """
 
 
 class FedgazNewspaperPage(TetmlNewspaperPage):
     """
-    Class representing a page in Tetml format.
-    :param str _id: Canonical page ID.
+    Class representing a page in FedGaz TETML format.
+
     :param int n: Page number.
-    :param dict page_content: nested article content of a single page
+    :param dict page_content: Nested article content of a single page
     :param str page_xml: Path to the Tetml file of the page.
     """
 
     def parse(self):
-
         self.page_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
@@ -44,25 +57,30 @@ class FedgazNewspaperPage(TetmlNewspaperPage):
 
 
 class FedgazNewspaperIssue(TetmlNewspaperIssue):
-    """Class representing a newspaper issue in TETML format.
+    """Class representing a issue in FedGaz TETML format.
+
+    All functions defined in this child class are used to parse additional
+    information specific for FedGaz and extend the generic TETML importer.
 
     Upon object initialization the following things happen:
 
-    - the Zip archive containing the issue is uncompressed
-    - the metadata file is parsed to determine the logical structure of the issue
-    - page objects (instances of ``TetmlNewspaperPage``) are initialised.
+    - index all the tetml documents of an issue
+    - parse the metadata file to determine the logical structure of the issue
+    - parse the tetml file that contains the actual content and some metadata
+    - perform a heuristic article segmentation
+    - redefine metadata and initialize page objects (instances of ``TetmlNewspaperPage``).
 
-    :param IssueDir issue_dir: Description of parameter `issue_dir`.
+    :param IssueDir issue_dir: Newspaper issue with relevant information.
 
     """
 
     def __init__(self, issue_dir: IssueDir):
-        super().__init__(issue_dir)
+        NewspaperIssue.__init__(self, issue_dir)
 
         logger.info(f"Starting to parse {self.id}")
 
         # get all tetml files of this issue
-        self.files = self.index_issue_files()
+        self.files = self._index_issue_files()
 
         # parse metadata that contains additional article information
         self.df = self._parse_metadata()
@@ -71,10 +89,9 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         self.article_data = self.parse_articles()
 
         # recompose articles according to their logical boundaries
-        overlapping = self._lookup_overlapping()
-        self._find_logical_article_boundary(overlapping)
+        self._heuristic_article_segmentation(candidates_only=True)
 
-        # using canonical ('m') and non-canonical ('meta') metadata
+        # using canonical ('m') and additional non-canonical ('meta') metadata
         self.content_items = [{"m": art["m"], "meta": art["meta"]} for art in self.article_data]
 
         # instantiate the individual pages
@@ -91,10 +108,130 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
 
         logger.info(f"Finished parsing {self.id}")
 
+    def parse_articles(self):
+        """
+        Parse all articles of this issue
+        """
+
+        articles = []
+        current_issue_page = 1  # start page of next article
+        for i, fname in enumerate(self.files):
+            try:
+                data = tetml_parser(fname)
+
+                # canonical identifier
+                data["m"]["id"] = canonical_path(self.issuedir, name=f"i{i+1:04}", extension="")
+
+                # reference to content item per region
+                for page in data["pages"]:
+                    for reg in page["r"]:
+                        reg["pOf"] = data["m"]["id"]
+
+                data["m"]["tp"] = "article"  # type attribute
+
+                # attribute indicating the range of pages an article covers
+                page_end = current_issue_page + data["meta"]["npages"]
+                data["m"]["pp"] = list(range(current_issue_page, page_end))
+                current_issue_page = page_end
+
+                data = self._redefine_from_metadata(data)
+
+                articles.append(data)
+
+            except Exception as e:
+                logger.error(f"Parsing of {fname} failed for {self.id}")
+                raise e
+
+        return articles
+
+    def _find_pages(self):
+        """
+        Initialize all page objects per issue assuming that a particular page
+        is only scanned once and not included in multpiple files.
+        """
+
+        for art in self.article_data:
+            can_pages = art["m"]["pp"]
+            # omit the last page of pruned articles as it parsed with the subsequent one
+            try:
+                if art["meta"]["pruned"]:
+                    can_pages = can_pages[:-1]
+            except KeyError:
+                pass
+
+            for can_page, page_content in zip(can_pages, art["pages"]):
+                can_id = f"{self.id}-p{can_page:04}"
+                self.pages.append(
+                    TetmlNewspaperPage(can_id, can_page, page_content, art["meta"]["tetml_path"])
+                )
+
+    def _parse_metadata(self, fname="metadata.tsv"):
+        """
+        Parse file with additional metadata
+        """
+
+        level_journal = self.path.split("/").index(self.journal)
+        basedir = "/".join(self.path.split("/")[0 : level_journal + 1])
+        fpath = os.path.join(basedir, fname)
+
+        try:
+            df = pd.read_csv(
+                fpath,
+                sep="\t",
+                parse_dates=["issue_date"],
+                dtype={"article_docid": str},
+                index_col="article_docid",
+            )
+            # discard rows from other issues as they are irrelevant
+            date = pd.Timestamp(self.date)
+            df = df[df["issue_date"] == date]
+
+        except FileNotFoundError:
+            raise FileNotFoundError(
+                f"File with additional metadata needs to be placed in \
+            the top newspaper directory and named {fname}"
+            )
+
+        return df
+
+    def _redefine_from_metadata(self, data):
+        """
+        Use additional metadata from file to set attributes
+        """
+
+        docid = data["meta"]["id"]
+        data["m"]["t"] = self._lookup_article_title(docid)
+        data["m"]["l"] = self._lookup_article_language(docid)
+        data["m"]["pp"] = self._lookup_article_pages(docid)
+
+        return data
+
+    def _lookup_article_title(self, docid):
+        """Use document identifier to lookup the actual title of an article"""
+
+        return self.df.loc[docid, "article_title"]
+
+    def _lookup_article_language(self, docid):
+        """Use document identifier to lookup the language of an article"""
+
+        return self.df.loc[docid, "volume_language"]
+
+    def _lookup_article_pages(self, docid):
+        """
+        Use document identifier to lookup the page span of an article.
+        The span reflects only full pages as part of an article,
+        while the remainder gets assigned to the subsequent article.
+        """
+
+        page_first = self.df.loc[docid, "canonical_page_first"]
+        page_last = self.df.loc[docid, "canonical_page_last"]
+
+        return list(range(page_first, page_last + 1))
+
     def _lookup_overlapping(self):
         return self.df[self.df.pruned == True].index.values
 
-    def _find_logical_article_boundary(self, overlapping: list = None):
+    def _heuristic_article_segmentation(self, candidates_only: bool = True) -> None:
         """
         Find and set the actual article boundary with a fuzzy match search using
         the title of the next article.
@@ -103,13 +240,15 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         due to a in-page segmentation of some articles.
         The remainder on the last page is assigned to the next article.
 
-        :param list overlapping_articles: Overlapping articles for which the boundary needs to be redefined.
+        :param bool candidates_only: Perform article segmentation only for predefined candidates.
         :return: None.
         """
 
         to_do_new_boundaries = []
 
-        if overlapping is None:
+        if candidates_only:
+            overlapping = self._lookup_overlapping()
+        else:
             # consider all articles as potentially overlapping
             overlapping = self.df.index.values
 
@@ -191,7 +330,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
                 self._set_new_article_boundary(bound)
             except Exception as e:
                 error_msg = (
-                    f"Error while setting new article boundary at position {bound} of the issue {self.id}.\n"
+                    f"Error while drawing a new article boundary at position {bound} in the issue {self.id}.\n"
                     + f"Error: {e}"
                 )
                 logger.error(error_msg)
@@ -201,7 +340,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         Set new article boundary and reassign the remainder from the subsequent
         to the previous article.
 
-        :param TokPosition boundary: Specifies the actual boundary between subsequent articles
+        :param TokPosition bndry: Specifies the actual boundary between subsequent articles
         :return: None.
         """
 
@@ -211,26 +350,27 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
 
         # extract paragraphs, lines and tokens before in-page article boundary
         prev_para = art_page_reg["p"][: bndry.para]
-        """
-        prev_lines = art_page_reg["p"][bndry.para]["l"][: bndry.line]
-        prev_toks = art_page_reg["p"][bndry.para]["l"][bndry.line]["t"][: bndry.tok]
-        """
+
+        # TODO: we currently only reassign full paragraphs
+        # prev_lines = art_page_reg["p"][bndry.para]["l"][: bndry.line]
+        # prev_toks = art_page_reg["p"][bndry.para]["l"][bndry.line]["t"][: bndry.tok]
+
         # assemble extracted parts in a single paragraph
         subtree = {"p": []}
         if prev_para:
             subtree["p"].extend(prev_para)
 
             # TODO: we currently only reassign full paragraphs
-            """
-            if prev_lines:
-                # subtree["p"].append({"l": prev_lines})
-            if prev_toks:
-                # create new paragraph and line for tokens on the same line as headline
-                # subtree["p"].append({"l": [{"t": prev_toks}]})
-            """
+            # if prev_lines:
+            # subtree["p"].append({"l": prev_lines})
+            # if prev_toks:
+            # create new paragraph and line for tokens on the same line as headline
+            # subtree["p"].append({"l": [{"t": prev_toks}]})
+
             # remove the remainings (i.e. subtree) from the subsequent article
             # del art_page_reg["p"][bndry.para]["l"][bndry.line]["t"][: bndry.tok]
             # del art_page_reg["p"][bndry.para]["l"][: bndry.line]
+
             del art_page_reg["p"][: bndry.para]
 
             # insert subtree as a separate region at the beginning of the page where

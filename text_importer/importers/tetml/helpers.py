@@ -6,8 +6,6 @@ These functions are mainly used within (i.e. called by) the classes
 
 import logging
 from math import ceil, floor
-
-import sys
 import lxml.etree
 
 
@@ -22,8 +20,7 @@ FILTER_WORDS = ["#", "ST", "#ST", "ST#", "#ST#"]
 
 
 def get_metadata(root: lxml.etree.Element) -> dict:
-    """
-    Return dict with relevant metadata from page file
+    """Return dict with relevant metadata from page file
 
     :param root: etree.Element of tetml page file
     :return: A dictionary with keys: ``tetcdt``, ``pdfpath``, ``pdfcdt``, ``npages``.
@@ -50,7 +47,7 @@ def filter_special_symbols(jtoken: dict) -> bool:
     """
     Check if token needs to be filtered out as it is a non-content word
 
-    :param jtoken:
+    :param dict jtoken: Token text and coordinates.
     :return: bool to indicate stop or content word
 
     """
@@ -59,8 +56,14 @@ def filter_special_symbols(jtoken: dict) -> bool:
 
 def remove_page_number(jtoken: dict, i_line: int, i_word: int) -> bool:
     """
-    Remove page number in the header if a number appears within the first 3 tokens
+    Check if page number in the header appears within the first 3 tokens
     of the first line and is not longer than 3 digits.
+
+    :param dict jtoken: Token text and coordinates.
+    :param int i_line: Line number.
+    :param dict i_word: Word number in line.
+    :return: bool to indicate page number.
+
     """
 
     word = jtoken["tx"]
@@ -68,25 +71,31 @@ def remove_page_number(jtoken: dict, i_line: int, i_word: int) -> bool:
 
 
 def word2json(
-    word, pageheight, pagewidth, imageheight, imagewidth, placed_image_attribs, filename=None,
+    word: lxml.etree.Element,
+    pageheight: float,
+    pagewidth: float,
+    imageheight: float,
+    imagewidth: float,
+    placed_image_attribs: dict,
+    filename: str = None,
 ) -> dict:
     """
     Return dict with all information about the (hyphenated) TETML word element
 
-    {"tx": Text,
+    ``{"tx": Text,
     "c": coords,
     "hy" : Bool,
-    "hyt": {"nf": Text, "c":coords, "tx":coords}}
+    "hyt": {"nf": Text, "c":coords, "tx":coords}}``
 
     "hyt" is {} if word is not hyphenated
 
-    :param pageheight:
-    :param pagewidth:
-    :param imageheight:
-    :param imagewidth:
-    :param placed_image_attribs:
-    :param filename:
-    :param word:
+    :param float pageheight:
+    :param float pagewidth:
+    :param float imageheight:
+    :param float imagewidth:
+    :param dict placed_image_attribs:
+    :param str filename:
+    :param lxml.etree.Element word:
     :return: dictionary with token text and metadata
     """
 
@@ -210,39 +219,48 @@ def word2json(
 
 
 def compute_box(
-    llx, lly, urx, ury, pageheight, pagewidth, imageheight, imagewidth, placedimage_attribs,
-):
+    llx: float,
+    lly: float,
+    urx: float,
+    ury: float,
+    pageheight: float,
+    pagewidth: float,
+    imageheight: float,
+    imagewidth: float,
+    placedimage_attribs: dict,
+) -> list:
     """
     Compute IIIF box coordinates of input_box.
 
-    :param pageheight:
-    :param pagewidth:
-    :param imageheight:
-    :param imagewidth:
-    :param llx: lower left x coordinate (lower=smaller)
-    :param lly: lower left y coordinate (lower=smaller)
-    :param urx: upper right x coordinate (upper=bigger)
-    :param ury: upper right y coordinate (upper=bigger)
-    :param placedimage_attribs: all attributes of the placed image
-    :return: list with new box coordinates
-    :rtype: list
-
-
 
     New box coordinates [x,y,w,h] are in IIIF coordinate system https://iiif.io/api/image/2.0/#region
-        (x, y)
-        *--------------
-        |             |
-        |             |
-        |             |
-        |             |
-        |             |
-        |             |
-        --------------*
-                      (x2, y2)
+    ``
+    (x, y)
+    *--------------
+    |             |
+    |             |
+    |             |
+    |             |
+    |             |
+    |             |
+    --------------*
+                  (x2, y2)
 
     w = x2 - x
     h = y2 - y
+    ``
+
+    :param float pageheight:
+    :param float pagewidth:
+    :param float imageheight:
+    :param float imagewidth:
+    :param float llx: lower left x coordinate (lower=smaller)
+    :param float lly: lower left y coordinate (lower=smaller)
+    :param float urx: upper right x coordinate (upper=bigger)
+    :param float ury: upper right y coordinate (upper=bigger)
+    :param dict placedimage_attribs: all attributes of the placed image
+    :return: list with new box coordinates
+    :rtype: list
     """
     pix = placedimage_attribs["x"]
     if int(pix) != 0:
@@ -263,9 +281,7 @@ def compute_box(
 
 def compute_bb(innerbbs: list) -> list:
     """
-    Compute coordinates of the bounding box from multiple boxes
-    This function expects the directory structure that RERO used to
-    organize the dump of Tetml OCR data.
+    Compute coordinates of the bounding box from multiple boxes.
 
     :param list innerbbs: List of multiple inner boxes (x,y,w,h).
     :return: List of coordinates from the bounding box (x,y,w,h).
@@ -277,6 +293,7 @@ def compute_bb(innerbbs: list) -> list:
     bbrly = max(b[1] + b[3] for b in innerbbs)
     bbw = bbrlx - bblux
     bbh = bbrly - bbluy
+
     return [bblux, bbluy, bbw, bbh]
 
 
@@ -284,13 +301,17 @@ def get_placed_image(root: lxml.etree.Element) -> dict:
     """
     Return dimensions of the placed image
 
-    :param root: etree.Element
+    ``
+    <PlacedImage image="I0" x="0.00" y="0.00" width="588.84" height="842.00" />
+    => {"image":"IO", ,...}
+    ``
+    :param etree.Element: TETML document.
     :return: dict with all attributes of image xml element
-     <PlacedImage image="I0" x="0.00" y="0.00" width="588.84" height="842.00" />
-      => {"image":"IO", ,...}
+
     """
 
     img = root.find(f".//{TETPREFIX}PlacedImage")
+
     return {
         "image": img.attrib["image"],
         "x": float(img.attrib["x"]),
@@ -304,16 +325,20 @@ def get_tif_shape(root: lxml.etree.Element, id_image: str) -> tuple:
     """
     Return original tiff dimensions stored in tetml
 
+    ``
+    <Image id="I0" extractedAs=".tif" width="1404" height="2367" colorspace="CS0" bitsPerComponent="1"/>
+    ``
+
     :param root: etree.ELement
-    :return: pair of int of image xml element
-      <Image id="I0" extractedAs=".tif" width="1404" height="2367" colorspace="CS0" bitsPerComponent="1"/>
+    :return: width and height of tiff image.
+
     """
-    ## TODO: root.find(f".//{TETPREFIX}Image[@extractedAs]")
+
     img = root.find(f".//{TETPREFIX}Image[@id='{id_image}']")
     return int(img.attrib["width"]), int(img.attrib["height"])
 
 
-def add_gn_property(tokens: [dict], language: str):
+def add_gn_property(tokens: [dict], language: str) -> None:
     """
     Set property to indicate the use of whitespace following a token
 
