@@ -130,6 +130,9 @@ class SWANewspaperIssue(NewspaperIssue):
                 self._notes.append(f"Alto file for {page_id} missing {page_path}")
             else:
                 self.pages.append(page)
+            
+        if len(self.pages) == 0:
+            raise ValueError(f"Could not find any page for {self.id}")
     
     def _find_content_items(self):
         for page in sorted(self.pages, key=lambda x: x.id):
