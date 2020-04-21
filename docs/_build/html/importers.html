@@ -93,6 +93,8 @@
 <li class="toctree-l3"><a class="reference internal" href="importers/swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/bl.html">British Library Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/tetml.html">Generic TETML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
@@ -173,15 +175,18 @@
 are currently being developed.</p>
 <p>The following importer CLI scripts are already available:</p>
 <ul class="simple">
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.oliveimporter</span></code>: importer for the <em>Olive XML format</em>, used by
-<a class="reference external" href="https://www.rero.ch/">RERO</a> to encode and deliver the majority of its newspaper data.</li>
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.reroimporter</span></code>: importer for the Mets/ALTO flavor used by <a class="reference external" href="https://www.rero.ch/">RERO</a>
-to encode and deliver part of its data.</li>
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.luximporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://bnl.public.lu/">Bibliothèque nationale de Luxembourg (BNL)</a> to encode and deliver its newspaper data.</li>
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.bnfimporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a> to encode and deliver its newspaper data.</li>
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.swaimporter.py</span></code>: ALTO flavor of the <cite>Basel University Library</cite>.</li>
-<li><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.blimporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://www.bl.uk/">British Library (BL)</a>
-to encode and deliver its newspaper data.</li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.oliveimporter</span></code>: importer for the <em>Olive XML format</em>, used by
+<a class="reference external" href="https://www.rero.ch/">RERO</a> to encode and deliver the majority of its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.reroimporter</span></code>: importer for the Mets/ALTO flavor used by <a class="reference external" href="https://www.rero.ch/">RERO</a>
+to encode and deliver part of its data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.luximporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://bnl.public.lu/">Bibliothèque nationale de Luxembourg (BNL)</a> to encode and deliver its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.bnfimporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a> to encode and deliver its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.swaimporter</span></code>: ALTO flavor of the <cite>Basel University Library</cite>.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.blimporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://www.bl.uk/">British Library (BL)</a>
+to encode and deliver its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.tetml</span></code>: generic importer for the <em>TETML format</em>, produced by <a class="reference external" href="https://www.pdflib.com/products/tet/overview/">PDFlib TET</a>.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.fedgaz</span></code>: importer for the <em>TETML format</em> with separate metadata file and a heuristic article segmentation,
+used to parse the <a class="reference external" href="https://www.admin.ch/gov/de/start/bundesrecht/bundesblatt.html">Federal Gazette</a>.</p></li>
 </ul>
 <p>For further details on any of these implementations, please do refer to its documentation:</p>
 <div class="toctree-wrapper compound">
@@ -193,78 +198,18 @@ to encode and deliver its newspaper data.</li>
 <li class="toctree-l1"><a class="reference internal" href="importers/swa.html">SWA Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/bl.html">British Library Mets/Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/tetml.html">Generic TETML importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
 </div>
 </div>
 <div class="section" id="command-line-interface">
 <h2>Command-line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">All importers share the same command-line interface; only a few options
+<p class="admonition-title">Note</p>
+<p>All importers share the same command-line interface; only a few options
 are import-specific (see documentation below).</p>
 </div>
-<span class="target" id="module-text_importer.importers.generic_importer"></span><p>Functions and CLI script to convert any OCR data into Impresso’s format.</p>
-<dl class="docutils">
-<dt>Usage:</dt>
-<dd>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –chunk-size=&lt;cs&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –access-rights=&lt;ar&gt;]
-&lt;importer-name&gt;importer.py –version</dd>
-<dt>Options:</dt>
-<dd><table class="first last docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--input-dir=<var>&lt;id&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Base directory containing one sub-directory for each journal</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--image-dirs=<var>&lt;imd&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Directory containing (canonical) images and their metadata (use <cite>,</cite> to separate multiple dirs)</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--output-dir=<var>&lt;od&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Base directory where to write the output files</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--temp-dir=<var>&lt;td&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Temporary directory to extract .zip archives</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--config-file=<var>&lt;cf&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>configuration file for selective import</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--s3-bucket=<var>&lt;b&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>If provided, writes output to an S3 drive, in the specified bucket</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--scheduler=<var>&lt;sch&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Tell dask to use an existing scheduler (otherwise it’ll create one)</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--log-file=<var>&lt;f&gt;</var></span></kbd></td>
-<td>Log file; when missing print log to stdout</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--access-rights=<var>&lt;ar&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Access right file if relevant (only for <code class="docutils literal notranslate"><span class="pre">olive</span></code> and <code class="docutils literal notranslate"><span class="pre">rero</span></code> importers)</td></tr>
-<tr><td class="option-group" colspan="2">
-<kbd><span class="option">--chunk-size=<var>&lt;cs&gt;</var></span></kbd></td>
-</tr>
-<tr><td>&#160;</td><td>Chunk size in years</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--verbose</span></kbd></td>
-<td>Verbose log messages (good for debugging)</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--clear</span></kbd></td>
-<td>Removes the output folder (if already existing)</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">--version</span></kbd></td>
-<td>Prints version and exits.</td></tr>
-</tbody>
-</table>
-</dd>
-</dl>
 </div>
 <div class="section" id="configuration-file">
 <h2>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this headline">¶</a></h2>
@@ -273,14 +218,14 @@ means of a configuration file (JSON format). The path to this file is passed via
 CLI parameter.</p>
 <p>This JSON file contains three properties:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">newspapers</span></code>: a dictionary containing the newspaper IDs to be imported (e.g. GDL);</li>
-<li><code class="docutils literal notranslate"><span class="pre">exclude_newspapers</span></code>: a list of the newspaper IDs to be excluded;</li>
-<li><code class="docutils literal notranslate"><span class="pre">year_only</span></code>: a boolean flag indicating whether date ranges are expressed by using years
-or more granular dates (in the format <code class="docutils literal notranslate"><span class="pre">YYYY/MM/DD</span></code>).</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">newspapers</span></code>: a dictionary containing the newspaper IDs to be imported (e.g. GDL);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_newspapers</span></code>: a list of the newspaper IDs to be excluded;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">year_only</span></code>: a boolean flag indicating whether date ranges are expressed by using years
+or more granular dates (in the format <code class="docutils literal notranslate"><span class="pre">YYYY/MM/DD</span></code>).</p></li>
 </ul>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">When ingesting large amounts of data, these configuration files can help you organise
+<p class="admonition-title">Note</p>
+<p>When ingesting large amounts of data, these configuration files can help you organise
 your data imports into batches or homogeneous collections.</p>
 </div>
 <p>Here is a simple configuration file:</p>
@@ -308,79 +253,67 @@ your data imports into batches or homogeneous collections.</p>
 <span id="utilities"></span><h2>Utilities<a class="headerlink" href="#module-text_importer.utils" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="text_importer.utils.get_issue_schema">
-<code class="descclassname">text_importer.utils.</code><code class="descname">get_issue_schema</code><span class="sig-paren">(</span><em>schema_folder: str = 'impresso-schemas/json/newspaper/issue.schema.json'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.get_issue_schema" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.utils.</code><code class="sig-name descname">get_issue_schema</code><span class="sig-paren">(</span><em class="sig-param">schema_folder: str = 'impresso-schemas/json/newspaper/issue.schema.json'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.get_issue_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a list of python classes starting from a JSON schema.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>schema_folder</strong> (<em>string</em>) – path to the schema folder (default=”./schemas/”)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><cite>python_jsonschema_objects.util.Namespace</cite></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>schema_folder</strong> (<em>string</em>) – path to the schema folder (default=”./schemas/”)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><cite>python_jsonschema_objects.util.Namespace</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.utils.get_page_schema">
-<code class="descclassname">text_importer.utils.</code><code class="descname">get_page_schema</code><span class="sig-paren">(</span><em>schema_folder: str = 'impresso-schemas/json/newspaper/page.schema.json'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.get_page_schema" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.utils.</code><code class="sig-name descname">get_page_schema</code><span class="sig-paren">(</span><em class="sig-param">schema_folder: str = 'impresso-schemas/json/newspaper/page.schema.json'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.get_page_schema" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a list of python classes starting from a JSON schema.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>schema_folder</strong> – path to the schema folder (default=”./schemas/”)</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><cite>python_jsonschema_objects.util.Namespace</cite></td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>schema_folder</strong> – path to the schema folder (default=”./schemas/”)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><cite>python_jsonschema_objects.util.Namespace</cite></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.utils.init_logger">
-<code class="descclassname">text_importer.utils.</code><code class="descname">init_logger</code><span class="sig-paren">(</span><em>_logger: logging.RootLogger</em>, <em>log_level: int</em>, <em>log_file: str</em><span class="sig-paren">)</span> &#x2192; logging.RootLogger<a class="headerlink" href="#text_importer.utils.init_logger" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.utils.</code><code class="sig-name descname">init_logger</code><span class="sig-paren">(</span><em class="sig-param">_logger: logging.RootLogger</em>, <em class="sig-param">log_level: int</em>, <em class="sig-param">log_file: str</em><span class="sig-paren">)</span> &#x2192; logging.RootLogger<a class="headerlink" href="#text_importer.utils.init_logger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialise the logger.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>_logger</strong> (<em>logging.RootLogger</em>) – Logger instance to initialise.</li>
-<li><strong>log_level</strong> (<em>int</em>) – Desidered logging level (e.g. <code class="docutils literal notranslate"><span class="pre">logging.INFO</span></code>).</li>
-<li><strong>log_file</strong> (<em>str</em>) – Path to destination file for logging output. If no
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_logger</strong> (<em>logging.RootLogger</em>) – Logger instance to initialise.</p></li>
+<li><p><strong>log_level</strong> (<em>int</em>) – Desidered logging level (e.g. <code class="docutils literal notranslate"><span class="pre">logging.INFO</span></code>).</p></li>
+<li><p><strong>log_file</strong> (<em>str</em>) – Path to destination file for logging output. If no
 output file is provided (<code class="docutils literal notranslate"><span class="pre">log_file</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>) logs will be written
-to standard output.</li>
+to standard output.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The initialised logger object.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">logging.RootLogger</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The initialised logger object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>logging.RootLogger</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.utils.verify_imported_issues">
-<code class="descclassname">text_importer.utils.</code><code class="descname">verify_imported_issues</code><span class="sig-paren">(</span><em>actual_issue_json: dict</em>, <em>expected_issue_json: dict</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.verify_imported_issues" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.utils.</code><code class="sig-name descname">verify_imported_issues</code><span class="sig-paren">(</span><em class="sig-param">actual_issue_json: dict</em>, <em class="sig-param">expected_issue_json: dict</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.utils.verify_imported_issues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Short summary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>actual_issue_json</strong> (<em>dict</em>) – Description of parameter <cite>actual_issue_json</cite>.</li>
-<li><strong>expected_issue_json</strong> (<em>dict</em>) – Description of parameter <cite>expected_issue_json</cite>.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actual_issue_json</strong> (<em>dict</em>) – Description of parameter <cite>actual_issue_json</cite>.</p></li>
+<li><p><strong>expected_issue_json</strong> (<em>dict</em>) – Description of parameter <cite>expected_issue_json</cite>.</p></li>
 </ul>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

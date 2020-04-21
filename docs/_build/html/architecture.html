@@ -99,7 +99,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#image-data">Image data</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-text_importer.importers.core">Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#processing">Processing</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a></li>
@@ -180,36 +180,36 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 <h3>Canonical identifiers<a class="headerlink" href="#canonical-identifiers" title="Permalink to this headline">¶</a></h3>
 <p>Canonical identifiers are defined at the following levels:</p>
 <ol class="arabic simple">
-<li>newspaper issue</li>
-<li>newspaper page</li>
-<li>content item (e.g. article, advertisement, weather forecast, obituary, etc.)</li>
+<li><p>newspaper issue</p></li>
+<li><p>newspaper page</p></li>
+<li><p>content item (e.g. article, advertisement, weather forecast, obituary, etc.)</p></li>
 </ol>
 <div class="section" id="issue-ids">
 <h4>Issue IDs<a class="headerlink" href="#issue-ids" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}</span></code></li>
-<li>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a</span></code></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}</span></code></p></li>
+<li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="page-ids">
 <h4>Page IDs<a class="headerlink" href="#page-ids" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-p{page_number}</span></code></li>
-<li>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a-p0002</span></code></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-p{page_number}</span></code></p></li>
+<li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a-p0002</span></code></p></li>
 </ul>
 </div>
 <div class="section" id="content-item-ids">
 <h4>Content item IDs<a class="headerlink" href="#content-item-ids" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-i{item_number}</span></code></li>
-<li>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-i0048</span></code>, <code class="docutils literal notranslate"><span class="pre">JDG-1901-01-01-a-i0031</span></code></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-i{item_number}</span></code></p></li>
+<li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-i0048</span></code>, <code class="docutils literal notranslate"><span class="pre">JDG-1901-01-01-a-i0031</span></code></p></li>
 </ul>
 <p>Some things to note about these templates:</p>
 <ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">newspaper_id</span></code> is an arbitrary string, not containing white spaces, unambiguously identifying a given newspaper</li>
-<li><code class="docutils literal notranslate"><span class="pre">page_number</span></code> is a four-digits integer (zeroes are used for filling)</li>
-<li><code class="docutils literal notranslate"><span class="pre">edition</span></code>: in case of newspapers published multiple times per day, a lowercase letter is used to indicate the edition number: <code class="docutils literal notranslate"><span class="pre">a</span></code> for the first, <code class="docutils literal notranslate"><span class="pre">b</span></code> for the second, etc.</li>
-<li><code class="docutils literal notranslate"><span class="pre">item_number</span></code>: is a four-digits integer (zeroes are used for filling); <strong>NB</strong>: content item IDs are <strong>expected to remain stable</strong> across any two runs of the importer given the same input data.</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">newspaper_id</span></code> is an arbitrary string, not containing white spaces, unambiguously identifying a given newspaper</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">page_number</span></code> is a four-digits integer (zeroes are used for filling)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edition</span></code>: in case of newspapers published multiple times per day, a lowercase letter is used to indicate the edition number: <code class="docutils literal notranslate"><span class="pre">a</span></code> for the first, <code class="docutils literal notranslate"><span class="pre">b</span></code> for the second, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">item_number</span></code>: is a four-digits integer (zeroes are used for filling); <strong>NB</strong>: content item IDs are <strong>expected to remain stable</strong> across any two runs of the importer given the same input data.</p></li>
 </ul>
 </div>
 </div>
@@ -232,240 +232,13 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 <h3>Image data<a class="headerlink" href="#image-data" title="Permalink to this headline">¶</a></h3>
 <p>They are expected to be delivered via a dedicated IIIF endpoint, and typically stored in an image server. To each newspaper page corresponds an image file.</p>
 <div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">In case the canonical ID of a page and the internal ID of its image differ, the content provider is expected to be able to provide a mapping of the two identifier systems.</p>
+<p class="admonition-title">Note</p>
+<p>In case the canonical ID of a page and the internal ID of its image differ, the content provider is expected to be able to provide a mapping of the two identifier systems.</p>
 </div>
 </div>
 </div>
-<div class="section" id="module-text_importer.importers.core">
-<span id="processing"></span><h2>Processing<a class="headerlink" href="#module-text_importer.importers.core" title="Permalink to this headline">¶</a></h2>
-<p>Core functions to perform large-scale import of OCR data.</p>
-<p>Most of the functions in this module are meant to be used in conjuction
-with <a class="reference external" href="https://dask.org/">Dask</a>, the library we are using to parallelize
-the ingestion process and run it on distributed computing infrastructures.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">The function <a class="reference internal" href="#text_importer.importers.core.import_issues" title="text_importer.importers.core.import_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">import_issues()</span></code></a> is the most important in this module
-as it keeps everything together, by calling all other functions.</p>
-</div>
-<dl class="function">
-<dt id="text_importer.importers.core.compress_issues">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">compress_issues</code><span class="sig-paren">(</span><em>key: Tuple[str, int], issues: List[text_importer.importers.classes.NewspaperIssue], output_dir: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[str, str]<a class="headerlink" href="#text_importer.importers.core.compress_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function compresses a list of issues belonging to the same Journal-year, and saves them in the output directory
-First, it will check if the file already exists, loads it and then over-writes/adds the newly generated issues.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>key</strong> (<em>tuple</em>) – Tuple with newspaper ID and year of input issues
-(e.g. <code class="docutils literal notranslate"><span class="pre">(GDL,</span> <span class="pre">1900)</span></code>).</li>
-<li><strong>issues</strong> (<em>list</em>) – A list of <cite>NewspaperIssue</cite> instances.</li>
-<li><strong>output_dir</strong> (<em>type</em>) – Description of parameter <cite>output_dir</cite>.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>a tuple with: <code class="docutils literal notranslate"><span class="pre">tuple[0]</span></code> a label following the template
-<code class="docutils literal notranslate"><span class="pre">&lt;NEWSPAPER&gt;-&lt;YEAR&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">tuple[1]</span></code> the path to the the compressed
-<a href="#id1"><span class="problematic" id="id2">``</span></a>.bz2``file containing the input issues as separate documents in</p>
-<blockquote>
-<div><p>a JSON-line file.</p>
-</div></blockquote>
-</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.core.compress_pages">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">compress_pages</code><span class="sig-paren">(</span><em>key: str, json_files: List[T], output_dir: str, prefix: str = ''</em><span class="sig-paren">)</span> &#x2192; Tuple[str, str]<a class="headerlink" href="#text_importer.importers.core.compress_pages" title="Permalink to this definition">¶</a></dt>
-<dd><p>Merges a set of JSON line files into a single compressed archive.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>key</strong> – signature of the newspaper issue (e.g. GDL-1900)</li>
-<li><strong>json_files</strong> – input JSON line files</li>
-<li><strong>output_dir</strong> – directory where to write the output file</li>
-<li><strong>prefix</strong> – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a tuple with: sorting key [0] and path to serialized file [1].</p>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
-(e.g. GDL-1900).</p>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.core.dir2issue">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">dir2issue</code><span class="sig-paren">(</span><em>issue: impresso_commons.path.path_fs.IssueDirectory, issue_class: Type[text_importer.importers.classes.NewspaperIssue], failed_log=None, image_dirs=None, temp_dir=None</em><span class="sig-paren">)</span> &#x2192; Optional[text_importer.importers.classes.NewspaperIssue]<a class="headerlink" href="#text_importer.importers.core.dir2issue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instantiate a <code class="docutils literal notranslate"><span class="pre">NewspaperIssue</span></code> instance from an <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code>.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.core.import_issues">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">import_issues</code><span class="sig-paren">(</span><em>issues: List[impresso_commons.path.path_fs.IssueDirectory], out_dir: str, s3_bucket: Optional[str], issue_class: Type[text_importer.importers.classes.NewspaperIssue], image_dirs: Optional[str], temp_dir: Optional[str], chunk_size: Optional[int]</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.core.import_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Import a bunch of newspaper issues.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>issues</strong> (<em>list</em>) – Description of parameter <cite>issues</cite>.</li>
-<li><strong>out_dir</strong> (<em>str</em>) – Description of parameter <cite>out_dir</cite>.</li>
-<li><strong>s3_bucket</strong> (<em>str</em>) – Description of parameter <cite>s3_bucket</cite>.</li>
-<li><strong>issue_class</strong> – The newspaper issue class to import
-(Child of <code class="docutils literal notranslate"><span class="pre">NewspaperIssue</span></code>).</li>
-<li><strong>image_dirs</strong> – Directory of images (can be multiple)</li>
-<li><strong>temp_dir</strong> – Temporary directory for extracting archives
-(applies only to importers make use of <code class="docutils literal notranslate"><span class="pre">ZipArchive</span></code>).</li>
-<li><strong>chunk_size</strong> (<em>int</em>) – The chunk size in years</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Description of returned object.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">tuple</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.core.issue2pages">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">issue2pages</code><span class="sig-paren">(</span><em>issue: text_importer.importers.classes.NewspaperIssue</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.classes.NewspaperPage]<a class="headerlink" href="#text_importer.importers.core.issue2pages" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flatten a list of issues into  a list of their pages.</p>
-<p>As an issue consists of several pagaes, this function is useful
-in order to process each page in a truly parallel fashion.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.core.process_pages">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">process_pages</code><span class="sig-paren">(</span><em>pages: List[text_importer.importers.classes.NewspaperPage], failed_log: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.classes.NewspaperPage]<a class="headerlink" href="#text_importer.importers.core.process_pages" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a list of pages, trigger the <code class="docutils literal notranslate"><span class="pre">.parse()</span></code> method of each page.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>pages</strong> (<em>List</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><em>NewspaperPage</em></a><em>]</em>) – Input newspaper pages.</li>
-<li><strong>failed_log</strong> (<em>str</em>) – File path of failed log</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of processed pages.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[<a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage">NewspaperPage</a>]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.core.serialize_pages">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">serialize_pages</code><span class="sig-paren">(</span><em>pages: List[text_importer.importers.classes.NewspaperPage], output_dir: str = None</em><span class="sig-paren">)</span> &#x2192; List[Tuple[impresso_commons.path.path_fs.IssueDirectory, str]]<a class="headerlink" href="#text_importer.importers.core.serialize_pages" title="Permalink to this definition">¶</a></dt>
-<dd><p>Serialise a list of pages to an output directory.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>pages</strong> (<em>List</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><em>NewspaperPage</em></a><em>]</em>) – Input newspaper pages.</li>
-<li><strong>output_dir</strong> (<em>str</em>) – Path to the output directory.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of tuples, where each tuple contains <code class="docutils literal notranslate"><span class="pre">[0]</span></code> the
-<code class="docutils literal notranslate"><span class="pre">IssueDir</span></code> object representing the issue to which pages belong
-and <code class="docutils literal notranslate"><span class="pre">[1]</span></code> the path to the individual page JSON file.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[Tuple[IssueDir, str]]</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.core.upload_issues">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">upload_issues</code><span class="sig-paren">(</span><em>sort_key: str</em>, <em>filepath: str</em>, <em>bucket_name: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[bool, str]<a class="headerlink" href="#text_importer.importers.core.upload_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload a file to a given S3 bucket.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sort_key</strong> – the key used to group articles (e.g. “GDL-1900”)</li>
-<li><strong>filepath</strong> – path of the file to upload to S3</li>
-<li><strong>bucket_name</strong> – name of S3 bucket where to upload the file</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a tuple with [0] whether the upload was successful (boolean) and
-[1] the path to the uploaded file.</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tuple[bool, str]</p>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
-(e.g. GDL-1900).</p>
-</div>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.core.upload_pages">
-<code class="descclassname">text_importer.importers.core.</code><code class="descname">upload_pages</code><span class="sig-paren">(</span><em>sort_key: str</em>, <em>filepath: str</em>, <em>bucket_name: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[bool, str]<a class="headerlink" href="#text_importer.importers.core.upload_pages" title="Permalink to this definition">¶</a></dt>
-<dd><p>Upload a page JSON file to a given S3 bucket.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>sort_key</strong> – the key used to group articles (e.g. “GDL-1900”)</li>
-<li><strong>filepath</strong> – path of the file to upload to S3</li>
-<li><strong>bucket_name</strong> – name of S3 bucket where to upload the file</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">a tuple with [0] whether the upload was successful (boolean) and
-[1] the path of the uploaded file (string)</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Tuple[bool, str]</p>
-</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last"><code class="docutils literal notranslate"><span class="pre">sort_key</span></code> is expected to be the concatenation of newspaper ID and
-year (e.g. GDL-1900).</p>
-</div>
-</dd></dl>
-
+<div class="section" id="processing">
+<h2>Processing<a class="headerlink" href="#processing" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
