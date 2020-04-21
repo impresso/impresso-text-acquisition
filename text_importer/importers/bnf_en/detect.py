@@ -139,9 +139,9 @@ def dir2issue(path: str, access_rights: dict, ark_links: dict) -> BnfEnIssueDir:
     journal = journal.lower().replace('-', '').strip()
     edition = EDITIONS_MAPPINGS[int(edition)]
     
-    #
+    #get_ark_link(ark_links, journal, date, edition)
     return BnfEnIssueDir(journal=journal, date=date, edition=edition, path=path,
-                         rights="open-public", ark_link=get_ark_link(ark_links, journal, date, edition))
+                         rights="open-public", ark_link=None)
 
 
 def detect_issues(base_dir: str, access_rights: str) -> List[BnfEnIssueDir]:
@@ -163,8 +163,8 @@ def detect_issues(base_dir: str, access_rights: str) -> List[BnfEnIssueDir]:
         for _dir in os.listdir(journal)
         ]
     # Open ark links document and parse it
-    ark_links = construct_ark_links(os.path.join(base_dir, EXCEL_FILE))
-    return [dir2issue(_dir, None, ark_links) for _dir in issue_dirs]
+    #ark_links = construct_ark_links(os.path.join(base_dir, EXCEL_FILE))
+    return [dir2issue(_dir, None, None) for _dir in issue_dirs]
 
 
 def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[List[BnfEnIssueDir]]:
