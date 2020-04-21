@@ -234,21 +234,22 @@ def compute_box(
 
 
     New box coordinates [x,y,w,h] are in IIIF coordinate system https://iiif.io/api/image/2.0/#region
-    ``
-    (x, y)
-    *--------------
-    |             |
-    |             |
-    |             |
-    |             |
-    |             |
-    |             |
-    --------------*
-                  (x2, y2)
 
-    w = x2 - x
-    h = y2 - y
-    ``
+    .. code-block::
+
+        (x, y)
+        *--------------
+        |             |
+        |             |
+        |             |
+        |             |
+        |             |
+        |             |
+        --------------*
+                      (x2, y2)
+
+        w = x2 - x
+        h = y2 - y
 
     :param float pageheight:
     :param float pagewidth:
