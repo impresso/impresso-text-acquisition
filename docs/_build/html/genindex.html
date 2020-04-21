@@ -167,8 +167,8 @@
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
- | <a href="#U"><strong>U</strong></a>
  | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
  | <a href="#X"><strong>X</strong></a>
  
 </div>
@@ -176,6 +176,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="importers/bnf.html#text_importer.importers.bnf.helpers.add_div">add_div() (in module text_importer.importers.bnf.helpers)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.add_gn_property">add_gn_property() (in module text_importer.importers.tetml.helpers)</a>
 </li>
       <li><a href="importers/bl.html#text_importer.importers.bl.classes.BlNewspaperPage.add_issue">add_issue() (text_importer.importers.bl.classes.BlNewspaperPage method)</a>
 
@@ -192,7 +194,7 @@
 </li>
         <li><a href="importers/rero.html#text_importer.importers.rero.classes.ReroNewspaperPage.add_issue">(text_importer.importers.rero.classes.ReroNewspaperPage method)</a>
 </li>
-        <li><a href="importers/swa.html#text_importer.importers.swa.classes.SWANewspaperPage.add_issue">(text_importer.importers.swa.classes.SWANewspaperPage method)</a>
+        <li><a href="importers/tetml.html#text_importer.importers.tetml.classes.TetmlNewspaperPage.add_issue">(text_importer.importers.tetml.classes.TetmlNewspaperPage method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -221,13 +223,11 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="importers/swa.html#text_importer.importers.swa.classes.SWANewspaperPage.ci_id">ci_id (text_importer.importers.swa.classes.SWANewspaperPage attribute)</a>
-</li>
       <li><a href="importers/olive.html#text_importer.importers.olive.helpers.combine_article_parts">combine_article_parts() (in module text_importer.importers.olive.helpers)</a>
 </li>
-      <li><a href="architecture.html#text_importer.importers.core.compress_issues">compress_issues() (in module text_importer.importers.core)</a>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.compute_bb">compute_bb() (in module text_importer.importers.tetml.helpers)</a>
 </li>
-      <li><a href="architecture.html#text_importer.importers.core.compress_pages">compress_pages() (in module text_importer.importers.core)</a>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.compute_box">compute_box() (in module text_importer.importers.tetml.helpers)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -258,15 +258,11 @@
 </li>
         <li><a href="importers/rero.html#text_importer.importers.rero.detect.detect_issues">(in module text_importer.importers.rero.detect)</a>
 </li>
-        <li><a href="importers/swa.html#text_importer.importers.swa.detect.detect_issues">(in module text_importer.importers.swa.detect)</a>
-</li>
       </ul></li>
       <li><a href="importers/bl.html#text_importer.importers.bl.detect.dir2issue">dir2issue() (in module text_importer.importers.bl.detect)</a>
 
       <ul>
         <li><a href="importers/bnf.html#text_importer.importers.bnf.detect.dir2issue">(in module text_importer.importers.bnf.detect)</a>
-</li>
-        <li><a href="architecture.html#text_importer.importers.core.dir2issue">(in module text_importer.importers.core)</a>
 </li>
         <li><a href="importers/lux.html#text_importer.importers.lux.detect.dir2issue">(in module text_importer.importers.lux.detect)</a>
 </li>
@@ -276,6 +272,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="importers/olive.html#text_importer.importers.olive.detect.dir2olivedir">dir2olivedir() (in module text_importer.importers.olive.detect)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.detect.dir2tetmldir">dir2tetmldir() (in module text_importer.importers.tetml.detect)</a>
 </li>
       <li><a href="importers/mets-alto.html#text_importer.importers.mets_alto.alto.distill_coordinates">distill_coordinates() (in module text_importer.importers.mets_alto.alto)</a>
 </li>
@@ -295,7 +293,7 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="importers/swa.html#text_importer.importers.swa.classes.SWANewspaperPage.file_exists">file_exists (text_importer.importers.swa.classes.SWANewspaperPage attribute)</a>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.filter_special_symbols">filter_special_symbols() (in module text_importer.importers.tetml.helpers)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -311,13 +309,17 @@
 </li>
       <li><a href="importers.html#text_importer.utils.get_issue_schema">get_issue_schema() (in module text_importer.utils)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="importers/swa.html#text_importer.importers.swa.detect.get_issuedir">get_issuedir() (in module text_importer.importers.swa.detect)</a>
-</li>
       <li><a href="importers/bnf.html#text_importer.importers.bnf.helpers.get_journal_name">get_journal_name() (in module text_importer.importers.bnf.helpers)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.get_metadata">get_metadata() (in module text_importer.importers.tetml.helpers)</a>
+</li>
       <li><a href="importers.html#text_importer.utils.get_page_schema">get_page_schema() (in module text_importer.utils)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.get_placed_image">get_placed_image() (in module text_importer.importers.tetml.helpers)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.get_tif_shape">get_tif_shape() (in module text_importer.importers.tetml.helpers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -325,15 +327,11 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="architecture.html#text_importer.importers.core.import_issues">import_issues() (in module text_importer.importers.core)</a>
-</li>
       <li><a href="importers.html#text_importer.utils.init_logger">init_logger() (in module text_importer.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="importers/bnf.html#text_importer.importers.bnf.helpers.is_multi_date">is_multi_date() (in module text_importer.importers.bnf.helpers)</a>
-</li>
-      <li><a href="architecture.html#text_importer.importers.core.issue2pages">issue2pages() (in module text_importer.importers.core)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -420,11 +418,13 @@
 </li>
         <li><a href="importers/olive.html#text_importer.importers.olive.classes.OliveNewspaperPage.parse">(text_importer.importers.olive.classes.OliveNewspaperPage method)</a>
 </li>
-        <li><a href="importers/swa.html#text_importer.importers.swa.classes.SWANewspaperPage.parse">(text_importer.importers.swa.classes.SWANewspaperPage method)</a>
+        <li><a href="importers/tetml.html#text_importer.importers.tetml.classes.TetmlNewspaperPage.parse">(text_importer.importers.tetml.classes.TetmlNewspaperPage method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.classes.TetmlNewspaperIssue.parse_articles">parse_articles() (text_importer.importers.tetml.classes.TetmlNewspaperIssue method)</a>
+</li>
       <li><a href="importers/bnf.html#text_importer.importers.bnf.helpers.parse_date">parse_date() (in module text_importer.importers.bnf.helpers)</a>
 </li>
       <li><a href="importers/mets-alto.html#text_importer.importers.mets_alto.mets.parse_mets_amdsec">parse_mets_amdsec() (in module text_importer.importers.mets_alto.mets)</a>
@@ -434,8 +434,6 @@
       <li><a href="importers/mets-alto.html#text_importer.importers.mets_alto.alto.parse_style">parse_style() (in module text_importer.importers.mets_alto.alto)</a>
 </li>
       <li><a href="importers/olive.html#text_importer.importers.olive.parsers.parse_styles">parse_styles() (in module text_importer.importers.olive.parsers)</a>
-</li>
-      <li><a href="architecture.html#text_importer.importers.core.process_pages">process_pages() (in module text_importer.importers.core)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -447,10 +445,12 @@
 </li>
       <li><a href="importers/olive.html#text_importer.importers.olive.helpers.recompose_ToC">recompose_ToC() (in module text_importer.importers.olive.helpers)</a>
 </li>
-      <li><a href="importers/lux.html#text_importer.importers.lux.helpers.remove_section_cis">remove_section_cis() (in module text_importer.importers.lux.helpers)</a>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.remove_page_number">remove_page_number() (in module text_importer.importers.tetml.helpers)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/lux.html#text_importer.importers.lux.helpers.remove_section_cis">remove_section_cis() (in module text_importer.importers.lux.helpers)</a>
+</li>
       <li><a href="importers/rero.html#text_importer.importers.rero.detect.Rero2IssueDir">Rero2IssueDir (in module text_importer.importers.rero.detect)</a>
 </li>
       <li><a href="importers/rero.html#text_importer.importers.rero.classes.ReroNewspaperIssue">ReroNewspaperIssue (class in text_importer.importers.rero.classes)</a>
@@ -476,25 +476,25 @@
 </li>
         <li><a href="importers/rero.html#text_importer.importers.rero.detect.select_issues">(in module text_importer.importers.rero.detect)</a>
 </li>
-        <li><a href="importers/swa.html#text_importer.importers.swa.detect.select_issues">(in module text_importer.importers.swa.detect)</a>
-</li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="architecture.html#text_importer.importers.core.serialize_pages">serialize_pages() (in module text_importer.importers.core)</a>
-</li>
-      <li><a href="importers/swa.html#text_importer.importers.swa.detect.SwaIssueDir">SwaIssueDir (in module text_importer.importers.swa.detect)</a>
-</li>
-      <li><a href="importers/swa.html#text_importer.importers.swa.classes.SWANewspaperIssue">SWANewspaperIssue (class in text_importer.importers.swa.classes)</a>
-</li>
-      <li><a href="importers/swa.html#text_importer.importers.swa.classes.SWANewspaperPage">SWANewspaperPage (class in text_importer.importers.swa.classes)</a>
-</li>
   </ul></td>
 </tr></table>
 
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.detect.tetml_detect_issues">tetml_detect_issues() (in module text_importer.importers.tetml.detect)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.parsers.tetml_parser">tetml_parser() (in module text_importer.importers.tetml.parsers)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.detect.tetml_select_issues">tetml_select_issues() (in module text_importer.importers.tetml.detect)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.detect.TetmlIssueDir">TetmlIssueDir (in module text_importer.importers.tetml.detect)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.classes.TetmlNewspaperIssue">TetmlNewspaperIssue (class in text_importer.importers.tetml.classes)</a>
+</li>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.classes.TetmlNewspaperPage">TetmlNewspaperPage (class in text_importer.importers.tetml.classes)</a>
+</li>
       <li><a href="importers/bl.html#module-text_importer.importers.bl.classes">text_importer.importers.bl.classes (module)</a>
 </li>
       <li><a href="importers/bl.html#module-text_importer.importers.bl.detect">text_importer.importers.bl.detect (module)</a>
@@ -505,10 +505,6 @@
 </li>
       <li><a href="importers/bnf.html#module-text_importer.importers.bnf.helpers">text_importer.importers.bnf.helpers (module)</a>
 </li>
-      <li><a href="architecture.html#module-text_importer.importers.core">text_importer.importers.core (module)</a>
-</li>
-      <li><a href="importers.html#module-text_importer.importers.generic_importer">text_importer.importers.generic_importer (module)</a>
-</li>
       <li><a href="importers/lux.html#module-text_importer.importers.lux.classes">text_importer.importers.lux.classes (module)</a>
 </li>
       <li><a href="importers/lux.html#module-text_importer.importers.lux.detect">text_importer.importers.lux.detect (module)</a>
@@ -517,10 +513,10 @@
 </li>
       <li><a href="importers/mets-alto.html#module-text_importer.importers.mets_alto.alto">text_importer.importers.mets_alto.alto (module)</a>
 </li>
-      <li><a href="importers/mets-alto.html#module-text_importer.importers.mets_alto.classes">text_importer.importers.mets_alto.classes (module)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/mets-alto.html#module-text_importer.importers.mets_alto.classes">text_importer.importers.mets_alto.classes (module)</a>
+</li>
       <li><a href="importers/mets-alto.html#module-text_importer.importers.mets_alto.mets">text_importer.importers.mets_alto.mets (module)</a>
 </li>
       <li><a href="importers/olive.html#module-text_importer.importers.olive.classes">text_importer.importers.olive.classes (module)</a>
@@ -535,9 +531,13 @@
 </li>
       <li><a href="importers/rero.html#module-text_importer.importers.rero.detect">text_importer.importers.rero.detect (module)</a>
 </li>
-      <li><a href="importers/swa.html#module-text_importer.importers.swa.classes">text_importer.importers.swa.classes (module)</a>
+      <li><a href="importers/tetml.html#module-text_importer.importers.tetml.classes">text_importer.importers.tetml.classes (module)</a>
 </li>
-      <li><a href="importers/swa.html#module-text_importer.importers.swa.detect">text_importer.importers.swa.detect (module)</a>
+      <li><a href="importers/tetml.html#module-text_importer.importers.tetml.detect">text_importer.importers.tetml.detect (module)</a>
+</li>
+      <li><a href="importers/tetml.html#module-text_importer.importers.tetml.helpers">text_importer.importers.tetml.helpers (module)</a>
+</li>
+      <li><a href="importers/tetml.html#module-text_importer.importers.tetml.parsers">text_importer.importers.tetml.parsers (module)</a>
 </li>
       <li><a href="importers.html#module-text_importer.utils">text_importer.utils (module)</a>
 </li>
@@ -550,18 +550,6 @@
   </ul></td>
 </tr></table>
 
-<h2 id="U">U</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="architecture.html#text_importer.importers.core.upload_issues">upload_issues() (in module text_importer.importers.core)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="architecture.html#text_importer.importers.core.upload_pages">upload_pages() (in module text_importer.importers.core)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -570,17 +558,25 @@
   </ul></td>
 </tr></table>
 
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/tetml.html#text_importer.importers.tetml.helpers.word2json">word2json() (in module text_importer.importers.tetml.helpers)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="X">X</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="importers/bnf.html#text_importer.importers.bnf.classes.BnfNewspaperIssue.xml">xml (text_importer.importers.bnf.classes.BnfNewspaperIssue attribute)</a>
+      <li><a href="importers/bnf.html#text_importer.importers.bnf.classes.BnfNewspaperIssue.xml">xml() (text_importer.importers.bnf.classes.BnfNewspaperIssue property)</a>
 
       <ul>
-        <li><a href="importers/bnf.html#text_importer.importers.bnf.classes.BnfNewspaperPage.xml">(text_importer.importers.bnf.classes.BnfNewspaperPage attribute)</a>
+        <li><a href="importers/bnf.html#text_importer.importers.bnf.classes.BnfNewspaperPage.xml">(text_importer.importers.bnf.classes.BnfNewspaperPage property)</a>
 </li>
-        <li><a href="importers/mets-alto.html#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.xml">(text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue attribute)</a>
+        <li><a href="importers/mets-alto.html#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.xml">(text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue property)</a>
 </li>
-        <li><a href="importers/mets-alto.html#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.xml">(text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage attribute)</a>
+        <li><a href="importers/mets-alto.html#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.xml">(text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage property)</a>
 </li>
       </ul></li>
   </ul></td>

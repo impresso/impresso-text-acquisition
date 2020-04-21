@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SWA Alto importer &mdash; Impresso TextImporter  documentation</title>
+  <title>FedGaz TETML importer &mdash; Impresso TextImporter  documentation</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="British Library Mets/Alto importer" href="bl.html" />
-    <link rel="prev" title="RERO Mets/Alto importer" href="rero.html" /> 
+    <link rel="next" title="Writing a new importer" href="../custom_importer.html" />
+    <link rel="prev" title="Generic TETML importer" href="tetml.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,15 +90,14 @@
 <li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">SWA Alto importer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#custom-classes">Custom classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#detect-functions">Detect functions</a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">FedGaz TETML importer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#custom-classes">Custom classes</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
@@ -154,13 +153,13 @@
         
           <li><a href="../importers.html">TextImporter</a> &raquo;</li>
         
-      <li>SWA Alto importer</li>
+      <li>FedGaz TETML importer</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/importers/swa.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/importers/fedgaz.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -173,15 +172,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="swa-alto-importer">
-<h1>SWA Alto importer<a class="headerlink" href="#swa-alto-importer" title="Permalink to this headline">¶</a></h1>
-<p>This importer is a special case of Mets/Alto. Here, we only have ALTO.xml files, so only the Pages are in alto format.
-It was developed to handle OCR newspaper data in Alto format provided by the <a class="reference external" href="https://www.ub.unibas.ch/ub-wirtschaft-swa/">Schweizerisches Wirtschaftsarchiv (SWA)</a> of Basel University Library.</p>
+  <div class="section" id="fedgaz-tetml-importer">
+<h1>FedGaz TETML importer<a class="headerlink" href="#fedgaz-tetml-importer" title="Permalink to this headline">¶</a></h1>
+<p>This importer was developed to parse the OCR document data of the Federal Gazette in the TETML format, produced by PDFlib TET, complemented with separate metadata file.</p>
+<p>The metadata, which is not contained in the TETML dat,atext_importer.importers.tetml.classes.TetmlNewspaperPage is looked up in a complementary dataset located in the top folder of a source and is named <cite>metadata.tsv</cite>.
+The dataset provides the following columns: <cite>article_docid</cite>, <cite>issue_date,</cite> <cite>article_title</cite>, <cite>volume_language</cite>, <cite>canonical_page_first</cite>, <cite>canonical_page_last</cite>, <cite>pruned</cite>.
+Moreover, the name of the tetml file needs to correspond with the <cite>article_docid</cite> in the metadata as it is used as lookup id (e.g.,`10000032.word.tetml`).</p>
+<p>Additonaly, the importer performs an heuristic article segmentation for documents that end on the same page where a new document already begins.
+This in-page segmentation are indicated with the attribute <cite>pruned</cite>. When the attribute is set to false, the content of the last overlapping page is assigned to the subsequent article.
+Otherwise, a fuzzy search on the title is performed to draw the correct boundary and reassign the content to respective article.</p>
 <div class="section" id="custom-classes">
 <h2>Custom classes<a class="headerlink" href="#custom-classes" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="detect-functions">
-<h2>Detect functions<a class="headerlink" href="#detect-functions" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -193,10 +194,10 @@ It was developed to handle OCR newspaper data in Alto format provided by the <a 
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="bl.html" class="btn btn-neutral float-right" title="British Library Mets/Alto importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../custom_importer.html" class="btn btn-neutral float-right" title="Writing a new importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="rero.html" class="btn btn-neutral float-left" title="RERO Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="tetml.html" class="btn btn-neutral float-left" title="Generic TETML importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

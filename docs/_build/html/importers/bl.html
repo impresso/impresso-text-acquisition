@@ -97,6 +97,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
@@ -179,24 +181,21 @@ handle OCR newspaper data provided by the British Library.</p>
 <span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.bl.classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="text_importer.importers.bl.classes.BlNewspaperIssue">
-<em class="property">class </em><code class="descclassname">text_importer.importers.bl.classes.</code><code class="descname">BlNewspaperIssue</code><span class="sig-paren">(</span><em>issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperIssue" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.bl.classes.</code><code class="sig-name descname">BlNewspaperIssue</code><span class="sig-paren">(</span><em class="sig-param">issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperIssue" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="class">
 <dt id="text_importer.importers.bl.classes.BlNewspaperPage">
-<em class="property">class </em><code class="descclassname">text_importer.importers.bl.classes.</code><code class="descname">BlNewspaperPage</code><span class="sig-paren">(</span><em>_id: str</em>, <em>n: int</em>, <em>filename: str</em>, <em>basedir: str</em>, <em>encoding: str = 'utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperPage" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">text_importer.importers.bl.classes.</code><code class="sig-name descname">BlNewspaperPage</code><span class="sig-paren">(</span><em class="sig-param">_id: str</em>, <em class="sig-param">n: int</em>, <em class="sig-param">filename: str</em>, <em class="sig-param">basedir: str</em>, <em class="sig-param">encoding: str = 'utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperPage" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
 <dt id="text_importer.importers.bl.classes.BlNewspaperPage.add_issue">
-<code class="descname">add_issue</code><span class="sig-paren">(</span><em>issue: text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_issue</code><span class="sig-paren">(</span><em class="sig-param">issue: text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds the given <cite>BlNewspaperIssue</cite> as an attribute for this class</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.bl.classes.BlNewspaperIssue" title="text_importer.importers.bl.classes.BlNewspaperIssue"><em>BlNewspaperIssue</em></a>) – </td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.bl.classes.BlNewspaperIssue" title="text_importer.importers.bl.classes.BlNewspaperIssue"><em>BlNewspaperIssue</em></a>) – </p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -206,74 +205,64 @@ handle OCR newspaper data provided by the British Library.</p>
 <span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.bl.detect" title="Permalink to this headline">¶</a></h2>
 <dl class="attribute">
 <dt id="text_importer.importers.bl.detect.BlIssueDir">
-<code class="descclassname">text_importer.importers.bl.detect.</code><code class="descname">BlIssueDir</code><a class="headerlink" href="#text_importer.importers.bl.detect.BlIssueDir" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.importers.bl.detect.</code><code class="sig-name descname">BlIssueDir</code><a class="headerlink" href="#text_importer.importers.bl.detect.BlIssueDir" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.bl.detect.IssueDirectory</span></code></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.bl.detect.detect_issues">
-<code class="descclassname">text_importer.importers.bl.detect.</code><code class="descname">detect_issues</code><span class="sig-paren">(</span><em>base_dir: str</em>, <em>access_rights: str</em>, <em>tmp_dir: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.bl.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.bl.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.importers.bl.detect.</code><code class="sig-name descname">detect_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">access_rights: str</em>, <em class="sig-param">tmp_dir: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.bl.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.bl.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect newspaper issues to import within the filesystem.</p>
 <p>This function expects the directory structure that the BL used to
 organize the dump of Mets/Alto OCR data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data. (For BL this dir should contain <cite>zip</cite> files)</li>
-<li><strong>access_rights</strong> (<em>str</em>) – Not used for this imported, but argument is kept for normality</li>
-<li><strong>tmp_dir</strong> (<em>str</em>) – Temporary directory to unzip archives</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data. (For BL this dir should contain <cite>zip</cite> files)</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Not used for this imported, but argument is kept for normality</p></li>
+<li><p><strong>tmp_dir</strong> (<em>str</em>) – Temporary directory to unzip archives</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of <cite>BlIssueDir</cite> instances, to be imported.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of <cite>BlIssueDir</cite> instances, to be imported.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.bl.detect.dir2issue">
-<code class="descclassname">text_importer.importers.bl.detect.</code><code class="descname">dir2issue</code><span class="sig-paren">(</span><em>path: str</em><span class="sig-paren">)</span> &#x2192; Optional[text_importer.importers.bl.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.bl.detect.dir2issue" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.importers.bl.detect.</code><code class="sig-name descname">dir2issue</code><span class="sig-paren">(</span><em class="sig-param">path: str</em><span class="sig-paren">)</span> &#x2192; Optional[text_importer.importers.bl.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.bl.detect.dir2issue" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the BLIP directory of an issue, this function returns the corresponding IssueDirectory.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>blip_dir</strong> (<em>str</em>) – The BLIP directory path</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">BlIssueDir The corresponding Issue</td>
-</tr>
-</tbody>
-</table>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>blip_dir</strong> (<em>str</em>) – The BLIP directory path</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>BlIssueDir The corresponding Issue</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="text_importer.importers.bl.detect.select_issues">
-<code class="descclassname">text_importer.importers.bl.detect.</code><code class="descname">select_issues</code><span class="sig-paren">(</span><em>base_dir: str</em>, <em>config: dict</em>, <em>access_rights: str</em><span class="sig-paren">)</span> &#x2192; Optional[List[text_importer.importers.bl.detect.IssueDirectory]]<a class="headerlink" href="#text_importer.importers.bl.detect.select_issues" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">text_importer.importers.bl.detect.</code><code class="sig-name descname">select_issues</code><span class="sig-paren">(</span><em class="sig-param">base_dir: str</em>, <em class="sig-param">config: dict</em>, <em class="sig-param">access_rights: str</em><span class="sig-paren">)</span> &#x2192; Optional[List[text_importer.importers.bl.detect.IssueDirectory]]<a class="headerlink" href="#text_importer.importers.bl.detect.select_issues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
 <p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.bl.detect.detect_issues" title="text_importer.importers.bl.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
 import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
 further details on how to configure filtering.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</li>
-<li><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</li>
-<li><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of <cite>BlIssueDir</cite> instances, to be imported.</p>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of <cite>BlIssueDir</cite> instances, to be imported.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
