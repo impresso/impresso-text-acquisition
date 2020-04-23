@@ -30,7 +30,7 @@ from impresso_commons.path.path_fs import IssueDir, canonical_path
 from impresso_commons.text.rebuilder import cleanup
 from impresso_commons.utils import chunk
 from impresso_commons.utils.s3 import get_s3_resource
-from smart_open import smart_open as smart_open_function
+from smart_open import open as smart_open_function
 
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers.olive.classes import OliveNewspaperIssue
