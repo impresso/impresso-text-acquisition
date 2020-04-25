@@ -75,8 +75,9 @@ def get_issuedir(row: pd.Series, archives_full_dir: str, access_rights: dict) ->
     """
     if len(row.archives) > 1:
         logger.debug(f"Issue {row.manifest_id} has more than one archive {row.archives}")
-    
+
     archive = os.path.join(archives_full_dir, list(row.archives)[0])
+    
     if os.path.isfile(archive):
         split = row.manifest_id.split('-')[:-1]
         if len(split) == 5:
