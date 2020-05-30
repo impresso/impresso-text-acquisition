@@ -48,6 +48,17 @@ canonical identifiers for the issue and its pages.
 """
 
 
+def _get_csv_file(directory: str) -> str:
+    files = os.listdir(directory)
+    files = [f for f in files if f.endswith(".csv")]
+    if len(files) == 0:
+        raise ValueError("Could not find csv file in {}".format(directory))
+    elif len(files) > 1:
+        raise ValueError("Found multiple csv files in {}".format(directory))
+    
+    return os.path.join(directory, files[0])
+
+
 def _apply(part: pd.DataFrame) -> pd.Series:
     """
     Helper to parse csv document
@@ -63,20 +74,20 @@ def _apply(part: pd.DataFrame) -> pd.Series:
     return pd.Series({'pages': res, 'archives': archives})
 
 
-def get_issuedir(row: pd.Series, archives_full_dir: str, access_rights: dict) -> Optional[SwaIssueDir]:
+def get_issuedir(row: pd.Series, journal_root: str, access_rights: dict) -> Optional[SwaIssueDir]:
     """ Creates a ``SwaIssueDir`` from a row of the csv file
 
     .. note ::
         This function is called internally by :func:`detect_issues`
 
     :param pd.Series row: Path of issue.
-    :param str archives_full_dir: Path to archive for current issue
+    :param str journal_root: Path to archive for current issue
     :return: New `` object.
     """
     if len(row.archives) > 1:
         logger.debug(f"Issue {row.manifest_id} has more than one archive {row.archives}")
 
-    archive = os.path.join(archives_full_dir, list(row.archives)[0])
+    archive = os.path.join(journal_root, list(row.archives)[0])
     
     if os.path.isfile(archive):
         split = row.manifest_id.split('-')[:-1]
@@ -95,8 +106,7 @@ def get_issuedir(row: pd.Series, archives_full_dir: str, access_rights: dict) ->
     return None
 
 
-def detect_issues(base_dir: str, access_rights: str, csv_file: str = 'impresso_ids.zip',
-                  archives_dir: str = 'impresso_ocr') -> List[SwaIssueDir]:
+def detect_issues(base_dir: str, access_rights: str) -> List[SwaIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that SWA used to
@@ -107,26 +117,27 @@ def detect_issues(base_dir: str, access_rights: str, csv_file: str = 'impresso_i
 
     :param str base_dir: Path to the base directory of newspaper data.
     :param str access_rights: Path to ``access_rights.json`` file.
-    :param str csv_file: Compressed csv file holding Issue and page identifiers with alto paths (impresso_ids.zip as default)
-    :param str archives_dir: Directory where archives are stored (impresso_ocr/ as default)
     :return: List of ``SwaIssueDir`` instances, to be imported.
     """
     
-    archives_full_dir = os.path.join(base_dir, archives_dir)
-    csv_file = os.path.join(base_dir, csv_file)
+    dir_path, dirs, files = next(os.walk(base_dir))
+    journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
+    journal_dirs = [(d, _get_csv_file(d)) for d in journal_dirs]
     
     with open(access_rights, 'r') as f:
         access_rights_dict = json.load(f)
     
-    if os.path.isfile(csv_file):
-        df = pd.read_csv(csv_file, compression='zip').groupby('manifest_id').apply(_apply).reset_index()
-        result = df.apply(lambda r: get_issuedir(r, archives_full_dir, access_rights_dict), axis=1)
-        result = result[~result.isna()].values
-    else:
-        logger.warning(f"Could not find csv file {csv_file}")
-        result = None
+    results = []
+    for journal_root, csv_file in journal_dirs:
+        if os.path.isfile(csv_file):
+            df = pd.read_csv(csv_file).groupby('manifest_id').apply(_apply).reset_index()
+            result = df.apply(lambda r: get_issuedir(r, journal_root, access_rights_dict), axis=1)
+            result = result[~result.isna()].values.tolist()
+            results += result
+        else:
+            logger.warning(f"Could not find csv file {csv_file}")
         
-    return result
+    return results
 
 
 def select_issues(base_dir: str, config: dict, access_rights: str) -> List[SwaIssueDir]:
