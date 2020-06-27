@@ -105,7 +105,6 @@ def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
                                 secondary_date=secondary_date)
         except ValueError as e:
             logger.info(e)
-            print(e)
             logger.error(f"Could not parse issue at {issue_path}")
     else:
         logger.error(f"Could not find manifest in {issue_path}")
