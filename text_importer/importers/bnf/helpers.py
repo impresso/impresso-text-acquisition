@@ -101,6 +101,8 @@ def parse_date(date_string: str, formats: List[str], separators: List[str]) -> T
         
         if ds_1 is None:
             raise ValueError("Could not parse date {}".format(date_string))
+    else:
+        ds_1 = date_string
     
     # Now parse
     for f in formats:
