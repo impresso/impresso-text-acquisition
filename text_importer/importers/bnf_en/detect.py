@@ -1,16 +1,16 @@
-import json
 import logging
 import os
 from collections import namedtuple
-from datetime import datetime
-from typing import List, Optional
+from datetime import datetime, timedelta
+from string import ascii_lowercase
+from typing import Dict, List, Optional
 
+import requests
+from bs4 import BeautifulSoup
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
-import requests
-from text_importer.utils import get_access_right
-import pandas as pd
-from bs4 import BeautifulSoup
+from tqdm import tqdm
+from multiprocessing import Pool, cpu_count
 
 logger = logging.getLogger(__name__)
 
@@ -53,18 +53,71 @@ canonical identifiers for the issue and its pages.
 >>> from datetime import date
 >>> i = BnfEnIssueDir('BLB', date(1845,12,28), 'a', './Le-Gaulois/18820208_1', 'open')
 """
+API_JOURNAL_URL = "https://gallica.bnf.fr/services/Issues?ark={ark}/date"
+API_ISSUE_URL = "https://gallica.bnf.fr/services/Issues?ark={ark}/date&date={year}"
+IIIF_URL = "https://gallica.bnf.fr/iiif/ark:/12148/{issue_id}"
 
-EXCEL_FILE = "liste-arks.xls"
-sheet_translation = {
-    'Ouest-Eclair': 'ouesteclair',
-    'JDPL': 'jdpl',
-    'Matin': 'lematin',
-    'Petit Parisien': 'lepetitparisien',
-    'PJI': 'lepji',
-    'Gaulois': 'legaulois'
+API_MAPPING = {
+    "oerennes": "cb32830550k",
+    "oecaen": "cb41193642z",
+    "lematin": "cb328123058",
+    "lepji": "cb32836564q",
+    "jdpl": "cb39294634r",
+    "legaulois": "cb32779904b",
+    "lepetitparisien": "cb34419111x",
     }
 
-OECAEN_API = 'http://gallica.bnf.fr/ark:/12148/cb41193642z/date'
+
+def get_api_id(journal, api_issue, edition):
+    date = api_issue[1]
+    return "{}-{}-{:02}-{:02}-{}".format(journal, date.year, date.month, date.day, ascii_lowercase[edition])
+
+
+def construct_journal_iiif_links(journal_ark):
+    journal, ark = journal_ark
+    
+    def get_date(dayofyear, year):
+        start_date = datetime(year=year, month=1, day=1)
+        return start_date + timedelta(days=int(dayofyear) - 1)
+    
+    print("Fetching for {}".format(journal))
+    r = requests.get(API_JOURNAL_URL.format(ark=ark))
+    years = BeautifulSoup(r.content, "lxml").findAll("year")
+    years = [int(x.contents[0]) for x in years]
+    
+    links = []
+    for year in tqdm(years):
+        # API requrest
+        url = API_ISSUE_URL.format(ark=API_MAPPING[journal], year=year)
+        r = requests.get(url)
+        api_issues = BeautifulSoup(r.content, "lxml").findAll("issue")
+        # Parse dates and editions
+        api_issues = [(i.get("ark"), get_date(i.get("dayofyear"), year)) for i in api_issues]
+        
+        editions = []
+        for i, issue in enumerate(api_issues):
+            if i == 0:
+                editions.append(0)
+            else:
+                previous_same = api_issues[i - 1][1] == issue[1]
+                if previous_same:
+                    editions.append(editions[-1] + 1)
+                else:
+                    editions.append(0)
+        
+        api_issues = [(get_api_id(journal, i, edition), i[0]) for i, edition in zip(api_issues, editions)]
+        links += api_issues
+    return links
+
+
+def construct_iiif_links() -> Dict[str, str]:
+    with Pool(4) as p:
+        results = p.map(construct_journal_iiif_links, list(API_MAPPING.items()))
+    
+    iiif_links = []
+    for i in results:
+        iiif_links += i
+    return dict(iiif_links)
 
 
 def get_id(journal: str, date: datetime.date, edition: str):
@@ -89,41 +142,7 @@ def parse_dir(_dir: str, journal: str) -> str:
     return "{}-{}-{}-{}-{}".format(journal, year, month, day, edition)
 
 
-def construct_ark_links(excel_file: str) -> dict:
-    """ Given the path of the excel file, creates a dict[str, str] mapping id to ark_link
-    
-    :param str excel_file:
-    :return: dict issue_id -> ark_link
-    """
-    xls = pd.ExcelFile(excel_file)
-    dfs = []
-    for sheet in xls.sheet_names:
-        s = pd.read_excel(xls, sheet)
-        journal = sheet_translation[sheet]
-        s['id'] = s['CHEMIN_COMPLET'].apply(lambda x: parse_dir(x, journal))
-        dfs.append(s)
-    df = pd.concat(dfs)
-    
-    return dict(df[['id', 'ARK_DOCNUM']].values)
-
-
-def get_oe_caen_ark_link(date: datetime.date) -> str:
-    r = requests.get(OECAEN_API + "{}{:02}{:02}".format(date.year, date.month, date.day))
-    obj = BeautifulSoup(r.text, features='lxml')
-    return obj.findAll("meta", {'property': 'og:url'})[0].get('content')
-
-
-def get_ark_link(ark_links, journal, date, edition):
-    _id = get_id(journal, date, edition)
-    if _id in ark_links:
-        return ark_links[_id]
-    else:
-        assert journal == "oecaen" or journal == "oerennes"
-        link = get_oe_caen_ark_link(date)
-        return "/".join(link.split('/')[3:])
-
-
-def dir2issue(path: str, access_rights: dict, ark_links: dict) -> BnfEnIssueDir:
+def dir2issue(path: str, access_rights: dict, iiif_links: dict) -> Optional[BnfEnIssueDir]:
     """Create a `BnfEnIssueDir` object from a directory path.
 
     .. note ::
@@ -139,9 +158,13 @@ def dir2issue(path: str, access_rights: dict, ark_links: dict) -> BnfEnIssueDir:
     journal = journal.lower().replace('-', '').strip()
     edition = EDITIONS_MAPPINGS[int(edition)]
     
-    #get_ark_link(ark_links, journal, date, edition)
+    id_ = get_id(journal, date, edition)
+    
+    if id_ not in iiif_links:
+        return None
+    
     return BnfEnIssueDir(journal=journal, date=date, edition=edition, path=path,
-                         rights="open-public", ark_link=None)
+                         rights="open-public", ark_link=iiif_links[id_])
 
 
 def detect_issues(base_dir: str, access_rights: str) -> List[BnfEnIssueDir]:
@@ -162,9 +185,14 @@ def detect_issues(base_dir: str, access_rights: str) -> List[BnfEnIssueDir]:
         for journal in journal_dirs
         for _dir in os.listdir(journal)
         ]
-    # Open ark links document and parse it
-    #ark_links = construct_ark_links(os.path.join(base_dir, EXCEL_FILE))
-    return [dir2issue(_dir, None, None) for _dir in issue_dirs]
+    
+    iiif_links = construct_iiif_links()
+    issue_dirs = [dir2issue(_dir, None, iiif_links) for _dir in issue_dirs]
+    
+    initial_length = len(issue_dirs)
+    issue_dirs = [i for i in issue_dirs if i is not None]
+    logger.info(f"Removed {initial_length - len(issue_dirs)} problematic issues")
+    return issue_dirs
 
 
 def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[List[BnfEnIssueDir]]:

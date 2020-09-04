@@ -19,8 +19,8 @@ Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URL = "https://gallica.bnf.fr/iiif/"
-IIIF_SUFFIX = "full/full/0/native.jpg"
+IIIF_ENDPOINT_URL = "https://gallica.bnf.fr/iiif/ark:/12148/"
+IIIF_SUFFIX = "full/full/0/default.jpg"
 SECTION_TYPE = "section"
 
 type_translation = {
