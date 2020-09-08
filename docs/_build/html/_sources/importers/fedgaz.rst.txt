@@ -1,15 +1,15 @@
 FedGaz TETML importer
 =======================
 
-This importer was developed to parse the OCR document data of the Federal Gazette in the TETML format, produced by PDFlib TET, complemented with separate metadata file.
+This importer is an adapted version of the generic TETML importer to parse the Federal Gazette data, which is complemented by an additional metadata file besides the document files in the TETML format.
 
-The metadata, which is not contained in the TETML dat,atext_importer.importers.tetml.classes.TetmlNewspaperPage is looked up in a complementary dataset located in the top folder of a source and is named `metadata.tsv`.
-The dataset provides the following columns: `article_docid`, `issue_date,` `article_title`, `volume_language`, `canonical_page_first`, `canonical_page_last`, `pruned`.
-Moreover, the name of the tetml file needs to correspond with the `article_docid` in the metadata as it is used as lookup id (e.g.,`10000032.word.tetml`).
+The separate metadata file is used to look up additional information for documents not provided by the respective TETML files. The file needs to be located in the top folder of the input directory and is named `metadata.tsv`. Moreover, the dataset provides the following columns: `article_docid`, `issue_date,` `article_title`, `volume_language`, `canonical_page_first`, `canonical_page_last`, `pruned`.
+Notably, the tetml file's name needs to correspond with the `article_docid` of the metadata as it is used as a key to look up other information (e.g., `10000032.word.tetml`).
 
-Additonaly, the importer performs an heuristic article segmentation for documents that end on the same page where a new document already begins.
-This in-page segmentation are indicated with the attribute `pruned`. When the attribute is set to false, the content of the last overlapping page is assigned to the subsequent article.
-Otherwise, a fuzzy search on the title is performed to draw the correct boundary and reassign the content to respective article.
+By default, the importer assumes that an article starts on a new page. Practically, there are many cases of in-page segmentations (i.e., an article starts on the same page where the previous ends). Thus, the FedGaz importer also performs a heuristic article segmentation for documents that share the page with the subsequent articles, indicated by the attribute `pruned`.
+Unless the attribute is set to `True`, the content of the shared page is automatically assigned to the subsequent article, limiting an article to its last full page. However, in case of an indicated pruning, the importer performs a fuzzy search to locate the subsequent article title on its starting page. If successful, the procedure sets the article boundary at the matching position and reassigns the content accordingly.
+
+
 
 Custom classes
 --------------

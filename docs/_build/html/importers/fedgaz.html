@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Writing a new importer" href="../custom_importer.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> Impresso TextImporter
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Impresso TextImporter
           
 
           
@@ -73,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -102,7 +104,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#utilities">Utilities</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Writing a new importer</a></li>
@@ -111,6 +113,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -149,7 +152,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../importers.html">TextImporter</a> &raquo;</li>
         
@@ -174,13 +177,11 @@
             
   <div class="section" id="fedgaz-tetml-importer">
 <h1>FedGaz TETML importer<a class="headerlink" href="#fedgaz-tetml-importer" title="Permalink to this headline">¶</a></h1>
-<p>This importer was developed to parse the OCR document data of the Federal Gazette in the TETML format, produced by PDFlib TET, complemented with separate metadata file.</p>
-<p>The metadata, which is not contained in the TETML dat,atext_importer.importers.tetml.classes.TetmlNewspaperPage is looked up in a complementary dataset located in the top folder of a source and is named <cite>metadata.tsv</cite>.
-The dataset provides the following columns: <cite>article_docid</cite>, <cite>issue_date,</cite> <cite>article_title</cite>, <cite>volume_language</cite>, <cite>canonical_page_first</cite>, <cite>canonical_page_last</cite>, <cite>pruned</cite>.
-Moreover, the name of the tetml file needs to correspond with the <cite>article_docid</cite> in the metadata as it is used as lookup id (e.g.,`10000032.word.tetml`).</p>
-<p>Additonaly, the importer performs an heuristic article segmentation for documents that end on the same page where a new document already begins.
-This in-page segmentation are indicated with the attribute <cite>pruned</cite>. When the attribute is set to false, the content of the last overlapping page is assigned to the subsequent article.
-Otherwise, a fuzzy search on the title is performed to draw the correct boundary and reassign the content to respective article.</p>
+<p>This importer is an adapted version of the generic TETML importer to parse the Federal Gazette data, which is complemented by an additional metadata file besides the document files in the TETML format.</p>
+<p>The separate metadata file is used to look up additional information for documents not provided by the respective TETML files. The file needs to be located in the top folder of the input directory and is named <cite>metadata.tsv</cite>. Moreover, the dataset provides the following columns: <cite>article_docid</cite>, <cite>issue_date,</cite> <cite>article_title</cite>, <cite>volume_language</cite>, <cite>canonical_page_first</cite>, <cite>canonical_page_last</cite>, <cite>pruned</cite>.
+Notably, the tetml file’s name needs to correspond with the <cite>article_docid</cite> of the metadata as it is used as a key to look up other information (e.g., <cite>10000032.word.tetml</cite>).</p>
+<p>By default, the importer assumes that an article starts on a new page. Practically, there are many cases of in-page segmentations (i.e., an article starts on the same page where the previous ends). Thus, the FedGaz importer also performs a heuristic article segmentation for documents that share the page with the subsequent articles, indicated by the attribute <cite>pruned</cite>.
+Unless the attribute is set to <cite>True</cite>, the content of the shared page is automatically assigned to the subsequent article, limiting an article to its last full page. However, in case of an indicated pruning, the importer performs a fuzzy search to locate the subsequent article title on its starting page. If successful, the procedure sets the article boundary at the matching position and reassigns the content accordingly.</p>
 <div class="section" id="custom-classes">
 <h2>Custom classes<a class="headerlink" href="#custom-classes" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -206,11 +207,19 @@ Otherwise, a fuzzy search on the title is performed to draw the correct boundary
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Matteo Romanello &amp; Impresso team
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -221,7 +230,6 @@ Otherwise, a fuzzy search on the title is performed to draw the correct boundary
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
