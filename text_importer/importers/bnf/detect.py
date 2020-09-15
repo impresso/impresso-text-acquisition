@@ -1,13 +1,14 @@
 import json
 import logging
 import os
+import string
 from collections import namedtuple
 from typing import List, Optional
 
+import pandas as pd
 from bs4 import BeautifulSoup
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
-
 from text_importer.importers.bnf.helpers import get_journal_name, parse_date
 from text_importer.importers.mets_alto.mets import get_dmd_sec
 from text_importer.utils import get_access_right
@@ -54,6 +55,29 @@ separated by either `-` or `/`
 """
 
 
+def get_id(issue):
+    return "{}-{}-{:02}-{:02}-{}".format(issue.journal, issue.date.year, issue.date.month,
+                                         issue.date.day, issue.edition)
+
+
+def get_number(issue):
+    return issue.path.split('/')[-1]
+
+
+def assign_editions(issues):
+    issues = sorted(issues, key=lambda x: x[1])
+    new_issues = []
+    for index, (i, n) in enumerate(issues):
+        i = BnfIssueDir(journal=i.journal,
+                        date=i.date,
+                        edition=string.ascii_lowercase[index],
+                        path=i.path,
+                        rights=i.rights,
+                        secondary_date=i.secondary_date)
+        new_issues.append((i, n))
+    return new_issues
+
+
 def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
     """ Creates a `BnfIssueDir` object from an archive path
     
@@ -97,8 +121,7 @@ def detect_issues(base_dir: str, access_rights: str = None):
     :return: List of `BnfIssueDir` instances, to be imported.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
-    
-    journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
+    journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs if not _dir.startswith("2")]
     issue_dirs = [
         os.path.join(journal, _dir)
         for journal in journal_dirs
@@ -110,6 +133,13 @@ def detect_issues(base_dir: str, access_rights: str = None):
     issue_dirs = [dir2issue(_dir, access_rights_dict) for _dir in issue_dirs]
     initial_length = len(issue_dirs)
     issue_dirs = [i for i in issue_dirs if i is not None]
+    
+    df = pd.DataFrame([{"issue": i, "id": get_id(i), "number": get_number(i)} for i in issue_dirs])
+    vals = df.groupby('id').apply(lambda x: x[['issue', 'number']].values.tolist()).values
+    
+    issue_dirs = [i if len(i) == 1 else assign_editions(i) for i in vals]
+    issue_dirs = [j[0] for i in issue_dirs for j in i]
+    
     logger.info(f"Removed {initial_length - len(issue_dirs)} problematic issues")
     return [i for i in issue_dirs if i is not None]
 

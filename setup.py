@@ -41,6 +41,7 @@ setup(
         'lxml',
         'boto',
         'python-jsonschema-objects',
+        'regex'
     ],
     dependency_links=[
       'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons-0.12.4',

@@ -91,6 +91,7 @@ class SWANewspaperIssue(NewspaperIssue):
         self.temp_pages = issue_dir.pages
         self.content_items = []
         
+        self._notes = []
         self._find_pages()
         self._find_content_items()
         
@@ -99,7 +100,8 @@ class SWANewspaperIssue(NewspaperIssue):
             'cdt': strftime("%Y-%m-%d %H:%M:%S"),
             'i': self.content_items,
             'ar': self.rights,
-            'pp': [p.id for p in self.pages]
+            'pp': [p.id for p in self.pages],
+            'notes': self._notes
             }
     
     def _parse_archive(self, temp_dir: str) -> ZipArchive:
@@ -125,17 +127,21 @@ class SWANewspaperIssue(NewspaperIssue):
             
             # Check page existence
             if not page.file_exists:
-                raise ValueError(f"Alto file for {page_id} missing {page_path}")
+                self._notes.append(f"Alto file for {page_id} missing {page_path}")
+            else:
+                self.pages.append(page)
             
-            self.pages.append(page)
+        if len(self.pages) == 0:
+            raise ValueError(f"Could not find any page for {self.id}")
     
     def _find_content_items(self):
-        for n, page in enumerate(sorted(self.pages, key=lambda x: x.id)):
-            ci_id = self.id + '-i' + str(n + 1).zfill(4)
+        for page in sorted(self.pages, key=lambda x: x.id):
+            page_number = page.number
+            ci_id = self.id + '-i' + str(page_number).zfill(4)
             ci = {
                 'm': {
                     'id': ci_id,
-                    'pp': [n + 1],
+                    'pp': [page_number],
                     'tp': 'page',
                     }
                 }

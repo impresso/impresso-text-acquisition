@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,27 +11,29 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="BNF Mets/Alto importer" href="bnf.html" />
@@ -50,7 +51,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> Impresso TextImporter
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Impresso TextImporter
           
 
           
@@ -73,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -92,16 +94,18 @@
 <li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">British Library Mets/Alto importer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.bl.classes">Custom classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.bl.detect">Detect functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-classes">Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detect-functions">Detect functions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#utilities">Utilities</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Writing a new importer</a></li>
@@ -110,6 +114,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -148,7 +153,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="../importers.html">TextImporter</a> &raquo;</li>
         
@@ -175,107 +180,11 @@
 <h1>British Library Mets/Alto importer<a class="headerlink" href="#british-library-mets-alto-importer" title="Permalink to this headline">¶</a></h1>
 <p>This importer extends the generic Mets/Alto importer, and it was developed to
 handle OCR newspaper data provided by the British Library.</p>
-<div class="section" id="module-text_importer.importers.bl.classes">
-<span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.bl.classes" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="text_importer.importers.bl.classes.BlNewspaperIssue">
-<em class="property">class </em><code class="descclassname">text_importer.importers.bl.classes.</code><code class="descname">BlNewspaperIssue</code><span class="sig-paren">(</span><em>issue_dir: impresso_commons.path.path_fs.IssueDirectory</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperIssue" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="class">
-<dt id="text_importer.importers.bl.classes.BlNewspaperPage">
-<em class="property">class </em><code class="descclassname">text_importer.importers.bl.classes.</code><code class="descname">BlNewspaperPage</code><span class="sig-paren">(</span><em>_id: str</em>, <em>n: int</em>, <em>filename: str</em>, <em>basedir: str</em>, <em>encoding: str = 'utf-8'</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperPage" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="text_importer.importers.bl.classes.BlNewspaperPage.add_issue">
-<code class="descname">add_issue</code><span class="sig-paren">(</span><em>issue: text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue</em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bl.classes.BlNewspaperPage.add_issue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds the given <cite>BlNewspaperIssue</cite> as an attribute for this class</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>issue</strong> (<a class="reference internal" href="#text_importer.importers.bl.classes.BlNewspaperIssue" title="text_importer.importers.bl.classes.BlNewspaperIssue"><em>BlNewspaperIssue</em></a>) – </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="custom-classes">
+<h2>Custom classes<a class="headerlink" href="#custom-classes" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-text_importer.importers.bl.detect">
-<span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.bl.detect" title="Permalink to this headline">¶</a></h2>
-<dl class="attribute">
-<dt id="text_importer.importers.bl.detect.BlIssueDir">
-<code class="descclassname">text_importer.importers.bl.detect.</code><code class="descname">BlIssueDir</code><a class="headerlink" href="#text_importer.importers.bl.detect.BlIssueDir" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">text_importer.importers.bl.detect.IssueDirectory</span></code></p>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.bl.detect.detect_issues">
-<code class="descclassname">text_importer.importers.bl.detect.</code><code class="descname">detect_issues</code><span class="sig-paren">(</span><em>base_dir: str</em>, <em>access_rights: str</em>, <em>tmp_dir: str</em><span class="sig-paren">)</span> &#x2192; List[text_importer.importers.bl.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.bl.detect.detect_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Detect newspaper issues to import within the filesystem.</p>
-<p>This function expects the directory structure that the BL used to
-organize the dump of Mets/Alto OCR data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data. (For BL this dir should contain <cite>zip</cite> files)</li>
-<li><strong>access_rights</strong> (<em>str</em>) – Not used for this imported, but argument is kept for normality</li>
-<li><strong>tmp_dir</strong> (<em>str</em>) – Temporary directory to unzip archives</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of <cite>BlIssueDir</cite> instances, to be imported.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.bl.detect.dir2issue">
-<code class="descclassname">text_importer.importers.bl.detect.</code><code class="descname">dir2issue</code><span class="sig-paren">(</span><em>path: str</em><span class="sig-paren">)</span> &#x2192; Optional[text_importer.importers.bl.detect.IssueDirectory]<a class="headerlink" href="#text_importer.importers.bl.detect.dir2issue" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given the BLIP directory of an issue, this function returns the corresponding IssueDirectory.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>blip_dir</strong> (<em>str</em>) – The BLIP directory path</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">BlIssueDir The corresponding Issue</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="function">
-<dt id="text_importer.importers.bl.detect.select_issues">
-<code class="descclassname">text_importer.importers.bl.detect.</code><code class="descname">select_issues</code><span class="sig-paren">(</span><em>base_dir: str</em>, <em>config: dict</em>, <em>access_rights: str</em><span class="sig-paren">)</span> &#x2192; Optional[List[text_importer.importers.bl.detect.IssueDirectory]]<a class="headerlink" href="#text_importer.importers.bl.detect.select_issues" title="Permalink to this definition">¶</a></dt>
-<dd><p>Detect selectively newspaper issues to import.</p>
-<p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.bl.detect.detect_issues" title="text_importer.importers.bl.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
-difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
-import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
-further details on how to configure filtering.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</li>
-<li><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</li>
-<li><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">List of <cite>BlIssueDir</cite> instances, to be imported.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+<div class="section" id="detect-functions">
+<h2>Detect functions<a class="headerlink" href="#detect-functions" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
@@ -299,11 +208,19 @@ further details on how to configure filtering.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2019, Matteo Romanello &amp; Impresso team
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -314,7 +231,6 @@ further details on how to configure filtering.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

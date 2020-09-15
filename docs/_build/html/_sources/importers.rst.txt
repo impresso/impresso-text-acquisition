@@ -17,9 +17,13 @@ The following importer CLI scripts are already available:
   <https://bnl.public.lu/>`_ to encode and deliver its newspaper data.
 - :py:mod:`text_importer.scripts.bnfimporter`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de France (BNF)
   <https://www.bnf.fr/en/>`_ to encode and deliver its newspaper data.
-- :py:mod:`text_importer.scripts.swaimporter.py`: ALTO flavor of the `Basel University Library`.
+- :py:mod:`text_importer.scripts.swaimporter`: ALTO flavor of the `Basel University Library`.
 - :py:mod:`text_importer.scripts.blimporter`: importer for the Mets/ALTO flavor used by the `British Library (BL) <https://www.bl.uk/>`_
   to encode and deliver its newspaper data.
+- :py:mod:`text_importer.scripts.tetml`: generic importer for the *TETML format*, produced by `PDFlib TET <https://www.pdflib.com/products/tet/overview/>`_.
+- :py:mod:`text_importer.scripts.fedgaz`: importer for the *TETML format* with separate metadata file and a heuristic article segmentation,
+  used to parse the `Federal Gazette <https://www.admin.ch/gov/de/start/bundesrecht/bundesblatt.html>`_.
+
 
 For further details on any of these implementations, please do refer to its documentation:
 
@@ -33,6 +37,8 @@ For further details on any of these implementations, please do refer to its docu
    importers/swa
    importers/bl
    importers/bnf
+   importers/tetml
+   importers/fedgaz
 
 Command-line interface
 ----------------------
