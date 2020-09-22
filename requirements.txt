@@ -16,7 +16,6 @@ chardet==3.0.4
 Click==7.0
 cloudpickle==1.2.1
 dask==2.2.0
--e git+https://github.com/impresso/dask_k8.git@f9badd1c2de247db369f6eb62ff8c70579a4c9fd#egg=dask_k8
 decorator==4.4.0
 defusedxml==0.6.0
 Deprecated==1.2.6
@@ -31,7 +30,7 @@ HeapDict==1.0.0
 idna==2.8
 imagesize==1.1.0
 importlib-metadata==0.19
--e git+https://github.com/impresso/impresso-pycommons.git@afd5df8b8cf16facf18a49e39238827b8bd910d0#egg=impresso_commons
+-e git+https://github.com/impresso/impresso-pycommons.git@f7cd754e6ed1b98ddeec9951e9c0639430df5d9c#egg=impresso_commons
 inflection==0.3.1
 ipdb==0.12.2
 ipykernel==5.1.2
