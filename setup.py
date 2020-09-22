@@ -34,7 +34,7 @@ setup(
     install_requires=[
         'bs4',
         'docopt',
-        'impresso_commons',
+        'impresso_commons>=0.12.7',
         'dask_k8',
         'pandas',
         'dask[complete]',
@@ -43,8 +43,5 @@ setup(
         'python-jsonschema-objects',
         'regex'
     ],
-    dependency_links=[
-      'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons-0.12.4',
-      'https://github.com/impresso/dask_k8/tarball/master#egg=dask_k8-0.1.1',
-      ]
+
 )
