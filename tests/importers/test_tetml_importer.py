@@ -1,17 +1,74 @@
 import os
 import json
 import logging
+import shutil
+from time import strftime
 import pkg_resources
+
+from pathlib import Path
 
 from dask import bag as db
 
 from text_importer.utils import verify_imported_issues
-from text_importer.importers.core import import_issues
+from text_importer.importers.core import import_issues, compress_issues, dirs2issues, issue2pages, process_pages, serialize_pages, compress_pages
 from text_importer.importers.tetml.detect import tetml_detect_issues
 from text_importer.importers.tetml.classes import TetmlNewspaperIssue
+from impresso_commons.path.path_fs import canonical_path
+
 
 
 logger = logging.getLogger(__name__)
+
+
+def test_import_issues_no_dask():
+    inp_dir = pkg_resources.resource_filename(
+        "text_importer", "data/sample_data/Tetml/"
+    )
+
+    access_rights_file = pkg_resources.resource_filename(
+        "text_importer", "data/sample_data/Tetml/access_rights.json"
+    )
+
+    out_dir=pkg_resources.resource_filename("text_importer", "data/out/")
+    image_dirs="/mnt/project_impresso/images/"
+    temp_dir=pkg_resources.resource_filename("text_importer", "data/temp/")
+
+    failed_log_path = os.path.join(
+            out_dir,
+            f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
+            )
+
+
+    dir_issues = tetml_detect_issues(base_dir=inp_dir, access_rights=access_rights_file)
+
+    assert dir_issues is not None
+    assert len(dir_issues) > 0
+
+    issues = dirs2issues(dir_issues, issue_class=TetmlNewspaperIssue, failed_log=failed_log_path, temp_dir=temp_dir)
+
+    for issue in issues:
+        compress_issues((issue.journal, issue.date.year), [issue], output_dir=out_dir)
+
+        pages = issue2pages(issue)
+        parsed_pages = process_pages(pages, failed_log=failed_log_path)
+        serialized_pages = serialize_pages(parsed_pages, output_dir=out_dir)
+
+        pages_out_dir = os.path.join(out_dir, 'pages')
+        Path(pages_out_dir).mkdir(exist_ok=True)
+
+
+
+
+        key = canonical_path(issue, path_type='dir').replace('/', '-')
+        compress_pages(key, serialized_pages, prefix='pages', output_dir=pages_out_dir)
+
+
+
+    if temp_dir is not None and os.path.isdir(temp_dir):
+        shutil.rmtree(temp_dir, ignore_errors=True)
+
+    logger.info("---------- Done ----------")
+
 
 
 def test_import_issues():
