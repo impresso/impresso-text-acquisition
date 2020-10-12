@@ -211,16 +211,20 @@ def import_issues(
         chunks = groupby(sorted(issues, key=lambda x: x.date.year), lambda x: x.date.year - (x.date.year % csize))
 
         chunks = [(year, list(issues)) for year, issues in chunks]
-        logger.info(f"Dividing issues into chunks of {chunk_size} years ({len(chunks)} in total)")
+        logger.info(f"Dividing issues into chunks of {chunk_size} years ({len(chunks)} chunks in total)")
         for year, issue_chunk in chunks:
             logger.info(f"Chunk of period {year} - {year + csize - 1} covers {len(issue_chunk)} issues")
     else:
         chunks = [(None, issues)]
 
     for year, issue_chunk in chunks:
-        if year is not None:
-            logger.info(f"Processing chunk of period {year} - {year + csize - 1}")
-        temp_issue_bag = db.from_sequence(issue_chunk, partition_size=20)
+        if year is None:
+            period = 'all years'
+        else:
+            period = f'{year} - {year + csize - 1}'
+            logger.info(f"Processing chunk of period {period}")
+
+        temp_issue_bag = db.from_sequence(issue_chunk, partition_size=200)
 
         issue_bag = temp_issue_bag.map_partitions(
                 dirs2issues,
@@ -229,13 +233,14 @@ def import_issues(
                 image_dirs=image_dirs,
                 temp_dir=temp_dir).persist()
 
-        logger.info(f'Start compressing and uploading issues')
+        logger.info(f'Start compressing and uploading issues for {period}')
         issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
             .starmap(compress_issues, output_dir=out_dir) \
             .starmap(upload_issues, bucket_name=s3_bucket) \
             .starmap(cleanup_fix) \
             .compute()
-        logger.info(f'Done compressing and uploading issues')
+
+        logger.info(f'Done compressing and uploading issues for {period}')
 
         processed_issues = list(issue_bag)
         random.shuffle(processed_issues)
@@ -243,7 +248,7 @@ def import_issues(
         chunks = chunk(processed_issues, 400)
 
         for chunk_n, chunk_of_issues in enumerate(chunks):
-            logger.info(f'Processing chunk {chunk_n}')
+            logger.info(f'Processing chunk {chunk_n} of pages for {period}')
 
             pages_bag = db.from_sequence(chunk_of_issues, partition_size=2) \
                 .map(issue2pages) \
@@ -254,7 +259,7 @@ def import_issues(
             pages_out_dir = os.path.join(out_dir, 'pages')
             Path(pages_out_dir).mkdir(exist_ok=True)
 
-            logger.info(f'Start compressing and uploading pages')
+            logger.info(f'Start compressing and uploading pages for {period}')
             pages_bag = pages_bag.groupby(
                     lambda x: canonical_path(
                             x[0], path_type='dir'
@@ -265,7 +270,7 @@ def import_issues(
                 .starmap(cleanup) \
                 .compute()
 
-            logger.info(f'Done compressing and uploading pages')
+            logger.info(f'Done compressing and uploading pages for {period}')
 
         del issue_bag
 
@@ -289,7 +294,7 @@ def cleanup_fix(upload_success, filepath):
         else:
             logger.info(f'Not removing {filepath} as upload has failed')
     except FileNotFoundError:
-        logger.info(f'FileNotFoundError for {filepath}')
+        logger.warning(f'FileNotFoundError for {filepath}')
 
 
 
