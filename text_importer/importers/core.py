@@ -151,7 +151,7 @@ def serialize_pages(
                     )
         result.append((issue_dir, out_file))
 
-    # TODO: this can be deleyted, I believe as it has no effect
+    # TODO: this can be deleted, I believe as it has no effect
     gc.collect()
     return result
 
@@ -222,9 +222,8 @@ def import_issues(
             period = 'all years'
         else:
             period = f'{year} - {year + csize - 1}'
-            logger.info(f"Processing chunk of period {period}")
 
-        temp_issue_bag = db.from_sequence(issue_chunk, partition_size=200)
+        temp_issue_bag = db.from_sequence(issue_chunk, partition_size=20)
 
         issue_bag = temp_issue_bag.map_partitions(
                 dirs2issues,
@@ -233,14 +232,31 @@ def import_issues(
                 image_dirs=image_dirs,
                 temp_dir=temp_dir).persist()
 
-        logger.info(f'Start compressing and uploading issues for {period}')
-        issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
+        logger.info(f'Start compressing issues for {period}')
+
+        compressed_issue_files = issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
             .starmap(compress_issues, output_dir=out_dir) \
-            .starmap(upload_issues, bucket_name=s3_bucket) \
-            .starmap(cleanup_fix) \
             .compute()
 
-        logger.info(f'Done compressing and uploading issues for {period}')
+        logger.info(f'Done compressing issues for {period}')
+
+        logger.info(f'Start uploading issues for {period}')
+
+        # NOTE: As a function of the partitioning size and the number of issues,
+        # the issues of a single year may be assigned to different partitions.
+        # To prevent further processing before the compressed issues of a single year is completed,
+        # the steps of compressing and uploading/deleting are separated from each other.
+        # Moreover, the issues are deduplicated after compressing due to the unpredictable partitioning.
+        # If not respected, the import may result in incomplete issue files and non-reproducible errors.
+        # TODO: The issues should be processed within a dask dataframe instead of bag
+        # to get cleaner code while ensuring proper partitioning.
+
+        db.from_sequence(set(compressed_issue_files)) \
+            .starmap(upload_issues, bucket_name=s3_bucket) \
+            .starmap(cleanup) \
+            .compute()
+
+        logger.info(f'Done uploading issues for {period}')
 
         processed_issues = list(issue_bag)
         random.shuffle(processed_issues)
@@ -259,7 +275,7 @@ def import_issues(
             pages_out_dir = os.path.join(out_dir, 'pages')
             Path(pages_out_dir).mkdir(exist_ok=True)
 
-            logger.info(f'Start compressing and uploading pages for {period}')
+            logger.info(f'Start compressing and uploading pages of chunk {chunk_n} for {period}')
             pages_bag = pages_bag.groupby(
                     lambda x: canonical_path(
                             x[0], path_type='dir'
@@ -270,7 +286,7 @@ def import_issues(
                 .starmap(cleanup) \
                 .compute()
 
-            logger.info(f'Done compressing and uploading pages for {period}')
+            logger.info(f'Done compressing and uploading pages of chunk {chunk_n} for {period}')
 
         del issue_bag
 
@@ -278,25 +294,6 @@ def import_issues(
         shutil.rmtree(temp_dir, ignore_errors=True)
 
     logger.info("---------- Done ----------")
-
-def cleanup_fix(upload_success, filepath):
-
-    """Removes a file if it has been successfully uploaded to S3.
-    :param upload_success: whether the upload was successful
-    :type upload_success: bool
-    :param filepath: path to the uploaded file
-    :type filepath: str
-    """
-    try:
-        if upload_success:
-            os.remove(filepath)
-            logger.info(f'Removed temporary file {filepath}')
-        else:
-            logger.info(f'Not removing {filepath} as upload has failed')
-    except FileNotFoundError:
-        logger.warning(f'FileNotFoundError for {filepath}')
-
-
 
 def compress_pages(
         key: str,
