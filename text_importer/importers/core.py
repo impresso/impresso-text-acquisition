@@ -49,12 +49,12 @@ def write_error(thing, error, failed_log):
     else:
         # if it's neither an issue nor a page it must be an issuedir
         issuedir = thing
-    
+
     note = (
         f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: "
         f"{error}"
     )
-    
+
     with open(failed_log, "a+") as f:
         f.write(note + "\n")
 
@@ -123,35 +123,35 @@ def serialize_pages(
 
     """
     result = []
-    
+
     for page in pages:
-        
+
         issue_dir = copy(page.issue.issuedir)
-        
+
         out_dir = os.path.join(
                 output_dir,
                 canonical_path(issue_dir, path_type="dir")
                 )
-        
+
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
-        
+
         canonical_filename = canonical_path(
                 issue_dir,
                 "p" + str(page.number).zfill(4),
                 ".json"
                 )
-        
+
         out_file = os.path.join(out_dir, canonical_filename)
-        
+
         with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
             json.dump(page.page_data, jsonfile)
             logger.info(
                     "Written page \'{}\' to {}".format(page.number, out_file)
                     )
         result.append((issue_dir, out_file))
-    
-    # TODO: this can be deleyted, I believe as it has no effect
+
+    # TODO: this can be deleted, I believe as it has no effect
     gc.collect()
     return result
 
@@ -168,7 +168,7 @@ def process_pages(pages: List[NewspaperPage], failed_log: str) -> List[Newspaper
     result = []
     for page in pages:
         try:
-            
+
             page.parse()
             result.append(page)
         except Exception as e:
@@ -199,6 +199,7 @@ def import_issues(
     :rtype: tuple
 
     """
+
     msg = f'Issues to import: {len(issues)}'
     logger.info(msg)
     failed_log_path = os.path.join(
@@ -207,49 +208,74 @@ def import_issues(
             )
     if chunk_size is not None:
         csize = int(chunk_size)
-        logger.info(f"Dividing issues into chunks of {chunk_size} years.")
         chunks = groupby(sorted(issues, key=lambda x: x.date.year), lambda x: x.date.year - (x.date.year % csize))
+
+        chunks = [(year, list(issues)) for year, issues in chunks]
+        logger.info(f"Dividing issues into chunks of {chunk_size} years ({len(chunks)} chunks in total)")
+        for year, issue_chunk in chunks:
+            logger.info(f"Chunk of period {year} - {year + csize - 1} covers {len(issue_chunk)} issues")
     else:
         chunks = [(None, issues)]
-    
+
     for year, issue_chunk in chunks:
-        if year is not None:
-            logger.info(f"Processing chunk of {year}")
+        if year is None:
+            period = 'all years'
+        else:
+            period = f'{year} - {year + csize - 1}'
+
         temp_issue_bag = db.from_sequence(issue_chunk, partition_size=20)
-        
+
         issue_bag = temp_issue_bag.map_partitions(
                 dirs2issues,
                 issue_class=issue_class,
                 failed_log=failed_log_path,
                 image_dirs=image_dirs,
                 temp_dir=temp_dir).persist()
-        
-        logger.info('Start compressing and uploading issues')
-        issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
+
+        logger.info(f'Start compressing issues for {period}')
+
+        compressed_issue_files = issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
             .starmap(compress_issues, output_dir=out_dir) \
+            .compute()
+
+        logger.info(f'Done compressing issues for {period}')
+
+        logger.info(f'Start uploading issues for {period}')
+
+        # NOTE: As a function of the partitioning size and the number of issues,
+        # the issues of a single year may be assigned to different partitions.
+        # To prevent further processing before the compressed issues of a single year is completed,
+        # the steps of compressing and uploading/deleting are separated from each other.
+        # Moreover, the issues are deduplicated after compressing due to the unpredictable partitioning.
+        # If not respected, the import may result in incomplete issue files and non-reproducible errors.
+        # TODO: The issues should be processed within a dask dataframe instead of bag
+        # to get cleaner code while ensuring proper partitioning.
+
+        db.from_sequence(set(compressed_issue_files)) \
             .starmap(upload_issues, bucket_name=s3_bucket) \
             .starmap(cleanup) \
             .compute()
-        logger.info('Done compressing and uploading')
-        
+
+        logger.info(f'Done uploading issues for {period}')
+
         processed_issues = list(issue_bag)
         random.shuffle(processed_issues)
-        
+
         chunks = chunk(processed_issues, 400)
-        
+
         for chunk_n, chunk_of_issues in enumerate(chunks):
-            logger.info(f'Processing chunk {chunk_n}')
-            
+            logger.info(f'Processing chunk {chunk_n} of pages for {period}')
+
             pages_bag = db.from_sequence(chunk_of_issues, partition_size=2) \
                 .map(issue2pages) \
                 .flatten() \
                 .map_partitions(process_pages, failed_log=failed_log_path) \
                 .map_partitions(serialize_pages, output_dir=out_dir)
-            
+
             pages_out_dir = os.path.join(out_dir, 'pages')
             Path(pages_out_dir).mkdir(exist_ok=True)
-            
-            logger.info('Now compress and upload pages')
+
+            logger.info(f'Start compressing and uploading pages of chunk {chunk_n} for {period}')
             pages_bag = pages_bag.groupby(
                     lambda x: canonical_path(
                             x[0], path_type='dir'
@@ -257,17 +283,17 @@ def import_issues(
                     ) \
                 .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir) \
                 .starmap(upload_pages, bucket_name=s3_bucket) \
-                .starmap(cleanup)
-            
-            pages_bag.compute()
-        
+                .starmap(cleanup) \
+                .compute()
+
+            logger.info(f'Done compressing and uploading pages of chunk {chunk_n} for {period}')
+
         del issue_bag
-    
+
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
-    
-    logger.info("---------- Done ----------")
 
+    logger.info("---------- Done ----------")
 
 def compress_pages(
         key: str,
@@ -288,7 +314,7 @@ def compress_pages(
         `sort_key` is expected to be the concatenation of newspaper ID and year
         (e.g. GDL-1900).
     """
-    
+
     newspaper, year, month, day, edition = key.split('-')
     prefix_string = "" if prefix == "" else f"-{prefix}"
     filename = (
@@ -297,13 +323,13 @@ def compress_pages(
     )
     filepath = os.path.join(output_dir, filename)
     logger.info(f'Compressing {len(json_files)} JSON files into {filepath}')
-    
+
     with smart_open_function(filepath, 'wb') as fout:
         writer = jsonlines.Writer(fout)
-        
+
         items_count = 0
         for issue, json_file in json_files:
-            
+
             with open(json_file, 'r') as inpf:
                 try:
                     item = json.load(inpf)
@@ -317,9 +343,9 @@ def compress_pages(
             logger.info(
                     f'Written {items_count} docs from {json_file} to {filepath}'
                     )
-        
+
         writer.close()
-    
+
     return key, filepath
 
 
@@ -345,7 +371,7 @@ def compress_issues(
     filename = f'{newspaper}-{year}-issues.jsonl.bz2'
     filepath = os.path.join(output_dir, filename)
     logger.info(f'Compressing {len(issues)} JSON files into {filepath}')
-    
+
     try:
         to_dump = set(issue.id for issue in issues)
         to_keep = []
@@ -358,12 +384,12 @@ def compress_issues(
                     if 'id' in issue and issue['id'] not in to_dump:
                         to_keep.append(issue)
                 reader.close()
-        
+
         with smart_open_function(filepath, 'wb') as fout:
             writer = jsonlines.Writer(fout)
-            
+
             items = [issue.issue_data for issue in issues] + to_keep  # Add the new ones/to overwrite
-            
+
             writer.write_all(items)
             logger.info(
                     f'Written {len(items)} issues to {filepath}'
@@ -372,7 +398,7 @@ def compress_issues(
     except Exception as e:
         logger.error(f"Error for {filepath}")
         logger.exception(e)
-    
+
     return f'{newspaper}-{year}', filepath
 
 
