@@ -291,10 +291,17 @@ def import_issues(
 
         del issue_bag
 
+
+    remove_filelocks(out_dir)
+
+
+
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
 
     logger.info("---------- Done ----------")
+
+
 
 def compress_pages(
         key: str,
@@ -378,27 +385,13 @@ def compress_issues(
 
     with lock:
         try:
-            to_dump = set(issue.id for issue in issues)
-            to_keep = []
-            if os.path.exists(filepath) and os.path.isfile(filepath):
-                with smart_open_function(filepath, 'rb') as f:
-                    reader = jsonlines.Reader(f)
-                    to_keep = []
-                    for issue in reader:
-                        logger.info(issue.keys())
-                        if 'id' in issue and issue['id'] not in to_dump:
-                            to_keep.append(issue)
-                    reader.close()
-
-            with smart_open_function(filepath, 'wb') as fout:
+            with smart_open_function(filepath, 'ab') as fout:
                 writer = jsonlines.Writer(fout)
 
-                items = [issue.issue_data for issue in issues] + to_keep  # Add the new ones/to overwrite
-
+                items = [issue.issue_data for issue in issues]
                 writer.write_all(items)
-                logger.info(
-                        f'Written {len(items)} issues to {filepath}'
-                        )
+
+                logger.info(f'Written {len(items)} issues to {filepath}')
                 writer.close()
         except Exception as e:
             logger.error(f"Error for {filepath}")
@@ -484,3 +477,18 @@ def upload_pages(
     except Exception as e:
         logger.error(f'The upload of {filepath} failed with error {e}')
         return False, filepath
+
+def remove_filelocks(output_dir: str):
+    """Remove all files ending with .lock in a directory.
+
+    :param output_dir: path to directory containing file locks.
+    :return: None.
+    :rtype: None
+
+    """
+
+    files = os.listdir(output_dir)
+
+    for file in files:
+        if file.endswith(".lock"):
+            os.remove(os.path.join(output_dir, file))
