@@ -1,62 +1,11 @@
 # Impresso Text Importer
 
-## Purpose
+[![Documentation Status](https://readthedocs.org/projects/impresso-pycommons/badge/?version=latest)](https://impresso-text-importer.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/impresso-text-importer.svg)](https://badge.fury.io/py/impresso-text-importer)
 
-Import the data from various OCR formats (Olive XML, Mets/Alto, etc.) into a canonical JSON format defined by the Impresso project (see [documentation of schemas](https://github.com/impresso/impresso-schemas)). A sample of the input data that this importer can deal with can be found in [sample_data/](sample_data/).
+The Impresso TextImporter is a library and a collection of scripts to import newspaper data from a variety of formats (e.g. Olive XML, various flavors of Mets/Alto XML, etc.) into [Impresso’s JSON format](https://github.com/impresso/impresso-schemas).
 
-## Documentation
-
-Code documentation, including a brief guide on how to write a custom importer, can be found at <https://impresso.github.io/impresso-text-acquisition/>. 
-
-## Development settings
-
-**Version**
-
-`3.6`
-
-**Documentation**
-
-Python docstring style https://pythonhosted.org/an_example_pypi_project/sphinx.html
-
-Sphinx configuration file (`docs/conf.py`) generated with:
-
-    sphinx-quickstart --ext-githubpages
-
-To compile the documentation
-
-```bash
-cd docs/
-make html
-```
-
-To view locally:
-
-Install `http-sever` (a node-js package):
-
-    npm install http-server -g
-
-Then:
-
-    cd docs
-    http-server
-
-And you'll be able to browse it at <http://127.0.0.1:8080>.
-
-
-
-**Testing**
-
-Python pytest framework: https://pypi.org/project/pytest/
-
-Tox: https://tox.readthedocs.io/en/latest/
-
-**Passing arguments**
-
-Doctopt: http://docopt.org/
-
-**Style**
-
-4 space indentation
+Please refer to the [documentation](http://impresso-text-importer.rtfd.io/) for further information on this library.
 
 ## License
 
@@ -67,4 +16,3 @@ Copyright (C) 2020  The *impresso* team (contributors to this program: Matteo Ro
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of merchantability or fitness for a particular purpose. See the [GNU Affero General Public License](https://github.com/impresso/impresso-text-acquisition/blob/master/LICENSE) for more details.
-
