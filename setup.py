@@ -20,7 +20,9 @@ setup(
     packages=find_packages(),
     package_data={
         'text_importer': [
-            'data/',
+            'impresso-schemas/json/*/*.json',
+            'impresso-schemas/docs/*/*.json',
+            'impresso-schemas/*',
         ]
     },
     entry_points={
@@ -33,7 +35,7 @@ setup(
     install_requires=[
         'bs4',
         'docopt',
-        'impresso_commons',
+        'impresso_pycommons',
         'pandas',
         'dask[complete]',
         'lxml',
@@ -42,7 +44,4 @@ setup(
         'regex',
         'filelock',
     ],
-    dependency_links=[
-      'https://github.com/impresso/impresso-pycommons/tarball/master#egg=impresso_commons',
-      ]
 )
