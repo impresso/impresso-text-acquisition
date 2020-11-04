@@ -33,7 +33,14 @@ setup(
             'impresso-txt-uploader = text_importer.upload:main',
         ]
     },
-    long_description=DESCRIPTION,
+    python_requires='>=3.6',
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7'
+    ],
+    long_description=README,
+    long_description_content_type='text/markdown',
     install_requires=[
         'bs4',
         'docopt',
