@@ -1,4 +1,5 @@
 import os
+import pathlib
 import dask
 import logging
 from dask.distributed import Client
@@ -35,10 +36,17 @@ elif DASK_SCHEDULER_STRATEGY == 'external':
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+log_dir = pkg_resources.resource_filename('text_importer', 'data/')
+out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
+temp_dir = pkg_resources.resource_filename('text_importer', 'data/temp/')
 log_file = pkg_resources.resource_filename(
     'text_importer',
     'data/tests.log'
 )
+pathlib.Path(log_dir).mkdir(parents=True, exist_ok=True)
+pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
+pathlib.Path(temp_dir).mkdir(parents=True, exist_ok=True)
+
 handler = logging.FileHandler(filename=log_file, mode='w')
 formatter = logging.Formatter(
     '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
