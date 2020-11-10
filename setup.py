@@ -42,7 +42,7 @@ setup(
     long_description=README,
     long_description_content_type='text/markdown',
     install_requires=[
-        'bs4',
+        'beautifulsoup4',
         'docopt',
         'impresso_pycommons',
         'pandas',
