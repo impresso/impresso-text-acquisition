@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-"bs4" = "*"
+"beautifulsoup4" = "*"
 docopt = "*"
 pandas = "*"
 dask = {extras = ["complete"]}
@@ -14,7 +14,7 @@ jsonlines = "*"
 boto = "*"
 "boto3" = "*"
 filelock = "*"
-impresso-commons = {git = "https://github.com/impresso/impresso-pycommons.git",editable = true}
+impresso-pycommons = "*"
 e1839a8 = {editable = true,path = "."}
 
 [dev-packages]
