@@ -19,21 +19,22 @@ logger = logging.getLogger(__name__)
 
 
 class MetsAltoNewspaperPage(NewspaperPage):
-    """Generic class representing a newspaper page in Alto format.
+    """Newspaper page in generic Alto format.
 
-    .. note ::
-
+    Note: 
         New Mets/Alto importers should sub-classes this class and implement
         its abstract methods (i.e. :meth:`~MetsAltoNewspaperPage.add_issue()`).
 
-    :param str _id: Canonical page ID.
-    :param int n: Page number.
-    :param str filename: Name of the page Alto XML file.
-    :param str basedir: Base directory where Alto files are located.
-
+    Args:
+        _id (str): Canonical page ID.
+        n (int): Page number.
+        filename (str): Name of the Alto XML page file.
+        basedir (str): Base directory where Alto files are located.
+        encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
     """
     
-    def __init__(self, _id: str, n: int, filename: str, basedir: str, encoding: str = 'utf-8'):
+    def __init__(self, _id: str, n: int, filename: str, basedir: str, 
+                 encoding: str = 'utf-8') -> None:
         super().__init__(_id, n)
         self.filename = filename
         self.basedir = basedir
@@ -46,7 +47,11 @@ class MetsAltoNewspaperPage(NewspaperPage):
     
     @property
     def xml(self) -> BeautifulSoup:
-        """Returns a BeautifulSoup object with Alto XML of the page."""
+        """Read Alto XML file of the page and create a BeautifulSoup object.
+
+        Returns:
+            BeautifulSoup: BeautifulSoup object with Alto XML of the page.
+        """
         alto_xml_path = os.path.join(self.basedir, self.filename)
         
         with codecs.open(alto_xml_path, 'r', encoding=self.encoding) as f:
@@ -55,14 +60,24 @@ class MetsAltoNewspaperPage(NewspaperPage):
         alto_doc = BeautifulSoup(raw_xml, 'xml')
         return alto_doc
     
-    def _convert_coordinates(self, page_data: List[dict]) -> Tuple[bool, List[dict]]:
-        return True, page_data
+    def _convert_coordinates(self, page_regions: List[dict]
+    ) -> Tuple[bool, List[dict]]:
+        """Convert region coordinates to iiif format if possible.
+
+        Args:
+            page_regions (List[dict]): Page regions from canonical Page format.
+
+        Returns:
+            Tuple[bool, List[dict]]: Whether the region coordinates are in iiif
+                format and page regions.
+        """
+        return True, page_regions
     
     @abstractmethod
-    def add_issue(self, issue):
+    def add_issue(self, issue: NewspaperIssue) -> None:
         pass
     
-    def parse(self):
+    def parse(self) -> None:
         doc = self.xml
         
         mappings = {}
@@ -73,9 +88,9 @@ class MetsAltoNewspaperPage(NewspaperPage):
                     mappings[part['comp_id']] = ci_id
         
         pselement = doc.find('PrintSpace')
-        page_data, notes = alto.parse_printspace(pselement, mappings)
+        page_regions, notes = alto.parse_printspace(pselement, mappings)
         self.page_data['cc'], self.page_data["r"] = self._convert_coordinates(
-                page_data
+                page_regions
                 )
         # Add notes for missing coordinates in SWA
         if len(notes) > 0:
@@ -83,18 +98,22 @@ class MetsAltoNewspaperPage(NewspaperPage):
 
 
 class MetsAltoNewspaperIssue(NewspaperIssue):
-    """Generic class representing a newspaper issue in Mets/Alto format.
+    """Newspaper issue in generic Mets/Alto format.
 
-    .. note ::
-
+    Note: 
         New Mets/Alto importers should sub-class this class and implement
         its abstract methods (i.e. ``_find_pages()``, ``_parse_mets()``).
 
-    :param IssueDir issue_dir: Description of parameter `issue_dir`.
+    Args:
+        issue_dir (IssueDir): Identifying information about the issue.
 
+    Attributes:
+        image_properties (dict): metadata allowing to convert region OCR/OLR
+            coordinates to iiif format compliant ones.
+        ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
     """
     
-    def __init__(self, issue_dir: IssueDir):
+    def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
         # create the canonical issue id
         self.image_properties = {}
@@ -104,22 +123,27 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
         self._parse_mets()
     
     @abstractmethod
-    def _find_pages(self):
+    def _find_pages(self) -> None:
         pass
     
     @abstractmethod
-    def _parse_mets(self):
+    def _parse_mets(self) -> None:
+        """Parse the Mets XML file corresponding to this issue.
+        """
         pass
-    
-    @property
-    def xml(self):
-        """Returns a BeautifulSoup object with Mets XML file of the issue.
 
-        .. note ::
+    @property
+    def xml(self) -> BeautifulSoup:
+        """Read Mets XML file of the issue and create a BeautifulSoup object.
+
+        Note:
             By default the issue Mets file is the only file containing
             `mets.xml` in its file name and located in the directory
             `self.path`. Individual importers can overwrite this behavior
             if necessary.
+    
+        Returns:
+            BeautifulSoup: BeautifulSoup object with Mets XML of the issue.
         """
         mets_file = [
             os.path.join(self.path, f)
