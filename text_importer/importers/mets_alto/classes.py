@@ -1,3 +1,11 @@
+"""This module contains the definition of generic Mets/Alto importer classes.
+
+The classes define newspaper Issues and Pages objects which convert OCR data in
+Mets/Alto format to a unified canoncial format.
+The classes in this module are meant to be subclassed to handle independently
+the parsing for each version of the Mets/Atlo format and their specificities.
+"""
+
 import codecs
 import logging
 import os
@@ -28,6 +36,15 @@ class MetsAltoNewspaperPage(NewspaperPage):
     Args:
         _id (str): Canonical page ID.
         n (int): Page number.
+        filename (str): Name of the Alto XML page file.
+        basedir (str): Base directory where Alto files are located.
+        encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
+
+    Attributes:
+        id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
+        number (int): Page number.
+        page_data (dict): Page data according to canonical Page format.
+        issue (NewspaperIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
@@ -108,6 +125,14 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
         issue_dir (IssueDir): Identifying information about the issue.
 
     Attributes:
+        id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
+        edition (str): Lower case letter ordering issues of the same day.
+        journal (str): Newspaper unique identifier or name.
+        path (str): Path to directory containing the issue's OCR data.
+        date (datetime.date): Publication date of issue.
+        issue_data (dict): Issue data according to canonical Issue format.
+        pages (list): List of :obj:`NewspaperPage` instances from this issue.
+        rights (str): Access rights applicable to this issue.
         image_properties (dict): metadata allowing to convert region OCR/OLR
             coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.

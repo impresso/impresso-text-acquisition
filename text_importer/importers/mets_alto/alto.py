@@ -1,6 +1,6 @@
 """Utility functions to parse Alto XML files."""
 
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple
 
 import bs4
 from bs4.element import Tag
@@ -144,7 +144,7 @@ def parse_printspace(element: Tag, mappings: Dict[str, str]
     :param style_div:
     :return:
     """
-def parse_style(style_div: Tag) -> Dict[str, Union[float, str]]:
+def parse_style(style_div: Tag) -> Dict[str, float | str]:
     """Parse the font-style information in the ALTO files (for BNL and BNF).
 
     Args:

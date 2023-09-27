@@ -1,4 +1,13 @@
-"""This module contains the definition of abstract importer classes."""
+"""This module contains the definition of abstract importer classes.
+
+In particular, the classes define newspaper Issues and Pages objects which
+convert OCR data in various formats (Olive, Mets/Alto, Tetml...) to a unified
+Impresso canoncial format, allowing to process and create a large corpus of 
+digitized historical newspapers.
+The classes in this module are meant to be subclassed to handle independently
+the parsing for each OCR format.
+"""
+
 import logging
 import os
 import shutil
@@ -49,7 +58,7 @@ class NewspaperIssue(ABC):
         self.rights = issue_dir.rights
     
     @abstractmethod
-    def _find_pages(self):
+    def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
         Created :obj:`NewspaperPage` instances are added to :attr:`pages`.
