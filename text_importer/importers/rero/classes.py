@@ -231,14 +231,12 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                     comp_fileid = area.get('FILEID')
                     comp_page_no = int(comp_fileid.replace('ALTO', ''))
                     
-                    parts.append(
-                            {
-                                'comp_role': comp_role,
-                                'comp_id': comp_id,
-                                'comp_fileid': comp_fileid,
-                                'comp_page_no': comp_page_no
-                                }
-                            )
+                    parts.append({
+                        'comp_role': comp_role,
+                        'comp_id': comp_id,
+                        'comp_fileid': comp_fileid,
+                        'comp_page_no': comp_page_no
+                    })
         return parts
     
     def _get_ci_language(self, dmdid: str) -> str | None:

@@ -1,3 +1,10 @@
+"""This module contains the definition of the SWA importer classes.
+
+The classes define newspaper Issues and Pages objects which convert OCR data in
+the SWA version of the Mets/Alto format to a unified canoncial format.
+Theses classes are subclasses of generic Mets/Alto importer classes.
+"""
+
 import logging
 import os
 from time import strftime
@@ -14,32 +21,46 @@ SWA_XML_ENCODING = "utf-8-sig"
 
 
 class SWANewspaperPage(MetsAltoNewspaperPage):
-    """Class representing a newspaper page in SWA data.
+    """Newspaper page in SWA (Mets/Alto) format.
 
-    :param str alto_path: Full path to the Alto XML file.
+    Args:
+        _id (str): Canonical page ID.
+        number (int): Page number.
+        alto_path (str): Full path to the Alto XML file.
+    
+    Attributes:
+        id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
+        number (int): Page number.
+        page_data (dict): Page data according to canonical Page format.
+        issue (NewspaperIssue): Issue this page is from.
+        filename (str): Name of the Alto XML page file.
+        basedir (str): Base directory where Alto files are located.
+        encoding (str, optional): Encoding of XML file.
+        iiif (str): The iiif URI to the newspaper page image.
     """
     
-    def __init__(self, _id: str, number: int, alto_path: str):
+    def __init__(self, _id: str, number: int, alto_path: str) -> None:
         self.alto_path = alto_path
         basedir, filename = os.path.split(alto_path)
-        super().__init__(_id, number, filename, basedir, encoding=SWA_XML_ENCODING)
+        super().__init__(_id, number, filename, basedir, 
+                         encoding=SWA_XML_ENCODING)
         self.iiif = os.path.join(IIIF_ENDPOINT_URL, filename.split('.')[0])
         self.page_data['iiif'] = self.iiif
     
-    def add_issue(self, issue: NewspaperIssue):
+    def add_issue(self, issue: NewspaperIssue) -> None:
         self.issue = issue
-    
+ 
     @property
     def ci_id(self) -> str:
-        """
-        Return the content item ID of the page.
+        """Return the content item ID of the page.
 
         Given that SWA data do not entail article-level segmentation,
         each page is considered as a content item. Thus, to mint the content
         item ID we take the canonical page ID and simply replace the "p"
         prefix with "i".
 
-        :return: str Content item id
+        Returns:
+            str: Content item id.
         """
         split = self.id.split('-')
         split[-1] = split[-1].replace('p', 'i')
@@ -47,13 +68,15 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
     
     @property
     def file_exists(self) -> bool:
-        """ Checks whether the ALTO file exists for this page
-        
-        :return:
+        """Check whether the Alto XML file exists for this page.
+
+        Returns:
+            bool: True if the Alto XML file exists, False otherwise.
         """
-        return os.path.exists(self.alto_path) and os.path.isfile(self.alto_path)
+        return (os.path.exists(self.alto_path) and 
+                os.path.isfile(self.alto_path))
     
-    def parse(self):
+    def parse(self) -> None:
         doc = self.xml
         pselement = doc.find('PrintSpace')
         ci_id = self.ci_id
@@ -68,24 +91,45 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
             self.page_data['n'] = notes
         return notes
     
-    def get_iiif_image(self):
+    def get_iiif_image(self) -> str:
+        """Create the iiif URI to the full journal page image.
+
+        Returns:
+            str: iiif URI of the image of the full page.
+        """
         return os.path.join(self.iiif, "full/full/0/default.jpg")
 
 
 class SWANewspaperIssue(NewspaperIssue):
-    """Class representing a SWA Newspaper Issue.
+    """Newspaper issue in SWA Mets/Alto format.
 
-    .. note ::
-
+    Note: 
         SWA is in ALTO format, but there isn't any Mets file. So in that case,
         issues are simply a collection of pages.
 
-    :param SwaIssueDir issue_dir: SwaIssueDir of the current Issue
-    :param str temp_dir: Temporary directory to extract archives
+    Args:
+        issue_dir (SwaIssueDir): Identifying information about the issue.
+        temp_dir (str): Temporary directory to extract archives.
 
+    Attributes:
+        id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
+        edition (str): Lower case letter ordering issues of the same day.
+        journal (str): Newspaper unique identifier or name.
+        path (str): Path to directory containing the issue's OCR data.
+        date (datetime.date): Publication date of issue.
+        issue_data (dict): Issue data according to canonical Issue format.
+        pages (list): List of :obj:`NewspaperPage` instances from this issue.
+        rights (str): Access rights applicable to this issue.
+        archive (ZipArchive): Archive containing all the Alto XML files for the
+            issue's pages.
+        temp_pages (List[Tuple[str, str]]): Temporary list of pages found for
+            this issue. A page is a tuple (page_canonical_id, alto_path), where
+            alto_path is the path from within the archive.
+        content_items (List[Dict[str,Any]]): Content items from this issue.
+        notes (List[str]): Notes of missing pages gathered while parsing.
     """
     
-    def __init__(self, issue_dir: SwaIssueDir, temp_dir: str):
+    def __init__(self, issue_dir: SwaIssueDir, temp_dir: str) -> None:
         super().__init__(issue_dir)
         self.archive = self._parse_archive(temp_dir)
         self.temp_pages = issue_dir.pages
@@ -105,6 +149,18 @@ class SWANewspaperIssue(NewspaperIssue):
             }
     
     def _parse_archive(self, temp_dir: str) -> ZipArchive:
+        """Open and parse the Zip archive located at :attr:`path` if possible.
+
+        Args:
+            temp_dir (str): Temporary directory in which to unpack the archive.
+
+        Raises:
+            ValueError: The Zip archive at :attr:`path` could not be opened.
+            ValueError: No Zip archive was found at given :attr:`path`.
+
+        Returns:
+            ZipArchive: Archive containing the pages XML files for the issue.
+        """
         if os.path.isfile(self.path):
             try:
                 archive = ZipFile(self.path)
@@ -119,7 +175,14 @@ class SWANewspaperIssue(NewspaperIssue):
             msg = f"Could not find archive {self.path} for {self.id}"
             raise ValueError(msg)
     
-    def _find_pages(self):
+    def _find_pages(self) -> None:
+        """Detect and create the issue pages using the relevant Alto XML files.
+
+        Created :obj:`SWANewspaperPage` instances are added to :attr:`pages`.
+
+        Raises:
+            ValueError: No page was found for this issue..
+        """
         for n, val in enumerate(sorted(self.temp_pages)):
             page_id, page_path = val
             page_path = os.path.join(self.archive.dir, page_path)
@@ -134,7 +197,12 @@ class SWANewspaperIssue(NewspaperIssue):
         if len(self.pages) == 0:
             raise ValueError(f"Could not find any page for {self.id}")
     
-    def _find_content_items(self):
+    def _find_content_items(self) -> None:
+        """Create content items for the pages in this issue.
+
+        Given that SWA data do not entail article-level segmentation,
+        each page is considered as a content item.
+        """
         for page in sorted(self.pages, key=lambda x: x.id):
             page_number = page.number
             ci_id = self.id + '-i' + str(page_number).zfill(4)

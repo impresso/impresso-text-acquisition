@@ -35,7 +35,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
 
     Args:
         _id (str): Canonical page ID.
-        n (int): Page number.
+        number (int): Page number.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
@@ -47,12 +47,12 @@ class MetsAltoNewspaperPage(NewspaperPage):
         issue (NewspaperIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
-        encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
+        encoding (str, optional): Encoding of XML file.
     """
     
-    def __init__(self, _id: str, n: int, filename: str, basedir: str, 
-                 encoding: str = 'utf-8') -> None:
-        super().__init__(_id, n)
+    def __init__(self, _id: str, number: int, filename: str,
+                 basedir: str, encoding: str = 'utf-8') -> None:
+        super().__init__(_id, number)
         self.filename = filename
         self.basedir = basedir
         self.encoding = encoding

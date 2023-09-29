@@ -1,3 +1,6 @@
+"""This module contains helper functions to find RERO OCR data to be imported.
+"""
+
 import json
 import logging
 import os
@@ -36,7 +39,6 @@ can then be used to locate the relevant data in the filesystem or to create
 canonical identifiers for the issue and its pages.
 
 Note:
-
     In case of newspaper published multiple times per day, a lowercase letter
     is used to indicate the edition number: 'a' for the first, 'b' for the
     second, etc.
@@ -46,7 +48,7 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.)
+    rights (str): Access rights on the data (open, closed, etc.).
 
 >>> from datetime import date
 >>> i = Rero2IssueDir('BLB', date(1845,12,28), 'a', './BLB/data/BLB/18451228_01', 'open')
@@ -160,9 +162,9 @@ def select_issues(
     ) if not exclude_flag else selected_issues
 
     logger.info(
-            "{} newspaper issues remained after applying filter: {}".format(
-                    len(filtered_issues),
-                    filtered_issues
-            )
+        "{} newspaper issues remained after applying filter: {}".format(
+            len(filtered_issues),
+            filtered_issues
+        )
     )
     return filtered_issues
