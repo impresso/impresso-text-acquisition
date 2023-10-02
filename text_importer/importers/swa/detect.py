@@ -222,9 +222,8 @@ def select_issues(
         exclude_list = config["exclude_newspapers"]
         year_flag = config["year_only"]
     except KeyError:
-        e_msg = (f"The key [newspapers|exclude_newspapers|year_only] "
-               "is missing in the config file.")
-        logger.critical(e_msg)
+        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] "
+                         "is missing in the config file.")
         return []
     
     exclude_flag = False if not exclude_list else True
@@ -236,9 +235,8 @@ def select_issues(
     filter_newspapers = (set(filter_dict.keys()) 
                         if not exclude_list 
                         else set(exclude_list))
-    d_msg = (f"got filter_newspapers: {filter_newspapers}, "
-             f"with exclude flag: {exclude_flag}")
-    logger.debug(d_msg)
+    logger.debug(f"got filter_newspapers: {filter_newspapers}, "
+                 f"with exclude flag: {exclude_flag}")
 
     issues = detect_issues(base_dir, access_rights)
 

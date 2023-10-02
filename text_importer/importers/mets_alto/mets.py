@@ -44,6 +44,9 @@ def parse_mets_amdsec(
     particular information about the image resolution allowing the coordinates 
     conversion to iiif format.
 
+    TODO: Error occurs when `x_res` and `y_res` are not in `amd_sect` -> check
+    before.
+
     Args:
         mets_doc (BeautifulSoup): BeautifulSoup object of Mets XML document.
         x_res (str): Name of field representing the X resolution.

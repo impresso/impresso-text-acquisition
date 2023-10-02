@@ -24,13 +24,13 @@ EDITIONS_MAPPINGS = {
 }
 
 Rero2IssueDir = namedtuple(
-        "IssueDirectory", [
-            'journal',
-            'date',
-            'edition',
-            'path',
-            'rights'
-        ]
+    "IssueDirectory", [
+        'journal',
+        'date',
+        'edition',
+        'path',
+        'rights'
+    ]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -141,9 +141,8 @@ def select_issues(
         year_flag = config["year_only"]
 
     except KeyError:
-        msg = (f"The key [newspapers|exclude_newspapers|year_only] "
+        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] "
                "is missing in the config file.")
-        logger.critical(msg)
         return
 
     issues = detect_issues(base_dir, access_rights)

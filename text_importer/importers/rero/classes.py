@@ -64,7 +64,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
 
     Args:
         _id (str): Canonical page ID.
-        n (int): Page number.
+        number (int): Page number.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
     
@@ -79,8 +79,9 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         page_width (float): The page width used for the coordinate system.
     """
     
-    def __init__(self, _id: str, n: int, filename: str, basedir: str) -> None:
-        super().__init__(_id, n, filename, basedir)
+    def __init__(self, _id: str, number: int, 
+                 filename: str, basedir: str) -> None:
+        super().__init__(_id, number, filename, basedir)
         
         page_tag = self.xml.find('Page')
         self.page_width = float(page_tag.get('WIDTH'))
@@ -207,18 +208,21 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                         )
                 raise e
     
-    def _parse_content_parts(self, content_div: Tag) -> List[Dict[str, str]]:
-        """Parse the legacy `parts` of the children of a content item div.
+    def _parse_content_parts(self, div: Tag) -> List[Dict[str, str | int]]:
+        """Parse the children of a content item div for its legacy `parts`.
+
+        The `parts` are article-level metadata about the content item from the
+        ORC and OLR processes. This information is located in an `<area>` tag.
 
         Args:
-            content_div (Tag): The div containing the content item
+            div (Tag): The div containing the content item
 
         Returns:
-            List[Dict[str, str]]: information on different parts for the 
+            List[Dict[str, str | int]]: information on different parts for the 
                 content item (role, id, fileid, page)
         """
         parts = []
-        for child in content_div.children:
+        for child in div.children:
             
             if isinstance(child, NavigableString):
                 continue
@@ -383,6 +387,9 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         Once the :attr:`issue_data` is created, containing all the relevant 
         information in the canonical Issue format, the `ReroNewspaperIssue`
         instance is ready for serialization.
+
+        TODO: call to parse_mets_amdsec often raises error, if 'ImageWidth'
+        and 'ImageLength' not in mets file.
         """
         mets_doc = self.xml
         
@@ -430,9 +437,8 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         assert len(parts) >= 1, f"No parts for image {content_item['m']['id']}"
         
         if len(parts) > 1:
-            msg = ("Found multiple parts for image "
-                   f"{content_item['m']['id']}, selecting largest one")
-            logger.info(msg)
+            logger.info("Found multiple parts for image "
+                         f"{content_item['m']['id']}, selecting largest one")
         
         coords = None
         max_area = 0
@@ -442,8 +448,8 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             
             elements = page.xml.findAll(["ComposedBlock", "TextBlock"], 
                                         {"ID": comp_id})
-            ast_msg="Image comp_id matches multiple TextBlock tags"
-            assert len(elements) <= 1, ast_msg
+            assert_msg="Image comp_id matches multiple TextBlock tags"
+            assert len(elements) <= 1, assert_msg
             if len(elements) == 0:
                 continue
             

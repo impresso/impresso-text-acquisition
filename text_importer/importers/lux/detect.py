@@ -1,3 +1,6 @@
+"""This module contains helper functions to find BNL OCR data to be imported.
+"""
+
 import logging
 import os
 from collections import namedtuple
@@ -18,31 +21,31 @@ EDITIONS_MAPPINGS = {
         }
 
 LuxIssueDir = namedtuple(
-        "IssueDirectory", [
-                'journal',
-                'date',
-                'edition',
-                'path',
-                'rights'
-                ]
-        )
+    "IssueDirectory", [
+        'journal',
+        'date',
+        'edition',
+        'path',
+        'rights'
+    ]
+)
 """A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
 canonical identifiers for the issue and its pages.
 
-.. note ::
-
+Note:
     In case of newspaper published multiple times per day, a lowercase letter
     is used to indicate the edition number: 'a' for the first, 'b' for the
     second, etc.
 
-:param str journal: Newspaper ID
-:param datetime.date date: Publication date
-:param str edition: Edition of the newspaper issue ('a', 'b', 'c', etc.)
-:param str path: Path to the directory containing OCR data
-:param str rights: Access rights on the data (open, closed, etc.)
+Args:
+    journal (str): Newspaper ID.
+    date (datetime.date): Publication date or issue.
+    edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
+    path (str): Path to the directory containing the issue's OCR data.
+    rights (str): Access rights on the data (open, closed, etc.).
 
 >>> from datetime import date
 >>> i = LuxIssueDir('armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/', 'protected')
@@ -50,13 +53,15 @@ canonical identifiers for the issue and its pages.
 
 
 def dir2issue(path: str) -> LuxIssueDir:
-    """Create a `LuxIssueDir` object from a directory path.
-    
-    .. note ::
-        This function is called internally by :func:`detect_issues`
-        
-    :param str path: Path of issue.
-    :return: New ``LuxIssueDir`` object
+    """Create a `LuxIssueDir` from a directory (BNL format).
+
+    Called internally by :func:`detect_issues`.
+
+    Args:
+        path (str): Path of issue.
+
+    Returns:
+        Rero2IssueDir: New `LuxIssueDir` object matching the path and rights.
     """
     issue_dir = os.path.basename(path)
     local_id = issue_dir.split('_')[2]
@@ -79,15 +84,19 @@ def dir2issue(path: str) -> LuxIssueDir:
             )
 
 
-def detect_issues(base_dir: str, access_rights: str = None) -> List[LuxIssueDir]:
+def detect_issues(base_dir: str, ar: str = None) -> List[LuxIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNL used to
     organize the dump of Mets/Alto OCR data.
 
-    :param str base_dir: Path to the base directory of newspaper data.
-    :param str access_rights: Not used for this imported, but argument is kept for normality
-    :return: List of `LuxIssueDir` instances, to be imported.
+    Args:
+        base_dir (str): Path to the base directory of newspaper data.
+        ar (str, optional): Access rights, not used for this imported, but
+            argument is kept for uniformity. Defaults to None.
+
+    Returns:
+        List[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
     batches_dirs = [os.path.join(dir_path, dir) for dir in dirs]
@@ -103,38 +112,49 @@ def detect_issues(base_dir: str, access_rights: str = None) -> List[LuxIssueDir]
             ]
 
 
-def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[List[LuxIssueDir]]:
+def select_issues(
+    base_dir: str, config: dict, access_rights: str
+) -> Optional[List[LuxIssueDir]]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
-    
-    :param str base_dir: Path to the base directory of newspaper data.
-    :param dict config: Config dictionary for filtering
-    :param str access_rights: Not used for this imported, but argument is kept for normality
-    :return: List of `LuxIssueDir` instances, to be imported.
-    """
 
+    Args:
+        base_dir (str): Path to the base directory of newspaper data.
+        config (dict): Config dictionary for filtering.
+        access_rights (str): Not used for this imported, but argument is kept
+            for uniformity.
+
+    Returns:
+        Optional[List[LuxIssueDir]]: List of `LuxIssueDir` instances to import.
+    """
     try:
         filter_dict = config["newspapers"]
         exclude_list = config["exclude_newspapers"]
         year_flag = config["year_only"]
 
     except KeyError:
-        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] is missing in the config file.")
+        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] "
+                        "is missing in the config file.")
         return
 
     issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
-    selected_issues = issue_bag \
-        .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \
-        .compute()
+    selected_issues = (
+        issue_bag.filter(
+            lambda i: (
+                len(filter_dict) == 0 or i.journal in filter_dict.keys()
+                ) and i.journal not in exclude_list
+        ).compute()
+    )
 
     exclude_flag = False if not exclude_list else True
-    filtered_issues = _apply_datefilter(filter_dict, selected_issues,
-                                        year_only=year_flag) if not exclude_flag else selected_issues
+    filtered_issues = _apply_datefilter(
+        filter_dict, selected_issues, year_only=year_flag
+    ) if not exclude_flag else selected_issues
     logger.info(
             "{} newspaper issues remained after applying filter: {}".format(
                     len(filtered_issues),
