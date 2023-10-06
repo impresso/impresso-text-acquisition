@@ -6,7 +6,6 @@ import logging
 import os
 from collections import namedtuple
 from datetime import datetime
-from typing import List
 
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
@@ -60,7 +59,7 @@ def dir2issue(path: str, access_rights: dict) -> Rero2IssueDir:
 
     Args:
         path (str): Path of issue.
-        access_rights (dict): Dictionary for access rights.
+        access_rights (dict): dictionary for access rights.
 
     Returns:
         Rero2IssueDir: New `Rero2IssueDir` object matching the path and rights.
@@ -78,7 +77,7 @@ def dir2issue(path: str, access_rights: dict) -> Rero2IssueDir:
 
 def detect_issues(
     base_dir: str, access_rights: str, data_dir: str = 'data'
-) -> List[Rero2IssueDir]:
+) -> list[Rero2IssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that RERO used to
@@ -93,7 +92,7 @@ def detect_issues(
             (usually `data/`). Defaults to 'data'.
 
     Returns:
-        List[Rero2IssueDir]: List of `Rero2IssueDir` instances, to be imported.
+        list[Rero2IssueDir]: list of `Rero2IssueDir` instances, to be imported.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
@@ -118,7 +117,7 @@ def detect_issues(
 
 def select_issues(
     base_dir: str, config: dict, access_rights: str
-) -> List[Rero2IssueDir] | None:
+) -> list[Rero2IssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -132,7 +131,7 @@ def select_issues(
         access_rights (str): Path to ``access_rights.json`` file.
 
     Returns:
-        List[Rero2IssueDir] | None: `Rero2IssueDir` instances to be imported.
+        list[Rero2IssueDir] | None: `Rero2IssueDir` instances to be imported.
     """
     # read filters from json configuration (see config.example.json)
     try:

@@ -1,11 +1,15 @@
-"""Classes to handle the Olive XML OCR format."""
+"""This module contains the definition of the Olive importer classes.
+
+The classes define newspaper Issues and Pages objects which convert OCR
+data in the Olive XML format to a unified canoncial format.
+"""
 
 import json
 import logging
 import os
 from collections import deque
 from time import strftime
-from typing import List
+from typing import Any
 from zipfile import ZipFile
 
 from impresso_commons.path import IssueDir
@@ -31,33 +35,46 @@ IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
 class OliveNewspaperPage(NewspaperPage):
-    """Class representing a page in Olive format.
+    """Newspaper page in Olive format.
 
-    :param str _id: Canonical page ID.
-    :param int n: Page number.
-    :param dict toc_data: Metadata about content items in the newspaper issue.
-    :param dict image_info: Metadata about the page image.
-    :param str page_xml: Path to the Olive XML file of the page.
+    Args:
+        _id (str): Canonical page ID.
+        number (int): Page number.
+        toc_data (dict): Metadata about content items in the newspaper issue.
+        page_info (dict): Metadata about the page image.
+        page_xml (str): Path to the Olive XML file of the page.
 
+    Attributes:
+        id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
+        number (int): Page number.
+        page_data (dict[str, Any]): Page data according to canonical format.
+        issue (NewspaperIssue | None): Issue this page is from.
+        toc_data (dict): Metadata about content items in the newspaper issue.
+        image_info (dict): Metadata about the page image.
+        page_xml (str): Path to the Olive XML file of the page.
+        archive (ZipArchive): Archive of the issue this page is from.
     """
     
-    def __init__(
-            self,
-            _id: str,
-            n: int,
-            toc_data: dict,
-            image_info,
-            page_xml
-            ):
-        super().__init__(_id, n)
+    def __init__(self, _id: str, number: int, toc_data: dict, 
+                 image_info: dict, page_xml: str) -> None:
+        super().__init__(_id, number)
         self.toc_data = toc_data
         self.page_data = None
         self.image_info = image_info
         self.page_xml = page_xml
         self.archive = None
     
-    def parse(self):
-        
+    def parse(self) -> None:
+        """Process the page XML file and transform into canonical Page format.
+
+        Note:
+            This lazy behavior means that the page contents are not processed
+            upon creation of the page object, but only once the ``parse()``
+            method is called.
+
+        Raises:
+            ValueError: No Newspaper issue has been added to this page.
+        """
         if self.issue is None:
             raise ValueError(f"No NewspaperIssue for {self.id}")
         
@@ -117,19 +134,36 @@ class OliveNewspaperPage(NewspaperPage):
 
 
 class OliveNewspaperIssue(NewspaperIssue):
-    """Class representing a newspaper issue in Olive format.
+    """Newspaper Issue in Olive format.
 
     Upon object initialization the following things happen:
+    - The Zip archive containing the issue is uncompressed.
+    - The ToC file is parsed to determine the logical structure of the issue.
+    - Page objects (instances of ``OliveNewspaperPage``) are initialized.
 
-    - the Zip archive containing the issue is uncompressed
-    - the ToC file is parsed to determine the logical structure of the issue
-    - page objects (instances of ``OliveNewspaperPage``) are initialised.
+    Args:
+        issue_dir (IssueDir): Identifying information about the issue.
+        image_dirs (str): Path to the directory with the page images. 
+            Multiple paths should be separated by comma (",").
+        temp_dir (str): Temporary directory to unpack ZipArchive objects.
 
-    :param IssueDir issue_dir: Description of parameter `issue_dir`.
-    :param str image_dirs: Path to the directory with the page images. Multiple
-        paths should be separated by comma (",").
-    :param str temp_dir: Description of parameter `temp_dir`.
-
+    Attributes:
+        id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
+        edition (str): Lower case letter ordering issues of the same day.
+        journal (str): Newspaper unique identifier or name.
+        path (str): Path to directory containing the issue's OCR data.
+        date (datetime.date): Publication date of issue.
+        issue_data (dict[str, Any]): Issue data according to canonical format.
+        pages (list): list of :obj:`NewspaperPage` instances from this issue.
+        rights (str): Access rights applicable to this issue.
+        image_dirs (str): Path to the directory with the page images. 
+            Multiple paths should be separated by comma (",").
+        archive (ZipArchive): ZipArchive for this issue.
+        toc_data (dict): Table of contents (ToC) data for this issue.
+        content_elements (list[dict[str, Any]]): All content elements detected.
+        content_items (list[dict[str, Any]]): Issue's recomposed content items.
+        clusters (dict[str, list[str]]): Inverted index of legacy ids; values
+            are clusters of articles, each indexed by one member.
     """
     
     def __init__(self, issue_dir: IssueDir, image_dirs: str, temp_dir: str):
@@ -169,14 +203,20 @@ class OliveNewspaperIssue(NewspaperIssue):
         logger.info(f"Finished parsing {self.id}")
     
     def _parse_archive(
-            self,
-            temp_dir: str,
-            file: str = "Document.zip"
-            ) -> ZipArchive:
-        """
-        Parses the archive for this issue. Fails if archive could not be parsed
-        :param file: The archive file to parse
-        :return:
+        self, temp_dir: str, file: str = "Document.zip"
+    ) -> ZipArchive:
+        """Parse the archive containing the Olive OCR for this issue.
+
+        Args:
+            temp_dir (str): Temporary directory to unpack the archive.
+            file (str, optional): Archive filename. Defaults to "Document.zip".
+
+        Raises:
+            ValueError: The `file` archive could not be opened
+            ValueError: The `file` archive was not found.
+
+        Returns:
+            ZipArchive: :obj:`ZipArchive` of the `file` with its contents.
         """
         archive_path = os.path.join(self.path, file)
         if os.path.isfile(archive_path):
@@ -199,8 +239,12 @@ class OliveNewspaperIssue(NewspaperIssue):
             msg = f"Could not find archive {file} for {self.id}"
             raise ValueError(msg)
     
-    def _get_page_xml_files(self) -> dict:
-        """Get the list of page XML files in the Zip archive."""
+    def _get_page_xml_files(self) -> dict[int, str]:
+        """Get all page XML files in `self.archive`, indexed by page number.
+
+        Returns:
+            dict[int, str]: Mapping from page number to XML file for each page.
+        """
         page_xml = None
         if self.archive is not None:
             page_xml = {
@@ -212,13 +256,21 @@ class OliveNewspaperIssue(NewspaperIssue):
         
         return page_xml
     
-    def _parse_toc(self, file: str = "TOC.xml") -> dict:
+    def _parse_toc(self, file: str = "TOC.xml") -> dict[int, dict[str, dict]]:
         """Parse the XML file containing the issue's ToC.
 
-        :param str file: Name of the ToC file.
-        :return: ToC data.
-        :rtype: dict
+        For each page, the resulting parsed ToC contains a dict mapping legacy
+        content item IDs to their metadata.
 
+        Args:
+            file (str, optional): Name of the ToC file. Defaults to "TOC.xml".
+
+        Raises:
+            FileNotFoundError: The ToC file was not found.
+            e: The ToC file could not be read.
+
+        Returns:
+            dict[int, dict[str, dict]]: Parsed ToC dict
         """
         toc_path = os.path.join(self.path, file)
         try:
@@ -231,8 +283,12 @@ class OliveNewspaperIssue(NewspaperIssue):
             raise e
         return toc_data
     
-    def _parse_image_xml_files(self):
-        """Extract image metadata from XML files."""
+    def _parse_image_xml_files(self) -> list[dict[str, str]]:
+        """Find image XML files and extract the image metadata.
+
+        Returns:
+            list[dict[str, str]]: Metadata about all images in issue.
+        """
         image_xml_files = [
                 item
                 for item in self.archive.namelist()
@@ -254,63 +310,53 @@ class OliveNewspaperIssue(NewspaperIssue):
         return images
     
     def _parse_styles_gallery(
-            self,
-            file: str = 'styleGallery.txt'
-            ) -> List[dict]:
+        self, file: str = 'styleGallery.txt'
+    ) -> list[dict[str, Any]]:
         """Parse the style file (plain text).
 
-        :param str file: File containing text styles (produced by Olive OCR).
-        :return: A list of styles.
-        :rtype: List[dict]
+        Args:
+            file (str, optional): Filename. Defaults to 'styleGallery.txt'.
 
+        Returns:
+            list[dict[str, Any]]: list of styles according to canonical format.
         """
         styles = []
         if file in self.archive.namelist():
             try:
                 styles = parse_styles(self.archive.read(file).decode())
             except Exception as e:
-                logger.warning((
-                        f"Parsing styles file {file}"
-                        f" for {self.id}, failed with error : {e}"
-                ))
+                logger.warning((f"Parsing styles file {file}"
+                                f" for {self.id}, failed with error : {e}"))
         else:
-            msg = f"Could not find styles {file} for {self.id}"
-            logger.warning(msg)
+            logger.warning(f"Could not find styles {file} for {self.id}")
         return styles
     
-    def _parse_articles(self):
+    def _parse_articles(self) -> tuple[list[dict], list[dict]]:
+        """Parse the article and ad XML files for this issue.
+
+        Content elements are article parts, which are then grouped and 
+        combined to create each article.
+
+        Returns:
+            tuple[list[dict], list[dict]]: Parsed articles & content elements.
+        """
         articles = []
         content_elements = []
         counter = 0
         # recompose each article by following the continuation links
         article_parts = []
         items = sorted(
-                [
-                        item
-                        for item in self.archive.namelist()
-                        if ".xml" in item and not item.startswith("._")
-                           and ("/Ar" in item or "/Ad" in item)
-                        ]
-                )
+            [
+            item
+            for item in self.archive.namelist()
+            if ".xml" in item and not item.startswith("._") and 
+                ("/Ar" in item or "/Ad" in item)
+            ]
+        )
         
         while len(items) > 0:
             counter += 1
             
-            # if out file already exists skip the data it contains
-            # TODO: change this to work with the JSON output
-            """
-            if os.path.exists(out_file):
-                exclude_data = BeautifulSoup(open(out_file).read())
-                exclude_data = [
-                    x.meta.id.string
-                    for x in exclude_data.find_all("entity")
-                ]
-                for y in exclude_data:
-                    for z in items:
-                        if y in z:
-                            items.remove(z)
-                continue
-            """
             internal_deque = deque([items[0]])
             items = items[1:]
             
@@ -351,72 +397,68 @@ class OliveNewspaperIssue(NewspaperIssue):
                 raise e
         return articles, content_elements
     
-    def _get_image_info(self) -> dict:
+    def _get_image_info(self) -> dict[str, Any]:
         """Read `image-info.json` file for a given issue.
 
-        :return: Content of the `image-info.json` file
-        :rtype: dict
+        Go though all given image directories and only load the 
+        contents of the file corresponding to this issue.
+
+        Raises:
+            e: `image-info.json` file could not be decoded.
+            ValueError: No `image-info.json` file was found
+
+        Returns:
+            dict[str, Any]: Contents of this issue's `image-info.json` file.
         """
         json_data = []
         for im_dir in self.image_dirs.split(','):
             issue_dir = os.path.join(
-                    im_dir,
-                    self.journal,
-                    str(self.date).replace("-", "/"),
-                    self.edition
-                    )
+                im_dir,
+                self.journal,
+                str(self.date).replace("-", "/"),
+                self.edition
+            )
             
-            issue_w_images = IssueDir(
-                    journal=self.journal,
-                    date=self.date,
-                    edition=self.edition,
-                    path=issue_dir
-                    )
+            issue_w_images = IssueDir(journal=self.journal, date=self.date, 
+                                      edition=self.edition, path=issue_dir)
             
-            image_info_name = canonical_path(
-                    issue_w_images,
-                    name="image-info",
-                    extension=".json"
-                    )
+            image_info_name = canonical_path(issue_w_images, name="image-info",
+                                             extension=".json")
             
-            image_info_path = os.path.join(
-                    issue_w_images.path,
-                    image_info_name
-                    )
+            image_info_path = os.path.join(issue_w_images.path, 
+                                           image_info_name)
             
             if os.path.exists(image_info_path):
                 with open(image_info_path, 'r') as inp_file:
                     try:
                         json_data = json.load(inp_file)
                         if len(json_data) == 0:
-                            logger.debug((
-                                    f"Empty image info for {self.id}"
-                                    f"at {image_info_path}"
-                            ))
+                            logger.debug(f"Empty image info for {self.id}"
+                                         f"at {image_info_path}")
                         else:
                             return json_data
                     except Exception as e:
-                        logger.error((
-                                f"Decoding file {image_info_path}"
-                                f"failed with '{e}'"
-                        ))
+                        logger.error(f"Decoding file {image_info_path}"
+                                     f"failed with '{e}'")
                         raise e
         if len(json_data) == 0:
-            msg = f"Could not find image info for {self.id}"
-            raise ValueError(msg)
-    
-    def _find_pages(self):
-        """Find page XML files and initialize page objects."""
+            raise ValueError(f"Could not find image info for {self.id}")
+
+    def _find_pages(self) -> None:
+        """Find page XML files and initialize page objects.
+
+        Raises:
+            ValueError: No page XML file was found.
+        """
         if self.toc_data is not None:
             image_info = self._get_image_info()
             pages_xml = self._get_page_xml_files()
             for page_n, data in self.toc_data.items():
                 can_id = "{}-p{}".format(self.id, str(page_n).zfill(4))
                 image_info_records = [
-                        p
-                        for p in image_info
-                        if int(p['pg']) == page_n
-                        ]
+                    p for p in image_info
+                    if int(p['pg']) == page_n
+                ]
                 
                 if len(image_info_records) == 0:
                     image_info_record = None
@@ -430,32 +472,39 @@ class OliveNewspaperIssue(NewspaperIssue):
                 
                 self._convert_images(image_info_record, page_n, page_xml)
                 
-                self.pages.append(OliveNewspaperPage(
-                        can_id,
-                        page_n,
-                        data,
-                        image_info_record,
-                        page_xml
-                        ))
+                self.pages.append(
+                    OliveNewspaperPage(can_id, page_n, data,
+                                       image_info_record, page_xml)
+                )
     
-    def _convert_images(self, image_info_record, page_n, page_xml):
+    def _convert_images(self, image_info_record: dict[str, Any], 
+                        page_n: int, page_xml: dict[int, str]) -> None:
+        """Convert a page's image information to canonical format.
+
+        The coordinates are also converted to a iiif-compliant format.
+
+        Args:
+            image_info_record (dict[str, Any]): Page's images information.
+            page_n (int): Corresponding page number.
+            page_xml (dict[int, str]): Parsed contents of the page's XML.
+        """
         if image_info_record is not None:
             box_strategy = image_info_record['strat']
             image_name = image_info_record['s']
             images_in_page = [
-                    content_item
-                    for content_item in self.content_items
-                    if content_item['m']['tp'] == "picture" and
-                       page_n in content_item['m']['pp']
-                    ]
+                content_item
+                for content_item in self.content_items
+                if content_item['m']['tp'] == "picture" and
+                    page_n in content_item['m']['pp']
+            ]
             
             for image in images_in_page:
                 image = convert_image_coordinates(
-                        image,
-                        self.archive.read(page_xml),
-                        image_name,
-                        self.archive,
-                        box_strategy,
-                        self.issuedir
-                        )
+                    image,
+                    self.archive.read(page_xml),
+                    image_name,
+                    self.archive,
+                    box_strategy,
+                    self.issuedir
+                )
                 image['m']['tp'] = 'image'

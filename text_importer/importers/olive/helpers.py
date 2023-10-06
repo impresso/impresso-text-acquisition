@@ -9,7 +9,7 @@ import logging
 import time
 from operator import itemgetter
 from time import strftime
-from typing import List
+from typing import List, Dict, Any
 
 from impresso_commons.images.olive_boxes import compute_box, get_scale_factor
 
@@ -566,7 +566,7 @@ def convert_image_coordinates(
     return image
 
 
-def normalize_language(language):
+def normalize_language(language: str) -> str:
     mappings = {
             "french": "fr",
             "english": "en",
@@ -575,7 +575,7 @@ def normalize_language(language):
     return mappings[language.lower()]
 
 
-def get_clusters(articles):
+def get_clusters(articles: List[Dict[str, Any]]) -> Dict[str, List[str]]:
     clusters = {}
     for ar in articles:
         legacy_id = ar["legacy"]["id"]

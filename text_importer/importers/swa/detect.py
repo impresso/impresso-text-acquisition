@@ -6,7 +6,7 @@ import logging
 import os
 from collections import namedtuple
 from datetime import date
-from typing import List, Optional
+from typing import Optional
 
 import dask.bag as db
 import pandas as pd
@@ -43,7 +43,7 @@ Args:
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
     rights (str): Access rights on the data (open, closed, etc.).
-    pages (list): List of tuples (page_canonical_id, alto_path), alto_path is
+    pages (list): list of tuples (page_canonical_id, alto_path), alto_path is
         the path from within the archive.
 
 >>> from datetime import date
@@ -89,7 +89,7 @@ def _get_csv_file(directory: str) -> str:
 def _parse_csv_apply(part: pd.DataFrame) -> pd.Series:
     """Helper to parse csv document, meant to be used on a grouped partition.
 
-    For all the pages in the current issue, mathces the pages' canonical ID to
+    For all the pages in the current issue, matches the pages' canonical ID to
     the corresponding XML file.
 
     Note: 
@@ -155,7 +155,7 @@ def _get_issuedir(
     return None
 
 
-def detect_issues(base_dir: str, access_rights: str) -> List[SwaIssueDir]:
+def detect_issues(base_dir: str, access_rights: str) -> list[SwaIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that SWA used to
@@ -171,7 +171,7 @@ def detect_issues(base_dir: str, access_rights: str) -> List[SwaIssueDir]:
         access_rights (str): Path to ``access_rights.json`` file.
 
     Returns:
-        List[SwaIssueDir]: List of ``SwaIssueDir`` instances, to be imported.
+        list[SwaIssueDir]: list of ``SwaIssueDir`` instances, to be imported.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
@@ -198,7 +198,7 @@ def detect_issues(base_dir: str, access_rights: str) -> List[SwaIssueDir]:
 
 def select_issues(
     base_dir: str, config: dict, access_rights: str
-) -> List[SwaIssueDir]:
+) -> list[SwaIssueDir]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -215,7 +215,7 @@ def select_issues(
         access_rights (str): Path to ``access_rights.json`` file.
 
     Returns:
-        List[SwaIssueDir]: List of ``SwaIssueDir`` instances, to be imported.
+        list[SwaIssueDir]: list of ``SwaIssueDir`` instances, to be imported.
     """
     try:
         filter_dict = config.get("newspapers")

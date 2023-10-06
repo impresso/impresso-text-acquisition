@@ -8,7 +8,7 @@ Theses classes are subclasses of generic Mets/Alto importer classes.
 import logging
 import os
 from time import strftime
-from typing import Dict, List, Tuple, Any
+from typing import Any
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
@@ -33,10 +33,10 @@ ILLUSTRATION_TYPE = "illustration"
 
 
 def convert_coordinates(
-    coords: List[float], 
-    resolution: Dict[str, float], 
+    coords: list[float], 
+    resolution: dict[str, float], 
     page_width: float
-) -> List[int]:
+) -> list[int]:
     """Convert the coordinates using true and coordinate system resolutions.
 
     The coordinate system resolution is not necessarily the same as the true
@@ -45,13 +45,13 @@ def convert_coordinates(
     and converts using x/fact.
 
     Args:
-        coords (List[float]): List of coordinates to convert
-        resolution (Dict[str, float]): True resolution of the images (keys 
+        coords (list[float]): List of coordinates to convert
+        resolution (dict[str, float]): True resolution of the images (keys 
             `x_resolution` and `y_resolution` of the dict).
         page_width (float): The page width used for the coordinate system.
 
     Returns:
-        List[int]: The coordinates rescaled to match the true image resolution.
+        list[int]: The coordinates rescaled to match the true image resolution.
     """
     if resolution['x_resolution'] == 0 or resolution['y_resolution'] == 0:
         return coords
@@ -71,7 +71,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
     Attributes:
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
-        page_data (dict): Page data according to canonical Page format.
+        page_data (dict[str, Any]): Page data according to canonical format.
         issue (NewspaperIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
@@ -86,25 +86,26 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         page_tag = self.xml.find('Page')
         self.page_width = float(page_tag.get('WIDTH'))
     
-    def add_issue(self, issue) -> None:
+    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
         self.issue = issue
         self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
     
     # no coordinate conversion needed, but keeping it here for now
     def _convert_coordinates(
-        self, page_regions: List[dict]
-    ) -> Tuple[bool, List[dict]]:
+        self, page_regions: list[dict]
+    ) -> tuple[bool, list[dict]]:
         """Convert region coordinates to iiif format if possible.
 
         Note: 
             Currently, no conversion of coordinates is needed.
 
         Args:
-            page_regions (List[dict]): Page regions from canonical Page format.
+            page_regions (list[dict[str, Any]]): Page regions from canonical 
+                page format.
 
         Returns:
-            Tuple[bool, List[dict]]: Whether the region coordinates are in iiif
-                format and page regions.
+            tuple[bool, list[dict[str, Any]]]: Whether the region coordinates 
+                are in iiif format and page regions.
         """
         if self.issue is None:
             logger.critical("Cannot convert coordinates if issue is unknown")
@@ -150,11 +151,11 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         journal (str): Newspaper unique identifier or name.
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
-        issue_data (dict): Issue data according to canonical Issue format.
-        pages (list): List of :obj:`NewspaperPage` instances from this issue.
+        issue_data (dict[str, Any]): Issue data according to canonical format.
+        pages (list): list of :obj:`NewspaperPage` instances from this issue.
         rights (str): Access rights applicable to this issue.
-        image_properties (dict): metadata allowing to convert region OCR/OLR
-            coordinates to iiif format compliant ones.
+        image_properties (dict[str, Any]): metadata allowing to convert region
+            OCR/OLR coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
     """
     
@@ -208,7 +209,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                         )
                 raise e
     
-    def _parse_content_parts(self, div: Tag) -> List[Dict[str, str | int]]:
+    def _parse_content_parts(self, div: Tag) -> list[dict[str, str | int]]:
         """Parse the children of a content item div for its legacy `parts`.
 
         The `parts` are article-level metadata about the content item from the
@@ -218,7 +219,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             div (Tag): The div containing the content item
 
         Returns:
-            List[Dict[str, str | int]]: information on different parts for the 
+            list[dict[str, str | int]]: information on different parts for the 
                 content item (role, id, fileid, page)
         """
         parts = []
@@ -253,7 +254,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             dmdid (str): Descriptive metadata id of a content item.
 
         Returns:
-            Optional[str]: Language if defined in the file else `None`.
+            str | None: Language if defined in the file else `None`.
         """
         doc = self.xml
         lang = doc.find("dmdSec", {"ID": dmdid})
@@ -264,7 +265,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             return None
         return lang.text
     
-    def _parse_content_item(self, item_div: Tag, counter:int) -> Dict[str,Any]:
+    def _parse_content_item(self, item_div: Tag, counter:int) -> dict[str,Any]:
         """Parse a content item div and create the dictionary representing it.
 
         The dictionary corresponding to a content item needs to be of a precise
@@ -276,7 +277,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             counter (int): Number of content items already added to the issue.
 
         Returns:
-            Dict[str, Any]: Content item in canonical format.
+            dict[str, Any]: Content item in canonical format.
         """
         div_type = item_div.get('TYPE').lower()
         
@@ -316,7 +317,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
              content_item['iiif_link']) = self._get_image_info(content_item)
         return content_item
     
-    def _decompose_section(self, div: Tag) -> List[Tag]:
+    def _decompose_section(self, div: Tag) -> list[Tag]:
         """Recursively decompose `Section` tags into a flat list of div tags.
 
         In RERO3, sometimes textblocks and images are withing `Section` tags. 
@@ -327,7 +328,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             div (Tag): Tag of type `Section` containing other divs to extract.
 
         Returns:
-            List[Tag]: Flat list of div tags to parse.
+            list[Tag]: Flat list of div tags to parse.
         """
         logger.info("Decomposing section type")
         # Only consider those with DMDID
@@ -348,14 +349,16 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                     final_divs.append(d)
         return final_divs
     
-    def _parse_content_items(self, mets_doc: BeautifulSoup) -> List[dict]:
+    def _parse_content_items(
+        self, mets_doc: BeautifulSoup
+    ) -> list[dict[str, Any]]:
         """Extract content item elements from the issue's Mets XML file.
 
         Args:
             mets_doc (BeautifulSoup): Mets document as BeautifulSoup object.
 
         Returns:
-            List[dict]: Content items from the issue in canonical format
+            list[dict[str, Any]]: Issue's content items in canonical format.
         """
         content_items = []
         divs = mets_doc.find('div', {'TYPE': 'CONTENT'}).findChildren(
@@ -413,18 +416,18 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             }
     
     def _get_image_info(
-        self, content_item: Dict[str, Any]
-    ) -> Tuple[List[int], str]:
+        self, content_item: dict[str, Any]
+    ) -> tuple[list[int], str]:
         """Recover the coordinates and iiif link for an image content item.
 
         The iiif link is embedded with the coordinates to directly crop the
         newspaper page to the image.
 
         Args:
-            content_item (Dict[str, Any]): Content item of an image.
+            content_item (dict[str, Any]): Content item of an image.
 
         Returns:
-            Tuple[List[int], str]: Coordinates on the page and iiif link
+            tuple[list[int], str]: Coordinates on the page and iiif link
         """
         # Images cannot be on multiple pages
         num_pages = len(content_item['m']['pp'])

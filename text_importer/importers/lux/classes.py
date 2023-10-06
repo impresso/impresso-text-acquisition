@@ -11,7 +11,7 @@ import logging
 import os
 import re
 from time import strftime
-from typing import List, Tuple, Dict, Any
+from typing import Any
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
@@ -54,7 +54,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
     Attributes:
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
-        page_data (dict): Page data according to canonical Page format.
+        page_data (dict[str, Any]): Page data according to canonical format.
         issue (NewspaperIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
@@ -81,8 +81,8 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
         self._parse_font_styles()
     
     def _convert_coordinates(
-        self, page_regions: List[dict]
-    ) -> Tuple[bool, List[dict]]:
+        self, page_regions: list[dict]
+    ) -> tuple[bool, list[dict]]:
         success = False
         try:
             img_props = self.issue.image_properties[self.number]
@@ -197,7 +197,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                         )
                 raise e
     
-    def _parse_mets_div(self, div: Tag) -> List[Dict[str, str | int]]:
+    def _parse_mets_div(self, div: Tag) -> list[dict[str, str | int]]:
         """Parse the children of a content item div for its legacy `parts`.
 
         The `parts` are article-level metadata about the content item from the
@@ -207,7 +207,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             div (Tag): The div containing the content item
 
         Returns:
-            List[Dict[str, str | int]]: information on different parts for the
+            list[dict[str, str | int]]: information on different parts for the
                 content item (role, id, fileid, page)
         """
         parts = []
@@ -234,7 +234,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                             )
         return parts
     
-    def _parse_dmdsec(self) -> Tuple[List[Dict[str, Any]], int]:
+    def _parse_dmdsec(self) -> tuple[list[dict[str, Any]], int]:
         """Parse `<dmdSec>` tags of Mets file to find some content items.
         
         Only articles and pictures are in this section and are identified
@@ -244,7 +244,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         generated based on the sorting of the ID strings of the sections.
 
         Returns:
-            Tuple[List[Dict[str, Any]], int]: Parsed CI's and counter to keep
+            tuple[list[dict[str, Any]], int]: Parsed CI's and counter to keep
                 track of the item numbers.
         """
         content_items = []
@@ -318,14 +318,14 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
     
     def _parse_structmap_divs(
         self, start_counter: int
-    ) -> Tuple[List[Dict[str, Any]], int]:
+    ) -> tuple[list[dict[str, Any]], int]:
         """Parse content items only in the Logical `<structMap>` of Mets file.
 
         Args:
             start_counter (int): item number to start with for the CIs found
 
         Returns:
-            Tuple[List[Dict[str, Any]], int]: Parsed CI's and updated counter
+            tuple[list[dict[str, Any]], int]: Parsed CI's and updated counter
                 to keep track of the item numbers.
         """
         content_items = []
@@ -375,11 +375,11 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             counter += 1
         return content_items, counter
     
-    def _process_image_ci(self, ci: Dict[str, Any]) -> None:
+    def _process_image_ci(self, ci: dict[str, Any]) -> None:
         """Process an image content item to complete its information.
 
         Args:
-            ci (Dict[str, Any]): Image content item to be processed.
+            ci (dict[str, Any]): Image content item to be processed.
         """
         item_div = self.xml.findAll('div', {'DMDID': ci['l']['id']})
         if len(item_div) > 0:
@@ -476,9 +476,9 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         self, 
         section: Tag, 
         section_div: Tag, 
-        content_items: List[Dict[str, Any]], 
+        content_items: list[dict[str, Any]], 
         counter: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Reconstruct the section using the div and previously created CIs.
         
         In the `l` field of the ci, an additional field `canonical_parts` 
@@ -488,11 +488,11 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         Args:
             section (Tag): `<dmdSec>` section of the Mets XML file.
             section_div (Tag): `<div>` section with corresponding DMDID.
-            content_items (List[Dict[str, Any]]): Incomplete content items.
+            content_items (list[dict[str, Any]]): Incomplete content items.
             counter (int): Content item counter.
 
         Returns:
-            Dict[str, Any]: _description_
+            dict[str, Any]: Content item of the reconstructed section.
         """
         title_elements = section.find_all('titleInfo')
         
@@ -520,16 +520,16 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             }
         return item
     
-    def _parse_sections(self, content_items: List[Dict[str, Any]], 
-                        start_counter: int) -> List[Dict[str, Any]]:
+    def _parse_sections(self, content_items: list[dict[str, Any]], 
+                        start_counter: int) -> list[dict[str, Any]]:
         """Reconstruct all the sections from the METS file (bugfix by Edoardo).
 
         Args:
-            content_items (List[Dict[str, Any]]): Current content items.
+            content_items (list[dict[str, Any]]): Current content items.
             start_counter (int):  Content item counter.
 
         Returns:
-            List[Dict[str, Any]]: Updated content items
+            list[dict[str, Any]]: Updated content items
         """
         counter = start_counter
         mets_doc = self.xml
@@ -551,7 +551,8 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     logger.error(err_msg)
                     continue
                 if div_has_body(div) and section_is_article(div):
-                    new_section = self._parse_section(section, div, content_items, counter)
+                    new_section = self._parse_section(section, div, 
+                                                      content_items, counter)
                     new_sections.append(new_section)
                     counter += 1
         return new_sections

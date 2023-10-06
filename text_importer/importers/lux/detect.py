@@ -5,7 +5,7 @@ import logging
 import os
 from collections import namedtuple
 from datetime import date
-from typing import List, Optional
+from typing import Optional
 
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
@@ -84,7 +84,7 @@ def dir2issue(path: str) -> LuxIssueDir:
             )
 
 
-def detect_issues(base_dir: str, ar: str = None) -> List[LuxIssueDir]:
+def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNL used to
@@ -96,7 +96,7 @@ def detect_issues(base_dir: str, ar: str = None) -> List[LuxIssueDir]:
             argument is kept for uniformity. Defaults to None.
 
     Returns:
-        List[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
+        list[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
     batches_dirs = [os.path.join(dir_path, dir) for dir in dirs]
@@ -114,7 +114,7 @@ def detect_issues(base_dir: str, ar: str = None) -> List[LuxIssueDir]:
 
 def select_issues(
     base_dir: str, config: dict, access_rights: str
-) -> Optional[List[LuxIssueDir]]:
+) -> Optional[list[LuxIssueDir]]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -129,7 +129,7 @@ def select_issues(
             for uniformity.
 
     Returns:
-        Optional[List[LuxIssueDir]]: List of `LuxIssueDir` instances to import.
+        Optional[list[LuxIssueDir]]: List of `LuxIssueDir` instances to import.
     """
     try:
         filter_dict = config["newspapers"]

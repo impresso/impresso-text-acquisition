@@ -31,7 +31,7 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
     Attributes:
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
-        page_data (dict): Page data according to canonical Page format.
+        page_data (dict[str, Any]): Page data according to canonical format.
         issue (NewspaperIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
@@ -117,16 +117,16 @@ class SWANewspaperIssue(NewspaperIssue):
         journal (str): Newspaper unique identifier or name.
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
-        issue_data (dict): Issue data according to canonical Issue format.
-        pages (list): List of :obj:`NewspaperPage` instances from this issue.
+        issue_data (dict[str, Any]): Issue data according to canonical format.
+        pages (list): list of :obj:`NewspaperPage` instances from this issue.
         rights (str): Access rights applicable to this issue.
         archive (ZipArchive): Archive containing all the Alto XML files for the
             issue's pages.
-        temp_pages (List[Tuple[str, str]]): Temporary list of pages found for
+        temp_pages (list[tuple[str, str]]): Temporary list of pages found for
             this issue. A page is a tuple (page_canonical_id, alto_path), where
             alto_path is the path from within the archive.
-        content_items (List[Dict[str,Any]]): Content items from this issue.
-        notes (List[str]): Notes of missing pages gathered while parsing.
+        content_items (list[dict[str,Any]]): Content items from this issue.
+        notes (list[str]): Notes of missing pages gathered while parsing.
     """
     
     def __init__(self, issue_dir: SwaIssueDir, temp_dir: str) -> None:

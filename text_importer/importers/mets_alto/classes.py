@@ -11,7 +11,7 @@ import logging
 import os
 from abc import abstractmethod
 from time import strftime
-from typing import List, Tuple
+from typing import Any
 
 from bs4 import BeautifulSoup
 from impresso_commons.path import IssueDir
@@ -43,7 +43,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
     Attributes:
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
-        page_data (dict): Page data according to canonical Page format.
+        page_data (dict[str, Any]): Page data according to canonical format.
         issue (NewspaperIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
@@ -77,16 +77,17 @@ class MetsAltoNewspaperPage(NewspaperPage):
         alto_doc = BeautifulSoup(raw_xml, 'xml')
         return alto_doc
     
-    def _convert_coordinates(self, page_regions: List[dict]
-    ) -> Tuple[bool, List[dict]]:
+    def _convert_coordinates(self, page_regions: list[dict[str, Any]]
+    ) -> tuple[bool, list[dict[str, Any]]]:
         """Convert region coordinates to iiif format if possible.
 
         Args:
-            page_regions (List[dict]): Page regions from canonical Page format.
+            page_regions (list[dict[str, Any]]): Page regions from canonical
+                Page format.
 
         Returns:
-            Tuple[bool, List[dict]]: Whether the region coordinates are in iiif
-                format and page regions.
+            tuple[bool, list[dict[str, Any]]]: Whether the region coordinates
+                are in iiif format and page regions.
         """
         return True, page_regions
     
@@ -130,11 +131,11 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
         journal (str): Newspaper unique identifier or name.
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
-        issue_data (dict): Issue data according to canonical Issue format.
-        pages (list): List of :obj:`NewspaperPage` instances from this issue.
+        issue_data (dict[str, Any]): Issue data according to canonical format.
+        pages (list): list of :obj:`NewspaperPage` instances from this issue.
         rights (str): Access rights applicable to this issue.
-        image_properties (dict): metadata allowing to convert region OCR/OLR
-            coordinates to iiif format compliant ones.
+        image_properties (dict[str, Any]): metadata allowing to convert region 
+            OCR/OLR coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
     """
     

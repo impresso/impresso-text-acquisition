@@ -13,7 +13,6 @@ import os
 import shutil
 
 from abc import ABC, abstractmethod
-from typing import List
 from zipfile import ZipFile
 
 from impresso_commons.path.path_fs import IssueDir, canonical_path
@@ -41,7 +40,7 @@ class NewspaperIssue(ABC):
         journal (str): Newspaper unique identifier or name.
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
-        issue_data (dict): Issue data according to canonical Issue format.
+        issue_data (dict[str, Any]): Issue data according to canonical format.
         pages (list): List of :obj:`NewspaperPage` instances from this issue.
         rights (str): Access rights applicable to this issue.
     """
@@ -96,8 +95,8 @@ class NewspaperPage(ABC):
     Attributes:
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
-        page_data (dict): Page data according to canonical Page format.
-        issue (NewspaperIssue): Issue this page is from.
+        page_data (dict[str, Any]): Page data according to canonical format.
+        issue (NewspaperIssue | None): Issue this page is from.
     """
     
     def __init__(self, _id: str, number: int) -> None:
@@ -151,7 +150,8 @@ class ZipArchive(object):
         temp_dir (str): Directory used for temporary storage of the contents.
 
     Attributes:
-        name_list (List[str]): List of filenames in the archive.
+        name_list (list[str]): List of filenames in the archive.
+        dir (str): Path to directory in which archive contents are.
     """
     
     def __init__(self, archive: ZipFile, temp_dir: str) -> None:
@@ -180,8 +180,8 @@ class ZipArchive(object):
                 except FileExistsError as e:
                     pass
     
-    def namelist(self) -> List[str]:
-        """List[str]: List of filenames in the archive.
+    def namelist(self) -> list[str]:
+        """list[str]: List of filenames in the archive.
         """
         return self.name_list
     

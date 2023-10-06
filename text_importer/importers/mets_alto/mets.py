@@ -1,14 +1,13 @@
 """Utility functions to parse Mets XML files."""
 
 import logging
-from typing import Dict
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 logger = logging.getLogger(__name__)
 
 
-def parse_mets_filegroup(mets_doc: BeautifulSoup) -> Dict[int, str]:
+def parse_mets_filegroup(mets_doc: BeautifulSoup) -> dict[int, str]:
     """Parse ``<fileGrp>`` section to extract the page's OCR image ids.
 
     The ``<fileGrp>`` section contains the names and ids of the images and text
@@ -19,7 +18,7 @@ def parse_mets_filegroup(mets_doc: BeautifulSoup) -> Dict[int, str]:
         mets_doc (BeautifulSoup): BeautifulSoup object of Mets XML document.
 
     Returns:
-        Dict[int, str]: Mapping from page number to page image id.
+        dict[int, str]: Mapping from page number to page image id.
     """
     image_filegroup = mets_doc.findAll(
         'fileGrp', {"USE": lambda x: x and x.lower() == 'images'}
@@ -37,7 +36,7 @@ def parse_mets_amdsec(
     y_res: str, 
     x_res_default: int = 300, 
     y_res_default: int = 300
-) -> Dict:
+) -> dict:
     """Parse the ``<amdsec>`` section of Mets XML to extract image properties.
 
     The ``<amdsec>`` section contains administrative metadata about the OCR, in
@@ -55,7 +54,7 @@ def parse_mets_amdsec(
         y_res_default (int, optional): Default Y res. Defaults to 300.
 
     Returns:
-        Dict: Parsed image properties with default values if the field was not
+        dict: Parsed image properties with default values if the field was not
             found in the document.
     """
     page_image_ids = parse_mets_filegroup(mets_doc) # Returns {page: im_id}

@@ -1,12 +1,10 @@
 """Utility functions to parse Alto XML files."""
 
-from typing import Dict, List, Tuple
-
 import bs4
 from bs4.element import Tag
 
 
-def distill_coordinates(element: Tag) -> List[int]:
+def distill_coordinates(element: Tag) -> list[int]:
     """Extract image coordinates from any XML tag.
 
     Note:
@@ -17,7 +15,7 @@ def distill_coordinates(element: Tag) -> List[int]:
         element (Tag): Input XML tag containing coordinates to distill.
 
     Returns:
-        List[int]: An ordered list of coordinates (``x``, ``y``, ``width``,
+        list[int]: An ordered list of coordinates (``x``, ``y``, ``width``,
             ``height``).
     """
     hpos = int(float(element.get('HPOS')))
@@ -29,14 +27,14 @@ def distill_coordinates(element: Tag) -> List[int]:
     return [hpos, vpos, width, height]
 
 
-def parse_textline(element: Tag) -> Tuple[dict, List[str]]:
+def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     """Parse the ``<TextLine>`` element of an ALTO XML document.
 
     Args:
         element (Tag): Input XML element (``<TextLine>``).
 
     Returns:
-        Tuple[dict, List[str]]: Parsed lines or text in the canonical format
+        tuple[dict, list[str]]: Parsed lines or text in the canonical format
             and notes about potential missing token coordinates. 
     """
     line = {}
@@ -75,8 +73,8 @@ def parse_textline(element: Tag) -> Tuple[dict, List[str]]:
     return line, notes
 
 
-def parse_printspace(element: Tag, mappings: Dict[str, str]
-) -> Tuple[List[dict], List[str]]:
+def parse_printspace(element: Tag, mappings: dict[str, str]
+) -> tuple[list[dict], list[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
     This element contains all the OCR information about the content items of
@@ -85,11 +83,11 @@ def parse_printspace(element: Tag, mappings: Dict[str, str]
     
     Args:
         element (Tag): Input XML element (``<PrintSpace>``).
-        mappings (Dict[str, str]): Mapping from OCR component ids to their 
+        mappings (dict[str, str]): Mapping from OCR component ids to their 
             corresponding canonical Content Item ID.
 
     Returns:
-        Tuple[List[dict], List[str]]: List of page regions in the canonical
+        tuple[list[dict], list[str]]: List of page regions in the canonical
             format and notes about potential parsing problems. 
     """
     
@@ -139,19 +137,14 @@ def parse_printspace(element: Tag, mappings: Dict[str, str]
             regions.append(region)
     return regions, notes
 
-""" Parses the font-style information in the ALTO files (BNL and BNF)
-    
-    :param style_div:
-    :return:
-    """
-def parse_style(style_div: Tag) -> Dict[str, float | str]:
+def parse_style(style_div: Tag) -> dict[str, float | str]:
     """Parse the font-style information in the ALTO files (for BNL and BNF).
 
     Args:
         style_div (Tag): Element of XML file containing font-style information.
 
     Returns:
-        Dict[str, Union[float, str]]: Parsed style for Issue canonical format.
+        dict[str, float | str]: Parsed style for Issue canonical format.
     """
     font_family = style_div.get("FONTFAMILY")
     font_size = style_div.get("FONTSIZE")

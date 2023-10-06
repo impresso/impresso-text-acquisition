@@ -1,18 +1,18 @@
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE
 from bs4.element import Tag
-from typing import List, Dict, Any, Tuple, Collection
+from typing import Any
 
 NON_ARTICLE = ["advertisement", "death_notice"]
 
 
 def convert_coordinates(hpos: int, vpos: int, width: int, height: int,
-                        x_res: float, y_res: float) -> List[int]:
+                        x_res: float, y_res: float) -> list[int]:
     """Convert the coordinates to iiif-compliant ones using the resolution.
 
-    x =   (coordinate['xResolution']/254.0) * coordinate['hpos']
-    y =   (coordinate['yResolution']/254.0) * coordinate['vpos']
-    w =  (coordinate['xResolution']/254.0) * coordinate['width']
-    h =  (coordinate['yResolution']/254.0) * coordinate['height']
+    x = (coordinate['xResolution']/254.0) * coordinate['hpos']
+    y = (coordinate['yResolution']/254.0) * coordinate['vpos']
+    w = (coordinate['xResolution']/254.0) * coordinate['width']
+    h = (coordinate['yResolution']/254.0) * coordinate['height']
 
     Args:
         hpos (int): Horizontal position coordinate of element.
@@ -23,7 +23,7 @@ def convert_coordinates(hpos: int, vpos: int, width: int, height: int,
         y_res (float): Y-axis resolution of image.
 
     Returns:
-        List[int]: Converted coordinates.
+        list[int]: Converted coordinates.
     """
     x = (x_res / 254) * hpos
     y = (y_res / 254) * vpos
@@ -82,8 +82,8 @@ def section_is_article(section_div: Tag) -> bool:
 
 
 def find_section_articles(
-    section_div: Tag, content_items: List[Dict[str, Any]]
-) -> List[str]:
+    section_div: Tag, content_items: list[dict[str, Any]]
+) -> list[str]:
     """Parse the articles inside the section div and get their content item ID.
 
     Recover the content item canonical ID corresponding to each article using 
@@ -91,10 +91,10 @@ def find_section_articles(
 
     Args:
         section_div (Tag): `div` with the articles for which to get CI IDs.
-        content_items (List[Dict[str, Any]]): Content items already identified.
+        content_items (list[dict[str, Any]]): Content items already identified.
 
     Returns:
-        List[str]: List of content item IDs for `div`'s children articles.
+        list[str]: List of content item IDs for `div`'s children articles.
     """
     articles_lid = []
     for d in section_div.findChildren("div", {"TYPE": "ARTICLE"}):
@@ -112,8 +112,8 @@ def find_section_articles(
 
 
 def remove_section_cis(
-    content_items: List[Dict[str, Any]], sections: List[Dict[str, Any]]
-) -> Tuple[List[Dict[str, Any]], Collection[Dict[str, Any]]]:
+    content_items: list[dict[str, Any]], sections: list[dict[str, Any]]
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Remove undesired content items based on the formed sections.
 
     Some content items are contained within a section and should not be in the
@@ -121,11 +121,11 @@ def remove_section_cis(
     removed.
 
     Args:
-        content_items (List[Dict[str, Any]]): Content items, to be filtered.
-        sections (List[Dict[str, Any]]): Formed section content items.
+        content_items (list[dict[str, Any]]): Content items, to be filtered.
+        sections (list[dict[str, Any]]): Formed section content items.
 
     Returns:
-        Tuple[List[Dict[str, Any]], Collection[Dict[str, Any]]]: Filtered 
+        tuple[list[dict[str, Any]], list[dict[str, Any]]]: Filtered 
             content items and ones that were removed.
     """
     to_remove = [j for i in sections for j in i['l']['canonical_parts']]
@@ -140,6 +140,6 @@ def remove_section_cis(
             new_cis.append(ci)
             removed.append(ci['m']['id'])
     
-    return new_cis, to_remove
+    return new_cis, list(to_remove)
 
 
