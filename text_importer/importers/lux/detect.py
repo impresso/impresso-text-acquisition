@@ -5,7 +5,6 @@ import logging
 import os
 from collections import namedtuple
 from datetime import date
-from typing import Optional
 
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
@@ -114,7 +113,7 @@ def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
 
 def select_issues(
     base_dir: str, config: dict, access_rights: str
-) -> Optional[list[LuxIssueDir]]:
+) -> list[LuxIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -129,7 +128,7 @@ def select_issues(
             for uniformity.
 
     Returns:
-        Optional[list[LuxIssueDir]]: List of `LuxIssueDir` instances to import.
+        list[LuxIssueDir] | None: List of `LuxIssueDir` instances to import.
     """
     try:
         filter_dict = config["newspapers"]

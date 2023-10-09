@@ -3,7 +3,7 @@
 import codecs
 import copy
 import re
-from typing import List, Optional
+from typing import Any
 
 from bs4 import BeautifulSoup
 from impresso_commons.path.path_fs import canonical_path, IssueDir
@@ -12,16 +12,19 @@ from text_importer.importers.olive.helpers import (normalize_language,
                                                    normalize_line)
 
 
-def parse_styles(text: str) -> List[dict]:
-    """Turn Olive style file into a dictionary.
+def parse_styles(text: str) -> list[dict[str, Any]]:
+    """Turn Olive `styleGallery.txt` file into a dictionary.
 
     Style IDs may be referred to within the ``s`` property of token elements
     as defined in the impresso JSON schema for newspaper pages (see
     `documentation <https://github.com/impresso/impresso-schemas/blob/master/docs/page.schema.md>`__).
+    Each style has ID, font, font size, color (rgb).
 
-    :param str text: textual content of file `styleGallery.txt`
-    :return: A list of styles; each style has ID, font, font size, color (rgb).
-    :rtype: List[dict]
+    Args:
+        text (str): textual content of file `styleGallery.txt`.
+
+    Returns:
+        list[dict[str, Any]]: List of styles according to the impresso schema.
     """
     styles = []
     regex = r'(\d{3})=(".*?"),(\d+\.?\d+),(\(.*?\))'
@@ -32,27 +35,28 @@ def parse_styles(text: str) -> List[dict]:
 
         n, font, font_size, color = re.match(regex, line).groups()
         styles.append(
-                {
-                        "id": int(n),
-                        "f": font.replace('"', ""),
-                        "fs": float(font_size),
-                        "rgb": [
-                            int(i)
-                            for i in color.replace("(", "")
-                            .replace(")", "").split(",")]
-                        }
-                )
+            {
+            "id": int(n),
+            "f": font.replace('"', ""),
+            "fs": float(font_size),
+            "rgb": [
+                int(i)
+                for i in color.replace("(", "").replace(")", "").split(",")
+            ]
+            }
+        )
 
     return styles
 
 
-def olive_image_parser(text: bytes) -> Optional[dict]:
-    """Parse the Olive XML file contaning image metadata.
+def olive_image_parser(text: bytes) -> dict[str, str | list] | None:
+    """Parse the Olive XML file containing image metadata.
 
-    :param bytes text: Content of the XML file to parse.
-    :return: A dictionary of image metadata.
-    :rtype: Optional[dict]
+    Args:
+        text (bytes): Content of the XML file to parse.
 
+    Returns:
+        dict[str, str | list] | None: Dictionary of image metadata.
     """
     soup = BeautifulSoup(text, "lxml")
     root = soup.find("xmd-entity")
@@ -60,31 +64,35 @@ def olive_image_parser(text: bytes) -> Optional[dict]:
     try:
         assert root is not None
         img = {
-                'id': root.get('id'),
-                'coords': root.img.get('box').split(),
-                'name': root.meta.get('name'),
-                'resolution': root.meta.get('images_resolution'),
-                'filepath': root.img.get('href')
-                }
+            'id': root.get('id'),
+            'coords': root.img.get('box').split(),
+            'name': root.meta.get('name'),
+            'resolution': root.meta.get('images_resolution'),
+            'filepath': root.img.get('href')
+        }
         return img
     except AssertionError:
         return None
 
 
 def olive_toc_parser(
-    toc_path: str,
-    issue_dir: IssueDir,
+    toc_path: str, 
+    issue_dir: IssueDir, 
     encoding: str = "windows-1252"
-) -> dict:
+) -> dict[int, dict[str, dict]]:
     """Parse the TOC.xml file (Olive format).
 
-    :param str toc_path: Path to the ToC XML file.
-    :param IssueDir issue_dir: Corresponding ``IssueDir`` object.
-    :param str encoding: XML file encoding.
-    :return: A dictionary where keys are content item IDs and values their
-        metadata.
-    :rtype: dict
+    For each page, the a dict containing page data is created; mapping content
+    item legacy IDs to their metadata. 
 
+    Args:
+        toc_path (str): Path to the ToC XML file.
+        issue_dir (IssueDir): Corresponding ``IssueDir`` object.
+        encoding (str, optional): File's encoding. Defaults to "windows-1252".
+
+    Returns:
+        dict[int, dict[str, dict]]: Dictionary where keys are page numbers and
+            values the corresponding page data dictionary.
     """
     with codecs.open(toc_path, 'r', encoding) as f:
         text = f.read()
@@ -102,15 +110,15 @@ def olive_toc_parser(
             item_legacy_id = entity.get("id")
 
             item = {
-                    "legacy_id": item_legacy_id,
-                    "id": canonical_path(
-                            issue_dir,
-                            name=f"i{str(global_counter).zfill(4)}",
-                            extension=""
-                            ),
-                    "type": entity.get("entity_type"),
-                    "seq": n + 1
-                    }
+                "legacy_id": item_legacy_id,
+                "id": canonical_path(
+                        issue_dir,
+                        name=f"i{str(global_counter).zfill(4)}",
+                        extension=""
+                        ),
+                "type": entity.get("entity_type"),
+                "seq": n + 1
+            }
 
             # if it's a picture we want to get also the article into which
             # the image is embedded
@@ -124,10 +132,10 @@ def olive_toc_parser(
 
     # gather the IDs of all content items int the issue
     ids = [
-            toc_data[page][item]["id"]
-            for page in toc_data
-            for item in toc_data[page]
-            ]
+        toc_data[page][item]["id"]
+        for page in toc_data
+        for item in toc_data[page]
+    ]
 
     # check that these IDs are unique within the issue
     assert len(ids) == len(list(set(ids)))
@@ -135,17 +143,20 @@ def olive_toc_parser(
     return toc_data
 
 
-def olive_parser(text: str) -> dict:
+def olive_parser(text: str) -> dict[str, dict | list]:
     """Parse an Olive XML file (e.g. from Le Temps corpus).
 
     The main logic implemented here was derived from
     <https://github.com/dhlab-epfl/LeTemps-preprocessing/>. Each XML file
     corresponds to one article, as detected by Olive.
+    The final dictionary has keys ``meta``, ``r``, ``stats`` and ``legacy``, 
+    each mapping to dictionaries or lists with the file's parsed contents.
 
-    :param text: content of the xml file to parse
-    :type text: string
-    :return: A dictionary with keys: ``meta``, ``r``, ``stats``, ``legacy``.
-    :rtype: dict
+    Args:
+        text (str): Contents of the xml file to parse.
+
+    Returns:
+        dict[str, dict | list]: Dictionary with parsed contents.
     """
     soup = BeautifulSoup(text, "lxml")
     root = soup.find("xmd-entity")
@@ -157,14 +168,11 @@ def olive_parser(text: str) -> dict:
     issue_date = soup.meta['issue_date']
 
     out = {
-            "meta": {
-                    "language": None,
-                    "type": {}
-                    },
-            "r": [],
-            "stats": {},
-            "legacy": {"continuation_from": None, "continuation_to": None},
-            }
+        "meta": {"language": None, "type": {}},
+        "r": [],
+        "stats": {},
+        "legacy": {"continuation_from": None, "continuation_to": None},
+    }
     out["meta"]["title"] = title
     out["meta"]["page_no"] = [int(page_no)]
     out["meta"]["language"] = normalize_language(language)
@@ -172,23 +180,23 @@ def olive_parser(text: str) -> dict:
     out["meta"]["issue_date"] = issue_date
 
     new_region = {
-            "c": [],
-            "p": []
-            }
+        "c": [],
+        "p": []
+    }
 
     new_paragraph = {
-            "l": []
-            }
+        "l": []
+    }
 
     new_line = {
-            "c": [],
-            "t": []
-            }
+        "c": [],
+        "t": []
+    }
 
     new_token = {
-            "c": [],
-            "tx": ""
-            }
+        "c": [],
+        "tx": ""
+    }
 
     for primitive in soup.find_all("primitive"):
 
@@ -218,10 +226,7 @@ def olive_parser(text: str) -> dict:
                     para = copy.deepcopy(new_paragraph)
 
                 line = copy.deepcopy(new_line)
-                line["c"] = [
-                        int(i)
-                        for i in tag.get('box').split(" ")
-                        ]
+                line["c"] = [int(i) for i in tag.get('box').split(" ")]
                 line_counter += 1
 
             if tag.name in ["w", "q"]:
@@ -254,13 +259,6 @@ def olive_parser(text: str) -> dict:
 
     out["legacy"]["id"] = identifier
     out["legacy"]["source"] = soup.link['source']
-    """
-    # I suspect this could be deleted
-    out["legacy"]["word_count"] = int(soup.meta['wordcnt'])
-    out["legacy"]["chars_count"] = int(soup.meta['total_chars_count'])
-    suspicious_chars_count = int(soup.meta['suspicious_chars_count'])
-    out["legacy"]["suspicious_chars_count"] = int(suspicious_chars_count)
-    """
     out["legacy"]["first_id"] = soup.link['first_id']
     out["legacy"]["last_id"] = soup.link['last_id']
     out["legacy"]["next_id"] = soup.link['next_id']

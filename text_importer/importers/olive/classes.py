@@ -80,17 +80,17 @@ class OliveNewspaperPage(NewspaperPage):
         
         element_ids = self.toc_data.keys()
         elements = {
-                el["legacy"]["id"]: el
-                for el in json.loads(self.issue.content_elements)
-                if (el["legacy"]["id"] in element_ids)
-                }
+            el["legacy"]["id"]: el
+            for el in json.loads(self.issue.content_elements)
+            if (el["legacy"]["id"] in element_ids)
+        }
         
         self.page_data = recompose_page(
-                self.id,
-                self.toc_data,
-                elements,
-                self.issue.clusters
-                )
+            self.id,
+            self.toc_data,
+            elements,
+            self.issue.clusters
+        )
         
         self.page_data['id'] = self.id
         self.page_data['iiif'] = os.path.join(IMPRESSO_IIIF_BASEURI, self.id)
@@ -104,31 +104,34 @@ class OliveNewspaperPage(NewspaperPage):
         #     # Means issue has been fully processed, can cleanup
         #     self.archive.cleanup()
     
-    def _convert_page_coords(self):
+    def _convert_page_coords(self) -> None:
+        """Convert page coordinates to the desired iiif format if possible.
+
+        The conversion is attempted if `self.image_info` is defined, otherwise
+        the page is simply skipped.
+        """
         self.page_data['cc'] = False
         if self.image_info is not None:
             try:
                 box_strategy = self.image_info['strat']
                 image_name = self.image_info['s']
                 was_converted = convert_page_coordinates(
-                        self.page_data,
-                        self.archive.read(self.page_xml),
-                        image_name,
-                        self.archive,
-                        box_strategy,
-                        self.issue
-                        )
+                    self.page_data,
+                    self.archive.read(self.page_xml),
+                    image_name,
+                    self.archive,
+                    box_strategy,
+                    self.issue
+                )
                 if was_converted:
                     self.page_data['cc'] = True
             except Exception as e:
-                logger.error("Page {} raised error: {}".format(self.id, e))
-                logger.error(
-                        "Couldn't convert coordinates in p. {}".format(self.id)
-                        )
+                logger.error(f"Page {self.id} raised error: {e}")
+                logger.error(f"Couldn't convert coordinates in p. {self.id}")
         else:
             logger.debug(f"Image {self.id} does not have image info")
     
-    def add_issue(self, issue: NewspaperIssue):
+    def add_issue(self, issue: NewspaperIssue) -> None:
         self.issue = issue
         self.archive = issue.archive
 
