@@ -12,12 +12,12 @@ from impresso_commons.path.path_fs import _apply_datefilter
 logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {
-        1: 'a',
-        2: 'b',
-        3: 'c',
-        4: 'd',
-        5: 'e'
-        }
+    1: 'a',
+    2: 'b',
+    3: 'c',
+    4: 'd',
+    5: 'e'
+}
 
 LuxIssueDir = namedtuple(
     "IssueDirectory", [
@@ -75,12 +75,12 @@ def dir2issue(path: str) -> LuxIssueDir:
         edition = EDITIONS_MAPPINGS[int(edition)]
 
     return LuxIssueDir(
-            local_id,
-            date(int(year), int(month), int(day)),
-            edition,
-            path,
-            rights
-            )
+        local_id,
+        date(int(year), int(month), int(day)),
+        edition,
+        path,
+        rights
+    )
 
 
 def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
@@ -100,15 +100,12 @@ def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
     dir_path, dirs, files = next(os.walk(base_dir))
     batches_dirs = [os.path.join(dir_path, dir) for dir in dirs]
     issue_dirs = [
-            os.path.join(batch_dir, dir)
-            for batch_dir in batches_dirs
-            for dir in os.listdir(batch_dir)
-            if 'newspaper' in dir
-            ]
-    return [
-            dir2issue(_dir)
-            for _dir in issue_dirs
-            ]
+        os.path.join(batch_dir, dir)
+        for batch_dir in batches_dirs
+        for dir in os.listdir(batch_dir)
+        if 'newspaper' in dir
+    ]
+    return [dir2issue(_dir) for _dir in issue_dirs]
 
 
 def select_issues(
@@ -146,7 +143,7 @@ def select_issues(
         issue_bag.filter(
             lambda i: (
                 len(filter_dict) == 0 or i.journal in filter_dict.keys()
-                ) and i.journal not in exclude_list
+            ) and i.journal not in exclude_list
         ).compute()
     )
 
@@ -154,11 +151,7 @@ def select_issues(
     filtered_issues = _apply_datefilter(
         filter_dict, selected_issues, year_only=year_flag
     ) if not exclude_flag else selected_issues
-    logger.info(
-            "{} newspaper issues remained after applying filter: {}".format(
-                    len(filtered_issues),
-                    filtered_issues
-            )
-    )
+    logger.info(f"{len(filtered_issues)} newspaper issues remained "
+                f"after applying filter: {filtered_issues}")
     return filtered_issues
 

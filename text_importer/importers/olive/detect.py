@@ -11,14 +11,14 @@ from impresso_commons.path.path_fs import (IssueDir, detect_issues,
 from text_importer.utils import get_access_right
 
 OliveIssueDir = namedtuple(
-        "OliveIssueDirectory", [
-                'journal',
-                'date',
-                'edition',
-                'path',
-                'rights'
-                ]
-        )
+    "OliveIssueDirectory", [
+        'journal',
+        'date',
+        'edition',
+        'path',
+        'rights'
+    ]
+)
 """A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
