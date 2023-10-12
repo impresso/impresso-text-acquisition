@@ -39,15 +39,15 @@ Homepage = "https://github.com/impresso/impresso-text-acquisition"
 Documentaton = "https://impresso-text-importer.readthedocs.io/en/latest/index.html" 
 
 [tool.setuptools.packages.find]
-where = [""]
+include = ["text_importer*"]
+namespaces = false
 
 [tool.setuptools.package-data]
-mypkg = [
+text_importer = [
     "impresso-schemas/json/*/*.json",
     "impresso-schemas/docs/*/*.json",
     "impresso-schemas/*",
 ]
-
 
 [project.scripts]
 impresso-txt-importer = "text_importer.importer.generic_importer:main"
