@@ -33,7 +33,7 @@ setup(
             'impresso-txt-uploader = text_importer.upload:main',
         ]
     },
-    python_requires='>=3.6',
+    python_requires='>=3.11',
     classifiers=[
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
@@ -44,7 +44,6 @@ setup(
     install_requires=[
         'beautifulsoup4',
         'docopt',
-        'impresso_pycommons',
         'pandas',
         'dask[complete]',
         'lxml',
