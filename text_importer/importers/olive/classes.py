@@ -140,9 +140,9 @@ class OliveNewspaperIssue(NewspaperIssue):
     """Newspaper Issue in Olive format.
 
     Upon object initialization the following things happen:
-    - The Zip archive containing the issue is uncompressed.
-    - The ToC file is parsed to determine the logical structure of the issue.
-    - Page objects (instances of ``OliveNewspaperPage``) are initialized.
+        - The Zip archive containing the issue is uncompressed.
+        - The ToC file is parsed to determine the logical structure of the issue.
+        - Page objects (instances of ``OliveNewspaperPage``) are initialized.
 
     Args:
         issue_dir (IssueDir): Identifying information about the issue.

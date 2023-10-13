@@ -19,11 +19,11 @@ import text_importer
 # -- Project information -----------------------------------------------------
 
 project = 'Impresso TextImporter'
-copyright = '2019, Matteo Romanello & Impresso team'
+copyright = '2023, Matteo Romanello, Pauline Conti & Impresso team'
 author = 'Matteo Romanello & Impresso team'
 
 # The full version, including alpha/beta/rc tags
-release = ''
+release = '0.12.0'
 
 master_doc = 'index'
 # -- General configuration ---------------------------------------------------
@@ -32,6 +32,7 @@ master_doc = 'index'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosectionlabel',

@@ -9,9 +9,9 @@ from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT, CONTENTITEM_
 BNF_CONTENT_TYPES = ["article", "advertisement", "illustration", "ornament", "freead",
                      "table"]  # BNF types that do not have a direct `area` descendant
 SECTION = "section"
-"""Content types as defined in BNF Mets flavour. These are the ones we are interested in parsing.
+"""Content types as defined in BNF Mets flavour. These are the ones we are interested in parsing. 
     The `SECTION` type should be flattened, and should not be part of content items, but it is needed to parse what's
-     inside.
+    inside.
 """
 
 type_translation = {
@@ -21,7 +21,7 @@ type_translation = {
     'table': CONTENTITEM_TYPE_TABLE,
     'article': CONTENTITEM_TYPE_ARTICLE,
     'freead': CONTENTITEM_TYPE_ADVERTISEMENT
-    }
+}
 
 logger = logging.getLogger(__name__)
 

@@ -9,10 +9,10 @@ def convert_coordinates(hpos: int, vpos: int, width: int, height: int,
                         x_res: float, y_res: float) -> list[int]:
     """Convert the coordinates to iiif-compliant ones using the resolution.
 
-    x = (coordinate['xResolution']/254.0) * coordinate['hpos']
-    y = (coordinate['yResolution']/254.0) * coordinate['vpos']
-    w = (coordinate['xResolution']/254.0) * coordinate['width']
-    h = (coordinate['yResolution']/254.0) * coordinate['height']
+    - x = (coordinate['xResolution']/254.0) * coordinate['hpos']
+    - y = (coordinate['yResolution']/254.0) * coordinate['vpos']
+    - w = (coordinate['xResolution']/254.0) * coordinate['width']
+    - h = (coordinate['yResolution']/254.0) * coordinate['height']
 
     Args:
         hpos (int): Horizontal position coordinate of element.

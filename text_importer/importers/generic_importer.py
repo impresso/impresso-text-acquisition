@@ -18,7 +18,7 @@ Options:
     --chunk-size=<cs>   Chunk size in years used to group issues when importing
     --verbose   Verbose log messages (good for debugging)
     --clear    Removes the output folder (if already existing)
-    --incremental Skips issues already present in output directory 
+    --incremental   Skips issues already present in output directory 
     --version    Prints version and exits.
 
 """  # noqa: E501
