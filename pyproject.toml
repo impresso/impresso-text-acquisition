@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "text_importer"
-version = "0.12.0"
 authors = [{name="Matteo Romanello", email="matteo.romanello@gmail.com"}]
 description = "Library to import newspaper data from a variety of OCR formats into Impresso's JSON format."
 readme = "README.md"
@@ -20,6 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
+dynamic = ["version"]
 
 dependencies = [
     "beautifulsoup4",
@@ -31,12 +31,15 @@ dependencies = [
     "python-jsonschema-objects",
     "regex",
     "filelock",
-    #"impresso_pycommons", "impresso_commons"
+    "impresso_pycommons"
 ]
 
 [project.urls]
 Homepage = "https://github.com/impresso/impresso-text-acquisition"
 Documentaton = "https://impresso-text-importer.readthedocs.io/en/latest/index.html" 
+
+[tool.setuptools.dynamic]
+version = {attr = "text_importer.__version__"}
 
 [tool.setuptools.packages.find]
 include = ["text_importer*"]
