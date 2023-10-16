@@ -4,8 +4,7 @@ Most of the functions in this module are meant to be used in conjuction
 with `Dask <https://dask.org/>`_, the library we are using to parallelize
 the ingestion process and run it on distributed computing infrastructures.
 
-.. note::
-
+Note:
     The function :func:`import_issues` is the most important in this module
     as it keeps everything together, by calling all other functions.
 """
@@ -22,7 +21,7 @@ from itertools import groupby
 from json import JSONDecodeError
 from pathlib import Path
 from time import strftime
-from typing import List, Optional, Tuple, Type
+from typing import Tuple, Type
 
 import jsonlines
 from dask import bag as db
@@ -40,7 +39,19 @@ from text_importer.importers.swa.classes import SWANewspaperIssue
 logger = logging.getLogger(__name__)
 
 
-def write_error(thing, error, failed_log):
+def write_error(
+    thing: NewspaperIssue | NewspaperPage | IssueDir,
+    error: Exception, 
+    failed_log: str
+) -> None:
+    """Write the given error of a failed import to the `failed_log` file.
+
+    Args:
+        thing (NewspaperIssue | NewspaperPage | IssueDir): Object for which
+            the error occurred.
+        error (Exception): Error that occurred and should be logged.
+        failed_log (str): Path to log file for failed imports.
+    """
     logger.error(f'Error when processing {thing}: {error}')
     logger.exception(error)
     if isinstance(thing, NewspaperPage):
@@ -61,18 +72,34 @@ def write_error(thing, error, failed_log):
 
 
 def dir2issue(
-        issue: IssueDir,
-        issue_class: Type[NewspaperIssue],
-        failed_log=None,
-        image_dirs=None, temp_dir=None) -> Optional[NewspaperIssue]:
-    """Instantiate a ``NewspaperIssue`` instance from an ``IssueDir``."""
+    issue: IssueDir,
+    issue_class: Type[NewspaperIssue],
+    failed_log: str | None = None,
+    image_dirs: str | None = None, 
+    temp_dir: str | None = None
+) -> NewspaperIssue | None:
+    """Instantiate a `NewspaperIssue` object from an `IssueDir`.
+
+    Any instantiation leading to an exception is logged to a specific file
+    only containing issues which could not be imported.
+
+    Args:
+        issue (IssueDir): `IssueDir` representing the issue to instantiate.
+        issue_class (Type[NewspaperIssue]): Type of `NewspaperIssue` to use.
+        failed_log (str | None, optional): Path to the log file used if the
+            instantiation was not successful. Defaults to None.
+        image_dirs (str | None, optional): Path to the directory containing the
+            information on images, only for Olive importer. Defaults to None.
+        temp_dir (str | None, optional): Temporary directory to unpack the 
+            issue's zip archive into. Defaults to None.
+
+    Returns:
+        NewspaperIssue | None: A new `NewspaperIssue` instance, or `None` if
+            the instantiation triggered an exception.
+    """
     try:
         if issue_class is OliveNewspaperIssue:
-            np_issue = OliveNewspaperIssue(
-                    issue,
-                    image_dirs=image_dirs,
-                    temp_dir=temp_dir
-                    )
+            np_issue = OliveNewspaperIssue(issue, image_dirs, temp_dir)
         elif issue_class is SWANewspaperIssue:
             np_issue = SWANewspaperIssue(issue, temp_dir=temp_dir)
         else:
@@ -84,23 +111,51 @@ def dir2issue(
 
 
 def dirs2issues(
-        issues: List[IssueDir],
-        issue_class: Type[NewspaperIssue],
-        failed_log=None,
-        image_dirs=None, temp_dir=None) -> List[NewspaperIssue]:
+    issues: list[IssueDir],
+    issue_class: Type[NewspaperIssue],
+    failed_log: str | None = None,
+    image_dirs: str | None = None, 
+    temp_dir: str | None = None
+) -> list[NewspaperIssue]:
+    """Instantiate the `NewspaperIssue` objects to import to Impresso's format.
+
+    Any `NewspaperIssue` for which the instantiation is unsuccessful
+    will be logged, along with the triggered error.
+
+    Args:
+        issues (list[IssueDir]): List of issues to instantiate and import.
+        issue_class (Type[NewspaperIssue]): Type of `NewspaperIssue` to use.
+        failed_log (str | None, optional): Path to the log file used when an
+            instantiation was not successful. Defaults to None.
+        image_dirs (str | None, optional): Path to the directory containing the
+            information on images, only for Olive importer. Defaults to None.
+        temp_dir (str | None, optional): Temporary directory to unpack zip
+            archives of issues into. Defaults to None.
+
+    Returns:
+        list[NewspaperIssue]: List of `NewspaperIssue` instances to import.
+    """
     ret = []
     for issue in issues:
-        np_issue = dir2issue(issue, issue_class, failed_log, image_dirs, temp_dir)
+        np_issue = dir2issue(
+            issue, issue_class, failed_log, image_dirs, temp_dir
+        )
         if np_issue is not None:
             ret.append(np_issue)
     return ret
 
 
-def issue2pages(issue: NewspaperIssue) -> List[NewspaperPage]:
-    """Flatten a list of issues into  a list of their pages.
+def issue2pages(issue: NewspaperIssue) -> list[NewspaperPage]:
+    """Flatten an issue into a list of their pages.
 
-    As an issue consists of several pagaes, this function is useful
-    in order to process each page in a truly parallel fashion.
+    As an issue consists of several pages, this function is useful
+    in order to process each page in a truly parallel fashion. 
+
+    Args:
+        issue (NewspaperIssue): Issue to collect the pages of.
+
+    Returns:
+        list[NewspaperPage]: List of pages of the given issue.
     """
     pages = []
     for page in issue.pages:
@@ -110,18 +165,20 @@ def issue2pages(issue: NewspaperIssue) -> List[NewspaperPage]:
 
 
 def serialize_pages(
-        pages: List[NewspaperPage],
-        output_dir: str = None
-        ) -> List[Tuple[IssueDir, str]]:
-    """Serialise a list of pages to an output directory.
+    pages: list[NewspaperPage],
+    output_dir: str | None = None
+) -> list[Tuple[IssueDir, str]]:
+    """Serialize a list of pages to an output directory.
 
-    :param List[NewspaperPage] pages: Input newspaper pages.
-    :param str output_dir: Path to the output directory.
-    :return: A list of tuples, where each tuple contains ``[0]`` the
-        ``IssueDir`` object representing the issue to which pages belong
-        and ``[1]`` the path to the individual page JSON file.
-    :rtype: List[Tuple[IssueDir, str]]
+    Args:
+        pages (list[NewspaperPage]): Input newspaper pages.
+        output_dir (str | None, optional): Path to the output directory. 
+            Defaults to None.
 
+    Returns:
+        list[Tuple[IssueDir, str]]: A list of tuples (`IssueDir`, `path`), 
+            where the `IssueDir` object represents the issue to which pages 
+            belong, and `path` the path to the individual page JSON file.
     """
     result = []
 
@@ -130,26 +187,24 @@ def serialize_pages(
         issue_dir = copy(page.issue.issuedir)
 
         out_dir = os.path.join(
-                output_dir,
-                canonical_path(issue_dir, path_type="dir")
-                )
+            output_dir,
+            canonical_path(issue_dir, path_type="dir")
+        )
 
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
         canonical_filename = canonical_path(
-                issue_dir,
-                "p" + str(page.number).zfill(4),
-                ".json"
-                )
+            issue_dir,
+            "p" + str(page.number).zfill(4),
+            ".json"
+        )
 
         out_file = os.path.join(out_dir, canonical_filename)
 
         with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
             json.dump(page.page_data, jsonfile)
-            logger.info(
-                    "Written page \'{}\' to {}".format(page.number, out_file)
-                    )
+            logger.info(f"Written page \'{page.number}\' to {out_file}")
         result.append((issue_dir, out_file))
 
     # TODO: this can be deleted, I believe as it has no effect
@@ -157,19 +212,21 @@ def serialize_pages(
     return result
 
 
-def process_pages(pages: List[NewspaperPage], failed_log: str) -> List[NewspaperPage]:
+def process_pages(
+    pages: list[NewspaperPage], failed_log: str
+) -> list[NewspaperPage]:
     """Given a list of pages, trigger the ``.parse()`` method of each page.
 
-    :param List[NewspaperPage] pages: Input newspaper pages.
-    :param str failed_log: File path of failed log
-    :return: A list of processed pages.
-    :rtype: List[NewspaperPage]
+    Args:
+        pages (list[NewspaperPage]): Input newspaper pages.
+        failed_log (str): File path of failed log.
 
+    Returns:
+        list[NewspaperPage]: A list of processed pages.
     """
     result = []
     for page in pages:
         try:
-
             page.parse()
             result.append(page)
         except Exception as e:
@@ -178,43 +235,47 @@ def process_pages(pages: List[NewspaperPage], failed_log: str) -> List[Newspaper
 
 
 def import_issues(
-        issues: List[IssueDir],
-        out_dir: str,
-        s3_bucket: Optional[str],
-        issue_class: Type[NewspaperIssue],
-        image_dirs: Optional[str],
-        temp_dir: Optional[str],
-        chunk_size: Optional[int]):
+    issues: list[IssueDir],
+    out_dir: str,
+    s3_bucket: str | None,
+    issue_class: Type[NewspaperIssue],
+    image_dirs: str | None,
+    temp_dir: str | None,
+    chunk_size: int | None
+) -> None:
     """Import a bunch of newspaper issues.
 
-    :param list issues: Description of parameter `issues`.
-    :param str out_dir: Description of parameter `out_dir`.
-    :param str s3_bucket: Description of parameter `s3_bucket`.
-    :param issue_class: The newspaper issue class to import
-        (Child of ``NewspaperIssue``).
-    :param image_dirs: Directory of images (can be multiple)
-    :param temp_dir: Temporary directory for extracting archives
-        (applies only to importers make use of ``ZipArchive``).
-    :param int chunk_size: The chunk size in years
-    :return: Description of returned object.
-    :rtype: tuple
-
+    Args:
+        issues (list[IssueDir]): Issues to import.
+        out_dir (str): Output directory for the json files.
+        s3_bucket (str | None): Output s3 bucket for the json files.
+        issue_class (Type[NewspaperIssue]): Newspaper issue class to import,
+            (Child of ``NewspaperIssue``).
+        image_dirs (str | None): Directory of images for Olive format, 
+            (can be multiple).
+        temp_dir (str | None): Temporary directory for extracting archives
+            (applies only to importers make use of ``ZipArchive``).
+        chunk_size (int | None): Chunk size in years used to process issues.
     """
-
     msg = f'Issues to import: {len(issues)}'
     logger.info(msg)
     failed_log_path = os.path.join(
-            out_dir,
-            f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
-            )
+        out_dir,
+        f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
+    )
     if chunk_size is not None:
         csize = int(chunk_size)
-        chunks = groupby(sorted(issues, key=lambda x: x.date.year), lambda x: x.date.year - (x.date.year % csize))
+        chunks = groupby(
+            sorted(issues, key=lambda x: x.date.year), 
+            lambda x: x.date.year - (x.date.year % csize)
+        )
 
         chunks = [(year, list(issues)) for year, issues in chunks]
-        logger.info(f"Dividing issues into chunks of {chunk_size} years ({len(chunks)} chunks in total)")
+        logger.info(f"Dividing issues into chunks of {chunk_size} years "
+                    f"({len(chunks)} chunks in total)")
         for year, issue_chunk in chunks:
-            logger.info(f"Chunk of period {year} - {year + csize - 1} covers {len(issue_chunk)} issues")
+            logger.info(f"Chunk of period {year} - {year + csize - 1} covers "
+                        f"{len(issue_chunk)} issues")
     else:
         chunks = [(None, issues)]
 
@@ -227,17 +288,20 @@ def import_issues(
         temp_issue_bag = db.from_sequence(issue_chunk, partition_size=20)
 
         issue_bag = temp_issue_bag.map_partitions(
-                dirs2issues,
-                issue_class=issue_class,
-                failed_log=failed_log_path,
-                image_dirs=image_dirs,
-                temp_dir=temp_dir).persist()
+            dirs2issues,
+            issue_class=issue_class,
+            failed_log=failed_log_path,
+            image_dirs=image_dirs,
+            temp_dir=temp_dir
+        ).persist()
 
         logger.info(f'Start compressing issues for {period}')
 
-        compressed_issue_files = issue_bag.groupby(lambda i: (i.journal, i.date.year)) \
-            .starmap(compress_issues, output_dir=out_dir) \
+        compressed_issue_files = (
+            issue_bag.groupby(lambda i: (i.journal, i.date.year)) 
+            .starmap(compress_issues, output_dir=out_dir) 
             .compute()
+        )
 
         logger.info(f'Done compressing issues for {period}')
 
@@ -252,10 +316,9 @@ def import_issues(
         # TODO: The issues should be processed within a dask dataframe instead of bag
         # to get cleaner code while ensuring proper partitioning.
 
-        db.from_sequence(set(compressed_issue_files)) \
-            .starmap(upload_issues, bucket_name=s3_bucket) \
-            .starmap(cleanup) \
-            .compute()
+        (db.from_sequence(set(compressed_issue_files)) 
+         .starmap(upload_issues, bucket_name=s3_bucket)
+         .starmap(cleanup).compute())
 
         logger.info(f'Done uploading issues for {period}')
 
@@ -267,34 +330,39 @@ def import_issues(
         for chunk_n, chunk_of_issues in enumerate(chunks):
             logger.info(f'Processing chunk {chunk_n} of pages for {period}')
 
-            pages_bag = db.from_sequence(chunk_of_issues, partition_size=2) \
-                .map(issue2pages) \
-                .flatten() \
-                .map_partitions(process_pages, failed_log=failed_log_path) \
+            pages_bag = (
+                db.from_sequence(chunk_of_issues, partition_size=2)
+                .map(issue2pages)
+                .flatten()
+                .map_partitions(process_pages, failed_log=failed_log_path)
                 .map_partitions(serialize_pages, output_dir=out_dir)
+            )
 
             pages_out_dir = os.path.join(out_dir, 'pages')
             Path(pages_out_dir).mkdir(exist_ok=True)
 
-            logger.info(f'Start compressing and uploading pages of chunk {chunk_n} for {period}')
-            pages_bag = pages_bag.groupby(
+            logger.info(f'Start compressing and uploading pages '
+                        f'of chunk {chunk_n} for {period}')
+            pages_bag = (
+                pages_bag.groupby(
                     lambda x: canonical_path(
-                            x[0], path_type='dir'
-                            ).replace('/', '-')
-                    ) \
-                .starmap(compress_pages, prefix='pages', output_dir=pages_out_dir) \
-                .starmap(upload_pages, bucket_name=s3_bucket) \
-                .starmap(cleanup) \
+                        x[0], path_type='dir'
+                    ).replace('/', '-')
+                )
+                .starmap(
+                    compress_pages, suffix='pages', output_dir=pages_out_dir
+                )
+                .starmap(upload_pages, bucket_name=s3_bucket) 
+                .starmap(cleanup) 
                 .compute()
+            )
 
-            logger.info(f'Done compressing and uploading pages of chunk {chunk_n} for {period}')
+            logger.info(f'Done compressing and uploading pages '
+                        f'of chunk {chunk_n} for {period}')
 
         del issue_bag
 
-
     remove_filelocks(out_dir)
-
-
 
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -302,32 +370,28 @@ def import_issues(
     logger.info("---------- Done ----------")
 
 
-
 def compress_pages(
-        key: str,
-        json_files: List,
-        output_dir: str,
-        prefix: str = ""
-        ) -> Tuple[str, str]:
-    """Merges a set of JSON line files into a single compressed archive.
+    key: str,
+    json_files: list[str],
+    output_dir: str,
+    suffix: str = ""
+) -> Tuple[str, str]:
+    """Merge a set of JSON line files into a single compressed archive.
 
-    :param key: signature of the newspaper issue (e.g. GDL-1900)
-    :param json_files: input JSON line files
-    :param output_dir: directory where to write the output file
-    :param prefix:
-    :return: a tuple with: sorting key [0] and path to serialized file [1].
+    Args:
+        key (str): Canonical ID of the newspaper issue (e.g. GDL-1900-01-02-a).
+        json_files (list[str]): Paths of input JSON line files.
+        output_dir (str): Directory where to write the output file.
+        suffix (str, optional): Suffix to add to the filename. Defaults to "".
 
-    .. note::
-
-        `sort_key` is expected to be the concatenation of newspaper ID and year
-        (e.g. GDL-1900).
+    Returns:
+        Tuple[str, str]: Sorting key [0] and path to serialized file [1].
     """
-
     newspaper, year, month, day, edition = key.split('-')
-    prefix_string = "" if prefix == "" else f"-{prefix}"
+    suffix_string = "" if suffix == "" else f"-{suffix}"
     filename = (
         f'{newspaper}-{year}-{month}-{day}-{edition}'
-        f'{prefix_string}.jsonl.bz2'
+        f'{suffix_string}.jsonl.bz2'
     )
     filepath = os.path.join(output_dir, filename)
     logger.info(f'Compressing {len(json_files)} JSON files into {filepath}')
@@ -344,13 +408,11 @@ def compress_pages(
                     writer.write(item)
                     items_count += 1
                 except JSONDecodeError as e:
-                    logger.error(
-                            f'Reading data from {json_file} failed'
-                            )
+                    logger.error(f'Reading data from {json_file} failed')
                     logger.exception(e)
             logger.info(
-                    f'Written {items_count} docs from {json_file} to {filepath}'
-                    )
+                f'Written {items_count} docs from {json_file} to {filepath}'
+            )
 
         writer.close()
 
@@ -358,22 +420,26 @@ def compress_pages(
 
 
 def compress_issues(
-        key: Tuple[str, int],
-        issues: List[NewspaperIssue],
-        output_dir: str = None
-        ) -> Tuple[str, str]:
-    """This function compresses a list of issues belonging to the same Journal-year, and saves them in the output directory
-    First, it will check if the file already exists, loads it and then over-writes/adds the newly generated issues.
+    key: Tuple[str, int],
+    issues: list[NewspaperIssue],
+    output_dir: str | None = None
+) -> Tuple[str, str]:
+    """Compress issues of the same Journal-year and save them in a json file.
 
-    :param tuple key: Tuple with newspaper ID and year of input issues
-        (e.g. ``(GDL, 1900)``).
-    :param list issues: A list of `NewspaperIssue` instances.
-    :param type output_dir: Description of parameter `output_dir`.
-    :return: a tuple with: ``tuple[0]`` a label following the template
-        ``<NEWSPAPER>-<YEAR>`` and ``tuple[1]`` the path to the the compressed
-        ``.bz2``file containing the input issues as separate documents in
-         a JSON-line file.
-    :rtype: tuple
+    First check if the file exists, load it and then over-write/add the newly
+    generated issues.
+    The compressed ``.bz2`` output file is a JSON-line file, where each line
+    corresponds to an individual and issue document in the canonical format.  
+
+    Args:
+        key (Tuple[str, int]): Newspaper ID and year of input issues 
+            (e.g. `(GDL, 1900)`).
+        issues (list[NewspaperIssue]): A list of `NewspaperIssue` instances.
+        output_dir (str | None, optional): Output directory. Defaults to None.
+
+    Returns:
+        Tuple[str, str]: Label following the template `<NEWSPAPER>-<YEAR>` and 
+            the path to the the compressed `.bz2` file.
     """
     newspaper, year = key
     filename = f'{newspaper}-{year}-issues.jsonl.bz2'
@@ -401,33 +467,32 @@ def compress_issues(
 
 
 def upload_issues(
-        sort_key: str,
-        filepath: str,
-        bucket_name: str = None
-        ) -> Tuple[bool, str]:
-    """Upload a file to a given S3 bucket.
+    sort_key: str,
+    filepath: str,
+    bucket_name: str | None = None
+) -> Tuple[bool, str]:
+    """Upload an issues JSON-line file to a given S3 bucket.
 
-    :param sort_key: the key used to group articles (e.g. "GDL-1900")
-    :param filepath: path of the file to upload to S3
-    :param bucket_name: name of S3 bucket where to upload the file
-    :return: a tuple with [0] whether the upload was successful (boolean) and
-        [1] the path to the uploaded file.
-    :rtype: Tuple[bool, str]
+    `sort_key` is expected to be the concatenation of newspaper ID and year.
 
-    .. note::
+    Args:
+        sort_key (str): Key used to group articles (e.g. "GDL-1900").
+        filepath (str): Path of the file to upload to S3.
+        bucket_name (str | None, optional): Name of S3 bucket where to upload
+            the file. Defaults to None.
 
-        `sort_key` is expected to be the concatenation of newspaper ID and year
-        (e.g. GDL-1900).
-
+    Returns:
+        Tuple[bool, str]: Whether the upload was successful and the path to the
+            uploaded file.
     """
     # create connection with bucket
     # copy contents to s3 key
     newspaper, year = sort_key.split('-')
     key_name = "{}/{}/{}".format(
-            newspaper,
-            "issues",
-            os.path.basename(filepath)
-            )
+        newspaper,
+        "issues",
+        os.path.basename(filepath)
+    )
     s3 = get_s3_resource()
     try:
         bucket = s3.Bucket(bucket_name)
@@ -440,34 +505,31 @@ def upload_issues(
         return False, filepath
 
 
-def upload_pages(
-        sort_key: str,
-        filepath: str,
-        bucket_name: str = None
-        ) -> Tuple[bool, str]:
+def upload_pages( 
+    sort_key: str,
+    filepath: str,
+    bucket_name: str | None = None
+) -> Tuple[bool, str]:
     """Upload a page JSON file to a given S3 bucket.
 
-    :param sort_key: the key used to group articles (e.g. "GDL-1900")
-    :param filepath: path of the file to upload to S3
-    :param bucket_name: name of S3 bucket where to upload the file
-    :return: a tuple with [0] whether the upload was successful (boolean) and
-        [1] the path of the uploaded file (string)
-    :rtype: Tuple[bool, str]
+    Args:
+        sort_key (str): the key used to group articles (e.g. "GDL-1900").
+        filepath (str): Path of the file to upload to S3.
+        bucket_name (str | None, optional): Name of S3 bucket where to upload
+            the file. Defaults to None.
 
-    .. note::
-
-        ``sort_key`` is expected to be the concatenation of newspaper ID and
-        year (e.g. GDL-1900).
-
+    Returns:
+        Tuple[bool, str]: Whether the upload was successful and the path to the
+            uploaded file.
     """
     # create connection with bucket
     # copy contents to s3 key
     newspaper, year, month, day, edition = sort_key.split('-')
     key_name = "{}/pages/{}/{}".format(
-            newspaper,
-            f'{newspaper}-{year}',
-            os.path.basename(filepath)
-            )
+        newspaper,
+        f'{newspaper}-{year}',
+        os.path.basename(filepath)
+    )
     s3 = get_s3_resource()
     try:
         bucket = s3.Bucket(bucket_name)
@@ -478,15 +540,13 @@ def upload_pages(
         logger.error(f'The upload of {filepath} failed with error {e}')
         return False, filepath
 
-def remove_filelocks(output_dir: str):
+
+def remove_filelocks(output_dir: str) -> None:
     """Remove all files ending with .lock in a directory.
 
-    :param output_dir: path to directory containing file locks.
-    :return: None.
-    :rtype: None
-
+    Args:
+        output_dir (str): Path to directory containing file locks.
     """
-
     files = os.listdir(output_dir)
 
     for file in files:

@@ -1,7 +1,14 @@
+"""This module contains the definition of the RERO importer classes.
+
+The classes define newspaper Issues and Pages objects which convert OCR data in
+the RERO version of the Mets/Alto format to a unified canoncial format.
+Theses classes are subclasses of generic Mets/Alto importer classes.
+"""
+
 import logging
 import os
 from time import strftime
-from typing import Dict, List
+from typing import Any
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
@@ -25,42 +32,80 @@ PICTURE_TYPE = "picture"
 ILLUSTRATION_TYPE = "illustration"
 
 
-def convert_coordinates(coords: List[float], resolution: Dict, page_width: float) -> List[int]:
+def convert_coordinates(
+    coords: list[float], 
+    resolution: dict[str, float], 
+    page_width: float
+) -> list[int]:
+    """Convert the coordinates using true and coordinate system resolutions.
+
+    The coordinate system resolution is not necessarily the same as the true
+    resolution of the image. A conversion, or rescaling can thus be necessary.
+    Essentially computes fact = coordinate_width / true_width,
+    and converts using x/fact.
+
+    Args:
+        coords (list[float]): List of coordinates to convert
+        resolution (dict[str, float]): True resolution of the images (keys 
+            `x_resolution` and `y_resolution` of the dict).
+        page_width (float): The page width used for the coordinate system.
+
+    Returns:
+        list[int]: The coordinates rescaled to match the true image resolution.
     """
-    Converts the given coordinates by taking the true resolution and the coordinate system resolution.
-    
-    Essentially computes fact = coordinate_width / true_width and converts using x/fact
-    :param coords: List of coordinates to convert
-    :param resolution: Dictionary describing the true resolution of the images (`x_resolution` and `y_resolution`)
-    :param page_width: The page width used for the coordinate system
-    :return:
-    """
-    x_res_true, y_res_true = resolution['x_resolution'], resolution['y_resolution']
-    if x_res_true == 0 or y_res_true == 0:
+    if resolution['x_resolution'] == 0 or resolution['y_resolution'] == 0:
         return coords
-    factor = page_width / x_res_true
+    factor = page_width / resolution['x_resolution']
     return [int(c / factor) for c in coords]
 
 
 class ReroNewspaperPage(MetsAltoNewspaperPage):
-    """Class representing a page in RERO (Mets/Alto) data."""
+    """Newspaper page in RERO (Mets/Alto) format.
+
+    Args:
+        _id (str): Canonical page ID.
+        number (int): Page number.
+        filename (str): Name of the Alto XML page file.
+        basedir (str): Base directory where Alto files are located.
     
-    def __init__(self, _id: str, n: int, filename: str, basedir: str):
-        super().__init__(_id, n, filename, basedir)
+    Attributes:
+        id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
+        number (int): Page number.
+        page_data (dict[str, Any]): Page data according to canonical format.
+        issue (NewspaperIssue): Issue this page is from.
+        filename (str): Name of the Alto XML page file.
+        basedir (str): Base directory where Alto files are located.
+        encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
+        page_width (float): The page width used for the coordinate system.
+    """
+    
+    def __init__(self, _id: str, number: int, 
+                 filename: str, basedir: str) -> None:
+        super().__init__(_id, number, filename, basedir)
         
         page_tag = self.xml.find('Page')
         self.page_width = float(page_tag.get('WIDTH'))
     
-    def add_issue(self, issue):
+    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
         self.issue = issue
         self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
     
     # no coordinate conversion needed, but keeping it here for now
-    def _convert_coordinates(self, page_data):
-        """
-         no conversion of coordinates
-        :param page_data:
-        :return:
+    def _convert_coordinates(
+        self, page_regions: list[dict]
+    ) -> tuple[bool, list[dict]]:
+        """Convert region coordinates to iiif format if possible.
+
+        Note: 
+            Currently, no conversion of coordinates is needed.
+
+        Args:
+            page_regions (list[dict[str, Any]]): Page regions from canonical 
+                page format.
+
+        Returns:
+            tuple[bool, list[dict[str, Any]]]: Whether the region coordinates 
+                are in iiif format and page regions.
         """
         if self.issue is None:
             logger.critical("Cannot convert coordinates if issue is unknown")
@@ -72,12 +117,12 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         
         # Those fields are 0 For RERO2
         if x_res == 0 or y_res == 0:
-            return True, page_data
+            return True, page_regions
         
         # Then convert coordinates of all regions/paragraphs/lines/tokens
         success = False
         try:
-            for region in page_data:
+            for region in page_regions:
                 region['c'] = convert_coordinates(region['c'], image_properties, self.page_width)
                 for paragraph in region['p']:
                     paragraph['c'] = convert_coordinates(paragraph['c'], image_properties, self.page_width)
@@ -88,16 +133,40 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
             success = True
         except Exception as e:
             logger.error(f"Error {e} occurred when converting coordinates for {self.id}")
-        return success, page_data
+        return success, page_regions
 
 
 class ReroNewspaperIssue(MetsAltoNewspaperIssue):
-    """Class representing an issue in RERO (Mets/Alto) data.
-    All functions defined in this child class are specific to parsing RERO Mets/Alto format
+    """Newspaper Issue in RERO (Mets/Alto) format.
+
+    All functions defined in this child class are specific to parsing RERO 
+    Mets/Alto format.
+
+    Args:
+        issue_dir (IssueDir): Identifying information about the issue.
+
+    Attributes:
+        id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
+        edition (str): Lower case letter ordering issues of the same day.
+        journal (str): Newspaper unique identifier or name.
+        path (str): Path to directory containing the issue's OCR data.
+        date (datetime.date): Publication date of issue.
+        issue_data (dict[str, Any]): Issue data according to canonical format.
+        pages (list): list of :obj:`NewspaperPage` instances from this issue.
+        rights (str): Access rights applicable to this issue.
+        image_properties (dict[str, Any]): metadata allowing to convert region
+            OCR/OLR coordinates to iiif format compliant ones.
+        ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
     """
     
-    def _find_pages(self):
-        """Detects the Alto XML page files for a newspaper issue and initializes page objects."""
+    def _find_pages(self) -> None:
+        """Detect and create the issue pages using the relevant Alto XML files.
+
+        Created :obj:`ReroNewspaperPage` instances are added to :attr:`pages`.
+
+        Raises:
+            e: Instantiation of a page or adding it to :attr:`pages` failed.
+        """
         alto_path = os.path.join(self.path, 'ALTO')
         
         if not os.path.exists(alto_path):
@@ -107,7 +176,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             file
             for file in os.listdir(alto_path)
             if not file.startswith('.') and '.xml' in file
-            ]
+        ]
         
         page_numbers = []
         
@@ -118,7 +187,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         page_canonical_names = [
             "{}-p{}".format(self.id, str(page_n).zfill(4))
             for page_n in page_numbers
-            ]
+        ]
         
         self.pages = []
         for filename, page_no, page_id in zip(
@@ -140,14 +209,21 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                         )
                 raise e
     
-    def _parse_content_parts(self, content_div) -> List[Dict[str, str]]:
-        """
-        Given the div of a content item, this function parses the children and constructs the legacy `parts` component
-        :param content_div: The div containing the content item
-        :return: list[dict] of different parts for this content item (role, id, fileid, page)
+    def _parse_content_parts(self, div: Tag) -> list[dict[str, str | int]]:
+        """Parse the children of a content item div for its legacy `parts`.
+
+        The `parts` are article-level metadata about the content item from the
+        ORC and OLR processes. This information is located in an `<area>` tag.
+
+        Args:
+            div (Tag): The div containing the content item
+
+        Returns:
+            list[dict[str, str | int]]: information on different parts for the 
+                content item (role, id, fileid, page)
         """
         parts = []
-        for child in content_div.children:
+        for child in div.children:
             
             if isinstance(child, NavigableString):
                 continue
@@ -160,21 +236,25 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                     comp_fileid = area.get('FILEID')
                     comp_page_no = int(comp_fileid.replace('ALTO', ''))
                     
-                    parts.append(
-                            {
-                                'comp_role': comp_role,
-                                'comp_id': comp_id,
-                                'comp_fileid': comp_fileid,
-                                'comp_page_no': comp_page_no
-                                }
-                            )
+                    parts.append({
+                        'comp_role': comp_role,
+                        'comp_id': comp_id,
+                        'comp_fileid': comp_fileid,
+                        'comp_page_no': comp_page_no
+                    })
         return parts
     
-    def _get_ci_language(self, dmdid):
-        """
-        Finds the language code of the CI with given DMDID. Languages are usually in a dmdSec at the beginning of a METS file
-        :param dmdid:
-        :return:
+    def _get_ci_language(self, dmdid: str) -> str | None:
+        """Find the language code of the content item with given a `DMDID`.
+        
+        Languages are usually in a `<dmdSec>` at the beginning of a METS file,
+        corresponding to the descriptive metadata.
+
+        Args:
+            dmdid (str): Descriptive metadata id of a content item.
+
+        Returns:
+            str | None: Language if defined in the file else `None`.
         """
         doc = self.xml
         lang = doc.find("dmdSec", {"ID": dmdid})
@@ -185,15 +265,19 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             return None
         return lang.text
     
-    def _parse_content_item(self, item_div, counter: int):
-        """
-        Parses a content item div and returns the dictionary representing it.
+    def _parse_content_item(self, item_div: Tag, counter:int) -> dict[str,Any]:
+        """Parse a content item div and create the dictionary representing it.
 
-        :param item_div: Div of content item
-        :param counter: Number of content items already added
-            (needed to generate canonical id).
-        :return:  dict, of the resulting content item
+        The dictionary corresponding to a content item needs to be of a precise
+        format, following the canonical Issue schema.
+        The counter is used to generate the canonical ID for the content item.
 
+        Args:
+            item_div (Tag): Div of content item.
+            counter (int): Number of content items already added to the issue.
+
+        Returns:
+            dict[str, Any]: Content item in canonical format.
         """
         div_type = item_div.get('TYPE').lower()
         
@@ -229,19 +313,29 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                 content_item['m']['pp'].append(pge_no)
         
         if content_item['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
-            content_item['m']['c'], content_item['iiif_link'] = self._get_image_info(content_item)
+            (content_item['m']['c'], 
+             content_item['iiif_link']) = self._get_image_info(content_item)
         return content_item
     
-    def _decompose_section(self, div):
-        """ In RERO3, sometimes textblocks and images are withing `Section` tags. Those need to be recursively decomposed
+    def _decompose_section(self, div: Tag) -> list[Tag]:
+        """Recursively decompose `Section` tags into a flat list of div tags.
+
+        In RERO3, sometimes textblocks and images are withing `Section` tags. 
+        Those need to be recursively decomposed for all the content items to 
+        be parsed.
         
-        :param div: The `Section` div
-        :return: all children divs that are not `Section`
+        Args:
+            div (Tag): Tag of type `Section` containing other divs to extract.
+
+        Returns:
+            list[Tag]: Flat list of div tags to parse.
         """
         logger.info("Decomposing section type")
+        # Only consider those with DMDID
         section_divs = [d for d in div.findAll("div") if
-                        d.get('DMDID') is not None]  # Only consider those with DMDID
-        section_divs = sorted(section_divs, key=lambda x: x.get('ID').lower())  # Sort to get same IDS
+                        d.get('DMDID') is not None] 
+        # Sort to get same IDS
+        section_divs = sorted(section_divs, key=lambda x: x.get('ID').lower()) 
         
         final_divs = []
         # Now do it recursively
@@ -249,16 +343,22 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             d_type = d.get('TYPE')
             if d_type is not None:
                 if d_type.lower() == SECTION_TYPE:
-                    final_divs += self._decompose_section(d)  # Recursively decompose
+                    # Recursively decompose if contents are also of Sections.
+                    final_divs += self._decompose_section(d) 
                 else:
                     final_divs.append(d)
         return final_divs
     
-    def _parse_content_items(self, mets_doc: BeautifulSoup):
-        """
-        Extract content item elements from a Mets XML file.
-        :param BeautifulSoup mets_doc:
-        :return:
+    def _parse_content_items(
+        self, mets_doc: BeautifulSoup
+    ) -> list[dict[str, Any]]:
+        """Extract content item elements from the issue's Mets XML file.
+
+        Args:
+            mets_doc (BeautifulSoup): Mets document as BeautifulSoup object.
+
+        Returns:
+            list[dict[str, Any]]: Issue's content items in canonical format.
         """
         content_items = []
         divs = mets_doc.find('div', {'TYPE': 'CONTENT'}).findChildren(
@@ -284,9 +384,16 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                 counter += 1
         return content_items
     
-    def _parse_mets(self):
-        """Parses the Mets XML file of the newspaper issue."""
-        
+    def _parse_mets(self) -> None:
+        """Parse the Mets XML file corresponding to this issue.
+
+        Once the :attr:`issue_data` is created, containing all the relevant 
+        information in the canonical Issue format, the `ReroNewspaperIssue`
+        instance is ready for serialization.
+
+        TODO: call to parse_mets_amdsec often raises error, if 'ImageWidth'
+        and 'ImageLength' not in mets file.
+        """
         mets_doc = self.xml
         
         self.image_properties = parse_mets_amdsec(
@@ -308,9 +415,20 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             "pp": [p.id for p in self.pages]
             }
     
-    def _get_image_info(self, content_item):
-        # Fetch the legacy parts
-        
+    def _get_image_info(
+        self, content_item: dict[str, Any]
+    ) -> tuple[list[int], str]:
+        """Recover the coordinates and iiif link for an image content item.
+
+        The iiif link is embedded with the coordinates to directly crop the
+        newspaper page to the image.
+
+        Args:
+            content_item (dict[str, Any]): Content item of an image.
+
+        Returns:
+            tuple[list[int], str]: Coordinates on the page and iiif link
+        """
         # Images cannot be on multiple pages
         num_pages = len(content_item['m']['pp'])
         assert num_pages == 1, "Image is on more than one page"
@@ -322,7 +440,8 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         assert len(parts) >= 1, f"No parts for image {content_item['m']['id']}"
         
         if len(parts) > 1:
-            logger.info(f"Found multiple parts for image {content_item['m']['id']}, selecting largest one")
+            logger.info("Found multiple parts for image "
+                         f"{content_item['m']['id']}, selecting largest one")
         
         coords = None
         max_area = 0
@@ -330,21 +449,34 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         for part in parts:
             comp_id = part['comp_id']
             
-            elements = page.xml.findAll(["ComposedBlock", "TextBlock"], {"ID": comp_id})
-            assert len(elements) <= 1, "Image comp_id matches multiple TextBlock tags"
+            elements = page.xml.findAll(["ComposedBlock", "TextBlock"], 
+                                        {"ID": comp_id})
+            assert_msg="Image comp_id matches multiple TextBlock tags"
+            assert len(elements) <= 1, assert_msg
             if len(elements) == 0:
                 continue
             
             element = elements[0]
-            hpos, vpos, width, height = element.get('HPOS'), element.get('VPOS'), element.get('WIDTH'), element.get('HEIGHT')
+            hpos, vpos = element.get('HPOS'), element.get('VPOS')
+            width, height = element.get('WIDTH'), element.get('HEIGHT')
             
             # Select largest image
             area = int(float(width)) * int(float(height))
             if area > max_area:
                 max_area = area
-                coords = [int(float(hpos)), int(float(vpos)), int(float(width)), int(float(height))]
+                coords = [int(float(hpos)), int(float(vpos)), 
+                          int(float(width)), int(float(height))]
         
-        coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
-        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, ",".join([str(x) for x in coords]), 'full', '0', 'default.jpg')
+        coords = convert_coordinates(coords, 
+                                     self.image_properties[page.number], 
+                                     page.page_width)
+        
+        iiif_link = os.path.join(
+            IIIF_ENDPOINT_URL, page.id, 
+            ",".join([str(x) for x in coords]), 
+            'full', 
+            '0', 
+            'default.jpg'
+        )
         
         return coords, iiif_link
