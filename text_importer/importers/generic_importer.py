@@ -111,7 +111,7 @@ def main(issue_class: Type[NewspaperIssue], detect_func, select_func):
         return
     
     init_logger(logger, log_level, log_file)
-    logger.debug("CLI arguments received: {}".format(args))
+    logger.info("CLI arguments received: {}".format(args))
     
     # start the dask local cluster
     client = get_dask_client(scheduler, log_file, log_level)
