@@ -32,9 +32,9 @@ def test_import_issues():
             issues,
             out_dir=out_dir,
             s3_bucket=None,
-            issue_class=BnfNewspaperIssue,
+            issue_class=BnfEnNewspaperIssue,
             image_dirs=None,
-            temp_dir=temp_dir,
+            temp_dir=tmp_dir,
             chunk_size=None
     )
 
