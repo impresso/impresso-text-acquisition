@@ -183,7 +183,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                 content_item['m']['pp'].append(pge_no)
         
         if div_type in [CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE]:
-            content_item['m']['c'], content_item['iiif_link'] = self._get_image_info(content_item)
+            content_item['c'], content_item['m']['iiif_link'] = self._get_image_info(content_item)
         return content_item
     
     def _decompose_section(self, div):
@@ -279,8 +279,8 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                 coords = [int(float(hpos)), int(float(vpos)), int(float(width)), int(float(height))]
         
         # coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
-        iiif_link = os.path.join(IIIF_ENDPOINT_URL, self.ark_link, "f{}".format(page.number),
-                                 ",".join([str(x) for x in coords]), 'full', '0', 'default.jpg')
+        iiif_link = os.path.join(IIIF_ENDPOINT_URL, self.ark_link, 
+                                 "f{}".format(page.number), "info.json")
         
         return coords, iiif_link
     

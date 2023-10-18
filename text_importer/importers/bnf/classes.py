@@ -245,7 +245,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
             embedded.append(ci)
         return embedded, item_counter
     
-    def _get_image_iiif_link(self, ci_id: str, parts: List) -> str:
+    def _get_image_iiif_link(self, ci_id: str, parts: List) -> tuple[str]:
         """ Gets the image iiif link given the ID of the CI (
         
         :param str ci_id: The ID of the image CI
@@ -267,9 +267,8 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                 logger.warning(f"Could not find image {image_part_id} for CI {ci_id}")
             else:
                 coords = distill_coordinates(block)
-                iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.ark_link, ",".join(str(c) for c in coords),
-                                         IIIF_IMAGE_SUFFIX)
-        return iiif_link
+                iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.ark_link, "info.json")
+        return coords, iiif_link
     
     def _parse_mets(self):
         """Parses the METS file for the current Issue"""
@@ -289,7 +288,9 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         for x in content_items:
             x['m']['pp'] = list(set(c['comp_page_no'] for c in x['l']['parts']))
             if x['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
-                x['m']['iiif_link'] = self._get_image_iiif_link(x['m']['id'], x['l']['parts'])
+                x['c'], x['m']['iiif_link'] = self._get_image_iiif_link(
+                    x['m']['id'], x['l']['parts']
+                )
         
         self.pages = list(self.pages.values())
         

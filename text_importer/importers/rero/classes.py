@@ -313,8 +313,8 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                 content_item['m']['pp'].append(pge_no)
         
         if content_item['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
-            (content_item['m']['c'], 
-             content_item['iiif_link']) = self._get_image_info(content_item)
+            (content_item['c'], 
+             content_item['m']['iiif_link']) = self._get_image_info(content_item)
         return content_item
     
     def _decompose_section(self, div: Tag) -> list[Tag]:
@@ -471,12 +471,6 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                                      self.image_properties[page.number], 
                                      page.page_width)
         
-        iiif_link = os.path.join(
-            IIIF_ENDPOINT_URL, page.id, 
-            ",".join([str(x) for x in coords]), 
-            'full', 
-            '0', 
-            'default.jpg'
-        )
+        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, "info.json")
         
         return coords, iiif_link
