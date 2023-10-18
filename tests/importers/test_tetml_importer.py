@@ -118,7 +118,7 @@ def test_verify_imported_issues():
     logger.info("Starting test_verify_imported_issues in test_tetml_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng,'"data/out/')
+    inp_dir = get_pkg_resource(f_mng,'data/out/')
     expected_data_dir = get_pkg_resource(f_mng,'data/expected/Tetml')
 
     # consider only newspapers in Tetml format
