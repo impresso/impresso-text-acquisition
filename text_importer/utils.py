@@ -1,8 +1,10 @@
 import json
 import logging
 import os
+import contextlib
+import pathlib
+import importlib_resources
 
-import pkg_resources
 import python_jsonschema_objects as pjs
 
 logger = logging.getLogger(__name__)
@@ -37,6 +39,27 @@ def init_logger(
     _logger.info("Logger successfully initialised")
     return _logger
 
+def get_pkg_resource(
+    file_manager: contextlib.ExitStack, path: str, package: str = "text_importer"
+) -> pathlib.PosixPath:
+    """Return the resource at `path` in `package`, using a context manager.
+
+    Note: 
+        The context manager `file_manager` needs to be instantiated prior to 
+        calling this function and should be closed once the package resource 
+        is no longer of use.
+
+    Args:
+        file_manager (contextlib.ExitStack): Context manager.
+        path (str): Path to the desired resource in given package.
+        package (str, optional): Package name. Defaults to "text_importer".
+
+    Returns:
+        pathlib.PosixPath: Path to desired managed resource.
+    """
+    ref = importlib_resources.files(package)/path
+    return file_manager.enter_context(importlib_resources.as_file(ref))
+
 
 def get_page_schema(
     schema_folder: str = "impresso-schemas/json/newspaper/page.schema.json"
@@ -46,11 +69,13 @@ def get_page_schema(
     :param schema_folder: path to the schema folder (default="./schemas/")
     :rtype: `python_jsonschema_objects.util.Namespace`
     """
-    schema_path = pkg_resources.resource_filename("text_importer", schema_folder)
+    file_manager = contextlib.ExitStack()
+    schema_path = get_pkg_resource(file_manager, schema_folder)
     with open(os.path.join(schema_path), "r") as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().NewspaperPage
+    file_manager.close()
     return ns
 
 
@@ -63,11 +88,13 @@ def get_issue_schema(
     :type schema_folder: string
     :rtype: `python_jsonschema_objects.util.Namespace`
     """
-    schema_path = pkg_resources.resource_filename("text_importer", schema_folder)
+    file_manager = contextlib.ExitStack()
+    schema_path = get_pkg_resource(file_manager, schema_folder)
     with open(os.path.join(schema_path), "r") as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().NewspaperIssue
+    file_manager.close()
     return ns
 
 
