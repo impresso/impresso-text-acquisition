@@ -9,7 +9,9 @@ Please refer to the [documentation](http://impresso-text-importer.rtfd.io/) for 
 
 ## License
 
-The 'impresso - Media Monitoring of the Past' project is funded by the Swiss National Science Foundation (SNSF) under  grant number [CRSII5_173719](http://p3.snf.ch/project-173719) (Sinergia program). The project aims at developing tools to process and explore large-scale collections of historical newspapers, and at studying the impact of this new tooling on historical research practices. More information at https://impresso-project.ch.
+The second project 'impresso - Media Monitoring of the Past II. Beyond Borders: Connecting Historical Newspapers and Radio' ('impresso') is funded by the Swiss National Science Foundation (SNSF 213585) and the Luxembourg National Research Fund (17498891).
+
+The first project, 'impresso - Media Monitoring of the Past' was funded by the Swiss National Science Foundation (SNSF) under  grant number [CRSII5_173719](http://p3.snf.ch/project-173719) (Sinergia program). The projects aim at developing tools to process and explore large-scale collections of historical newspapers, and at studying the impact of this new tooling on historical research practices. More information at https://impresso-project.ch.
 
 Copyright (C) 2020  The *impresso* team (contributors to this program: Matteo Romanello, Maud Ehrmann, Alex Flückliger, Edoardo Tarek Höelzl).
 
