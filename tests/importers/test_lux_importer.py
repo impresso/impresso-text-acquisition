@@ -1,11 +1,16 @@
+import bz2
 import json
+import logging
+import os
+from glob import glob
 import logging
 
 from contextlib import ExitStack
 
 from text_importer.utils import get_pkg_resource
+from text_importer.importers import CONTENTITEM_TYPE_IMAGE
 from text_importer.importers.core import import_issues
-from text_importer.importers.lux.classes import LuxNewspaperIssue
+from text_importer.importers.lux.classes import LuxNewspaperIssue, IIIF_ENDPOINT_URL
 from text_importer.importers.lux.detect import detect_issues as lux_detect_issues
 from text_importer.importers.lux.detect import select_issues as lux_select_issues
 
@@ -80,6 +85,43 @@ def test_selective_import():
     logger.info("Finished test_selective_import, closing file manager.")
     f_mng.close()
 
+def check_link(link: str):
+    return IIIF_ENDPOINT_URL in link and "ark:" in link and "ark:/" not in link
+
+def check_iiif_links(issue_data):
+    items = issue_data['i']
+    imgs = [i for i in items if i['m']['tp'] == CONTENTITEM_TYPE_IMAGE]
+    return (len(imgs) == 0 or 
+            all(check_link(data['m']['iiif_link']) for data in imgs))
+
+
+def test_image_iiif_links():
+
+    logger.info("Starting test_image_iiif_links in test_lux_importer.py")
+    f_mng = ExitStack()
+    inp_dir = get_pkg_resource(f_mng, 'data/sample_data/Luxembourg/')
+    out_dir = get_pkg_resource(f_mng, 'data/out/')
+    
+    issues = lux_detect_issues(base_dir=inp_dir,)
+    
+    assert issues is not None
+    assert len(issues) > 0
+    
+    journals = set([x.journal for x in issues])
+    blobs = [f"{j}*.jsonl.bz2" for j in journals]
+    issue_files = [f for b in blobs for f in glob(os.path.join(out_dir, b))]
+    logger.info(issue_files)
+    
+    for filename in issue_files:
+        with bz2.open(filename, "rt") as bzinput:
+            for line in bzinput:
+                issue = json.loads(line)
+                assert check_iiif_links(issue), (
+                    "Issue as wrong iiif_links."
+                )
+
+    logger.info("Finished test_image_iiif_links, closing file manager.")
+    f_mng.close()
 
 # # TODO: adapt it to Lux data
 # def test_verify_imported_issues():
