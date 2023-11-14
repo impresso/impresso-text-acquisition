@@ -267,7 +267,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                 logger.warning(f"Could not find image {image_part_id} for CI {ci_id}")
             else:
                 coords = distill_coordinates(block)
-                iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.ark_link, "info.json")
+                iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.ark_link, IIIF_MANIFEST_SUFFIX)
         return coords, iiif_link
     
     def _parse_mets(self):

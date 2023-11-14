@@ -20,7 +20,8 @@ Pageschema = get_page_schema()
 logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URL = "https://gallica.bnf.fr/iiif/ark:/12148/"
-IIIF_SUFFIX = "full/full/0/default.jpg"
+IIIF_MANIFEST_SUFFIX = "full/full/0/manifest.json"
+IIIF_IMAGE_SUFFIX = "full/full/0/default.jpg"
 SECTION_TYPE = "section"
 
 type_translation = {
@@ -30,7 +31,7 @@ type_translation = {
 
 
 class BnfEnNewspaperPage(MetsAltoNewspaperPage):
-    """Class representing a page in RERO (Mets/Alto) data."""
+    """Class representing a page in BNF-EN (Mets/Alto) data."""
     
     def __init__(self, _id: str, n: int, filename: str, basedir: str):
         super().__init__(_id, n, filename, basedir)
@@ -41,7 +42,7 @@ class BnfEnNewspaperPage(MetsAltoNewspaperPage):
     def add_issue(self, issue):
         self.issue = issue
         ark = issue.ark_link
-        self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, ark, "f{}".format(self.number), IIIF_SUFFIX)
+        self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, ark, "f{}".format(self.number), IIIF_IMAGE_SUFFIX)
 
 
 class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
@@ -280,7 +281,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         
         # coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
         iiif_link = os.path.join(IIIF_ENDPOINT_URL, self.ark_link, 
-                                 "f{}".format(page.number), "info.json")
+                                 "f{}".format(page.number), IIIF_MANIFEST_SUFFIX)
         
         return coords, iiif_link
     

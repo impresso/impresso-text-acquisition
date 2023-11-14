@@ -25,6 +25,8 @@ Pageschema = get_page_schema()
 logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
+IIIF_MANIFEST_SUFFIX = 'info.json'
+IIIF_IMAGE_SUFFIX = 'full/full/0/default.jpg'
 
 # Types used in RERO2/RERO3 that are not in impresso schema
 SECTION_TYPE = "section"
@@ -471,6 +473,6 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                                      self.image_properties[page.number], 
                                      page.page_width)
         
-        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, "info.json")
+        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, IIIF_MANIFEST_SUFFIX)
         
         return coords, iiif_link
