@@ -38,7 +38,7 @@ IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
-IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/iiif/2"
+IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/image/iiif/2"
 
 
 class LuxNewspaperPage(MetsAltoNewspaperPage):
@@ -589,7 +589,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         content_items += section_cis
         # Set ark_id
         ark_link = mets_doc.find('mets').get('OBJID')
-        self.ark_id = ark_link.replace('https://persist.lu/', '')
+        self.ark_id = ark_link.replace('https://persist.lu/ark:/', 'ark:')
         
         for ci in content_items:
             
