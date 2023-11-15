@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "text_importer"
+authors = [{name="Matteo Romanello", email="matteo.romanello@gmail.com"}]
+description = "Library to import newspaper data from a variety of OCR formats into Impresso's JSON format."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: AGPL License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dynamic = ["version"]
+
+dependencies = [
+    "beautifulsoup4",
+    "docopt",
+    "pandas",
+    "dask[complete]",
+    "lxml",
+    "boto",
+    "python-jsonschema-objects",
+    "regex",
+    "filelock",
+    "impresso_pycommons"
+]
+
+[project.urls]
+Homepage = "https://github.com/impresso/impresso-text-acquisition"
+Documentaton = "https://impresso-text-importer.readthedocs.io/en/latest/index.html" 
+
+[tool.setuptools.dynamic]
+version = {attr = "text_importer.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["text_importer*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+text_importer = [
+    "impresso-schemas/json/*/*.json",
+    "impresso-schemas/docs/*/*.json",
+    "impresso-schemas/*",
+]
+
+[project.scripts]
+impresso-txt-importer = "text_importer.importer.generic_importer:main"

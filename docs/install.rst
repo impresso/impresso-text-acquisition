@@ -14,4 +14,4 @@ For now you'll have to:
   pip install -r requirements.txt
 
   # install the TextImporter
-  python setup.py install
+  pip install -e .

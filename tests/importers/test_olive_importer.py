@@ -1,10 +1,11 @@
 import os
 import json
-import pkg_resources
+
+from contextlib import ExitStack
 
 from dask import bag as db
 
-from text_importer.utils import verify_imported_issues
+from text_importer.utils import verify_imported_issues, get_pkg_resource
 from text_importer.importers.core import import_issues
 from text_importer.importers.olive.detect import olive_detect_issues
 from text_importer.importers.olive.classes import OliveNewspaperIssue
@@ -17,33 +18,33 @@ logger = logging.getLogger(__name__)
 def test_import_issues():
     """Test the Olive XML importer with sample data."""
 
-    inp_dir = pkg_resources.resource_filename(
-        'text_importer',
-        'data/sample_data/Olive/'
-    )
+    logger.info("Starting test_import_issues in test_olive_importer.py.")
 
-    access_rights_file = pkg_resources.resource_filename(
-        'text_importer',
-        'data/sample_data/Olive/access_rights.json'
-    )
+    f_mng = ExitStack()
+    inp_dir = get_pkg_resource(f_mng, 'data/sample_data/Olive/')
+    ar_file = get_pkg_resource(f_mng, 'data/sample_data/Olive/access_rights.json')
+    out_dir = get_pkg_resource(f_mng, 'data/out/')
+    tmp_dir = get_pkg_resource(f_mng, 'data/temp/')
 
     issues = olive_detect_issues(
         base_dir=inp_dir,
-        access_rights=access_rights_file
+        access_rights=ar_file
     )
     assert issues is not None
     assert len(issues) > 0
 
-    result = import_issues(
+    import_issues(
         issues,
-        out_dir=pkg_resources.resource_filename('text_importer', 'data/out/'),
+        out_dir=out_dir,
         s3_bucket=None,
         issue_class=OliveNewspaperIssue,
         image_dirs="/mnt/project_impresso/images/",
-        temp_dir=pkg_resources.resource_filename('text_importer', 'data/temp/'),
+        temp_dir=tmp_dir,
         chunk_size=None
     )
-    print(result)
+    
+    logger.info("Finished test_import_issues, closing file manager.")
+    f_mng.close()
 
 
 def test_verify_imported_issues():
@@ -54,16 +55,11 @@ def test_verify_imported_issues():
     2. a given content item ID should correspond always to the same piece of
     data.
     """
+    logger.info("Start test_verify_imported_issues in test_olive_importer.py")
 
-    inp_dir = pkg_resources.resource_filename(
-        'text_importer',
-        'data/out/'
-    )
-
-    expected_data_dir = pkg_resources.resource_filename(
-        'text_importer',
-        'data/expected/Olive'
-    )
+    f_mng = ExitStack()
+    inp_dir = get_pkg_resource(f_mng, 'data/out/')
+    expected_data_dir = get_pkg_resource(f_mng, 'data/expected/Olive')
 
     # consider only newspapers in Olive format
     newspapers = ["GDL", "JDG", "IMP"]
@@ -98,3 +94,6 @@ def test_verify_imported_issues():
             expected_issue_json = json.load(infile)
 
         verify_imported_issues(actual_issue_json, expected_issue_json)
+
+        logger.info("test_verify_imported_issues done, closing file manager.")
+        f_mng.close()

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FedGaz TETML importer &mdash; Impresso TextImporter 0.12.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=61ccb1f1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Writing a new importer" href="../custom_importer.html" />
+    <link rel="prev" title="Generic TETML importer" href="tetml.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Impresso TextImporter
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">TextImporter</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">FedGaz TETML importer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.fedgaz.classes">Custom classes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Writing a new importer</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Impresso TextImporter</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../importers.html">TextImporter</a></li>
+      <li class="breadcrumb-item active">FedGaz TETML importer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/importers/fedgaz.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="fedgaz-tetml-importer">
+<h1>FedGaz TETML importer<a class="headerlink" href="#fedgaz-tetml-importer" title="Link to this heading"></a></h1>
+<p>This importer is an adapted version of the generic TETML importer to parse the Federal Gazette data, which is complemented by an additional metadata file besides the document files in the TETML format.</p>
+<p>The separate metadata file is used to look up additional information for documents not provided by the respective TETML files. The file needs to be located in the top folder of the input directory and is named <cite>metadata.tsv</cite>. Moreover, the dataset provides the following columns: <cite>article_docid</cite>, <cite>issue_date,</cite> <cite>article_title</cite>, <cite>volume_language</cite>, <cite>canonical_page_first</cite>, <cite>canonical_page_last</cite>, <cite>pruned</cite>.
+Notably, the tetml file’s name needs to correspond with the <cite>article_docid</cite> of the metadata as it is used as a key to look up other information (e.g., <cite>10000032.word.tetml</cite>).</p>
+<p>By default, the importer assumes that an article starts on a new page. Practically, there are many cases of in-page segmentations (i.e., an article starts on the same page where the previous ends). Thus, the FedGaz importer also performs a heuristic article segmentation for documents that share the page with the subsequent articles, indicated by the attribute <cite>pruned</cite>.
+Unless the attribute is set to <cite>True</cite>, the content of the shared page is automatically assigned to the subsequent article, limiting an article to its last full page. However, in case of an indicated pruning, the importer performs a fuzzy search to locate the subsequent article title on its starting page. If successful, the procedure sets the article boundary at the matching position and reassigns the content accordingly.</p>
+<section id="module-text_importer.importers.fedgaz.classes">
+<span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.fedgaz.classes" title="Link to this heading"></a></h2>
+<p>Classes to handle the TETML OCR format.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_importer.importers.fedgaz.classes.FedgazNewspaperIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">FedgazNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDirectory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.fedgaz.classes.FedgazNewspaperIssue" title="Link to this definition"></a></dt>
+<dd><p>Class representing a issue in FedGaz TETML format.</p>
+<p>All functions defined in this child class are used to parse additional
+information specific for FedGaz and extend the generic TETML importer.</p>
+<p>Upon object initialization the following things happen:</p>
+<ul class="simple">
+<li><p>index all the tetml documents of an issue</p></li>
+<li><p>parse the metadata file to determine the logical structure of the issue</p></li>
+<li><p>parse the tetml file that contains the actual content and some metadata</p></li>
+<li><p>perform a heuristic article segmentation</p></li>
+<li><p>redefine metadata and initialize page objects (instances of <code class="docutils literal notranslate"><span class="pre">TetmlNewspaperPage</span></code>).</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Newspaper issue with relevant information.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="text_importer.importers.fedgaz.classes.FedgazNewspaperIssue.parse_articles">
+<span class="sig-name descname"><span class="pre">parse_articles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.fedgaz.classes.FedgazNewspaperIssue.parse_articles" title="Link to this definition"></a></dt>
+<dd><p>Parse all articles of this issue</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_importer.importers.fedgaz.classes.FedgazNewspaperPage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">FedgazNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_xml</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.fedgaz.classes.FedgazNewspaperPage" title="Link to this definition"></a></dt>
+<dd><p>Class representing a page in FedGaz TETML format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<em>int</em>) – Page number.</p></li>
+<li><p><strong>page_content</strong> (<em>dict</em>) – Nested article content of a single page</p></li>
+<li><p><strong>page_xml</strong> (<em>str</em>) – Path to the Tetml file of the page.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="text_importer.importers.fedgaz.classes.FedgazNewspaperPage.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.fedgaz.classes.FedgazNewspaperPage.parse" title="Link to this definition"></a></dt>
+<dd><p>Process the page XML file and transform into canonical Page format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This lazy behavior means that the page contents are not processed
+upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
+method is called.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_importer.importers.fedgaz.classes.TokPosition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">TokPosition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">art</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">para</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tok</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.fedgaz.classes.TokPosition" title="Link to this definition"></a></dt>
+<dd><p>Create a an identifier to store the position of the fuzzy match.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>art</strong> (<em>int</em>) – Article number.</p></li>
+<li><p><strong>page</strong> (<em>int</em>) – Page number.</p></li>
+<li><p><strong>reg</strong> (<em>int</em>) – Region number.</p></li>
+<li><p><strong>para</strong> (<em>int</em>) – Paragraph number.</p></li>
+<li><p><strong>line</strong> (<em>int</em>) – Line number.</p></li>
+<li><p><strong>tok</strong> (<em>int</em>) – Token number.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Create new instance of TokPosition(art, page, reg, para, line, tok)</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tetml.html" class="btn btn-neutral float-left" title="Generic TETML importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../custom_importer.html" class="btn btn-neutral float-right" title="Writing a new importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Matteo Romanello, Pauline Conti &amp; Impresso team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

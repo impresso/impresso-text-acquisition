@@ -7,7 +7,6 @@ Available importers
 The *Impresso TextImporter* already supports a number of formats (and flavours of standard formats), while a few others
 are currently being developed.
 
-<<<<<<< HEAD
 The following importer CLI scripts are already available:
 
 - :py:mod:`text_importer.scripts.oliveimporter`: importer for the *Olive XML format*, used by
@@ -16,9 +15,16 @@ The following importer CLI scripts are already available:
   to encode and deliver part of its data.
 - :py:mod:`text_importer.scripts.luximporter`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de Luxembourg (BNL)
   <https://bnl.public.lu/>`_ to encode and deliver its newspaper data.
-- :py:mod:`text_importer.scripts.swaimporter.py`: ALTO flavor of the `Basel University Library`.
+- :py:mod:`text_importer.scripts.bnfimporter`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de France (BNF)
+  <https://www.bnf.fr/en/>`_ to encode and deliver its newspaper data.
+- :py:mod:`text_importer.scripts.swaimporter`: ALTO flavor of the `Basel University Library`.
 - :py:mod:`text_importer.scripts.blimporter`: importer for the Mets/ALTO flavor used by the `British Library (BL) <https://www.bl.uk/>`_
   to encode and deliver its newspaper data.
+- :py:mod:`text_importer.scripts.tetml`: generic importer for the *TETML format*, produced by `PDFlib TET <https://www.pdflib.com/products/tet/overview/>`_.
+- :py:mod:`text_importer.scripts.fedgaz`: importer for the *TETML format* with separate metadata file and a heuristic article segmentation,
+  used to parse the `Federal Gazette <https://www.admin.ch/gov/de/start/bundesrecht/bundesblatt.html>`_.
+
+
 For further details on any of these implementations, please do refer to its documentation:
 
 .. toctree::
@@ -29,6 +35,10 @@ For further details on any of these implementations, please do refer to its docu
    importers/lux
    importers/rero
    importers/swa
+   importers/bl
+   importers/bnf
+   importers/tetml
+   importers/fedgaz
 
 Command-line interface
 ----------------------
@@ -60,7 +70,7 @@ This JSON file contains three properties:
 
 Here is a simple configuration file:
 
-.. code-block::
+.. code-block:: python
 
   {
     "newspapers": {
@@ -73,7 +83,7 @@ Here is a simple configuration file:
 This is what a more complex config file looks like (only contents for the decade 1950-1960 of GDL are processed):
 
 
-.. code-block::
+.. code-block:: python
 
   {
     "newspapers": {

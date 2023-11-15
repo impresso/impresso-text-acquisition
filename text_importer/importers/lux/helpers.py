@@ -1,17 +1,29 @@
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE
+from bs4.element import Tag
+from typing import Any
 
 NON_ARTICLE = ["advertisement", "death_notice"]
 
 
-def convert_coordinates(hpos, vpos, width, height, x_res, y_res):
-    """
-    x =   (coordinate['xResolution']/254.0) * coordinate['hpos']
+def convert_coordinates(hpos: int, vpos: int, width: int, height: int,
+                        x_res: float, y_res: float) -> list[int]:
+    """Convert the coordinates to iiif-compliant ones using the resolution.
 
-    y =   (coordinate['yResolution']/254.0) * coordinate['vpos']
+    - x = (coordinate['xResolution']/254.0) * coordinate['hpos']
+    - y = (coordinate['yResolution']/254.0) * coordinate['vpos']
+    - w = (coordinate['xResolution']/254.0) * coordinate['width']
+    - h = (coordinate['yResolution']/254.0) * coordinate['height']
 
-    w =  (coordinate['xResolution']/254.0) * coordinate['width']
+    Args:
+        hpos (int): Horizontal position coordinate of element.
+        vpos (int): Vertical position coordinate of element..
+        width (int): Width of element.
+        height (int): Height of element.
+        x_res (float): X-axis resolution of image.
+        y_res (float): Y-axis resolution of image.
 
-    h =  (coordinate['yResolution']/254.0) * coordinate['height']
+    Returns:
+        list[int]: Converted coordinates.
     """
     x = (x_res / 254) * hpos
     y = (y_res / 254) * vpos
@@ -19,18 +31,27 @@ def convert_coordinates(hpos, vpos, width, height, x_res, y_res):
     h = (y_res / 254) * height
     return [int(x), int(y), int(w), int(h)]
 
+def encode_ark(ark: str) -> str:
+    """Replaces (encodes) backslashes in the Ark identifier.
 
-def encode_ark(ark):
-    """Replaces (encodes) backslashes in the Ark identifier."""
+    Args:
+        ark (str): original ark identifier.
+
+    Returns:
+        str: New ark identifier with encoded backslashes.
+    """
     return ark.replace('/', '%2f')
 
 
-def div_has_body(div, body_type='body'):
-    """ Returns True if the given `div` has a body in it's direct children
-    
-    :param div:
-    :param body_type:
-    :return:
+def div_has_body(div: Tag, body_type='body') -> bool:
+    """Checks if the given `div` has a body in it's direct children.
+
+    Args:
+        div (Tag): `div` element to check.
+        body_type (str, optional): Content type of a body. Defaults to 'body'.
+
+    Returns:
+        bool: True if one or more of `div`'s direct children have a body.
     """
     children_types = set()
     for i in div.findChildren('div', recursive=False):
@@ -40,11 +61,17 @@ def div_has_body(div, body_type='body'):
     return body_type in children_types
 
 
-def section_is_article(section_div):
-    """ Returns True if the given div's children are all `ad_type`, except for "BODY" and "BODY_CONTENT"
-    
-    :param section_div:
-    :return:
+def section_is_article(section_div: Tag) -> bool:
+    """Check if the given section `div` is an article.
+
+    It's the case when none of `div`'s children are of non-article types
+    (except for "BODY" and "BODY_CONTENT"), which are ads or obituaries.
+
+    Args:
+        section_div (Tag): section `div` to check.
+
+    Returns:
+        bool: True if given `div` is an article section.
     """
     types = []
     for c in section_div.findChildren('div'):
@@ -54,12 +81,20 @@ def section_is_article(section_div):
     return not all(t in NON_ARTICLE for t in types)
 
 
-def find_section_articles(section_div, content_items):
-    """
-    Given a section div, parses all the articles inside of it, and searches the content items for that article.
-    :param section_div:
-    :param content_items:
-    :return:
+def find_section_articles(
+    section_div: Tag, content_items: list[dict[str, Any]]
+) -> list[str]:
+    """Parse the articles inside the section div and get their content item ID.
+
+    Recover the content item canonical ID corresponding to each article using 
+    the legacy ID (from the OCR) of the articles found in `div`'s children.
+
+    Args:
+        section_div (Tag): `div` with the articles for which to get CI IDs.
+        content_items (list[dict[str, Any]]): Content items already identified.
+
+    Returns:
+        list[str]: List of content item IDs for `div`'s children articles.
     """
     articles_lid = []
     for d in section_div.findChildren("div", {"TYPE": "ARTICLE"}):
@@ -76,19 +111,27 @@ def find_section_articles(section_div, content_items):
     return children_art
 
 
-def remove_section_cis(content_items, sections):
-    """
-    Given all the content items and the formed sections, filters out those that are contained in a section and returns the rest
-    :param content_items:
-    :param sections:
-    :return:
+def remove_section_cis(
+    content_items: list[dict[str, Any]], sections: list[dict[str, Any]]
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Remove undesired content items based on the formed sections.
+
+    Some content items are contained within a section and should not be in the
+    content items. Given the recovered section content items, they can be 
+    removed.
+
+    Args:
+        content_items (list[dict[str, Any]]): Content items, to be filtered.
+        sections (list[dict[str, Any]]): Formed section content items.
+
+    Returns:
+        tuple[list[dict[str, Any]], list[dict[str, Any]]]: Filtered 
+            content items and ones that were removed.
     """
     to_remove = [j for i in sections for j in i['l']['canonical_parts']]
     if len(to_remove) == 0:
         return content_items, []
-    
-    assert len(to_remove) == len(set(to_remove)), "Articles belonging to multiple sections"
-    
+        
     to_remove = set(to_remove)
     new_cis = []
     removed = []
@@ -97,22 +140,6 @@ def remove_section_cis(content_items, sections):
             new_cis.append(ci)
             removed.append(ci['m']['id'])
     
-    return new_cis, to_remove
+    return new_cis, list(to_remove)
 
 
-def parse_style(style_div):
-    font_family = style_div.get("FONTFAMILY")
-    font_size = style_div.get("FONTSIZE")
-    font_style = style_div.get("FONTSTYLE")
-    font_id = style_div.get("ID")
-    
-    font_name = font_family
-    if font_style is not None:
-        font_name = "{}-{}".format(font_name, font_style)
-    
-    style = {
-        "id": font_id,
-        "fs": int(font_size),
-        "f": font_name
-        }
-    return style

@@ -1,32 +1,67 @@
+"""Utility functions to parse Mets XML files."""
+
 import logging
-from typing import Dict
+from bs4 import BeautifulSoup
+from bs4.element import Tag
 
 logger = logging.getLogger(__name__)
 
 
-def parse_mets_filegroup(element) -> Dict:
-    # return a list of page image ids
-    
+def parse_mets_filegroup(mets_doc: BeautifulSoup) -> dict[int, str]:
+    """Parse ``<fileGrp>`` section to extract the page's OCR image ids.
+
+    The ``<fileGrp>`` section contains the names and ids of the images and text
+    files linked to the Mets XML file. Each page of the issue is associated to
+    a scan image file and ids.
+
+    Args:
+        mets_doc (BeautifulSoup): BeautifulSoup object of Mets XML document.
+
+    Returns:
+        dict[int, str]: Mapping from page number to page image id.
+    """
+    image_filegroup = mets_doc.findAll(
+        'fileGrp', {"USE": lambda x: x and x.lower() == 'images'}
+    )[0]
+
     return {
             int(child.get("SEQ")): child.get("ADMID")
-            for child in element.findAll('file')
+            for child in image_filegroup.findAll('file')
             }
 
 
-def parse_mets_amdsec(mets_doc, x_res: str, y_res: str, x_res_default=300, y_res_default=300) -> Dict:
+def parse_mets_amdsec(
+    mets_doc: BeautifulSoup, 
+    x_res: str, 
+    y_res: str, 
+    x_res_default: int = 300, 
+    y_res_default: int = 300
+) -> dict:
+    """Parse the ``<amdsec>`` section of Mets XML to extract image properties.
+
+    The ``<amdsec>`` section contains administrative metadata about the OCR, in
+    particular information about the image resolution allowing the coordinates 
+    conversion to iiif format.
+
+    TODO: Error occurs when `x_res` and `y_res` are not in `amd_sect` -> check
+    before.
+
+    Args:
+        mets_doc (BeautifulSoup): BeautifulSoup object of Mets XML document.
+        x_res (str): Name of field representing the X resolution.
+        y_res (str): Name of field representing the Y resolution.
+        x_res_default (int, optional): Default X_res. Defaults to 300.
+        y_res_default (int, optional): Default Y res. Defaults to 300.
+
+    Returns:
+        dict: Parsed image properties with default values if the field was not
+            found in the document.
     """
-    :param mets_doc: BeautifulSoup document of METS.xml
-    :param x_res: Field representing the X resolution
-    :param y_res: Field representing the Y resolution
-    :param x_res_default: Default X_res (300)
-    :param y_res_default: Default Y res (300)
-    :return: dict, containing the resolution for each image
-    """
-    image_filegroup = mets_doc.findAll('fileGrp', {"USE": lambda x: x and x.lower() == 'images'})[0]
-    page_image_ids = parse_mets_filegroup(image_filegroup)  # Returns {page: im_id}
+    page_image_ids = parse_mets_filegroup(mets_doc) # Returns {page: im_id}
     
     amd_sections = {
-            image_id: mets_doc.findAll('amdSec', {'ID': image_id})[0]  # Returns {page_id: amdsec}
+            # Returns {page_id: amdsec}
+            image_id: mets_doc.findAll('amdSec', {'ID': image_id})[0]  
             for image_id in page_image_ids.values()
             }
     
@@ -46,3 +81,19 @@ def parse_mets_amdsec(mets_doc, x_res: str, y_res: str, x_res_default=300, y_res
                     'y_resolution': y_res_default
                     }
     return image_properties_dict
+
+
+def get_dmd_sec(mets_doc: BeautifulSoup, filter: str) -> Tag:
+    """Extract the contents of a specific ``<dmdsec>`` from the Mets document.
+
+    The ``<dmdsec>`` section contains descriptive metadata. It's composed of 
+    several different subsections each identified with string IDs.
+
+    Args:
+        mets_doc (BeautifulSoup): BeautifulSoup object of Mets XML document.
+        filter (str): ID of the subsection of interest to filter the search.
+
+    Returns:
+        Tag: Contents of the desired ``<dmdsec>`` of the Mets XML document.
+    """
+    return mets_doc.find("dmdSec", {"ID": filter})

@@ -1,8 +1,10 @@
 import os
+import pathlib
 import dask
 import logging
 from dask.distributed import Client
-import pkg_resources
+from contextlib import ExitStack
+from text_importer.utils import get_pkg_resource
 
 DASK_WORKERS_NUMBER = 8
 DASK_MEMORY_LIMIT = "1G"
@@ -34,11 +36,16 @@ elif DASK_SCHEDULER_STRATEGY == 'external':
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+f_mng = ExitStack()
 
-log_file = pkg_resources.resource_filename(
-    'text_importer',
-    'data/tests.log'
-)
+log_dir = get_pkg_resource(f_mng, 'data/')
+out_dir = get_pkg_resource(f_mng, 'data/out/')
+temp_dir = get_pkg_resource(f_mng, 'data/temp/')
+log_file = get_pkg_resource(f_mng, 'data/tests.log')
+pathlib.Path(log_dir).mkdir(parents=True, exist_ok=True)
+pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
+pathlib.Path(temp_dir).mkdir(parents=True, exist_ok=True)
+
 handler = logging.FileHandler(filename=log_file, mode='w')
 formatter = logging.Formatter(
     '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'

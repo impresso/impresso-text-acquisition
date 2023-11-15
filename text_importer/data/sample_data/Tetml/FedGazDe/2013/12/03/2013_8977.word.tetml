@@ -1,0 +1,1060 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created by the PDFlib Text Extraction Toolkit TET (www.pdflib.com) -->
+<TET xmlns="http://www.pdflib.com/XML/TET3/TET-3.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.pdflib.com/XML/TET3/TET-3.0
+ http://www.pdflib.com/XML/TET3/TET-3.0.xsd"
+ version="4.2">
+<Creation platform="Linux-x86_64" tetVersion="4.3p1" date="2019-09-09T09:55:24+02:00" />
+<Document filename="data_pdf/FedGazDe/2013/12/03/2013_8977.pdf" pageCount="1" filesize="90979" linearized="false" pdfVersion="1.4" pdfa="PDF/A-1b:2005">
+<DocInfo>
+<Author>Schweizerische Bundeskanzlei</Author>
+<CreationDate>2013-11-28T10:34:15+01:00</CreationDate>
+<Creator>Schweizerische Bundeskanzlei (KAV)</Creator>
+<ModDate>2013-11-28T10:34:15+01:00</ModDate>
+<Producer>lgbk-20131128</Producer>
+<Title>BBl 2013 8977</Title>
+</DocInfo>
+<Metadata>
+<x:xmpmeta xmlns:x='adobe:ns:meta/' x:xmptk='Image::ExifTool 9.03'>
+<rdf:RDF xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+ <rdf:Description rdf:about=''
+  xmlns:dc='http://purl.org/dc/elements/1.1/'>
+  <dc:creator>
+   <rdf:Seq>
+    <rdf:li>Schweizerische Bundeskanzlei (KAV)</rdf:li>
+   </rdf:Seq>
+  </dc:creator>
+  <dc:format>application/pdf</dc:format>
+  <dc:title>
+   <rdf:Alt>
+    <rdf:li xml:lang='x-default'>BBl 2013 8977</rdf:li>
+   </rdf:Alt>
+  </dc:title>
+ </rdf:Description>
+
+ <rdf:Description rdf:about=''
+  xmlns:pdf='http://ns.adobe.com/pdf/1.3/'>
+  <pdf:Author>Schweizerische Bundeskanzlei</pdf:Author>
+  <pdf:Producer>lgbk-20131128</pdf:Producer>
+ </rdf:Description>
+
+ <rdf:Description rdf:about=''
+  xmlns:pdfaid='http://www.aiim.org/pdfa/ns/id/'>
+  <pdfaid:conformance>B</pdfaid:conformance>
+  <pdfaid:part>1</pdfaid:part>
+ </rdf:Description>
+
+ <rdf:Description rdf:about=''
+  xmlns:xmp='http://ns.adobe.com/xap/1.0/'>
+  <xmp:CreateDate>2013-11-28T10:34:15+01:00</xmp:CreateDate>
+  <xmp:CreatorTool>PScript5.dll Version 5.2.2</xmp:CreatorTool>
+  <xmp:ModifyDate>2013-11-28T10:34:15+01:00</xmp:ModifyDate>
+ </rdf:Description>
+
+ <rdf:Description rdf:about=''
+  xmlns:xmpMM='http://ns.adobe.com/xap/1.0/mm/'>
+  <xmpMM:DocumentID>uuid:a94ffd04-d8e9-4b37-994d-81b7608e5f79</xmpMM:DocumentID>
+  <xmpMM:InstanceID>uuid:d885788a-d98d-490d-8fc4-95a1f246bbe7</xmpMM:InstanceID>
+ </rdf:Description>
+</rdf:RDF>
+</x:xmpmeta>
+</Metadata>
+<Options>tetml={} </Options>
+<Pages>
+<Page number="1" width="420" height="595.22">
+<Options>tetml={} granularity=word tetml={elements={line} glyphdetails={all}} contentanalysis={dehyphenate=true keephyphenglyphs=true}</Options>
+<Content granularity="word" dehyphenation="true" dropcap="true" font="true" geometry="true" shadow="true" sub="true" sup="true">
+<Para>
+ <Line>
+  <Word>
+   <Text>Fernmeldegesetz</Text>
+   <Box llx="79.41" lly="550.36" urx="143.86" ury="559.36">
+    <Glyph font="F1" size="9" x="79.41" y="550.36" width="5.50">F</Glyph>
+    <Glyph font="F1" size="9" x="84.91" y="550.36" width="4.00">e</Glyph>
+    <Glyph font="F1" size="9" x="88.90" y="550.36" width="4.00">r</Glyph>
+    <Glyph font="F1" size="9" x="92.90" y="550.36" width="5.00">n</Glyph>
+    <Glyph font="F1" size="9" x="97.90" y="550.36" width="7.50">m</Glyph>
+    <Glyph font="F1" size="9" x="105.39" y="550.36" width="4.00">e</Glyph>
+    <Glyph font="F1" size="9" x="109.39" y="550.36" width="2.50">l</Glyph>
+    <Glyph font="F1" size="9" x="111.89" y="550.36" width="5.00">d</Glyph>
+    <Glyph font="F1" size="9" x="116.89" y="550.36" width="4.00">e</Glyph>
+    <Glyph font="F1" size="9" x="120.88" y="550.36" width="4.50">g</Glyph>
+    <Glyph font="F1" size="9" x="125.38" y="550.36" width="4.00">e</Glyph>
+    <Glyph font="F1" size="9" x="129.38" y="550.36" width="3.50">s</Glyph>
+    <Glyph font="F1" size="9" x="132.88" y="550.36" width="4.00">e</Glyph>
+    <Glyph font="F1" size="9" x="136.87" y="550.36" width="3.00">t</Glyph>
+    <Glyph font="F1" size="9" x="139.86" y="550.36" width="4.00">z</Glyph>
+   </Box>
+  </Word>
+ </Line>
+</Para>
+<Para>
+ <Line>
+  <Word>
+   <Text>Notifikation</Text>
+   <Box llx="79.41" lly="532.36" urx="131.08" ury="542.35">
+    <Glyph font="F1" size="9.99" x="79.41" y="532.36" width="7.21">N</Glyph>
+    <Glyph font="F1" size="9.99" x="86.63" y="532.36" width="5.00">o</Glyph>
+    <Glyph font="F1" size="9.99" x="91.63" y="532.36" width="3.33">t</Glyph>
+    <Glyph font="F1" size="9.99" x="94.96" y="532.36" width="2.78">i</Glyph>
+    <Glyph font="F1" size="9.99" x="97.74" y="532.36" width="3.33">f</Glyph>
+    <Glyph font="F1" size="9.99" x="101.07" y="532.36" width="2.78">i</Glyph>
+    <Glyph font="F1" size="9.99" x="103.86" y="532.36" width="5.55">k</Glyph>
+    <Glyph font="F1" size="9.99" x="109.41" y="532.36" width="5.00">a</Glyph>
+    <Glyph font="F1" size="9.99" x="114.41" y="532.36" width="3.33">t</Glyph>
+    <Glyph font="F1" size="9.99" x="117.75" y="532.36" width="2.78">i</Glyph>
+    <Glyph font="F1" size="9.99" x="120.53" y="532.36" width="5.00">o</Glyph>
+    <Glyph font="F1" size="9.99" x="125.53" y="532.36" width="5.55">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Eröffnung</Text>
+   <Box llx="133.59" lly="532.36" urx="178.04" ury="542.35">
+    <Glyph font="F1" size="9.99" x="133.59" y="532.36" width="6.66">E</Glyph>
+    <Glyph font="F1" size="9.99" x="140.26" y="532.36" width="4.44">r</Glyph>
+    <Glyph font="F1" size="9.99" x="144.70" y="532.36" width="5.00">ö</Glyph>
+    <Glyph font="F1" size="9.99" x="149.70" y="532.36" width="3.33">f</Glyph>
+    <Glyph font="F1" size="9.99" x="153.03" y="532.36" width="3.33">f</Glyph>
+    <Glyph font="F1" size="9.99" x="156.36" y="532.36" width="5.55">n</Glyph>
+    <Glyph font="F1" size="9.99" x="161.92" y="532.36" width="5.55">u</Glyph>
+    <Glyph font="F1" size="9.99" x="167.48" y="532.36" width="5.55">n</Glyph>
+    <Glyph font="F1" size="9.99" x="173.04" y="532.36" width="5.00">g</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Nummernwiderrufsverfahren</Text>
+   <Box llx="180.55" lly="532.36" urx="308.29" ury="542.35">
+    <Glyph font="F1" size="9.99" x="180.55" y="532.36" width="7.21">N</Glyph>
+    <Glyph font="F1" size="9.99" x="187.77" y="532.36" width="5.55">u</Glyph>
+    <Glyph font="F1" size="9.99" x="193.32" y="532.36" width="8.32">m</Glyph>
+    <Glyph font="F1" size="9.99" x="201.65" y="532.36" width="8.32">m</Glyph>
+    <Glyph font="F1" size="9.99" x="209.98" y="532.36" width="4.44">e</Glyph>
+    <Glyph font="F1" size="9.99" x="214.42" y="532.36" width="4.44">r</Glyph>
+    <Glyph font="F1" size="9.99" x="218.86" y="532.36" width="5.55">n</Glyph>
+    <Glyph font="F1" size="9.99" x="224.42" y="532.36" width="7.21">w</Glyph>
+    <Glyph font="F1" size="9.99" x="231.64" y="532.36" width="2.78">i</Glyph>
+    <Glyph font="F1" size="9.99" x="234.42" y="532.36" width="5.55">d</Glyph>
+    <Glyph font="F1" size="9.99" x="239.98" y="532.36" width="4.44">e</Glyph>
+    <Glyph font="F1" size="9.99" x="244.42" y="532.36" width="4.44">r</Glyph>
+    <Glyph font="F1" size="9.99" x="248.86" y="532.36" width="4.44">r</Glyph>
+    <Glyph font="F1" size="9.99" x="253.30" y="532.36" width="5.55">u</Glyph>
+    <Glyph font="F1" size="9.99" x="258.86" y="532.36" width="3.33">f</Glyph>
+    <Glyph font="F1" size="9.99" x="262.19" y="532.36" width="3.89">s</Glyph>
+    <Glyph font="F1" size="9.99" x="266.08" y="532.36" width="5.00">v</Glyph>
+    <Glyph font="F1" size="9.99" x="271.08" y="532.36" width="4.44">e</Glyph>
+    <Glyph font="F1" size="9.99" x="275.52" y="532.36" width="4.44">r</Glyph>
+    <Glyph font="F1" size="9.99" x="279.96" y="532.36" width="3.33">f</Glyph>
+    <Glyph font="F1" size="9.99" x="283.29" y="532.36" width="5.00">a</Glyph>
+    <Glyph font="F1" size="9.99" x="288.29" y="532.36" width="5.55">h</Glyph>
+    <Glyph font="F1" size="9.99" x="293.85" y="532.36" width="4.44">r</Glyph>
+    <Glyph font="F1" size="9.99" x="298.29" y="532.36" width="4.44">e</Glyph>
+    <Glyph font="F1" size="9.99" x="302.74" y="532.36" width="5.55">n</Glyph>
+   </Box>
+  </Word>
+ </Line>
+</Para>
+<Para>
+ <Line>
+  <Word>
+   <Text>Gegen</Text>
+   <Box llx="79.41" lly="500.35" urx="102.90" ury="509.35">
+    <Glyph font="F0" size="9" x="79.41" y="500.35" width="6.50">G</Glyph>
+    <Glyph font="F0" size="9" x="85.91" y="500.35" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="89.91" y="500.35" width="4.50">g</Glyph>
+    <Glyph font="F0" size="9" x="94.41" y="500.35" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="98.40" y="500.35" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Lakatos</Text>
+   <Box llx="105.78" lly="500.35" urx="134.28" ury="509.35">
+    <Glyph font="F0" size="9" x="105.78" y="500.35" width="5.50">L</Glyph>
+    <Glyph font="F0" size="9" x="111.28" y="500.35" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="115.28" y="500.35" width="4.50">k</Glyph>
+    <Glyph font="F0" size="9" x="119.78" y="500.35" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="123.78" y="500.35" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="126.28" y="500.35" width="4.50">o</Glyph>
+    <Glyph font="F0" size="9" x="130.78" y="500.35" width="3.50">s</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Annette</Text>
+   <Box llx="137.16" lly="500.35" urx="165.66" ury="509.35">
+    <Glyph font="F0" size="9" x="137.16" y="500.35" width="6.50">A</Glyph>
+    <Glyph font="F0" size="9" x="143.66" y="500.35" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="148.16" y="500.35" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="152.67" y="500.35" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="156.66" y="500.35" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="159.17" y="500.35" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="161.67" y="500.35" width="4.00">e</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>,</Text>
+   <Box llx="165.67" lly="500.35" urx="167.92" ury="509.35">
+    <Glyph font="F0" size="9" x="165.67" y="500.35" width="2.25">,</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Brandenburgerstrasse</Text>
+   <Box llx="170.80" lly="500.35" urx="248.79" ury="509.35">
+    <Glyph font="F0" size="9" x="170.80" y="500.35" width="6.00">B</Glyph>
+    <Glyph font="F0" size="9" x="176.80" y="500.35" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="179.80" y="500.35" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="183.79" y="500.35" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="188.30" y="500.35" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="192.80" y="500.35" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="196.79" y="500.35" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="201.29" y="500.35" width="4.50">b</Glyph>
+    <Glyph font="F0" size="9" x="205.80" y="500.35" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="210.30" y="500.35" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="213.29" y="500.35" width="4.50">g</Glyph>
+    <Glyph font="F0" size="9" x="217.79" y="500.35" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="221.79" y="500.35" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="224.79" y="500.35" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="228.29" y="500.35" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="230.79" y="500.35" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="233.79" y="500.35" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="237.79" y="500.35" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="241.29" y="500.35" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="244.79" y="500.35" width="4.00">e</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>20</Text>
+   <Box llx="251.67" lly="500.35" urx="260.67" ury="509.35">
+    <Glyph font="F0" size="9" x="251.67" y="500.35" width="4.50">2</Glyph>
+    <Glyph font="F0" size="9" x="256.17" y="500.35" width="4.50">0</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>,</Text>
+   <Box llx="260.67" lly="500.35" urx="262.92" ury="509.35">
+    <Glyph font="F0" size="9" x="260.67" y="500.35" width="2.25">,</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>D-80805</Text>
+   <Box llx="265.80" lly="500.35" urx="297.80" ury="509.35">
+    <Glyph font="F0" size="9" x="265.80" y="500.35" width="6.50">D</Glyph>
+    <Glyph font="F0" size="9" x="272.30" y="500.35" width="3.00">-</Glyph>
+    <Glyph font="F0" size="9" x="275.30" y="500.35" width="4.50">8</Glyph>
+    <Glyph font="F0" size="9" x="279.80" y="500.35" width="4.50">0</Glyph>
+    <Glyph font="F0" size="9" x="284.30" y="500.35" width="4.50">8</Glyph>
+    <Glyph font="F0" size="9" x="288.80" y="500.35" width="4.50">0</Glyph>
+    <Glyph font="F0" size="9" x="293.30" y="500.35" width="4.50">5</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>München</Text>
+   <Box llx="300.68" lly="500.35" urx="334.68" ury="509.35">
+    <Glyph font="F0" size="9" x="300.68" y="500.35" width="8.00">M</Glyph>
+    <Glyph font="F0" size="9" x="308.69" y="500.35" width="4.50">ü</Glyph>
+    <Glyph font="F0" size="9" x="313.19" y="500.35" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="317.69" y="500.35" width="4.00">c</Glyph>
+    <Glyph font="F0" size="9" x="321.68" y="500.35" width="4.50">h</Glyph>
+    <Glyph font="F0" size="9" x="326.19" y="500.35" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="330.18" y="500.35" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>,</Text>
+   <Box llx="334.68" lly="500.35" urx="336.93" ury="509.35">
+    <Glyph font="F0" size="9" x="334.68" y="500.35" width="2.25">,</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>ohne</Text>
+   <Box llx="339.81" lly="500.35" urx="357.31" ury="509.35">
+    <Glyph font="F0" size="9" x="339.81" y="500.35" width="4.50">o</Glyph>
+    <Glyph font="F0" size="9" x="344.32" y="500.35" width="4.50">h</Glyph>
+    <Glyph font="F0" size="9" x="348.82" y="500.35" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="353.32" y="500.35" width="4.00">e</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Zustellungsdomizil</Text>
+   <Box llx="360.19" lly="500.35" urx="385.70" ury="509.35">
+    <Glyph font="F0" size="9" x="360.19" y="500.35" width="5.50">Z</Glyph>
+    <Glyph font="F0" size="9" x="365.69" y="500.35" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="370.19" y="500.35" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="373.70" y="500.35" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="376.20" y="500.35" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="380.20" y="500.35" width="2.50" dehyphenation="pre">l</Glyph>
+    <Glyph font="F0" size="9" x="382.70" y="500.35" width="3.00" dehyphenation="artifact">-</Glyph>
+   </Box>
+   <Box llx="79.41" lly="490.36" urx="126.43" ury="499.36">
+    <Glyph font="F0" size="9" x="79.41" y="490.36" width="2.50" dehyphenation="post">l</Glyph>
+    <Glyph font="F0" size="9" x="81.91" y="490.36" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="86.41" y="490.36" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="90.91" y="490.36" width="4.50">g</Glyph>
+    <Glyph font="F0" size="9" x="95.42" y="490.36" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="98.92" y="490.36" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="103.42" y="490.36" width="4.50">o</Glyph>
+    <Glyph font="F0" size="9" x="107.92" y="490.36" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="114.92" y="490.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="117.43" y="490.36" width="4.00">z</Glyph>
+    <Glyph font="F0" size="9" x="121.42" y="490.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="123.92" y="490.36" width="2.50">l</Glyph>
+   </Box>
+  </Word>
+ </Line>
+ <Line>
+  <Word>
+   <Text>in</Text>
+   <Box llx="130.48" lly="490.36" urx="137.49" ury="499.36">
+    <Glyph font="F0" size="9" x="130.48" y="490.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="132.99" y="490.36" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>der</Text>
+   <Box llx="141.54" lly="490.36" urx="153.04" ury="499.36">
+    <Glyph font="F0" size="9" x="141.54" y="490.36" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="146.04" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="150.04" y="490.36" width="3.00">r</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Schweiz</Text>
+   <Box llx="157.09" lly="490.36" urx="187.59" ury="499.36">
+    <Glyph font="F0" size="9" x="157.09" y="490.36" width="5.00">S</Glyph>
+    <Glyph font="F0" size="9" x="162.10" y="490.36" width="4.00">c</Glyph>
+    <Glyph font="F0" size="9" x="166.10" y="490.36" width="4.50">h</Glyph>
+    <Glyph font="F0" size="9" x="170.60" y="490.36" width="6.50">w</Glyph>
+    <Glyph font="F0" size="9" x="177.10" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="181.09" y="490.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="183.59" y="490.36" width="4.00">z</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>,</Text>
+   <Box llx="187.59" lly="490.36" urx="189.84" ury="499.36">
+    <Glyph font="F0" size="9" x="187.59" y="490.36" width="2.25">,</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>wurde</Text>
+   <Box llx="193.90" lly="490.36" urx="216.39" ury="499.36">
+    <Glyph font="F0" size="9" x="193.90" y="490.36" width="6.50">w</Glyph>
+    <Glyph font="F0" size="9" x="200.40" y="490.36" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="204.90" y="490.36" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="207.90" y="490.36" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="212.40" y="490.36" width="4.00">e</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>gestützt</Text>
+   <Box llx="220.45" lly="490.36" urx="248.44" ury="499.36">
+    <Glyph font="F0" size="9" x="220.45" y="490.36" width="4.50">g</Glyph>
+    <Glyph font="F0" size="9" x="224.95" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="228.95" y="490.36" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="232.45" y="490.36" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="234.93" y="490.36" width="4.50">ü</Glyph>
+    <Glyph font="F0" size="9" x="239.43" y="490.36" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="241.94" y="490.36" width="4.00">z</Glyph>
+    <Glyph font="F0" size="9" x="245.93" y="490.36" width="2.50">t</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>auf</Text>
+   <Box llx="252.49" lly="490.36" urx="263.98" ury="499.36">
+    <Glyph font="F0" size="9" x="252.49" y="490.36" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="256.49" y="490.36" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="260.99" y="490.36" width="3.00">f</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>die</Text>
+   <Box llx="268.04" lly="490.36" urx="279.04" ury="499.36">
+    <Glyph font="F0" size="9" x="268.04" y="490.36" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="272.54" y="490.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="275.04" y="490.36" width="4.00">e</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Fernmeldegesetzgebung</Text>
+   <Box llx="283.09" lly="490.36" urx="370.61" ury="499.36">
+    <Glyph font="F0" size="9" x="283.09" y="490.36" width="5.00">F</Glyph>
+    <Glyph font="F0" size="9" x="288.09" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="292.09" y="490.36" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="295.09" y="490.36" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="299.59" y="490.36" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="306.60" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="310.59" y="490.36" width="2.50">l</Glyph>
+    <Glyph font="F0" size="9" x="313.10" y="490.36" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="317.60" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="321.60" y="490.36" width="4.50">g</Glyph>
+    <Glyph font="F0" size="9" x="326.10" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="330.10" y="490.36" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="333.60" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="337.60" y="490.36" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="340.10" y="490.36" width="4.00">z</Glyph>
+    <Glyph font="F0" size="9" x="344.10" y="490.36" width="4.50">g</Glyph>
+    <Glyph font="F0" size="9" x="348.60" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="352.60" y="490.36" width="4.50">b</Glyph>
+    <Glyph font="F0" size="9" x="357.10" y="490.36" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="361.60" y="490.36" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="366.11" y="490.36" width="4.50">g</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>ein</Text>
+   <Box llx="374.66" lly="490.36" urx="385.66" ury="499.36">
+    <Glyph font="F0" size="9" x="374.66" y="490.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="378.65" y="490.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="381.16" y="490.36" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+ </Line>
+ <Line>
+  <Word>
+   <Text>Nummernwiderrufsverfahren</Text>
+   <Box llx="79.41" lly="480.34" urx="184.87" ury="489.34">
+    <Glyph font="F0" size="9" x="79.41" y="480.34" width="6.50">N</Glyph>
+    <Glyph font="F0" size="9" x="85.91" y="480.34" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="90.41" y="480.34" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="97.41" y="480.34" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="104.41" y="480.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="108.41" y="480.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="111.41" y="480.34" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="115.91" y="480.34" width="6.50">w</Glyph>
+    <Glyph font="F0" size="9" x="122.40" y="480.34" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="124.91" y="480.34" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="129.41" y="480.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="133.40" y="480.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="136.40" y="480.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="139.40" y="480.34" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="143.90" y="480.34" width="3.00">f</Glyph>
+    <Glyph font="F0" size="9" x="146.89" y="480.34" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="150.39" y="480.34" width="4.50">v</Glyph>
+    <Glyph font="F0" size="9" x="154.89" y="480.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="158.89" y="480.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="161.89" y="480.34" width="3.00">f</Glyph>
+    <Glyph font="F0" size="9" x="164.88" y="480.34" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="168.88" y="480.34" width="4.50">h</Glyph>
+    <Glyph font="F0" size="9" x="173.38" y="480.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="176.38" y="480.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="180.37" y="480.34" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>eröffnet</Text>
+   <Box llx="187.12" lly="480.34" urx="215.61" ury="489.34">
+    <Glyph font="F0" size="9" x="187.12" y="480.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="191.12" y="480.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="194.12" y="480.34" width="4.50">ö</Glyph>
+    <Glyph font="F0" size="9" x="198.62" y="480.34" width="3.00">f</Glyph>
+    <Glyph font="F0" size="9" x="201.61" y="480.34" width="3.00">f</Glyph>
+    <Glyph font="F0" size="9" x="204.61" y="480.34" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="209.11" y="480.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="213.11" y="480.34" width="2.50">t</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>.</Text>
+   <Box llx="215.61" lly="480.34" urx="217.86" ury="489.34">
+    <Glyph font="F0" size="9" x="215.61" y="480.34" width="2.25">.</Glyph>
+   </Box>
+  </Word>
+ </Line>
+</Para>
+<Para>
+ <Line>
+  <Word>
+   <Text>Das</Text>
+   <Box llx="79.41" lly="460.36" urx="93.91" ury="469.36">
+    <Glyph font="F2" size="9" x="79.41" y="460.36" width="6.50">D</Glyph>
+    <Glyph font="F2" size="9" x="85.91" y="460.36" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="90.41" y="460.36" width="3.50">s</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Schreiben</Text>
+   <Box llx="96.16" lly="460.36" urx="132.15" ury="469.36">
+    <Glyph font="F2" size="9" x="96.16" y="460.36" width="4.50">S</Glyph>
+    <Glyph font="F2" size="9" x="100.66" y="460.36" width="4.00">c</Glyph>
+    <Glyph font="F2" size="9" x="104.66" y="460.36" width="4.50">h</Glyph>
+    <Glyph font="F2" size="9" x="109.16" y="460.36" width="3.50">r</Glyph>
+    <Glyph font="F2" size="9" x="112.66" y="460.36" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="116.65" y="460.36" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="119.15" y="460.36" width="4.50">b</Glyph>
+    <Glyph font="F2" size="9" x="123.65" y="460.36" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="127.65" y="460.36" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>kann</Text>
+   <Box llx="134.40" lly="460.36" urx="151.90" ury="469.36">
+    <Glyph font="F2" size="9" x="134.40" y="460.36" width="4.00">k</Glyph>
+    <Glyph font="F2" size="9" x="138.40" y="460.36" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="142.90" y="460.36" width="4.50">n</Glyph>
+    <Glyph font="F2" size="9" x="147.40" y="460.36" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>innerhalb</Text>
+   <Box llx="154.15" lly="460.36" urx="189.15" ury="469.36">
+    <Glyph font="F2" size="9" x="154.15" y="460.36" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="156.65" y="460.36" width="4.50">n</Glyph>
+    <Glyph font="F2" size="9" x="161.15" y="460.36" width="4.50">n</Glyph>
+    <Glyph font="F2" size="9" x="165.65" y="460.36" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="169.64" y="460.36" width="3.50">r</Glyph>
+    <Glyph font="F2" size="9" x="173.15" y="460.36" width="4.50">h</Glyph>
+    <Glyph font="F2" size="9" x="177.65" y="460.36" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="182.15" y="460.36" width="2.50">l</Glyph>
+    <Glyph font="F2" size="9" x="184.65" y="460.36" width="4.50">b</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>von</Text>
+   <Box llx="191.40" lly="460.36" urx="204.39" ury="469.36">
+    <Glyph font="F2" size="9" x="191.40" y="460.36" width="4.00">v</Glyph>
+    <Glyph font="F2" size="9" x="195.39" y="460.36" width="4.50">o</Glyph>
+    <Glyph font="F2" size="9" x="199.89" y="460.36" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>15</Text>
+   <Box llx="206.64" lly="460.36" urx="215.64" ury="469.36">
+    <Glyph font="F2" size="9" x="206.64" y="460.36" width="4.50">1</Glyph>
+    <Glyph font="F2" size="9" x="211.14" y="460.36" width="4.50">5</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Tagen</Text>
+   <Box llx="217.89" lly="460.36" urx="240.39" ury="469.36">
+    <Glyph font="F2" size="9" x="217.89" y="460.36" width="5.00">T</Glyph>
+    <Glyph font="F2" size="9" x="222.90" y="460.36" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="227.40" y="460.36" width="4.50">g</Glyph>
+    <Glyph font="F2" size="9" x="231.90" y="460.36" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="235.89" y="460.36" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>nach</Text>
+   <Box llx="242.64" lly="460.36" urx="260.14" ury="469.36">
+    <Glyph font="F2" size="9" x="242.64" y="460.36" width="4.50">n</Glyph>
+    <Glyph font="F2" size="9" x="247.14" y="460.36" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="251.64" y="460.36" width="4.00">c</Glyph>
+    <Glyph font="F2" size="9" x="255.64" y="460.36" width="4.50">h</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>der</Text>
+   <Box llx="262.39" lly="460.36" urx="274.39" ury="469.36">
+    <Glyph font="F2" size="9" x="262.39" y="460.36" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="266.89" y="460.36" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="270.89" y="460.36" width="3.50">r</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Publikation</Text>
+   <Box llx="276.64" lly="460.36" urx="318.64" ury="469.36">
+    <Glyph font="F2" size="9" x="276.64" y="460.36" width="5.50">P</Glyph>
+    <Glyph font="F2" size="9" x="282.14" y="460.36" width="4.50">u</Glyph>
+    <Glyph font="F2" size="9" x="286.64" y="460.36" width="4.50">b</Glyph>
+    <Glyph font="F2" size="9" x="291.14" y="460.36" width="2.50">l</Glyph>
+    <Glyph font="F2" size="9" x="293.64" y="460.36" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="296.14" y="460.36" width="4.00">k</Glyph>
+    <Glyph font="F2" size="9" x="300.14" y="460.36" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="304.64" y="460.36" width="2.50">t</Glyph>
+    <Glyph font="F2" size="9" x="307.14" y="460.36" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="309.64" y="460.36" width="4.50">o</Glyph>
+    <Glyph font="F2" size="9" x="314.14" y="460.36" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>dieser</Text>
+   <Box llx="320.89" lly="460.36" urx="342.89" ury="469.36">
+    <Glyph font="F2" size="9" x="320.89" y="460.36" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="325.39" y="460.36" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="327.89" y="460.36" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="331.89" y="460.36" width="3.50">s</Glyph>
+    <Glyph font="F2" size="9" x="335.39" y="460.36" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="339.38" y="460.36" width="3.50">r</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Notifikation</Text>
+   <Box llx="345.14" lly="460.36" urx="377.14" ury="469.36">
+    <Glyph font="F2" size="9" x="345.14" y="460.36" width="6.00">N</Glyph>
+    <Glyph font="F2" size="9" x="351.14" y="460.36" width="4.50">o</Glyph>
+    <Glyph font="F2" size="9" x="355.64" y="460.36" width="2.50">t</Glyph>
+    <Glyph font="F2" size="9" x="358.14" y="460.36" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="360.64" y="460.36" width="2.50">f</Glyph>
+    <Glyph font="F2" size="9" x="363.14" y="460.36" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="365.65" y="460.36" width="4.00">k</Glyph>
+    <Glyph font="F2" size="9" x="369.64" y="460.36" width="4.50" dehyphenation="pre">a</Glyph>
+    <Glyph font="F2" size="9" x="374.14" y="460.36" width="3.00" dehyphenation="artifact">-</Glyph>
+   </Box>
+   <Box llx="79.41" lly="450.34" urx="93.41" ury="459.34">
+    <Glyph font="F2" size="9" x="79.41" y="450.34" width="2.50" dehyphenation="post">t</Glyph>
+    <Glyph font="F2" size="9" x="81.91" y="450.34" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="84.41" y="450.34" width="4.50">o</Glyph>
+    <Glyph font="F2" size="9" x="88.91" y="450.34" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+ </Line>
+ <Line>
+  <Word>
+   <Text>im</Text>
+   <Box llx="95.66" lly="450.34" urx="104.66" ury="459.34">
+    <Glyph font="F2" size="9" x="95.66" y="450.34" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="98.16" y="450.34" width="6.50">m</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Bundesblatt</Text>
+   <Box llx="106.91" lly="450.34" urx="149.91" ury="459.34">
+    <Glyph font="F2" size="9" x="106.91" y="450.34" width="5.50">B</Glyph>
+    <Glyph font="F2" size="9" x="112.41" y="450.34" width="4.50">u</Glyph>
+    <Glyph font="F2" size="9" x="116.91" y="450.34" width="4.50">n</Glyph>
+    <Glyph font="F2" size="9" x="121.41" y="450.34" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="125.91" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="129.90" y="450.34" width="3.50">s</Glyph>
+    <Glyph font="F2" size="9" x="133.40" y="450.34" width="4.50">b</Glyph>
+    <Glyph font="F2" size="9" x="137.90" y="450.34" width="2.50">l</Glyph>
+    <Glyph font="F2" size="9" x="140.40" y="450.34" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="144.90" y="450.34" width="2.50">t</Glyph>
+    <Glyph font="F2" size="9" x="147.41" y="450.34" width="2.50">t</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>von</Text>
+   <Box llx="152.16" lly="450.34" urx="165.15" ury="459.34">
+    <Glyph font="F2" size="9" x="152.16" y="450.34" width="4.00">v</Glyph>
+    <Glyph font="F2" size="9" x="156.15" y="450.34" width="4.50">o</Glyph>
+    <Glyph font="F2" size="9" x="160.65" y="450.34" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>der</Text>
+   <Box llx="167.40" lly="450.34" urx="179.40" ury="459.34">
+    <Glyph font="F2" size="9" x="167.40" y="450.34" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="171.90" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="175.90" y="450.34" width="3.50">r</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Adressatin</Text>
+   <Box llx="181.65" lly="450.34" urx="220.15" ury="459.34">
+    <Glyph font="F2" size="9" x="181.65" y="450.34" width="5.50">A</Glyph>
+    <Glyph font="F2" size="9" x="187.15" y="450.34" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="191.65" y="450.34" width="3.50">r</Glyph>
+    <Glyph font="F2" size="9" x="195.15" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="199.14" y="450.34" width="3.50">s</Glyph>
+    <Glyph font="F2" size="9" x="202.64" y="450.34" width="3.50">s</Glyph>
+    <Glyph font="F2" size="9" x="206.14" y="450.34" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="210.64" y="450.34" width="2.50">t</Glyph>
+    <Glyph font="F2" size="9" x="213.14" y="450.34" width="2.50">i</Glyph>
+    <Glyph font="F2" size="9" x="215.65" y="450.34" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>/</Text>
+   <Box llx="220.14" lly="450.34" urx="222.65" ury="459.34">
+    <Glyph font="F2" size="9" x="220.14" y="450.34" width="2.50">/</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>dem</Text>
+   <Box llx="222.65" lly="450.34" urx="237.64" ury="459.34">
+    <Glyph font="F2" size="9" x="222.65" y="450.34" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="227.15" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="231.14" y="450.34" width="6.50">m</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Adressaten</Text>
+   <Box llx="239.89" lly="450.34" urx="279.88" ury="459.34">
+    <Glyph font="F2" size="9" x="239.89" y="450.34" width="5.50">A</Glyph>
+    <Glyph font="F2" size="9" x="245.39" y="450.34" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="249.89" y="450.34" width="3.50">r</Glyph>
+    <Glyph font="F2" size="9" x="253.39" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="257.38" y="450.34" width="3.50">s</Glyph>
+    <Glyph font="F2" size="9" x="260.88" y="450.34" width="3.50">s</Glyph>
+    <Glyph font="F2" size="9" x="264.38" y="450.34" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="268.88" y="450.34" width="2.50">t</Glyph>
+    <Glyph font="F2" size="9" x="271.38" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="275.38" y="450.34" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>angefordert</Text>
+   <Box llx="282.13" lly="450.34" urx="324.62" ury="459.34">
+    <Glyph font="F2" size="9" x="282.13" y="450.34" width="4.50">a</Glyph>
+    <Glyph font="F2" size="9" x="286.63" y="450.34" width="4.50">n</Glyph>
+    <Glyph font="F2" size="9" x="291.13" y="450.34" width="4.50">g</Glyph>
+    <Glyph font="F2" size="9" x="295.63" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="299.62" y="450.34" width="2.50">f</Glyph>
+    <Glyph font="F2" size="9" x="302.12" y="450.34" width="4.50">o</Glyph>
+    <Glyph font="F2" size="9" x="306.62" y="450.34" width="3.50">r</Glyph>
+    <Glyph font="F2" size="9" x="310.12" y="450.34" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="314.62" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="318.62" y="450.34" width="3.50">r</Glyph>
+    <Glyph font="F2" size="9" x="322.12" y="450.34" width="2.50">t</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>werden</Text>
+   <Box llx="326.87" lly="450.34" urx="353.36" ury="459.34">
+    <Glyph font="F2" size="9" x="326.87" y="450.34" width="6.00">w</Glyph>
+    <Glyph font="F2" size="9" x="332.87" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="336.87" y="450.34" width="3.50">r</Glyph>
+    <Glyph font="F2" size="9" x="340.37" y="450.34" width="4.50">d</Glyph>
+    <Glyph font="F2" size="9" x="344.87" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="348.86" y="450.34" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>bei</Text>
+   <Box llx="355.61" lly="450.34" urx="366.61" ury="459.34">
+    <Glyph font="F2" size="9" x="355.61" y="450.34" width="4.50">b</Glyph>
+    <Glyph font="F2" size="9" x="360.11" y="450.34" width="4.00">e</Glyph>
+    <Glyph font="F2" size="9" x="364.11" y="450.34" width="2.50">i</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>:</Text>
+   <Box llx="366.61" lly="450.34" urx="369.61" ury="459.34">
+    <Glyph font="F2" size="9" x="366.61" y="450.34" width="3.00">:</Glyph>
+   </Box>
+  </Word>
+ </Line>
+</Para>
+<Para>
+ <Line>
+  <Word>
+   <Text>Bundesamt</Text>
+   <Box llx="79.41" lly="436.36" urx="119.90" ury="445.36">
+    <Glyph font="F0" size="9" x="79.41" y="436.36" width="6.00">B</Glyph>
+    <Glyph font="F0" size="9" x="85.41" y="436.36" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="89.91" y="436.36" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="94.41" y="436.36" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="98.91" y="436.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="102.90" y="436.36" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="106.40" y="436.36" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="110.40" y="436.36" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="117.40" y="436.36" width="2.50">t</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>für</Text>
+   <Box llx="122.17" lly="436.36" urx="132.66" ury="445.36">
+    <Glyph font="F0" size="9" x="122.17" y="436.36" width="3.00">f</Glyph>
+    <Glyph font="F0" size="9" x="125.16" y="436.36" width="4.50">ü</Glyph>
+    <Glyph font="F0" size="9" x="129.66" y="436.36" width="3.00">r</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Kommunikation</Text>
+   <Box llx="134.92" lly="436.36" urx="193.92" ury="445.36">
+    <Glyph font="F0" size="9" x="134.92" y="436.36" width="6.50">K</Glyph>
+    <Glyph font="F0" size="9" x="141.42" y="436.36" width="4.50">o</Glyph>
+    <Glyph font="F0" size="9" x="145.92" y="436.36" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="152.92" y="436.36" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="159.92" y="436.36" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="164.42" y="436.36" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="168.92" y="436.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="171.42" y="436.36" width="4.50">k</Glyph>
+    <Glyph font="F0" size="9" x="175.92" y="436.36" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="179.91" y="436.36" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="182.42" y="436.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="184.92" y="436.36" width="4.50">o</Glyph>
+    <Glyph font="F0" size="9" x="189.42" y="436.36" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+ </Line>
+ <Line>
+  <Word>
+   <Text>Nummerierung</Text>
+   <Box llx="79.41" lly="426.34" urx="134.41" ury="435.34">
+    <Glyph font="F0" size="9" x="79.41" y="426.34" width="6.50">N</Glyph>
+    <Glyph font="F0" size="9" x="85.91" y="426.34" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="90.41" y="426.34" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="97.41" y="426.34" width="7.00">m</Glyph>
+    <Glyph font="F0" size="9" x="104.42" y="426.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="108.41" y="426.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="111.41" y="426.34" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="113.91" y="426.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="117.91" y="426.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="120.91" y="426.34" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="125.41" y="426.34" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="129.91" y="426.34" width="4.50">g</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>und</Text>
+   <Box llx="136.66" lly="426.34" urx="150.16" ury="435.34">
+    <Glyph font="F0" size="9" x="136.66" y="426.34" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="141.16" y="426.34" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="145.66" y="426.34" width="4.50">d</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Adressierung</Text>
+   <Box llx="152.41" lly="426.34" urx="200.41" ury="435.34">
+    <Glyph font="F0" size="9" x="152.41" y="426.34" width="6.50">A</Glyph>
+    <Glyph font="F0" size="9" x="158.91" y="426.34" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="163.41" y="426.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="166.41" y="426.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="170.41" y="426.34" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="173.91" y="426.34" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="177.41" y="426.34" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="179.91" y="426.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="183.91" y="426.34" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="186.91" y="426.34" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="191.41" y="426.34" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="195.91" y="426.34" width="4.50">g</Glyph>
+   </Box>
+  </Word>
+ </Line>
+ <Line>
+  <Word>
+   <Text>Zukunftstrasse</Text>
+   <Box llx="79.41" lly="416.35" urx="132.41" ury="425.35">
+    <Glyph font="F0" size="9" x="79.41" y="416.35" width="5.50">Z</Glyph>
+    <Glyph font="F0" size="9" x="84.91" y="416.35" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="89.41" y="416.35" width="4.50">k</Glyph>
+    <Glyph font="F0" size="9" x="93.91" y="416.35" width="4.50">u</Glyph>
+    <Glyph font="F0" size="9" x="98.41" y="416.35" width="4.50">n</Glyph>
+    <Glyph font="F0" size="9" x="102.91" y="416.35" width="3.00">f</Glyph>
+    <Glyph font="F0" size="9" x="105.91" y="416.35" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="108.41" y="416.35" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="111.92" y="416.35" width="2.50">t</Glyph>
+    <Glyph font="F0" size="9" x="114.42" y="416.35" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="117.42" y="416.35" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="121.41" y="416.35" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="124.92" y="416.35" width="3.50">s</Glyph>
+    <Glyph font="F0" size="9" x="128.42" y="416.35" width="4.00">e</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>44</Text>
+   <Box llx="134.66" lly="416.35" urx="143.67" ury="425.35">
+    <Glyph font="F0" size="9" x="134.66" y="416.35" width="4.50">4</Glyph>
+    <Glyph font="F0" size="9" x="139.17" y="416.35" width="4.50">4</Glyph>
+   </Box>
+  </Word>
+ </Line>
+ <Line>
+  <Word>
+   <Text>2501</Text>
+   <Box llx="79.41" lly="406.36" urx="97.41" ury="415.36">
+    <Glyph font="F0" size="9" x="79.41" y="406.36" width="4.50">2</Glyph>
+    <Glyph font="F0" size="9" x="83.91" y="406.36" width="4.50">5</Glyph>
+    <Glyph font="F0" size="9" x="88.41" y="406.36" width="4.50">0</Glyph>
+    <Glyph font="F0" size="9" x="92.91" y="406.36" width="4.50">1</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>Biel</Text>
+   <Box llx="99.66" lly="406.36" urx="114.66" ury="415.36">
+    <Glyph font="F0" size="9" x="99.66" y="406.36" width="6.00">B</Glyph>
+    <Glyph font="F0" size="9" x="105.66" y="406.36" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="108.17" y="406.36" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="112.16" y="406.36" width="2.50">l</Glyph>
+   </Box>
+  </Word>
+ </Line>
+ <Line>
+  <Word>
+   <Text>Telefon</Text>
+   <Box llx="79.41" lly="396.34" urx="107.39" ury="405.34">
+    <Glyph font="F0" size="9" x="79.41" y="396.34" width="5.50">T</Glyph>
+    <Glyph font="F0" size="9" x="84.91" y="396.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="88.90" y="396.34" width="2.50">l</Glyph>
+    <Glyph font="F0" size="9" x="91.40" y="396.34" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="95.40" y="396.34" width="3.00">f</Glyph>
+    <Glyph font="F0" size="9" x="98.40" y="396.34" width="4.50">o</Glyph>
+    <Glyph font="F0" size="9" x="102.89" y="396.34" width="4.50">n</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>+</Text>
+   <Box llx="109.65" lly="396.34" urx="114.73" ury="405.34">
+    <Glyph font="F0" size="9" x="109.65" y="396.34" width="5.08">+</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>41</Text>
+   <Box llx="114.72" lly="396.34" urx="123.72" ury="405.34">
+    <Glyph font="F0" size="9" x="114.72" y="396.34" width="4.50">4</Glyph>
+    <Glyph font="F0" size="9" x="119.22" y="396.34" width="4.50">1</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>(</Text>
+   <Box llx="125.98" lly="396.34" urx="128.97" ury="405.34">
+    <Glyph font="F0" size="9" x="125.98" y="396.34" width="3.00">(</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>0</Text>
+   <Box llx="128.97" lly="396.34" urx="133.47" ury="405.34">
+    <Glyph font="F0" size="9" x="128.97" y="396.34" width="4.50">0</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>)</Text>
+   <Box llx="133.47" lly="396.34" urx="136.47" ury="405.34">
+    <Glyph font="F0" size="9" x="133.47" y="396.34" width="3.00">)</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>32</Text>
+   <Box llx="136.47" lly="396.34" urx="145.47" ury="405.34">
+    <Glyph font="F0" size="9" x="136.47" y="396.34" width="4.50">3</Glyph>
+    <Glyph font="F0" size="9" x="140.97" y="396.34" width="4.50">2</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>327</Text>
+   <Box llx="147.72" lly="396.34" urx="161.22" ury="405.34">
+    <Glyph font="F0" size="9" x="147.72" y="396.34" width="4.50">3</Glyph>
+    <Glyph font="F0" size="9" x="152.22" y="396.34" width="4.50">2</Glyph>
+    <Glyph font="F0" size="9" x="156.72" y="396.34" width="4.50">7</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>55</Text>
+   <Box llx="163.48" lly="396.34" urx="172.47" ury="405.34">
+    <Glyph font="F0" size="9" x="163.48" y="396.34" width="4.50">5</Glyph>
+    <Glyph font="F0" size="9" x="167.97" y="396.34" width="4.50">5</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>11</Text>
+   <Box llx="174.73" lly="396.34" urx="183.73" ury="405.34">
+    <Glyph font="F0" size="9" x="174.73" y="396.34" width="4.50">1</Glyph>
+    <Glyph font="F0" size="9" x="179.23" y="396.34" width="4.50">1</Glyph>
+   </Box>
+  </Word>
+ </Line>
+ <Line>
+  <Word>
+   <Text>Fax</Text>
+   <Box llx="79.41" lly="386.35" urx="92.91" ury="395.35">
+    <Glyph font="F0" size="9" x="79.41" y="386.35" width="5.00">F</Glyph>
+    <Glyph font="F0" size="9" x="84.41" y="386.35" width="4.00">a</Glyph>
+    <Glyph font="F0" size="9" x="88.41" y="386.35" width="4.50">x</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>direkt</Text>
+   <Box llx="95.16" lly="386.35" urx="116.15" ury="395.35">
+    <Glyph font="F0" size="9" x="95.16" y="386.35" width="4.50">d</Glyph>
+    <Glyph font="F0" size="9" x="99.66" y="386.35" width="2.50">i</Glyph>
+    <Glyph font="F0" size="9" x="102.16" y="386.35" width="3.00">r</Glyph>
+    <Glyph font="F0" size="9" x="105.15" y="386.35" width="4.00">e</Glyph>
+    <Glyph font="F0" size="9" x="109.15" y="386.35" width="4.50">k</Glyph>
+    <Glyph font="F0" size="9" x="113.65" y="386.35" width="2.50">t</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>+</Text>
+   <Box llx="118.40" lly="386.35" urx="123.47" ury="395.35">
+    <Glyph font="F0" size="9" x="118.40" y="386.35" width="5.08">+</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>41</Text>
+   <Box llx="123.47" lly="386.35" urx="132.47" ury="395.35">
+    <Glyph font="F0" size="9" x="123.47" y="386.35" width="4.50">4</Glyph>
+    <Glyph font="F0" size="9" x="127.97" y="386.35" width="4.50">1</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>(</Text>
+   <Box llx="134.72" lly="386.35" urx="137.72" ury="395.35">
+    <Glyph font="F0" size="9" x="134.72" y="386.35" width="3.00">(</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>0</Text>
+   <Box llx="137.72" lly="386.35" urx="142.22" ury="395.35">
+    <Glyph font="F0" size="9" x="137.72" y="386.35" width="4.50">0</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>)</Text>
+   <Box llx="142.22" lly="386.35" urx="145.21" ury="395.35">
+    <Glyph font="F0" size="9" x="142.22" y="386.35" width="3.00">)</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>32</Text>
+   <Box llx="145.21" lly="386.35" urx="154.21" ury="395.35">
+    <Glyph font="F0" size="9" x="145.21" y="386.35" width="4.50">3</Glyph>
+    <Glyph font="F0" size="9" x="149.71" y="386.35" width="4.50">2</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>327</Text>
+   <Box llx="156.46" lly="386.35" urx="169.96" ury="395.35">
+    <Glyph font="F0" size="9" x="156.46" y="386.35" width="4.50">3</Glyph>
+    <Glyph font="F0" size="9" x="160.96" y="386.35" width="4.50">2</Glyph>
+    <Glyph font="F0" size="9" x="165.46" y="386.35" width="4.50">7</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>55</Text>
+   <Box llx="172.21" lly="386.35" urx="181.21" ury="395.35">
+    <Glyph font="F0" size="9" x="172.21" y="386.35" width="4.50">5</Glyph>
+    <Glyph font="F0" size="9" x="176.71" y="386.35" width="4.50">5</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>49</Text>
+   <Box llx="183.46" lly="386.35" urx="192.46" ury="395.35">
+    <Glyph font="F0" size="9" x="183.46" y="386.35" width="4.50">4</Glyph>
+    <Glyph font="F0" size="9" x="187.96" y="386.35" width="4.50">9</Glyph>
+   </Box>
+  </Word>
+ </Line>
+</Para>
+<Para>
+ <Line>
+  <Word>
+   <Text>2013-2989</Text>
+   <Box llx="79.41" lly="30.22" urx="107.60" ury="36.73">
+    <Glyph font="F0" size="6.51" x="79.41" y="30.22" width="3.26">2</Glyph>
+    <Glyph font="F0" size="6.51" x="82.66" y="30.22" width="3.26">0</Glyph>
+    <Glyph font="F0" size="6.51" x="85.91" y="30.22" width="3.26">1</Glyph>
+    <Glyph font="F0" size="6.51" x="89.17" y="30.22" width="3.26">3</Glyph>
+    <Glyph font="F0" size="6.51" x="92.42" y="30.22" width="2.17">-</Glyph>
+    <Glyph font="F0" size="6.51" x="94.58" y="30.22" width="3.26">2</Glyph>
+    <Glyph font="F0" size="6.51" x="97.84" y="30.22" width="3.26">9</Glyph>
+    <Glyph font="F0" size="6.51" x="101.09" y="30.22" width="3.26">8</Glyph>
+    <Glyph font="F0" size="6.51" x="104.34" y="30.22" width="3.26">9</Glyph>
+   </Box>
+  </Word>
+  <Word>
+   <Text>8977</Text>
+   <Box llx="366.12" lly="30.22" urx="384.12" ury="39.22">
+    <Glyph font="F0" size="9" x="366.12" y="30.22" width="4.50">8</Glyph>
+    <Glyph font="F0" size="9" x="370.62" y="30.22" width="4.50">9</Glyph>
+    <Glyph font="F0" size="9" x="375.12" y="30.22" width="4.50">7</Glyph>
+    <Glyph font="F0" size="9" x="379.62" y="30.22" width="4.50">7</Glyph>
+   </Box>
+  </Word>
+ </Line>
+</Para>
+</Content>
+</Page>
+<Resources>
+<Fonts>
+ <Font id="F0" name="TimesNewRoman" fullname="FBLAAF+TimesNewRoman" type="TrueType" embedded="true" ascender="1420" capheight="1356" italicangle="0" descender="-442" weight="400" xheight="916"/>
+ <Font id="F1" name="TimesNewRoman,Bold" fullname="FBLAAH+TimesNewRoman,Bold" type="TrueType" embedded="true" ascender="1387" capheight="1356" italicangle="0" descender="-442" weight="700" xheight="935"/>
+ <Font id="F2" name="TimesNewRoman,Italic" fullname="FBLABJ+TimesNewRoman,Italic" type="TrueType" embedded="true" ascender="1422" capheight="1356" italicangle="-15" descender="-442" weight="400" xheight="881"/>
+</Fonts>
+<ColorSpaces>
+ <ColorSpace id="CS0" name="DeviceGray" components="1"/>
+</ColorSpaces>
+</Resources>
+</Pages>
+</Document>
+</TET>
