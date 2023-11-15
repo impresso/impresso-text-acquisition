@@ -2,10 +2,13 @@ import codecs
 import logging
 import os
 from time import strftime
+import requests
 
 from bs4 import BeautifulSoup
 
-from text_importer.importers.bcul.helpers import find_mit_file, get_page_number, get_div_coords, parse_textblock
+from text_importer.importers.bcul.helpers import (find_mit_file, get_page_number, 
+                                                  get_div_coords, parse_textblock,
+                                                  get_iiif_link_json, get_iiif_link_xml)
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
 
@@ -17,7 +20,11 @@ BCUL_CI_TYPES = {BCUL_IMAGE_TYPE, BCUL_TABLE_TYPE}
 BCUL_CI_TRANSLATION = {
     BCUL_IMAGE_TYPE: CONTENTITEM_TYPE_IMAGE,
     BCUL_TABLE_TYPE: CONTENTITEM_TYPE_TABLE
-    }
+}
+IIIF_BASE_URL = "https://scriptorium.bcu-lausanne.ch/api/iiif"
+IIIF_IMG_BASE_URL = f"{IIIF_BASE_URL}-img"
+IIIF_SUFFIX = 'info.json'
+IIIF_MANIFEST_SUFFIX = 'manifest'
 
 
 class BCULNewspaperPage(NewspaperPage):
@@ -150,6 +157,55 @@ class BCULNewspaperIssue(NewspaperIssue):
             self._find_pages_json()
         elif self.is_xml:
             self._find_pages_xml()
+
+    def _get_iiif_link_json(self, page_path: str) -> str:
+        """Return iiif uri in case `mit` file is in JSON.
+
+        In this case, the page identifier is simply the page XML file's name.
+
+        Args:
+            page_path (str): Path to the page XML file the content item is on.
+
+        Returns:
+            str: IIIF image uri to the image information.
+        """
+        # when mit file is a JSON, each page file's name is the iiif identifier
+        page_identifier = os.path.basename(page_path).split('.')[0]
+        return os.path.join(IIIF_IMG_BASE_URL, page_identifier, IIIF_SUFFIX)
+
+    def _get_iiif_link_xml(self, page_number: int) -> str | None:
+        """Return iiif uri in case `mit` file is in XML.
+
+        In this case, the iiif URI to images needs to be fetched from the iiif
+        presentation API, in the issue's manifest.
+
+        Args:
+            page_number (int): Page number for which to fetch the iiif URI.
+
+        Returns:
+            str | None: IIIF image uri to the image information or None if 
+                request to presentation API failed.
+        """
+        identifier = self.path.split('/')[-1]
+        try:
+            response = requests.get(
+                os.path.join(IIIF_BASE_URL, identifier, IIIF_MANIFEST_SUFFIX)
+            )
+            if response.status_code == 200:
+                iiif = (
+                    response.json()['sequences'][0]['canvases'][page_number]
+                        ['images'][0]['resource']['@id']
+                )
+                # replace suffix mapping to page's image by information json.
+                return '/'.join(iiif.split('/')[:-4]+[IIIF_SUFFIX])
+            else:
+                logger.error(f"Got {response.status_code} response while "
+                             f"querying the IIIF API for {self.id}.")
+        except Exception as e:
+            logger.error(f'Error while querying IIIF API for {self.id}: {e}.')
+        logger.warning(f"No iiif link stored for content item {self.id}.")
+        # Exception or wrong HTTP response, so no iiif link to return
+        return None
     
     def _find_content_items(self):
         # First add the pages as content items
@@ -170,15 +226,22 @@ class BCULNewspaperIssue(NewspaperIssue):
             page_cis = [(div.get('blockType'), get_div_coords(div)) for div in p.get_ci_divs()]  # Get page
             for div_type, coords in sorted(page_cis, key=lambda x: x[1]):  # Sort by coordinates
                 ci_id = self.id + '-i' + str(n).zfill(4)
-                
+
                 ci = {
                     'm': {
                         'id': ci_id,
                         'pp': [p.number],
                         'tp': BCUL_CI_TRANSLATION[div_type],
-                        'c': coords,
-                        }
-                    }
-                # TODO: add IIIF url for image types
+                    },
+                }
+
+                # Content item is an image TODO check this works with samples that have images
+                if ci['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
+                    if self.is_json:
+                        ci['m']['iiif_link'] = self._get_iiif_link_json(p.path)
+                    elif self.is_xml: 
+                        ci['m']['iiif_link'] = self._get_iiif_link_xml(p.number)
+                    ci['c'] = coords
+
                 self.content_items.append(ci)
                 n += 1
