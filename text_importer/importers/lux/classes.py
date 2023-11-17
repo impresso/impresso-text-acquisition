@@ -38,7 +38,8 @@ IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
-IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/image/iiif/2"
+IIIF_ENDPOINT_URI = "https://iiif.eluxemburgensia.lu/image/iiif/2"
+IIIF_SUFFIX = "info.json"
 
 
 class LuxNewspaperPage(MetsAltoNewspaperPage):
@@ -75,9 +76,9 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
     def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
-        iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
-        iiif_link = f'{iiif_base_link}%2fpages%2f{self.number}/info.json'
-        self.page_data['iiif'] = iiif_link
+        iiif_base_link = f'{IIIF_ENDPOINT_URI}/{encoded_ark_id}'
+        iiif_link = f'{iiif_base_link}%2fpages%2f{self.number}'
+        self.page_data['iiif_img_base_uri'] = iiif_link
         self._parse_font_styles()
     
     def _convert_coordinates(
@@ -454,7 +455,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 coordinates = convert_coordinates(hpos, vpos, height, width, 
                                                   x_resolution, y_resolution)
                 encoded_ark_id = encode_ark(self.ark_id)
-                iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
+                iiif_base_link = f'{IIIF_ENDPOINT_URI}/{encoded_ark_id}'
                 ci['m']['iiif_link'] = (
                     f'{iiif_base_link}%2fpages%2f{curr_page.number}/info.json'
                 )

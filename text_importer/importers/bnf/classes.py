@@ -21,9 +21,10 @@ Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URL = "https://gallica.bnf.fr/iiif"
-IIIF_MANIFEST_SUFFIX = "full/full/0/manifest.json"
-IIIF_IMAGE_SUFFIX = "full/0/default.jpg"
+IIIF_ENDPOINT_URI = "https://gallica.bnf.fr/iiif"
+IIIF_MANIFEST_SUFFIX = 'manifest.json'
+IIIF_SUFFIX = "info.json"
+IIIF_IMAGE_SUFFIX = "full/0/default.jpg" # TODO remove
 
 
 class BnfNewspaperPage(MetsAltoNewspaperPage):
@@ -51,8 +52,8 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
         :param MetsAltoNewspaperIssue issue: The parent Issue
         """
         self.issue = issue
-        iiif_url = os.path.join(IIIF_ENDPOINT_URL, self.ark_link, IIIF_MANIFEST_SUFFIX)
-        self.page_data['iiif'] = iiif_url
+        self.page_data['iiif_img_base_uri'] = os.path.join(IIIF_ENDPOINT_URI, 
+                                                           self.ark_link)
         self._parse_font_styles()
     
     def parse(self):
@@ -267,7 +268,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                 logger.warning(f"Could not find image {image_part_id} for CI {ci_id}")
             else:
                 coords = distill_coordinates(block)
-                iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.ark_link, IIIF_MANIFEST_SUFFIX)
+                iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.ark_link, IIIF_SUFFIX)
         return coords, iiif_link
     
     def _parse_mets(self):
@@ -294,13 +295,20 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         
         self.pages = list(self.pages.values())
         
+        # Issue manifest iiif URI is in format {iiif_prefix}/{ark_id}/manifest.json
+        # By default, the ark id contains the page number,
+        iiif_manifest = os.path.join(IIIF_ENDPOINT_URI, 
+                                     os.path.dirname(self.pages[0].ark_link),
+                                     IIIF_MANIFEST_SUFFIX)
+
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "i": content_items,
             "id": self.id,
             "ar": self.rights,
-            "pp": [p.id for p in self.pages]
-            }
+            "pp": [p.id for p in self.pages],
+            "iiif_manifest_uri": iiif_manifest
+        }
         # Note for newspapers with two dates (197 cases)
         if self.secondary_date is not None:
             self.issue_data['n'] = ["Secondary date {}".format(self.secondary_date)]

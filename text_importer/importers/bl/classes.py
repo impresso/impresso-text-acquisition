@@ -13,7 +13,7 @@ Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
+IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 BL_PICTURE_TYPE = "picture"
 BL_AD_TYPE = "advert"
@@ -27,7 +27,8 @@ class BlNewspaperPage(MetsAltoNewspaperPage):
         :param BlNewspaperIssue issue:
         """
         self.issue = issue
-        self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
+        self.page_data['iiif_img_base_uri'] = os.path.join(IIIF_ENDPOINT_URI, 
+                                                           self.id)
 
 
 class BlNewspaperIssue(MetsAltoNewspaperIssue):
@@ -156,7 +157,7 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         # Get logical structure of issue
         divs = self.xml.find('structMap', {'TYPE': 'LOGICAL'}).find('div', {'TYPE': 'ISSUE'}).findChildren('div')
         
-        # Sort to have same naming
+        # Sort to have same naming  # TODO change sorting!!
         sorted_divs = sorted(divs, key=lambda x: x.get('DMDID').lower())
         
         # Get all CI types

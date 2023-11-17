@@ -24,8 +24,8 @@ Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
-IIIF_MANIFEST_SUFFIX = 'info.json'
+IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
+IIIF_SUFFIX = 'info.json'
 IIIF_IMAGE_SUFFIX = 'full/full/0/default.jpg'
 
 # Types used in RERO2/RERO3 that are not in impresso schema
@@ -90,7 +90,8 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
     
     def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
         self.issue = issue
-        self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
+        self.page_data['iiif_img_base_uri'] = os.path.join(IIIF_ENDPOINT_URI, 
+                                                           self.id)
     
     # no coordinate conversion needed, but keeping it here for now
     def _convert_coordinates(
@@ -399,12 +400,12 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         mets_doc = self.xml
         
         self.image_properties = parse_mets_amdsec(
-                mets_doc,
-                x_res='ImageWidth',
-                y_res='ImageLength',
-                x_res_default=0,
-                y_res_default=0,
-                )  # Parse the resolution of page images
+            mets_doc,
+            x_res='ImageWidth',
+            y_res='ImageLength',
+            x_res_default=0,
+            y_res_default=0,
+        )  # Parse the resolution of page images
         
         # Parse all the content items
         content_items = self._parse_content_items(mets_doc)
@@ -415,7 +416,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             "id": self.id,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
-            }
+        }
     
     def _get_image_info(
         self, content_item: dict[str, Any]
@@ -473,6 +474,6 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                                      self.image_properties[page.number], 
                                      page.page_width)
         
-        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, IIIF_MANIFEST_SUFFIX)
+        iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.id, IIIF_SUFFIX)
         
         return coords, iiif_link

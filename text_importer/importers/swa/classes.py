@@ -16,7 +16,9 @@ from text_importer.importers.mets_alto.classes import MetsAltoNewspaperPage
 from text_importer.importers.swa.detect import SwaIssueDir
 
 logger = logging.getLogger(__name__)
-IIIF_ENDPOINT_URL = "https://ub-sipi.ub.unibas.ch/impresso"
+IIIF_IMG_BASE_URI = "https://ub-sipi.ub.unibas.ch/impresso"
+IIIF_PRES_BASE_URI = "https://ub-iiifpresentation.ub.unibas.ch/impresso_sb"
+IIIF_MANIFEST_SUFFIX = "manifest"
 SWA_XML_ENCODING = "utf-8-sig"
 
 
@@ -44,8 +46,8 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         basedir, filename = os.path.split(alto_path)
         super().__init__(_id, number, filename, basedir, 
                          encoding=SWA_XML_ENCODING)
-        self.iiif = os.path.join(IIIF_ENDPOINT_URL, filename.split('.')[0])
-        self.page_data['iiif'] = self.iiif
+        self.iiif = os.path.join(IIIF_IMG_BASE_URI, filename.split('.')[0])
+        self.page_data['iiif_img_base_uri'] = self.iiif
     
     def add_issue(self, issue: NewspaperIssue) -> None:
         self.issue = issue
@@ -138,6 +140,10 @@ class SWANewspaperIssue(NewspaperIssue):
         self._notes = []
         self._find_pages()
         self._find_content_items()
+
+        iiif_manifest = os.path.join(IIIF_PRES_BASE_URI, 
+                                     f"{self.id}-issue",
+                                     IIIF_MANIFEST_SUFFIX)
         
         self.issue_data = {
             'id': self.id,
@@ -145,8 +151,9 @@ class SWANewspaperIssue(NewspaperIssue):
             'i': self.content_items,
             'ar': self.rights,
             'pp': [p.id for p in self.pages],
+            'iiif_manifest_uri': iiif_manifest,
             'notes': self._notes
-            }
+        }
     
     def _parse_archive(self, temp_dir: str) -> ZipArchive:
         """Open and parse the Zip archive located at :attr:`path` if possible.

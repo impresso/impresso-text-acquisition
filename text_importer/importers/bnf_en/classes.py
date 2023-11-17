@@ -19,9 +19,10 @@ Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URL = "https://gallica.bnf.fr/iiif/ark:/12148/"
-IIIF_MANIFEST_SUFFIX = "full/full/0/manifest.json"
-IIIF_IMAGE_SUFFIX = "full/full/0/default.jpg"
+IIIF_ENDPOINT_URI = "https://gallica.bnf.fr/iiif/ark:/12148/"
+IIIF_SUFFIX = "info.json"
+IIIF_MANIFEST_SUFFIX = "manifest.json"
+IIIF_IMAGE_SUFFIX = "full/full/0/default.jpg" # TODO remove
 SECTION_TYPE = "section"
 
 type_translation = {
@@ -42,7 +43,9 @@ class BnfEnNewspaperPage(MetsAltoNewspaperPage):
     def add_issue(self, issue):
         self.issue = issue
         ark = issue.ark_link
-        self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, ark, "f{}".format(self.number), IIIF_IMAGE_SUFFIX)
+        self.page_data['iiif_img_base_uri'] = os.path.join(
+            IIIF_ENDPOINT_URI, ark, "f{}".format(self.number)
+        )
 
 
 class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
@@ -280,18 +283,21 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                 coords = [int(float(hpos)), int(float(vpos)), int(float(width)), int(float(height))]
         
         # coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
-        iiif_link = os.path.join(IIIF_ENDPOINT_URL, self.ark_link, 
-                                 "f{}".format(page.number), IIIF_MANIFEST_SUFFIX)
+        iiif_link = os.path.join(IIIF_ENDPOINT_URI, self.ark_link, 
+                                 "f{}".format(page.number), IIIF_SUFFIX)
         
         return coords, iiif_link
     
     def _parse_mets(self):
         content_items = self._parse_content_items()
+
+        iiif_manifest = os.path.join(IIIF_ENDPOINT_URI, self.ark_link, IIIF_MANIFEST_SUFFIX)
         
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "i": content_items,
             "id": self.id,
             "ar": self.rights,
-            "pp": [p.id for p in self.pages]
+            "pp": [p.id for p in self.pages],
+            "iiif_manifest_uri": iiif_manifest
             }
