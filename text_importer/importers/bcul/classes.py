@@ -1,3 +1,8 @@
+"""This module contains the definition of the BCUL importer classes.
+
+The classes define newspaper Issues and Pages objects which convert OCR data in
+the ABBYY format to a unified canoncial format.
+"""
 import codecs
 import logging
 import os
@@ -7,8 +12,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from text_importer.importers.bcul.helpers import (find_mit_file, get_page_number, 
-                                                  get_div_coords, parse_textblock,
-                                                  get_iiif_link_json, get_iiif_link_xml)
+                                                  get_div_coords, parse_textblock)
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
 
@@ -28,7 +32,7 @@ IIIF_MANIFEST_SUFFIX = 'manifest'
 
 
 class BCULNewspaperPage(NewspaperPage):
-    
+
     def __init__(self, _id: str, number: int, page_path: str, iiif_uri: str):
         super().__init__(_id, number)
         self.path = page_path
