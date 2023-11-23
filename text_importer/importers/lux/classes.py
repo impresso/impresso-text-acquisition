@@ -6,7 +6,6 @@ to a unified canoncial format.
 Theses classes are subclasses of generic Mets/Alto importer classes.
 """
 
-import codecs
 import logging
 import os
 import re

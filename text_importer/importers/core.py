@@ -9,7 +9,6 @@ Note:
     as it keeps everything together, by calling all other functions.
 """
 
-import codecs
 import gc
 import json
 import logging
@@ -202,7 +201,7 @@ def serialize_pages(
 
         out_file = os.path.join(out_dir, canonical_filename)
 
-        with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
+        with open(out_file, 'wb', encoding='utf-8') as jsonfile:
             json.dump(page.page_data, jsonfile)
             logger.info(f"Written page \'{page.number}\' to {out_file}")
         result.append((issue_dir, out_file))
@@ -494,15 +493,17 @@ def upload_issues(
         os.path.basename(filepath)
     )
     s3 = get_s3_resource()
-    try:
-        bucket = s3.Bucket(bucket_name)
-        bucket.upload_file(filepath, key_name)
-        logger.info(f'Uploaded {filepath} to {key_name}')
-        return True, filepath
-    except Exception as e:
-        logger.error(e)
-        logger.error(f'The upload of {filepath} failed with error {e}')
-        return False, filepath
+    if bucket_name is not None:
+        try:
+            bucket = s3.Bucket(bucket_name)
+            bucket.upload_file(filepath, key_name)
+            logger.info(f'Uploaded {filepath} to {key_name}')
+            return True, filepath
+        except Exception as e:
+            logger.error(f'The upload of {filepath} failed with error {e}')
+    else:
+        logger.info(f'Bucket name is None, not uploading issue {filepath}.')
+    return False, filepath
 
 
 def upload_pages( 
@@ -531,14 +532,17 @@ def upload_pages(
         os.path.basename(filepath)
     )
     s3 = get_s3_resource()
-    try:
-        bucket = s3.Bucket(bucket_name)
-        bucket.upload_file(filepath, key_name)
-        logger.info(f'Uploaded {filepath} to {key_name}')
-        return True, filepath
-    except Exception as e:
-        logger.error(f'The upload of {filepath} failed with error {e}')
-        return False, filepath
+    if bucket_name is not None:
+        try:
+            bucket = s3.Bucket(bucket_name)
+            bucket.upload_file(filepath, key_name)
+            logger.info(f'Uploaded {filepath} to {key_name}')
+            return True, filepath
+        except Exception as e:
+            logger.error(f'The upload of {filepath} failed with error {e}')
+    else:
+        logger.info(f'Bucket name is None, not uploading page {filepath}.')
+    return False, filepath
 
 
 def remove_filelocks(output_dir: str) -> None:

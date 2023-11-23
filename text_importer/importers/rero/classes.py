@@ -190,23 +190,18 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         ]
         
         self.pages = []
-        for filename, page_no, page_id in zip(
-                page_file_names, page_numbers, page_canonical_names
-                ):
+        for filename, page_no, page_id in zip(page_file_names, 
+                                              page_numbers, 
+                                              page_canonical_names):
             try:
                 self.pages.append(
-                        ReroNewspaperPage(
-                                page_id,
-                                page_no,
-                                filename,
-                                alto_path
-                                )
-                        )
+                    ReroNewspaperPage(page_id, page_no, filename, alto_path)
+                )
             except Exception as e:
                 logger.error(
-                        f'Adding page {page_no} {page_id} {filename}',
-                        f'raised following exception: {e}'
-                        )
+                    f'Adding page {page_no} {page_id} {filename}',
+                    f'raised following exception: {e}'
+                )
                 raise e
     
     def _parse_content_parts(self, div: Tag) -> list[dict[str, str | int]]:
@@ -390,19 +385,16 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         Once the :attr:`issue_data` is created, containing all the relevant 
         information in the canonical Issue format, the `ReroNewspaperIssue`
         instance is ready for serialization.
-
-        TODO: call to parse_mets_amdsec often raises error, if 'ImageWidth'
-        and 'ImageLength' not in mets file.
         """
         mets_doc = self.xml
         
         self.image_properties = parse_mets_amdsec(
-                mets_doc,
-                x_res='ImageWidth',
-                y_res='ImageLength',
-                x_res_default=0,
-                y_res_default=0,
-                )  # Parse the resolution of page images
+            mets_doc,
+            x_res='ImageWidth',
+            y_res='ImageLength',
+            x_res_default=0,
+            y_res_default=0,
+        )  # Parse the resolution of page images
         
         # Parse all the content items
         content_items = self._parse_content_items(mets_doc)
@@ -413,7 +405,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             "id": self.id,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
-            }
+        }
     
     def _get_image_info(
         self, content_item: dict[str, Any]

@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from collections import namedtuple
@@ -11,7 +10,6 @@ from impresso_commons.path.path_fs import _apply_datefilter
 from glob import glob
 from text_importer.utils import get_access_right
 
-import codecs
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
@@ -72,7 +70,7 @@ def _get_journal_name(issue_path: str, blip_id: str) -> Optional[str]:
     
     mets_file = mets_file[0]
     
-    with codecs.open(mets_file, 'r', "utf-8") as f:
+    with open(mets_file, 'rb', encoding="utf-8") as f:
         raw_xml = f.read()
     
     mets_doc = BeautifulSoup(raw_xml, 'xml')

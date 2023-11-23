@@ -6,7 +6,6 @@ The classes in this module are meant to be subclassed to handle independently
 the parsing for each version of the Mets/Atlo format and their specificities.
 """
 
-import codecs
 import logging
 import os
 from abc import abstractmethod
@@ -71,7 +70,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
         """
         alto_xml_path = os.path.join(self.basedir, self.filename)
         
-        with codecs.open(alto_xml_path, 'r', encoding=self.encoding) as f:
+        with open(alto_xml_path, 'rb', encoding=self.encoding) as f:
             raw_xml = f.read()
         
         alto_doc = BeautifulSoup(raw_xml, 'xml')
@@ -182,7 +181,7 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
         
         mets_file = mets_file[0]
         
-        with codecs.open(mets_file, 'r', "utf-8") as f:
+        with open(mets_file, 'rb', encoding="utf-8") as f:
             raw_xml = f.read()
         
         mets_doc = BeautifulSoup(raw_xml, 'xml')
