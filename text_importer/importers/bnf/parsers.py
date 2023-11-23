@@ -145,7 +145,9 @@ def parse_embedded_cis(div: Tag,
                 
                 if lab is not None:
                     metadata['t'] = lab
-                # Check if the parent exists (sometimes tables are embedded into articles, but the articles are empty)
+                # Check if the parent exists 
+                # (sometimes tables are embedded into articles, 
+                # but the articles are empty)
                 if parent_id is not None:
                     metadata['pOf'] = parent_id
                 new_ci = {

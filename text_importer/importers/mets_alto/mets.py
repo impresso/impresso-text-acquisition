@@ -25,9 +25,9 @@ def parse_mets_filegroup(mets_doc: BeautifulSoup) -> dict[int, str]:
     )[0]
 
     return {
-            int(child.get("SEQ")): child.get("ADMID")
-            for child in image_filegroup.findAll('file')
-            }
+        int(child.get("SEQ")): child.get("ADMID")
+        for child in image_filegroup.findAll('file')
+    }
 
 
 def parse_mets_amdsec(
