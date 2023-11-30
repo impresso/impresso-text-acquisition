@@ -226,13 +226,13 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     comp_page_no = int(comp_fileid.replace('ALTO', ''))
                     
                     parts.append(
-                            {
-                                'comp_role': comp_role,
-                                'comp_id': comp_id,
-                                'comp_fileid': comp_fileid,
-                                'comp_page_no': comp_page_no
-                                }
-                            )
+                        {
+                            'comp_role': comp_role,
+                            'comp_id': comp_id,
+                            'comp_fileid': comp_fileid,
+                            'comp_page_no': comp_page_no
+                        }
+                    )
         return parts
     
     def _parse_dmdsec(self) -> tuple[list[dict[str, Any]], int]:
@@ -452,6 +452,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 img_props = self.image_properties[curr_page.number]
                 x_resolution = img_props['x_resolution']
                 y_resolution = img_props['y_resolution']
+                # height and width should be switched! hpos, vpos, width, height
                 coordinates = convert_coordinates(hpos, vpos, height, width, 
                                                   x_resolution, y_resolution)
                 encoded_ark_id = encode_ark(self.ark_id)
