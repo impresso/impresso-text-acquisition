@@ -70,7 +70,7 @@ def _get_journal_name(issue_path: str, blip_id: str) -> Optional[str]:
     
     mets_file = mets_file[0]
     
-    with open(mets_file, 'rb', encoding="utf-8") as f:
+    with open(mets_file, 'r', encoding="utf-8") as f:
         raw_xml = f.read()
     
     mets_doc = BeautifulSoup(raw_xml, 'xml')

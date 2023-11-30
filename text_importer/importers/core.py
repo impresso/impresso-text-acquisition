@@ -24,6 +24,7 @@ from typing import Tuple, Type
 
 import jsonlines
 from dask import bag as db
+from dask.distributed import Client
 from filelock import FileLock
 from impresso_commons.path.path_fs import IssueDir, canonical_path
 from impresso_commons.text.rebuilder import cleanup
@@ -201,7 +202,7 @@ def serialize_pages(
 
         out_file = os.path.join(out_dir, canonical_filename)
 
-        with open(out_file, 'wb', encoding='utf-8') as jsonfile:
+        with open(out_file, 'w', encoding='utf-8') as jsonfile:
             json.dump(page.page_data, jsonfile)
             logger.info(f"Written page \'{page.number}\' to {out_file}")
         result.append((issue_dir, out_file))
@@ -240,7 +241,8 @@ def import_issues(
     issue_class: Type[NewspaperIssue],
     image_dirs: str | None,
     temp_dir: str | None,
-    chunk_size: int | None
+    chunk_size: int | None,
+    client: Client
 ) -> None:
     """Import a bunch of newspaper issues.
 
@@ -359,7 +361,8 @@ def import_issues(
             logger.info(f'Done compressing and uploading pages '
                         f'of chunk {chunk_n} for {period}')
 
-        del issue_bag
+        #del issue_bag
+        client.cancel(issue_bag) 
 
     remove_filelocks(out_dir)
 

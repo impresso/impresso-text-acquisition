@@ -161,7 +161,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
             logger.critical(f"Could not find METS file in {self.path}")
             return None
         mets_file = mets_file[0]
-        with open(mets_file, 'rb', encoding="utf-8") as f:
+        with open(mets_file, 'r', encoding="utf-8") as f:
             raw_xml = f.read()
         
         mets_doc = BeautifulSoup(raw_xml, 'xml')

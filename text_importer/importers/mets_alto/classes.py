@@ -70,7 +70,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
         """
         alto_xml_path = os.path.join(self.basedir, self.filename)
         
-        with open(alto_xml_path, 'rb', encoding=self.encoding) as f:
+        with open(alto_xml_path, 'r', encoding=self.encoding) as f:
             raw_xml = f.read()
         
         alto_doc = BeautifulSoup(raw_xml, 'xml')
@@ -174,14 +174,14 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
             os.path.join(self.path, f)
             for f in os.listdir(self.path)
             if 'mets.xml' in f.lower()
-            ]
+        ]
         if len(mets_file) == 0:
             logger.critical(f"Could not find METS file in {self.path}")
             return
         
         mets_file = mets_file[0]
         
-        with open(mets_file, 'rb', encoding="utf-8") as f:
+        with open(mets_file, 'r', encoding="utf-8") as f:
             raw_xml = f.read()
         
         mets_doc = BeautifulSoup(raw_xml, 'xml')

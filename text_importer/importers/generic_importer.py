@@ -90,7 +90,7 @@ def get_dask_client(
         Client: A client connected to and allowing to manage the Dask cluster.
     """
     if scheduler is None:
-        client = Client(processes=False, n_workers=8, threads_per_worker=2)
+        client = Client(n_workers=8, threads_per_worker=2)
     else:
         client = Client(scheduler)
         client.run(
@@ -244,4 +244,4 @@ def main(
     assert outp_dir is not None or out_bucket is not None
     
     import_issues(issues, outp_dir, out_bucket, issue_class, 
-                  image_dirs, temp_dir, chunk_size)
+                  image_dirs, temp_dir, chunk_size, client)
