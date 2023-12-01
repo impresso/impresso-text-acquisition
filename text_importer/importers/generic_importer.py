@@ -30,7 +30,7 @@ import shutil
 import time
 from typing import Any, Type, Callable
 
-from dask.distributed import Client
+from dask.distributed import Client, LocalCluster
 from docopt import docopt
 from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
                                            detect_canonical_issues,
@@ -90,7 +90,10 @@ def get_dask_client(
         Client: A client connected to and allowing to manage the Dask cluster.
     """
     if scheduler is None:
-        client = Client(n_workers=8, threads_per_worker=2)
+        cluster = LocalCluster()
+        client = Client(cluster)
+        cluster.adapt(minimum=2, maximum=32)
+        #client = Client(processes=False, n_workers=8, threads_per_worker=2)
     else:
         client = Client(scheduler)
         client.run(

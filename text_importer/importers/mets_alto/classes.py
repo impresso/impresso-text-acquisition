@@ -70,11 +70,23 @@ class MetsAltoNewspaperPage(NewspaperPage):
         """
         alto_xml_path = os.path.join(self.basedir, self.filename)
         
-        with open(alto_xml_path, 'r', encoding=self.encoding) as f:
-            raw_xml = f.read()
-        
-        alto_doc = BeautifulSoup(raw_xml, 'xml')
-        return alto_doc
+        # In case of I/O error, retry twice,
+        tries = 3
+        for i in range(tries):
+            try:
+                with open(alto_xml_path, 'r', encoding=self.encoding) as f:
+                    raw_xml = f.read()
+                
+                alto_doc = BeautifulSoup(raw_xml, 'xml')
+                return alto_doc
+            except IOError as e:
+                if i < tries - 1: # i is zero indexed
+                    logger.warning(f"Caught error for {self.id}, retrying (up to {tries} times) to read xml file. Error: {e}.")
+                    continue
+                else:
+                    logger.warning(f"Reached maximum amount of errors for {self.id}.")
+                    raise e
+
     
     def _convert_coordinates(self, page_regions: list[dict[str, Any]]
     ) -> tuple[bool, list[dict[str, Any]]]:
@@ -181,8 +193,23 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
         
         mets_file = mets_file[0]
         
-        with open(mets_file, 'r', encoding="utf-8") as f:
+        """with open(mets_file, 'r', encoding="utf-8") as f:
             raw_xml = f.read()
         
         mets_doc = BeautifulSoup(raw_xml, 'xml')
-        return mets_doc
+        return mets_doc"""
+        tries = 3
+        for i in range(tries):
+            try:
+                with open(mets_file, 'r', encoding="utf-8") as f:
+                    raw_xml = f.read()
+                
+                mets_doc = BeautifulSoup(raw_xml, 'xml')
+                return mets_doc
+            except IOError as e:
+                if i < tries - 1: # i is zero indexed
+                    logger.warning(f"Caught error for {self.id}, retrying (up to {tries} times) to read xml file. Error: {e}.")
+                    continue
+                else:
+                    logger.warning(f"Reached maximum amount of errors for {self.id}.")
+                    raise e
