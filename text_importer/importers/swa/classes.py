@@ -128,7 +128,7 @@ class SWANewspaperIssue(NewspaperIssue):
             this issue. A page is a tuple (page_canonical_id, alto_path), where
             alto_path is the path from within the archive.
         content_items (list[dict[str,Any]]): Content items from this issue.
-        notes (list[str]): Notes of missing pages gathered while parsing.
+        _notes (list[str]): Notes of missing pages gathered while parsing.
     """
     
     def __init__(self, issue_dir: SwaIssueDir, temp_dir: str) -> None:
@@ -137,7 +137,6 @@ class SWANewspaperIssue(NewspaperIssue):
         self.temp_pages = issue_dir.pages
         self.content_items = []
         
-        self._notes = []
         self._find_pages()
         self._find_content_items()
 
@@ -188,7 +187,7 @@ class SWANewspaperIssue(NewspaperIssue):
         Created :obj:`SWANewspaperPage` instances are added to :attr:`pages`.
 
         Raises:
-            ValueError: No page was found for this issue..
+            ValueError: No page was found for this issue.
         """
         for n, val in enumerate(sorted(self.temp_pages)):
             page_id, page_path = val
