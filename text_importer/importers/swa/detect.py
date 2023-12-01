@@ -249,13 +249,6 @@ def select_issues(
         ).compute()
     )
     
-    logger.info(
-        "{} newspaper issues remained after applying filter: {}".format(
-            len(selected_issues),
-            selected_issues
-        )
-    )
-    
     exclude_flag = False if not exclude_list else True
     filtered_issues = (
         _apply_datefilter(filter_dict, selected_issues, year_only=year_flag) 

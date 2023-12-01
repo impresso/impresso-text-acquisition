@@ -44,7 +44,6 @@ Args:
     rights (str): Access rights on the data (open, closed, etc.).
 
 >>> from datetime import date
->>> i = OnbIssueDir('nwb', date(1874,01,06), 'a', './ANNO/nwb/1874/01/06', 'open')
 >>> i = OnbIssueDir(
         journal='nwb', 
         date=date(1874,01,06), 
@@ -59,6 +58,8 @@ Args:
 
 def dir2issue(path: str, access_rights: dict) -> OnbIssueDir:
     """Create a `OnbIssueDir` from a directory (ONB format).
+
+    TODO: integrate the access rights once the information is available.
 
     Args:
         path (str): Path of issue.
@@ -79,6 +80,9 @@ def dir2issue(path: str, access_rights: dict) -> OnbIssueDir:
             p_number = int(Path(file).stem)
             p_id = f"{issue_id}-p{str(p_number).zfill(4)}"
             pages.append((p_id, os.path.basename(file)))
+
+    # sort the pages by number
+    pages.sort(key=lambda x: int(x[1].replace('.xml', '')))
 
     return OnbIssueDir(journal=journal, 
                        date=issue_date,
@@ -125,3 +129,75 @@ def detect_issues(base_dir: str, access_rights: str) -> list[OnbIssueDir]:
     ar_dict = {}
 
     return [dir2issue(_dir, ar_dict) for _dir in issues_dirs]
+
+
+def select_issues(
+    base_dir: str, config: dict, access_rights: str
+) -> list[OnbIssueDir]:
+    """Detect selectively newspaper issues to import.
+
+    The behavior is very similar to :func:`detect_issues` with the only
+    difference that ``config`` specifies some rules to filter the data to
+    import. See `this section <../importers.html#configuration-files>`__ for
+    further details on how to configure filtering.
+
+    Note:
+        The access rights information is not in place yet, but needs
+        to be specified by the content provider (ONB).
+
+    TODO: `select_issues` has a lot of code reuse among importers, move to
+    `utils.py` or something similar.
+
+    Args:
+        base_dir (str): Path to the base directory of newspaper data.
+        config (dict): Config dictionary for filtering.
+        access_rights (str): Path to ``access_rights.json`` file.
+
+    Returns:
+        list[OnbIssueDir]: list of ``OnbIssueDir`` instances, to be imported.
+    """
+    try:
+        filter_dict = config.get("newspapers")
+        exclude_list = config["exclude_newspapers"]
+        year_flag = config["year_only"]
+    except KeyError:
+        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] "
+                         "is missing in the config file.")
+        return []
+    
+    exclude_flag = False if not exclude_list else True
+    logger.debug(f"got filter_dict: {filter_dict}, "
+                 f"\nexclude_list: {exclude_list}, "
+                 f"\nyear_flag: {year_flag}"
+                 f"\nexclude_flag: {exclude_flag}")
+    
+    filter_newspapers = (set(filter_dict.keys()) 
+                         if not exclude_flag 
+                         else set(exclude_list))
+    logger.debug(f"got filter_newspapers: {filter_newspapers}, "
+                 f"with exclude flag: {exclude_flag}")
+
+    issues = detect_issues(base_dir, access_rights)
+
+    issue_bag = db.from_sequence(issues)
+    selected_issues = (
+        issue_bag.filter(
+            lambda i: (
+                len(filter_dict) == 0 or i.journal in filter_dict.keys()
+            ) and i.journal not in exclude_list
+        ).compute()
+    )
+    
+    exclude_flag = False if not exclude_list else True
+    filtered_issues = (
+        _apply_datefilter(filter_dict, selected_issues, year_only=year_flag) 
+        if not exclude_flag 
+        else selected_issues
+    )
+    logger.info(
+        "{} newspaper issues remained after applying filter: {}".format(
+            len(filtered_issues),
+            filtered_issues
+        )
+    )
+    return selected_issues
