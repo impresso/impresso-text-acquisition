@@ -239,7 +239,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                     })
         return parts
     
-    def _get_ci_language(self, dmdid: str) -> str | None:
+    def _get_ci_language(self, dmdid: str, mets_doc: BeautifulSoup) -> str | None:
         """Find the language code of the content item with given a `DMDID`.
         
         Languages are usually in a `<dmdSec>` at the beginning of a METS file,
@@ -251,8 +251,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         Returns:
             str | None: Language if defined in the file else `None`.
         """
-        doc = self.xml
-        lang = doc.find("dmdSec", {"ID": dmdid})
+        lang = mets_doc.find("dmdSec", {"ID": dmdid})
         if lang is None:
             return None
         lang = lang.find("MODS:languageTerm")
@@ -260,7 +259,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             return None
         return lang.text
     
-    def _parse_content_item(self, item_div: Tag, counter:int) -> dict[str,Any]:
+    def _parse_content_item(self, item_div: Tag, counter: int, mets_doc: BeautifulSoup) -> dict[str,Any]:
         """Parse a content item div and create the dictionary representing it.
 
         The dictionary corresponding to a content item needs to be of a precise
@@ -291,7 +290,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             }
         
         # Get CI language
-        language = self._get_ci_language(item_div.get('DMDID'))
+        language = self._get_ci_language(item_div.get('DMDID'), mets_doc)
         if language is not None:
             metadata['l'] = language
         
@@ -372,10 +371,10 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             if div_type is not None and (div_type.lower() == SECTION_TYPE):
                 section_divs = self._decompose_section(div)
                 for d in section_divs:
-                    content_items.append(self._parse_content_item(d, counter))
+                    content_items.append(self._parse_content_item(d, counter, mets_doc))
                     counter += 1
             else:
-                content_items.append(self._parse_content_item(div, counter))
+                content_items.append(self._parse_content_item(div, counter, mets_doc))
                 counter += 1
         return content_items
     

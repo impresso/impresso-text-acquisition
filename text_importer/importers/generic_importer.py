@@ -90,7 +90,7 @@ def get_dask_client(
         Client: A client connected to and allowing to manage the Dask cluster.
     """
     if scheduler is None:
-        cluster = LocalCluster()
+        cluster = LocalCluster(memory_limit='auto', threads_per_worker=4)
         client = Client(cluster)
         cluster.adapt(minimum=2, maximum=32)
         #client = Client(processes=False, n_workers=8, threads_per_worker=2)

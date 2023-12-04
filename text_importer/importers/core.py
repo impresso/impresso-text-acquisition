@@ -242,7 +242,7 @@ def import_issues(
     image_dirs: str | None,
     temp_dir: str | None,
     chunk_size: int | None,
-    client: Client
+    client: Client | None = None,
 ) -> None:
     """Import a bunch of newspaper issues.
 
@@ -361,8 +361,12 @@ def import_issues(
             logger.info(f'Done compressing and uploading pages '
                         f'of chunk {chunk_n} for {period}')
 
-        #del issue_bag
-        client.cancel(issue_bag) 
+        # free some dask memory 
+        if client:
+            # if client is defined here
+            client.cancel(issue_bag) 
+        else:
+            del issue_bag
 
     remove_filelocks(out_dir)
 
