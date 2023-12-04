@@ -13,9 +13,10 @@ will first be converted to Alto before using this importer.
 import logging
 import os
 from time import strftime
+from bs4 import BeautifulSoup
 
 from text_importer.importers.classes import NewspaperIssue
-from text_importer.importers.mets_alto.alto import parse_printspace
+from text_importer.importers.mets_alto.alto import parse_printspace, parse_style
 from text_importer.importers.mets_alto.classes import MetsAltoNewspaperPage
 from text_importer.importers.onb.detect import OnbIssueDir
 
@@ -51,17 +52,56 @@ class ONBNewspaperPage(MetsAltoNewspaperPage):
     def __init__(self, _id: str, number: int, filename: str, basedir: str, 
                  iiif_identifier: str, encoding: str = 'utf-8') -> None:
         super().__init__(_id, number, filename, basedir, encoding)
-        #self.alto_path = os.path.join(basedir, filename)
-        #self.iiif_identifier = iiif_identifier
         # create iiif base image URI for ONB
         self.iiif = os.path.join(IIIF_IMG_BASE_URI, 
                                  iiif_identifier, 
                                  str(number).zfill(8))
         self.page_data['iiif_img_base_uri'] = self.iiif
+        self.parse_info_for_issue()
+
+    def parse_info_for_issue(self) -> None:
+        alto_doc = self.xml
+        self.language_list = self.languages(alto_doc)
+        _ = self.text_styles(alto_doc)
 
     def add_issue(self, issue: NewspaperIssue) -> None:
         self.issue = issue
+    
+    @property
+    def text_styles(self, alto_doc: BeautifulSoup | None = None) -> list[str]:
+        """Return the TODO
 
+        Given that each ONB page is considered as a content item, it can happen
+        that multiple languages are present in the text.
+
+        Returns:
+            list[str]: List of languages present in this page's text.
+        """
+        # only parse the xml for the text styles once
+        if not self.styles_dict:
+            alto_doc = self.xml if alto_doc is None else alto_doc
+            self.styles_dict = {
+                x.get('ID'): parse_style(x, page_num=self.number)
+                for x in alto_doc.findAll('TextStyle')}
+        return list(self.styles_dict.values())
+    
+    @property
+    def languages(self, alto_doc: BeautifulSoup | None = None) -> list[str]:
+        """Return the languages present on the page.
+
+        Given that each ONB page is considered as a content item, it can happen
+        that multiple languages are present in the text.
+
+        Returns:
+            list[str]: List of languages present in this page's text.
+        """
+        # only parse the xml for the languages once
+        if not self.language_list:
+            alto_doc = self.xml if alto_doc is None else alto_doc
+            lang_map = map(lambda x: x.get('language'), alto_doc.findAll('TextBlock'))
+            self.language_list = list(set(lang_map))
+        return self.language_list
+    
     @property
     def ci_id(self) -> str:
         """Return the content item ID of the page.
@@ -77,20 +117,6 @@ class ONBNewspaperPage(MetsAltoNewspaperPage):
         split = self.id.split('-')
         split[-1] = split[-1].replace('p', 'i')
         return "-".join(split)
-    
-    @property
-    def languages(self) -> list[str]:
-        """Return the languages present on the page.
-
-        Given that each ONB page is considered as a content item, it can happen
-        that multiple languages are present in the text.
-
-        Returns:
-            list[str]: List of languages present in this page's text.
-        """
-        alto_doc = self.xml
-        lang_map = map(lambda x: x.get('language'), alto_doc.findAll('TextBlock'))
-        return list(set(lang_map))
 
     def parse(self) -> None:
         doc = self.xml
@@ -99,11 +125,12 @@ class ONBNewspaperPage(MetsAltoNewspaperPage):
         
         text_blocks = pselement.findAll('TextBlock')
         mappings = {k.get('ID'): ci_id for k in pselement.findAll('TextBlock')}
-        page_data, notes = parse_printspace(pselement, mappings)
+        page_data, notes = parse_printspace(pselement, mappings, self.styles_dict)
         
         # the coordinates in the XML files are already correct
         self.page_data['cc'], self.page_data['r'] = True, page_data
-        
+        self.language_list = self.languages(doc)
+
         # Add notes to page data
         if len(notes) > 0:
             self.page_data['n'] = notes
@@ -143,6 +170,8 @@ class ONBNewspaperIssue(NewspaperIssue):
         self.iiif_identifier = ''.join(self.path.split('/')[-4:])
         self.content_items = []
 
+        self.text_styles = [] #self._parse_font_styles()
+
         self._find_pages()
         self._find_content_items()
 
@@ -157,8 +186,19 @@ class ONBNewspaperIssue(NewspaperIssue):
             'ar': self.rights,
             'pp': [p.id for p in self.pages],
             'iiif_manifest_uri': iiif_manifest,
+            's': self.text_styles,
             'notes': self._notes
         }
+
+    def _parse_font_styles(self):
+        """ Parses the styles at page level"""
+        style_divs = self.xml.findAll("TextStyle")
+        
+        styles = []
+        for d in style_divs:
+            styles.append(parse_style(d))
+        
+        return styles
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.

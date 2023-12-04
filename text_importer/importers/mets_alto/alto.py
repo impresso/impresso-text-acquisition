@@ -27,7 +27,8 @@ def distill_coordinates(element: Tag) -> list[int]:
     return [hpos, vpos, width, height]
 
 
-def parse_textline(element: Tag) -> tuple[dict, list[str]]:
+def parse_textline(element: Tag, text_style: str | None = None
+) -> tuple[dict, list[str]]:
     """Parse the ``<TextLine>`` element of an ALTO XML document.
 
     Args:
@@ -60,6 +61,9 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
                 'tx': child.get('CONTENT')
                 }
             
+            if text_style is not None:
+                token['s'] = text_style
+            
             if child.get('SUBS_TYPE') == "HypPart1":
                 # token['tx'] += u"\u00AD"
                 token['tx'] += "-"
@@ -73,7 +77,8 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     return line, notes
 
 
-def parse_printspace(element: Tag, mappings: dict[str, str]
+def parse_printspace(element: Tag, mappings: dict[str, str], 
+                     text_styles: dict[str, dict] | None = None
 ) -> tuple[list[dict], list[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
@@ -109,8 +114,11 @@ def parse_printspace(element: Tag, mappings: dict[str, str]
             
             coordinates = distill_coordinates(block)
             
+            # fetch the issue-level text style id for this font
+            block_style_id = text_styles[block.get('STYLEREFS')]['id']
+            
             tmp = [
-                parse_textline(line_element)
+                parse_textline(line_element, block_style_id)
                 for line_element in block.findAll('TextLine')
                 ]
             
@@ -137,7 +145,7 @@ def parse_printspace(element: Tag, mappings: dict[str, str]
             regions.append(region)
     return regions, notes
 
-def parse_style(style_div: Tag) -> dict[str, float | str]:
+def parse_style(style_div: Tag, page_num: int | None = None) -> dict[str, float | str]:
     """Parse the font-style information in the ALTO files (for BNL and BNF).
 
     Args:
@@ -154,7 +162,10 @@ def parse_style(style_div: Tag) -> dict[str, float | str]:
     font_name = font_family
     if font_style is not None:
         font_name = "{}-{}".format(font_name, font_style)
-    
+    # add the page number when multiple pages have different ids for the fonts
+    if page_num is not None:
+        font_id = f"page{str(page_num)-{font_id}}"
+
     style = {
         "id": font_id,
         "fs": float(font_size),
