@@ -170,7 +170,7 @@ class ONBNewspaperIssue(NewspaperIssue):
         self.iiif_identifier = ''.join(self.path.split('/')[-4:])
         self.content_items = []
 
-        self.text_styles = [] #self._parse_font_styles()
+        self.text_styles = [] 
 
         self._find_pages()
         self._find_content_items()
@@ -189,16 +189,6 @@ class ONBNewspaperIssue(NewspaperIssue):
             's': self.text_styles,
             'notes': self._notes
         }
-
-    def _parse_font_styles(self):
-        """ Parses the styles at page level"""
-        style_divs = self.xml.findAll("TextStyle")
-        
-        styles = []
-        for d in style_divs:
-            styles.append(parse_style(d))
-        
-        return styles
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
@@ -221,6 +211,7 @@ class ONBNewspaperIssue(NewspaperIssue):
                 page = ONBNewspaperPage(p_id, n + 1, p_file, self.path, 
                                         self.iiif_identifier)
                 self.pages.append(page)
+                self.text_styles.extend(page.text_styles)
             else:
                 # No list of pages per issue;
                 # a page is missing if a number is skipped.

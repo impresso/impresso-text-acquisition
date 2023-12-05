@@ -200,4 +200,4 @@ def select_issues(
             filtered_issues
         )
     )
-    return selected_issues
+    return filtered_issues
