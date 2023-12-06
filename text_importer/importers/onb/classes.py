@@ -60,6 +60,14 @@ class ONBNewspaperPage(MetsAltoNewspaperPage):
         self.parse_info_for_issue()
 
     def parse_info_for_issue(self) -> None:
+        """Parse some the languages and text_styles page properties.
+
+        This information is necessary for the `NewspaperIssue` this page is
+        from, and is thus necessary upon creation of this page instead of when
+        it's parsed. 
+        Parsing both properties at once allows to prevent unnecessary calls to
+        `self.xml` which are costly in processing time when repeated.
+        """
         alto_doc = self.xml
         self.language_list = self.languages(alto_doc)
         _ = self.text_styles(alto_doc)
@@ -68,14 +76,17 @@ class ONBNewspaperPage(MetsAltoNewspaperPage):
         self.issue = issue
     
     @property
-    def text_styles(self, alto_doc: BeautifulSoup | None = None) -> list[str]:
-        """Return the TODO
+    def text_styles(
+        self, alto_doc: BeautifulSoup | None = None
+    ) -> list[dict[str, float, str]]:
+        """Return the text style fonts for this page. 
 
-        Given that each ONB page is considered as a content item, it can happen
-        that multiple languages are present in the text.
-
+        Multiple pages have the same fonts, with different IDs.
+        Each style returned by the `parse_style` function also contains this
+        page's number to know which IDs correspond to each page's fonts.
+        
         Returns:
-            list[str]: List of languages present in this page's text.
+            list[dict[str, float, str]]: List of text styles for this page
         """
         # only parse the xml for the text styles once
         if not self.styles_dict:
@@ -98,7 +109,9 @@ class ONBNewspaperPage(MetsAltoNewspaperPage):
         # only parse the xml for the languages once
         if not self.language_list:
             alto_doc = self.xml if alto_doc is None else alto_doc
-            lang_map = map(lambda x: x.get('language'), alto_doc.findAll('TextBlock'))
+            lang_map = map(
+                lambda x: x.get('language'), alto_doc.findAll('TextBlock')
+            )
             self.language_list = list(set(lang_map))
         return self.language_list
     
