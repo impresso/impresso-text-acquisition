@@ -203,7 +203,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                 )
                 raise e
     
-    def _get_divs_by_type(self) -> dict[str, list[tuple[str, str]]]:
+    def _get_divs_by_type(self, mets: BeautifulSoup) -> dict[str, list[tuple[str, str]]]:
         """Parse `div` tags, flatten them and sort them by type.
 
         First, parse the `dmdSec` tags, and sort them by type.
@@ -213,11 +213,13 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         Finally, flatten the sections into what they actually contain, and add
         the flattened sections to the return dict.
 
+        Args:
+            mets (BeautifulSoup): Contents of the Mets XML file.
+
         Returns:
             dict[str, list[tuple[str, str]]]: All the `div` sorted by type, the
                 values are the List of (div_id, div_label)
         """
-        mets = self.xml
         dmd_sections = [x for x in mets.findAll("dmdSec") if x.find("mods")]
         struct_map = mets.find("structMap", {"TYPE": "logical"})
         struct_content = struct_map.find("div", {"TYPE": "CONTENT"})
@@ -289,9 +291,9 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         del by_type['section']
         return by_type
     
-    def _parse_div(
-        self, div_id: str, div_type: str, label: str, item_counter: int
-    ) -> tuple[list[dict], int]:
+    def _parse_div(self, div_id: str, div_type: str, 
+                   label: str, item_counter: int, 
+                   mets_doc: BeautifulSoup) -> tuple[list[dict], int]:
         """Parse the given `div_id` from the `structMap` of the METS file.
 
         Args:
@@ -299,11 +301,12 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
             div_type (str): Type of the div (should be in `BNF_CONTENT_TYPES`)
             label (str): Label of the div (title)
             item_counter (int): The current counter for CI IDs
+            mets_doc (BeautifulSoup): Contents of the Mets XML file.
 
         Returns:
             tuple[list[dict], int]: _description_
         """
-        article_div = self.xml.find("div", {"ID": div_id})  # Get the tag
+        article_div = mets_doc.find("div", {"ID": div_id})  # Get the tag
         # Try to get the body if there is one (we discard headings)
         article_div = article_div.find("div", {"TYPE": "BODY"}) or article_div  
         parts = parse_div_parts(article_div)  # Parse the parts of the tag
@@ -381,15 +384,16 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         instance is ready for serialization.
         """
         
+        mets_doc = self.xml
         # First get all the divs by type
-        by_type = self._get_divs_by_type()
+        by_type = self._get_divs_by_type(mets_doc)
         item_counter = 1
         content_items = []
         
         # Then start parsing them
         for div_type, divs in by_type.items():
             for div_id, div_label in divs:
-                cis, item_counter = self._parse_div(div_id, div_type, div_label, item_counter)
+                cis, item_counter = self._parse_div(div_id, div_type, div_label, item_counter, mets_doc)
                 content_items += cis
         
         # Finally add the pages and iiif link

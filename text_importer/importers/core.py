@@ -375,6 +375,10 @@ def import_issues(
 
     logger.info("---------- Done ----------")
 
+    if client:
+        # shutdown dask client once processing is done.
+        client.shutdown()
+
 
 def compress_pages(
     key: str,
@@ -453,7 +457,7 @@ def compress_issues(
     logger.info(f'Compressing {len(issues)} JSON files into {filepath}')
 
     # put a file lock to avoid the overwriting of files due to parallelization
-    lock = FileLock(filepath + ".lock", timeout=5)
+    lock = FileLock(filepath + ".lock", timeout=10)
 
     with lock:
         try:
