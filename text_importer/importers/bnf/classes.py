@@ -100,12 +100,15 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
         )
         if len(notes) > 0:
             self.page_data['n'] = notes
-    
+
     @property
     def xml(self) -> BeautifulSoup:
-        """ Redefined as for some issues, the pages are in gz format
-        
-        :return:
+        """Read Alto XML file of the page and create a BeautifulSoup object.
+
+        Redefined function as for some issues, the pages are in gz format.
+
+        Returns:
+            BeautifulSoup: BeautifulSoup object with Alto XML of the page.
         """
         if not self.is_gzip:
             return super(BnfNewspaperPage, self).xml

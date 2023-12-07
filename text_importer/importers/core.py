@@ -300,7 +300,9 @@ def import_issues(
 
         compressed_issue_files = (
             issue_bag.groupby(lambda i: (i.journal, i.date.year)) 
-            .starmap(compress_issues, output_dir=out_dir) 
+            .starmap(compress_issues, 
+                     output_dir=out_dir,
+                     failed_log=failed_log_path) 
             .compute()
         )
 
@@ -432,20 +434,23 @@ def compress_pages(
 def compress_issues(
     key: Tuple[str, int],
     issues: list[NewspaperIssue],
-    output_dir: str | None = None
+    output_dir: str | None = None,
+    failed_log: str | None = None,
 ) -> Tuple[str, str]:
     """Compress issues of the same Journal-year and save them in a json file.
 
     First check if the file exists, load it and then over-write/add the newly
     generated issues.
     The compressed ``.bz2`` output file is a JSON-line file, where each line
-    corresponds to an individual and issue document in the canonical format.  
+    corresponds to an individual and issue document in the canonical format.
 
     Args:
         key (Tuple[str, int]): Newspaper ID and year of input issues 
             (e.g. `(GDL, 1900)`).
         issues (list[NewspaperIssue]): A list of `NewspaperIssue` instances.
         output_dir (str | None, optional): Output directory. Defaults to None.
+        failed_log (str | None, optional): Path to the log file used when an
+            instantiation was not successful. Defaults to None.
 
     Returns:
         Tuple[str, str]: Label following the template `<NEWSPAPER>-<YEAR>` and 
@@ -457,10 +462,10 @@ def compress_issues(
     logger.info(f'Compressing {len(issues)} JSON files into {filepath}')
 
     # put a file lock to avoid the overwriting of files due to parallelization
-    lock = FileLock(filepath + ".lock", timeout=10)
+    lock = FileLock(filepath + ".lock", timeout=13)
 
-    with lock:
-        try:
+    try:
+        with lock:
             with smart_open_function(filepath, 'ab') as fout:
                 writer = jsonlines.Writer(fout)
 
@@ -469,9 +474,10 @@ def compress_issues(
 
                 logger.info(f'Written {len(items)} issues to {filepath}')
                 writer.close()
-        except Exception as e:
-            logger.error(f"Error for {filepath}")
-            logger.exception(e)
+    except Exception as e:
+        logger.error(f"Error for {filepath}")
+        logger.exception(e)
+        write_error(filepath, e, failed_log)
 
     return f'{newspaper}-{year}', filepath
 

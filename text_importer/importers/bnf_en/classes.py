@@ -293,4 +293,4 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             "id": self.id,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
-            }
+        }
