@@ -97,15 +97,14 @@ class BCULNewspaperIssue(NewspaperIssue):
             logger.error("Mit file {} is not JSON nor XML".format(self.mit_file))
             raise ValueError
         
-        self.content_items = []
-        
-        self._find_pages()
-        self._find_content_items()
-
         # issue manifest, identifier is directory name
         self.iiif_manifest = os.path.join(IIIF_PRES_BASE_URI, 
                                           self.path.split('/')[-1], 
                                           IIIF_MANIFEST_SUFFIX)
+        self.content_items = []
+        
+        self._find_pages()
+        self._find_content_items()
         
         self.issue_data = {
             'id': self.id,

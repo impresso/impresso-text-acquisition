@@ -56,16 +56,13 @@ def get_div_coords(div):
 def parse_token(t):
     coords = get_div_coords(t)
     tx = t.getText()
-    return {
-        "c": coords,
-        "tx": tx
-        }
+    return {"c": coords, "tx": tx}
 
 
 def parse_textline(line):
     line_ci = {
         "c": get_div_coords(line)
-        }
+    }
     tokens = [parse_token(t) for t in line.findAll("charParams")]
     
     line_ci['t'] = tokens
