@@ -375,7 +375,9 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                                f"{image_part_id} for CI {ci_id}")
             else:
                 coords = distill_coordinates(block)
-                iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.ark_link, ",".join(str(c) for c in coords),
+                iiif_link = os.path.join(IIIF_ENDPOINT_URL, 
+                                         page.ark_link, 
+                                         ",".join(str(c) for c in coords),
                                          IIIF_IMAGE_SUFFIX)
         return iiif_link
     
@@ -413,7 +415,8 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
             "id": self.id,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
-            }
+        }
+
         # Note for newspapers with two dates (197 cases)
         if self.secondary_date is not None:
             self.issue_data['n'] = ["Secondary date {}".format(self.secondary_date)]
