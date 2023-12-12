@@ -127,6 +127,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
     def _get_ci_language(self, dmdid):
         """
         Finds the language code of the CI with given DMDID. Languages are usually in a dmdSec at the beginning of a METS file
+        TODO: remove self.xml here in favor of an a function argument.
         :param dmdid:
         :return:
         """
@@ -134,7 +135,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         lang = doc.find("dmdSec", {"ID": dmdid})
         if lang is None:
             return None
-        lang = lang.find("MODS:languageTerm")
+        lang = lang.find("mods:languageTerm") 
         if lang is None:
             return None
         return lang.text

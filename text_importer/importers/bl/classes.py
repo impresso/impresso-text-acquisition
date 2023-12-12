@@ -1,8 +1,16 @@
+"""This module contains the definition of BL importer classes.
+
+The classes define newspaper Issues and Pages objects which convert OCR data in
+the BL version of the Mets/Alto format to a unified canoncial format.
+Theses classes are subclasses of generic Mets/Alto importer classes.
+"""
+
 import logging
 import os
 from time import strftime
-from typing import List, Optional
+from typing import Any
 
+from bs4.element import Tag
 from text_importer.importers import (CONTENTITEM_TYPES, CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_ADVERTISEMENT)
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage)
@@ -20,76 +28,148 @@ BL_AD_TYPE = "advert"
 
 
 class BlNewspaperPage(MetsAltoNewspaperPage):
+    """Newspaper page in BL (Mets/Alto) format.
+
+    Args:
+        _id (str): Canonical page ID.
+        number (int): Page number.
+        filename (str): Name of the Alto XML page file.
+        basedir (str): Base directory where Alto files are located.
+        encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
     
-    def add_issue(self, issue: MetsAltoNewspaperIssue):
-        """Adds the given `BlNewspaperIssue` as an attribute for this class
-        
-        :param BlNewspaperIssue issue:
+    Attributes:
+        id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
+        number (int): Page number.
+        page_data (dict[str, Any]): Page data according to canonical format.
+        issue (NewspaperIssue): Issue this page is from.
+        filename (str): Name of the Alto XML page file.
+        basedir (str): Base directory where Alto files are located.
+        encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
+    """
+
+    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+        """Add the given `BlNewspaperIssue` as an attribute for this class.
+
+        Args:
+            issue (MetsAltoNewspaperIssue): Issue this page is from
         """
         self.issue = issue
         self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
 
 
 class BlNewspaperIssue(MetsAltoNewspaperIssue):
+    """Newspaper Issue in BL (Mets/Alto) format.
+
+    All functions defined in this child class are specific to parsing BL 
+    Mets/Alto format.
+
+    Args:
+        issue_dir (IssueDir): Identifying information about the issue.
+
+    Attributes:
+        id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
+        edition (str): Lower case letter ordering issues of the same day.
+        journal (str): Newspaper unique identifier or name.
+        path (str): Path to directory containing the issue's OCR data.
+        date (datetime.date): Publication date of issue.
+        issue_data (dict[str, Any]): Issue data according to canonical format.
+        pages (list): list of :obj:`NewspaperPage` instances from this issue.
+        rights (str): Access rights applicable to this issue.
+        image_properties (dict[str, Any]): metadata allowing to convert region
+            OCR/OLR coordinates to iiif format compliant ones.
+        ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
+    """
+
     
-    def _find_pages(self):
-        """Detects the Alto XML page files for a newspaper issue and initializes page objects."""
+    def _find_pages(self) -> None:
+        """Detect and create the issue pages using the relevant Alto XML files.
+
+        Created `BlNewspaperPage` instances are added to the `pages` attribute.
+
+        Raises:
+            e: Creating a `BlNewspaperPage` raised an exception.
+        """
         page_file_names = [
-            file
-            for file in os.listdir(self.path)
-            if not file.startswith('.') and '.xml' in file and 'mets' not in file
-            ]
-        page_numbers = [int(os.path.splitext(fname)[0].split('_')[-1]) for fname in page_file_names]
+            file for file in os.listdir(self.path)
+            if (not file.startswith('.') and 
+                '.xml' in file and 
+                'mets' not in file)
+        ]
+        page_numbers = [
+            int(os.path.splitext(fname)[0].split('_')[-1]) 
+            for fname in page_file_names
+        ]
         
-        page_canonical_names = ["{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers]
+        page_canonical_names = [
+            "{}-p{}".format(self.id, str(page_n).zfill(4)) 
+            for page_n in page_numbers
+        ]
         
         self.pages = []
-        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, 
+                                              page_canonical_names):
             try:
-                self.pages.append(BlNewspaperPage(page_id, page_no, filename, self.path))
+                self.pages.append(BlNewspaperPage(page_id, page_no, 
+                                                  filename, self.path))
             except Exception as e:
-                logger.error(
-                        f'Adding page {page_no} {page_id} {filename}',
-                        f'raised following exception: {e}'
-                        )
+                logger.error(f'Adding page {page_no} {page_id} {filename}',
+                             f'raised following exception: {e}')
                 raise e
     
-    def _get_part_dict(self, div, comp_role: Optional[str]) -> dict:
-        """Helper function to construct the part for a certain div entry of METS
-        
-        :param div: Content item div
-        :param str comp_role: Role of the component
-        :return: dict
+    def _get_part_dict(self, div: Tag, comp_role: str | None) -> dict[str,Any]:
+        """Construct the parts for a certain div entry of METS.
+
+        Args:
+            div (Tag): Content item div
+            comp_role (str | None): Role of the component
+
+        Returns:
+            dict[str, Any]: Parts dict for given div.
         """
-        
         comp_fileid = div.find('area', {'BETYPE': 'IDREF'}).get('FILEID')
         comp_id = div.get('ID')
         comp_page_no = int(div.parent.get('ORDER'))
         if comp_role is None:
             type_attr = div.get('TYPE')
             comp_role = type_attr.lower() if type_attr else None
-        return {'comp_role': comp_role, 'comp_id': comp_id, 'comp_fileid': comp_fileid, 'comp_page_no': int(comp_page_no)}
+
+        return {
+            'comp_role': comp_role, 
+            'comp_id': comp_id, 
+            'comp_fileid': comp_fileid, 
+            'comp_page_no': int(comp_page_no)
+        }
     
-    def _parse_content_parts(self, item_div, phys_map) -> List[dict]:
-        """Given a item entry in METS, and the physical structure of the Newspaper, parses all parts relation to item.
-        
-        :param item_div: The div corresponding to the item
-        :param phys_map: The physical structure of the Issue
-        :return: list[dict] Of each content part for given item
+    def _parse_content_parts(
+        self, item_div: Tag, phys_map: Tag
+    ) -> list[dict[str,Any]]:
+        """Parse parts of issue's physical structure relating to the given item.
+
+        Args:
+            item_div (Tag): The div corresponding to the item
+            phys_map (Tag): The physical structure of the Issue
+
+        Returns:
+            list[dict[str, Any]]: List of dicts of each content part of item.
         """
         # Find all parts and their IDS
         tag = f"#{item_div.get('ID')}"
         linkgrp = self.xml.find('smLocatorLink', {'xlink:href': tag}).parent
         
         # Remove `#` from xlink:href
-        parts_ids = [x.get('xlink:href')[1:] for x in linkgrp.findAll('smLocatorLink') if x.get('xlink:href') != tag]
+        parts_ids = [
+            x.get('xlink:href')[1:] for x in linkgrp.findAll('smLocatorLink') 
+            if x.get('xlink:href') != tag
+        ]
         parts = []
         for p in parts_ids:
-            div = phys_map.find('div', {'ID': p})  # Get element in physical map
+            # Get element in physical map
+            div = phys_map.find('div', {'ID': p})  
             type_attr = div.get('TYPE')
             comp_role = type_attr.lower() if type_attr else None
             
-            if comp_role == 'page':  # In that case, need to add all parts
+            # In that case, need to add all parts
+            if comp_role == 'page':  
                 for x in div.findAll('div'):
                     parts.append(self._get_part_dict(x, None))
             else:
@@ -98,20 +178,34 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         return parts
     
     def _get_content_item_language(self, dmdid: str) -> str:
-        """ Given a DMDID, searches the METS file for the item's language
-        
-        :param str dmdid: Legacy ID of the content item
-        :return: str Language of content item
+        """Given a DMDID, search the METS file for the item's language.
+
+        TODO: remove self.xml here in favor of an a function argument.
+
+        Args:
+            dmdid (str):  Legacy ID of the content item
+
+        Returns:
+            str: Language of content item
         """
-        return self.xml.find('dmdSec', {'ID': dmdid}).findChild('languageTerm').text
-    
-    def _parse_content_item(self, item_div, counter: int, phys_structmap) -> dict:
-        """Parses the given content item: searches for all parts and constructs unique IDs
+        lang = self.xml.find('dmdSec', {'ID': dmdid}).findChild('languageTerm')
+        return lang.text if lang is not None else None
+
+    def _parse_content_item(
+        self, item_div: Tag, counter: int, phys_structmap: Tag
+    ) -> dict[str, Any]:
+        """Parse the given content item.
         
-        :param item_div: The div of the content item
-        :param int counter: The counter to get unique ordered IDs
-        :param phys_structmap: The physical structmap element of the Mets file
-        :return: dict Representing the content item
+        Doing this parsing means searching for all parts and 
+        constructing unique IDs for each item.
+
+        Args:
+            item_div (Tag): The div of the content item.
+            counter (int): The counter to get unique ordered IDs.
+            phys_structmap (Tag): The physical structmap element of Mets file.
+
+        Returns:
+            dict[str, Any]: Canonical representation of the content item.
         """
         div_type = item_div.get('TYPE').lower()
         
@@ -128,33 +222,39 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
             'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
             'tp': div_type,
             'pp': [],
-            'l': self._get_content_item_language(item_div.get('DMDID'))  # Get language from METS file
-            }
+            'l': self._get_content_item_language(item_div.get('DMDID')) 
+        }
         
-        # Load physical struct map
+        # Load physical struct map, and find all parts in physical map
         content_item = {
             "m": metadata,
             "l": {
                 "id": item_div.get('ID'),
-                "parts": self._parse_content_parts(item_div, phys_structmap)  # Find all parts in physical map
-                }
+                "parts": self._parse_content_parts(item_div, phys_structmap)  
             }
+        }
         for p in content_item['l']['parts']:
             pge_no = p["comp_page_no"]
             if pge_no not in content_item['m']['pp']:
                 content_item['m']['pp'].append(pge_no)
         
-        # TODO: add coordinates for images as well as iiif_link. Since for now none of the issues we have have images, it cannot be done
+        # TODO: add coordinates for images as well as iiif_link
+        # + update approach for handling images
         return content_item
     
-    def _parse_content_items(self) -> List[dict]:
+    def _parse_content_items(self) -> list[dict[str, Any]]:
+        """Extract content item elements from a Mets XML file.
+
+        Returns:
+            list[dict[str, Any]]: List of all content items and the relevant
+                information in canonical format for each one.
         """
-        Extract content item elements from a Mets XML file.
-        :return: list[dict] The list of all content items and the relevant information
-        """
+        mets_doc = self.xml
         content_items = []
         # Get logical structure of issue
-        divs = self.xml.find('structMap', {'TYPE': 'LOGICAL'}).find('div', {'TYPE': 'ISSUE'}).findChildren('div')
+        divs = (mets_doc.find('structMap', {'TYPE': 'LOGICAL'})
+                .find('div', {'TYPE': 'ISSUE'})
+                .findChildren('div'))
         
         # Sort to have same naming
         sorted_divs = sorted(divs, key=lambda x: x.get('DMDID').lower())
@@ -162,19 +262,21 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         # Get all CI types
         found_types = set(x.get('TYPE') for x in sorted_divs)
         
-        phys_structmap = self.xml.find('structMap', {'TYPE': 'PHYSICAL'})
+        phys_structmap = mets_doc.find('structMap', {'TYPE': 'PHYSICAL'})
         
         counter = 1
         for div in sorted_divs:
             # Parse Each contentitem
-            content_items.append(self._parse_content_item(div, counter, phys_structmap))
+            content_items.append(
+                self._parse_content_item(div, counter, phys_structmap)
+            )
             counter += 1
         return content_items
     
-    def _parse_mets(self):
-        """Parses the Mets XML file of the newspaper issue."""
-        
+    def _parse_mets(self) -> None:
+
         # No image properties in BL data
+        
         # Parse all the content items
         content_items = self._parse_content_items()
         
@@ -184,4 +286,4 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
             "id": self.id,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
-            }
+        }
