@@ -215,7 +215,9 @@ def main(
         logger.info(f"Found config file: {os.path.realpath(config_file)}")
         with open(config_file, 'r') as f:
             config = json.load(f)
-        issues = select_func(inp_dir, config, access_rights=access_rights_file)
+        issues = apply_select_func(issue_class, config, input_dir=inp_dir, 
+                                   access_rights=access_rights_file, 
+                                   select_func=select_func, tmp_dir=temp_dir)
         logger.info(
             f"{len(issues)} newspaper remained after applying filter: {issues}"
         )

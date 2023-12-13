@@ -141,20 +141,21 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         }
     
     def _parse_content_parts(
-        self, item_div: Tag, phys_map: Tag
+        self, item_div: Tag, phys_map: Tag, structlink: Tag
     ) -> list[dict[str,Any]]:
         """Parse parts of issue's physical structure relating to the given item.
 
         Args:
             item_div (Tag): The div corresponding to the item
             phys_map (Tag): The physical structure of the Issue
+            structlink (Tag): The structlink element of Mets file.
 
         Returns:
             list[dict[str, Any]]: List of dicts of each content part of item.
         """
         # Find all parts and their IDS
         tag = f"#{item_div.get('ID')}"
-        linkgrp = self.xml.find('smLocatorLink', {'xlink:href': tag}).parent
+        linkgrp = structlink.find('smLocatorLink', {'xlink:href': tag}).parent
         
         # Remove `#` from xlink:href
         parts_ids = [
@@ -176,24 +177,11 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
                 parts.append(self._get_part_dict(div, comp_role))
         
         return parts
-    
-    def _get_content_item_language(self, dmdid: str) -> str:
-        """Given a DMDID, search the METS file for the item's language.
 
-        TODO: remove self.xml here in favor of an a function argument.
+    def _parse_content_item(self, item_div: Tag, counter: int, 
+                            phys_structmap: Tag, structlink: Tag, 
+                            item_dmd_sec: Tag) -> dict[str, Any]:
 
-        Args:
-            dmdid (str):  Legacy ID of the content item
-
-        Returns:
-            str: Language of content item
-        """
-        lang = self.xml.find('dmdSec', {'ID': dmdid}).findChild('languageTerm')
-        return lang.text if lang is not None else None
-
-    def _parse_content_item(
-        self, item_div: Tag, counter: int, phys_structmap: Tag
-    ) -> dict[str, Any]:
         """Parse the given content item.
         
         Doing this parsing means searching for all parts and 
@@ -203,6 +191,8 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
             item_div (Tag): The div of the content item.
             counter (int): The counter to get unique ordered IDs.
             phys_structmap (Tag): The physical structmap element of Mets file.
+            structlink (Tag): The structlink element of Mets file.
+            item_dmd_sec (Tag): Dmd section of Mets file of this specific item.
 
         Returns:
             dict[str, Any]: Canonical representation of the content item.
@@ -217,12 +207,15 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         # Check if new content item is found (or if we need more translation)
         if div_type not in CONTENTITEM_TYPES:
             logger.warning(f"Found new content item type: {div_type}")
+
+        # Get content item's language
+        lang = item_dmd_sec.findChild('languageTerm')
         
         metadata = {
             'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
             'tp': div_type,
             'pp': [],
-            'l': self._get_content_item_language(item_div.get('DMDID')) 
+            'l': lang.text if lang is not None else None  
         }
         
         # Load physical struct map, and find all parts in physical map
@@ -230,7 +223,9 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
             "m": metadata,
             "l": {
                 "id": item_div.get('ID'),
-                "parts": self._parse_content_parts(item_div, phys_structmap)  
+                "parts": self._parse_content_parts(item_div, 
+                                                   phys_structmap, 
+                                                   structlink)
             }
         }
         for p in content_item['l']['parts']:
@@ -263,12 +258,15 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         found_types = set(x.get('TYPE') for x in sorted_divs)
         
         phys_structmap = mets_doc.find('structMap', {'TYPE': 'PHYSICAL'})
+        structlink = mets_doc.find('structLink')
         
         counter = 1
         for div in sorted_divs:
             # Parse Each contentitem
+            dmd_sec = mets_doc.find('dmdSec', {'ID': div.get('DMDID')})
             content_items.append(
-                self._parse_content_item(div, counter, phys_structmap)
+                self._parse_content_item(div, counter, phys_structmap,
+                                         structlink, dmd_sec)
             )
             counter += 1
         return content_items
