@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RERO Mets/Alto importer &mdash; Impresso TextImporter 0.12.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>RERO Mets/Alto importer &mdash; Impresso TextImporter  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=61ccb1f1"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
         <script src="../_static/doctools.js?v=888ff710"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -52,13 +54,14 @@
 <li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">RERO Mets/Alto importer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.rero.classes">Custom classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.rero.detect">Detect functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.rero.classes">RERO Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.rero.detect">RERO Detect functions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
@@ -102,14 +105,14 @@
 handle OCR newspaper data provided by RERO in Mets/Alto format (the rest of
 the data is in Olive format).</p>
 <section id="module-text_importer.importers.rero.classes">
-<span id="custom-classes"></span><h2>Custom classes<a class="headerlink" href="#module-text_importer.importers.rero.classes" title="Link to this heading"></a></h2>
+<span id="rero-custom-classes"></span><h2>RERO Custom classes<a class="headerlink" href="#module-text_importer.importers.rero.classes" title="Link to this heading"></a></h2>
 <p>This module contains the definition of the RERO importer classes.</p>
 <p>The classes define newspaper Issues and Pages objects which convert OCR data in
 the RERO version of the Mets/Alto format to a unified canoncial format.
 Theses classes are subclasses of generic Mets/Alto importer classes.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">ReroNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDirectory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">ReroNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue" title="Link to this definition"></a></dt>
 <dd><p>Newspaper Issue in RERO (Mets/Alto) format.</p>
 <p>All functions defined in this child class are specific to parsing RERO
 Mets/Alto format.</p>
@@ -376,7 +379,7 @@ and converts using x/fact.</p>
 
 </section>
 <section id="module-text_importer.importers.rero.detect">
-<span id="detect-functions"></span><h2>Detect functions<a class="headerlink" href="#module-text_importer.importers.rero.detect" title="Link to this heading"></a></h2>
+<span id="rero-detect-functions"></span><h2>RERO Detect functions<a class="headerlink" href="#module-text_importer.importers.rero.detect" title="Link to this heading"></a></h2>
 <p>This module contains helper functions to find RERO OCR data to be imported.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="text_importer.importers.rero.detect.Rero2IssueDir">
@@ -492,7 +495,7 @@ further details on how to configure filtering.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Matteo Romanello, Pauline Conti &amp; Impresso team.</p>
+    <p>&#169; Copyright 2023, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

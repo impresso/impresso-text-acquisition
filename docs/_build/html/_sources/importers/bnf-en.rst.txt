@@ -1,0 +1,23 @@
+BNF-EN Mets/Alto importer
+=========================
+
+This importer extends the generic Mets/Alto importer, and it was developed to
+handle OCR newspaper data provided by the BNF that were part of the Europeana project.
+
+BNF-EN Custom classes
+---------------------
+
+.. automodule:: text_importer.importers.bnf_en.classes
+  :members:
+  :undoc-members:
+  :recursive:
+  :inherited-members:
+  :show-inheritance:
+
+BNF-EN Detect functions
+-----------------------
+
+.. automodule:: text_importer.importers.bnf_en.detect
+  :members:
+  :undoc-members:
+  :show-inheritance:
