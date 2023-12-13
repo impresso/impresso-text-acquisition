@@ -1,4 +1,4 @@
-"""This module contains helper functions to find BNF OCR data to be imported.
+"""This module contains helper functions to find BNF OCR data to import.
 """
 import json
 import logging
@@ -148,9 +148,9 @@ def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
             )
             edition = "a"
             rights = get_access_right(journal, np_date, access_rights_dict)
-            issue = BnfIssueDir(journal=journal, date=np_date, edition=edition, 
-                                path=issue_path, rights=rights,
-                                secondary_date=secondary_date)
+            issue = BnfIssueDir(journal=journal, date=np_date, 
+                                edition=edition, path=issue_path, 
+                                rights=rights, secondary_date=secondary_date)
         except ValueError as e:
             logger.info(e)
             logger.error(f"Could not parse issue at {issue_path}")
@@ -175,7 +175,10 @@ def detect_issues(
         list[BnfIssueDir]: List of `BnfIssueDir` instances, to be imported.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
-    journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs if not _dir.startswith("2")]
+    journal_dirs = [
+        os.path.join(dir_path, _dir) 
+        for _dir in dirs if not _dir.startswith("2")
+    ]
     issue_dirs = [
         os.path.join(journal, _dir)
         for journal in journal_dirs
@@ -188,8 +191,13 @@ def detect_issues(
     initial_length = len(issue_dirs)
     issue_dirs = [i for i in issue_dirs if i is not None]
     
-    df = pd.DataFrame([{"issue": i, "id": get_id(i), "number": get_number(i)} for i in issue_dirs])
-    vals = df.groupby('id').apply(lambda x: x[['issue', 'number']].values.tolist()).values
+    df = pd.DataFrame([
+        {"issue": i, "id": get_id(i), "number": get_number(i)} 
+        for i in issue_dirs
+    ])
+    vals = df.groupby('id').apply(
+        lambda x: x[['issue', 'number']].values.tolist()
+    ).values
     
     issue_dirs = [i if len(i) == 1 else assign_editions(i) for i in vals]
     issue_dirs = [j[0] for i in issue_dirs for j in i]
@@ -225,22 +233,25 @@ def select_issues(
         year_flag = config["year_only"]
     
     except KeyError:
-        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] is missing in the config file.")
+        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] "
+                        "is missing in the config file.")
         return
     
     issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
-    selected_issues = issue_bag \
-        .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \
-        .compute()
+    selected_issues = (
+        issue_bag.filter(
+            lambda i: (
+                len(filter_dict) == 0 or i.journal in filter_dict.keys()
+            ) and i.journal not in exclude_list
+        ).compute()
+    )
     
     exclude_flag = False if not exclude_list else True
-    filtered_issues = _apply_datefilter(filter_dict, selected_issues,
-                                        year_only=year_flag) if not exclude_flag else selected_issues
-    logger.info(
-            "{} newspaper issues remained after applying filter: {}".format(
-                    len(filtered_issues),
-                    filtered_issues
-                    )
-            )
+    filtered_issues = _apply_datefilter(
+        filter_dict, selected_issues, year_only=year_flag
+    ) if not exclude_flag else selected_issues
+    logger.info(f"{len(filtered_issues)} newspaper issues remained "
+                f"after applying filter: {filtered_issues}")
+    
     return filtered_issues

@@ -398,14 +398,16 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         # Then start parsing them
         for div_type, divs in by_type.items():
             for div_id, div_label in divs:
-                cis, item_counter = self._parse_div(div_id, div_type, div_label, item_counter, mets_doc)
+                cis, item_counter = self._parse_div(div_id, div_type, div_label, 
+                                                    item_counter, mets_doc)
                 content_items += cis
         
         # Finally add the pages and iiif link
         for x in content_items:
             x['m']['pp'] = list(set(c['comp_page_no'] for c in x['l']['parts']))
             if x['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
-                x['m']['iiif_link'] = self._get_image_iiif_link(x['m']['id'], x['l']['parts'])
+                x['m']['iiif_link'] = self._get_image_iiif_link(x['m']['id'], 
+                                                                x['l']['parts'])
         
         self.pages = list(self.pages.values())
         
@@ -419,4 +421,4 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
 
         # Note for newspapers with two dates (197 cases)
         if self.secondary_date is not None:
-            self.issue_data['n'] = ["Secondary date {}".format(self.secondary_date)]
+            self.issue_data['n'] = [f"Secondary date {self.secondary_date}"]

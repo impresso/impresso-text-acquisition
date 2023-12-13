@@ -85,7 +85,7 @@ def is_multi_date(date_string: str) -> bool:
     return len(date_string) > 10
 
 
-def get_dates(date_string: str, separators: list[str]) -> list[str | None]:
+def get_dates(date_string: str, separators: list[str]) -> list[Optional[str]]:
     """Extract date from given string using list of possible separators.
 
     Assumes that the given date string represents exactly 2 dates.
@@ -97,7 +97,7 @@ def get_dates(date_string: str, separators: list[str]) -> list[str | None]:
         separators (list[str]): The list of potential separators.
 
     Returns:
-        list[str | None]: Separated date or pair of None.
+        list[Optional[str]]: Separated date or pair of None.
     """
     for s in separators:
         if len(date_string.split(s)) == 2:
@@ -107,7 +107,7 @@ def get_dates(date_string: str, separators: list[str]) -> list[str | None]:
 
 def parse_date(
     date_string: str, formats: list[str], separators: list[str]
-) -> tuple[datetime.date, datetime.date | None]:
+) -> tuple[datetime.date, Optional[datetime.date]]:
     """Parse a date given a list of formats.
 
     The input string can sometimes represent a pair of dates, in which case
@@ -125,7 +125,7 @@ def parse_date(
         ValueError: The (first) date could not be parsed correctly.
 
     Returns:
-        tuple[datetime.date, datetime.date | None]: Parsed date, potentially
+        tuple[datetime.date, Optional[datetime.date]]: Parsed date, potentially
             parsed pair of dates.
     """
     date, secondary = None, None
