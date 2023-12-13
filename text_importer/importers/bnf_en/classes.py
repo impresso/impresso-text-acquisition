@@ -8,7 +8,7 @@ Theses classes are subclasses of generic Mets/Alto importer classes.
 import logging
 import os
 from time import strftime
-from typing import Any
+from typing import Any, Optional
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
@@ -185,21 +185,19 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                     )
         return parts
     
-    def _get_ci_language(self, dmdid: str) -> str | None:
+    def _get_ci_language(self, dmdid: str, mets_doc: BeautifulSoup) -> Optional[str]:
         """Find the language code of the CI with given DMDID.
 
         Languages are usually in a dmdSec at the beginning of a METS file.
 
-        TODO: remove self.xml here in favor of an a function argument.
-
         Args:
             dmdid (str): Identifier of the content item in the dmd section.
+            mets_doc (BeautifulSoup): Contents of the Mets XML file. 
 
         Returns:
-            str | None: Language or None if not present in Mets file.
+            Optional[str]: Language or None if not present in Mets file.
         """
-        doc = self.xml
-        lang = doc.find("dmdSec", {"ID": dmdid})
+        lang = mets_doc.find("dmdSec", {"ID": dmdid})
         if lang is None:
             return None
         lang = lang.find("mods:languageTerm") 
@@ -208,17 +206,15 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         return lang.text
     
     def _parse_content_item(
-        self, item_div: Tag, counter: int
+        self, item_div: Tag, counter: int, mets_doc: BeautifulSoup
     ) -> dict[str, Any]:
         """Parse a content item div and returns the dictionary representing it.
-
-        TODO: add mets_doc beautifulsoup as argument to remove non necessary 
-            uses of self.xml
 
         Args:
             item_div (Tag): Div of content item.
             counter (int): Number of content items already added (needed to 
                 generate canonical id).
+            mets_doc (BeautifulSoup): Contents of the Mets XML file. 
 
         Returns:
             dict[str, Any]: Resulting content item in canonical format.
@@ -237,10 +233,10 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             'tp': div_type,
             'pp': [],
             't': item_div.get('LABEL')
-            }
+        }
         
         # Get CI language
-        language = self._get_ci_language(item_div.get('DMDID'))
+        language = self._get_ci_language(item_div.get('DMDID'), mets_doc)
         if language is not None:
             metadata['l'] = language
         
@@ -249,8 +245,8 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             "l": {
                 "id": item_div.get('ID'),
                 "parts": self._parse_content_parts(item_div)
-                }
             }
+        }
         for p in content_item['l']['parts']:
             pge_no = p["comp_page_no"]
             if pge_no not in content_item['m']['pp']:
@@ -318,10 +314,10 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                 if div_type == SECTION_TYPE:
                     section_divs = self._decompose_section(div)
                     for sd in section_divs:
-                        content_items.append(self._parse_content_item(sd, counter))
+                        content_items.append(self._parse_content_item(sd, counter, doc))
                         counter += 1
                 else:
-                    content_items.append(self._parse_content_item(div, counter))
+                    content_items.append(self._parse_content_item(div, counter, doc))
                     counter += 1
         return content_items
     
@@ -330,7 +326,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
     ) -> tuple[list[int], str]:
         """Given an image content item, get its coordinates and iiif url.
 
-        TODO: remove non necessary uses of page.xml
+        TODO: Find an approach to reduce the number of calls to page.xml
 
         Args:
             content_item (dict[str, Any]): Content item in canonical format.
@@ -354,13 +350,14 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             logger.info(f"Found multiple parts for image "
                         f"{content_item['m']['id']}, selecting largest one")
         
+        page_doc = page.xml
         coords = None
         max_area = 0
         # Image can have multiple parts, choose largest one (with max area)
         for part in parts:
             comp_id = part['comp_id']
             
-            elements = page.xml.findAll(["ComposedBlock", "TextBlock"], {"ID": comp_id})
+            elements = page_doc.findAll(["ComposedBlock", "TextBlock"], {"ID": comp_id})
             assert len(elements) <= 1, "Image comp_id matches multiple TextBlock tags"
             if len(elements) == 0:
                 continue

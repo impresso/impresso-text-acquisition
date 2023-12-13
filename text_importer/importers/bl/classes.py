@@ -207,16 +207,16 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         # Check if new content item is found (or if we need more translation)
         if div_type not in CONTENTITEM_TYPES:
             logger.warning(f"Found new content item type: {div_type}")
-
-        # Get content item's language
-        lang = item_dmd_sec.findChild('languageTerm')
         
         metadata = {
             'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
             'tp': div_type,
             'pp': [],
-            'l': lang.text if lang is not None else None  
         }
+        # Get content item's language
+        lang = item_dmd_sec.findChild('languageTerm')
+        if lang is not None:
+            metadata['l'] = lang.text
         
         # Load physical struct map, and find all parts in physical map
         content_item = {
