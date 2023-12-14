@@ -9,7 +9,6 @@ Note:
     as it keeps everything together, by calling all other functions.
 """
 
-import codecs
 import gc
 import json
 import logging
@@ -25,6 +24,7 @@ from typing import Tuple, Type
 
 import jsonlines
 from dask import bag as db
+from dask.distributed import Client
 from filelock import FileLock
 from impresso_commons.path.path_fs import IssueDir, canonical_path
 from impresso_commons.text.rebuilder import cleanup
@@ -202,7 +202,7 @@ def serialize_pages(
 
         out_file = os.path.join(out_dir, canonical_filename)
 
-        with codecs.open(out_file, 'w', 'utf-8') as jsonfile:
+        with open(out_file, 'w', encoding='utf-8') as jsonfile:
             json.dump(page.page_data, jsonfile)
             logger.info(f"Written page \'{page.number}\' to {out_file}")
         result.append((issue_dir, out_file))
@@ -241,7 +241,8 @@ def import_issues(
     issue_class: Type[NewspaperIssue],
     image_dirs: str | None,
     temp_dir: str | None,
-    chunk_size: int | None
+    chunk_size: int | None,
+    client: Client | None = None,
 ) -> None:
     """Import a bunch of newspaper issues.
 
@@ -299,7 +300,9 @@ def import_issues(
 
         compressed_issue_files = (
             issue_bag.groupby(lambda i: (i.journal, i.date.year)) 
-            .starmap(compress_issues, output_dir=out_dir) 
+            .starmap(compress_issues, 
+                     output_dir=out_dir,
+                     failed_log=failed_log_path) 
             .compute()
         )
 
@@ -360,7 +363,12 @@ def import_issues(
             logger.info(f'Done compressing and uploading pages '
                         f'of chunk {chunk_n} for {period}')
 
-        del issue_bag
+        # free some dask memory 
+        if client:
+            # if client is defined here
+            client.cancel(issue_bag) 
+        else:
+            del issue_bag
 
     remove_filelocks(out_dir)
 
@@ -368,6 +376,10 @@ def import_issues(
         shutil.rmtree(temp_dir, ignore_errors=True)
 
     logger.info("---------- Done ----------")
+
+    if client:
+        # shutdown dask client once processing is done.
+        client.shutdown()
 
 
 def compress_pages(
@@ -422,20 +434,23 @@ def compress_pages(
 def compress_issues(
     key: Tuple[str, int],
     issues: list[NewspaperIssue],
-    output_dir: str | None = None
+    output_dir: str | None = None,
+    failed_log: str | None = None,
 ) -> Tuple[str, str]:
     """Compress issues of the same Journal-year and save them in a json file.
 
     First check if the file exists, load it and then over-write/add the newly
     generated issues.
     The compressed ``.bz2`` output file is a JSON-line file, where each line
-    corresponds to an individual and issue document in the canonical format.  
+    corresponds to an individual and issue document in the canonical format.
 
     Args:
         key (Tuple[str, int]): Newspaper ID and year of input issues 
             (e.g. `(GDL, 1900)`).
         issues (list[NewspaperIssue]): A list of `NewspaperIssue` instances.
         output_dir (str | None, optional): Output directory. Defaults to None.
+        failed_log (str | None, optional): Path to the log file used when an
+            instantiation was not successful. Defaults to None.
 
     Returns:
         Tuple[str, str]: Label following the template `<NEWSPAPER>-<YEAR>` and 
@@ -447,10 +462,10 @@ def compress_issues(
     logger.info(f'Compressing {len(issues)} JSON files into {filepath}')
 
     # put a file lock to avoid the overwriting of files due to parallelization
-    lock = FileLock(filepath + ".lock", timeout=5)
+    lock = FileLock(filepath + ".lock", timeout=13)
 
-    with lock:
-        try:
+    try:
+        with lock:
             with smart_open_function(filepath, 'ab') as fout:
                 writer = jsonlines.Writer(fout)
 
@@ -459,9 +474,10 @@ def compress_issues(
 
                 logger.info(f'Written {len(items)} issues to {filepath}')
                 writer.close()
-        except Exception as e:
-            logger.error(f"Error for {filepath}")
-            logger.exception(e)
+    except Exception as e:
+        logger.error(f"Error for {filepath}")
+        logger.exception(e)
+        write_error(filepath, e, failed_log)
 
     return f'{newspaper}-{year}', filepath
 
@@ -494,15 +510,17 @@ def upload_issues(
         os.path.basename(filepath)
     )
     s3 = get_s3_resource()
-    try:
-        bucket = s3.Bucket(bucket_name)
-        bucket.upload_file(filepath, key_name)
-        logger.info(f'Uploaded {filepath} to {key_name}')
-        return True, filepath
-    except Exception as e:
-        logger.error(e)
-        logger.error(f'The upload of {filepath} failed with error {e}')
-        return False, filepath
+    if bucket_name is not None:
+        try:
+            bucket = s3.Bucket(bucket_name)
+            bucket.upload_file(filepath, key_name)
+            logger.info(f'Uploaded {filepath} to {key_name}')
+            return True, filepath
+        except Exception as e:
+            logger.error(f'The upload of {filepath} failed with error {e}')
+    else:
+        logger.info(f'Bucket name is None, not uploading issue {filepath}.')
+    return False, filepath
 
 
 def upload_pages( 
@@ -531,14 +549,17 @@ def upload_pages(
         os.path.basename(filepath)
     )
     s3 = get_s3_resource()
-    try:
-        bucket = s3.Bucket(bucket_name)
-        bucket.upload_file(filepath, key_name)
-        logger.info(f'Uploaded {filepath} to {key_name}')
-        return True, filepath
-    except Exception as e:
-        logger.error(f'The upload of {filepath} failed with error {e}')
-        return False, filepath
+    if bucket_name is not None:
+        try:
+            bucket = s3.Bucket(bucket_name)
+            bucket.upload_file(filepath, key_name)
+            logger.info(f'Uploaded {filepath} to {key_name}')
+            return True, filepath
+        except Exception as e:
+            logger.error(f'The upload of {filepath} failed with error {e}')
+    else:
+        logger.info(f'Bucket name is None, not uploading page {filepath}.')
+    return False, filepath
 
 
 def remove_filelocks(output_dir: str) -> None:

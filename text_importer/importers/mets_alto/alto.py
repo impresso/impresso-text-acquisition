@@ -55,12 +55,12 @@ def parse_textline(element: Tag, text_style: str | None = None
             try:
                 coords = distill_coordinates(child)
             except TypeError as e:
-                notes.append("Token {} does not have coordinates".format(child.get('ID')))
+                notes.append(f"Token {child.get('ID')} does not have coordinates")
                 continue
             token = {
                 'c': coords,
                 'tx': child.get('CONTENT')
-                }
+            }
             
             if text_style is not None:
                 token['s'] = text_style
