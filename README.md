@@ -8,6 +8,14 @@ The Impresso TextImporter is a library and a collection of scripts to import new
 
 Please refer to the [documentation](http://impresso-text-importer.rtfd.io/) for further information on this library.
 
+## Installation
+
+With `pip`:
+
+```bash
+pip install text-importer
+```
+
 ## License
 
 The second project 'impresso - Media Monitoring of the Past II. Beyond Borders: Connecting Historical Newspapers and Radio' is funded by the Swiss National Science Foundation (SNSF) under grant number [CRSII5_213585](https://data.snf.ch/grants/grant/213585) and the Luxembourg National Research Fund under grant No. 17498891.
