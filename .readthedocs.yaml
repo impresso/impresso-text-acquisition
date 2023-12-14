@@ -38,7 +38,7 @@ sphinx:
   fail_on_warning: true
 
 submodules:
-  exclude: all
+  include: all
 
 # Optionally build your docs in additional formats such as PDF and ePub
 
