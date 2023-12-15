@@ -6,7 +6,6 @@ The classes in this module are meant to be subclassed to handle independently
 the parsing for each version of the Mets/Atlo format and their specificities.
 """
 
-import codecs
 import logging
 import os
 from abc import abstractmethod
@@ -71,11 +70,23 @@ class MetsAltoNewspaperPage(NewspaperPage):
         """
         alto_xml_path = os.path.join(self.basedir, self.filename)
         
-        with codecs.open(alto_xml_path, 'r', encoding=self.encoding) as f:
-            raw_xml = f.read()
-        
-        alto_doc = BeautifulSoup(raw_xml, 'xml')
-        return alto_doc
+        # In case of I/O error, retry twice,
+        tries = 3
+        for i in range(tries):
+            try:
+                with open(alto_xml_path, 'r', encoding=self.encoding) as f:
+                    raw_xml = f.read()
+                
+                alto_doc = BeautifulSoup(raw_xml, 'xml')
+                return alto_doc
+            except IOError as e:
+                if i < tries - 1: # i is zero indexed
+                    logger.warning(f"Caught error for {self.id}, retrying (up to {tries} times) to read xml file. Error: {e}.")
+                    continue
+                else:
+                    logger.warning(f"Reached maximum amount of errors for {self.id}.")
+                    raise e
+
     
     def _convert_coordinates(self, page_regions: list[dict[str, Any]]
     ) -> tuple[bool, list[dict[str, Any]]]:
@@ -162,6 +173,11 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
     def xml(self) -> BeautifulSoup:
         """Read Mets XML file of the issue and create a BeautifulSoup object.
 
+        During the processing, some IO errors can randomly happen when listing
+        the contents of the directory, or opening files, preventing the correct
+        parsing of the issue. The error is raised after the third try.
+        If the directory does not contain any Mets file, only try once.
+
         Note:
             By default the issue Mets file is the only file containing
             `mets.xml` in its file name and located in the directory
@@ -171,19 +187,33 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
         Returns:
             BeautifulSoup: BeautifulSoup object with Mets XML of the issue.
         """
-        mets_file = [
-            os.path.join(self.path, f)
-            for f in os.listdir(self.path)
-            if 'mets.xml' in f.lower()
-            ]
-        if len(mets_file) == 0:
-            logger.critical(f"Could not find METS file in {self.path}")
-            return
-        
-        mets_file = mets_file[0]
-        
-        with codecs.open(mets_file, 'r', "utf-8") as f:
-            raw_xml = f.read()
-        
-        mets_doc = BeautifulSoup(raw_xml, 'xml')
-        return mets_doc
+        tries = 3
+        for i in range(tries):
+            try:
+                mets_file = [
+                    os.path.join(self.path, f)
+                    for f in os.listdir(self.path)
+                    if 'mets.xml' in f.lower()
+                ]
+                if len(mets_file) == 0:
+                    logger.critical(f"Could not find METS file in {self.path}")
+                    tries = 1
+                    #return
+                
+                mets_file = mets_file[0]
+
+                with open(mets_file, 'r', encoding="utf-8") as f:
+                    raw_xml = f.read()
+                
+                mets_doc = BeautifulSoup(raw_xml, 'xml')
+                return mets_doc
+            except IOError as e:
+                if i < tries - 1: # i is zero indexed
+                    logger.warning(f"Caught error for {self.id}, "
+                                   f"retrying (up to {tries} times) to read "
+                                   f"xml file or listing the dir. Error: {e}.")
+                    continue
+                else:
+                    logger.warning("Reached maximum amount of "
+                                   f"errors for {self.id}.")
+                    raise e

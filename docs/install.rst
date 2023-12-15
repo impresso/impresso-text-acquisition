@@ -1,7 +1,7 @@
 Installation
 ============
 
-For now you'll have to:
+Installing for development:
 
 .. code-block:: bash
 
@@ -15,3 +15,10 @@ For now you'll have to:
 
   # install the TextImporter
   pip install -e .
+
+
+General installation:
+
+.. code-block:: bash
+
+  pip install text-importer

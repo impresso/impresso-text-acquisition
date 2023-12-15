@@ -5,14 +5,14 @@ This importer is a special case of Mets/Alto. Here, we only have ALTO.xml files,
 It was developed to handle OCR newspaper data in Alto format provided by the `Schweizerisches Wirtschaftsarchiv (SWA)
 <https://www.ub.unibas.ch/ub-wirtschaft-swa/>`_ of Basel University Library.
 
-Custom classes
---------------
+SWA Custom classes
+------------------
 
 .. automodule:: text_importer.importers.swa.classes
   :members:
 
-Detect functions
-----------------
+SWA Detect functions
+--------------------
 
 .. automodule:: text_importer.importers.swa.detect
   :members:
