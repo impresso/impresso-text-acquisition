@@ -1,88 +1,50 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Generic Mets/Alto importer &mdash; Impresso TextImporter  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
   
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="BNL Mets/Alto importer" href="lux.html" />
     <link rel="prev" title="Olive XML importer" href="olive.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Impresso TextImporter
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            Impresso TextImporter
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
@@ -90,9 +52,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Generic Mets/Alto importer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#abstract-classes">Abstract classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mets-parsing">Mets parsing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#alto-parsing">Alto parsing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.mets_alto.classes">Abstract classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.mets_alto.mets">Mets parsing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.mets_alto.alto">Alto parsing</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
@@ -100,151 +62,548 @@
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Writing a new importer</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Impresso TextImporter</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../importers.html">TextImporter</a> &raquo;</li>
-        
-      <li>Generic Mets/Alto importer</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../importers.html">TextImporter</a></li>
+      <li class="breadcrumb-item active">Generic Mets/Alto importer</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/importers/mets-alto.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="generic-mets-alto-importer">
-<h1>Generic Mets/Alto importer<a class="headerlink" href="#generic-mets-alto-importer" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="generic-mets-alto-importer">
+<h1>Generic Mets/Alto importer<a class="headerlink" href="#generic-mets-alto-importer" title="Link to this heading"></a></h1>
 <p>A back-bone for any Mets/Alto importer.</p>
-<div class="section" id="abstract-classes">
-<h2>Abstract classes<a class="headerlink" href="#abstract-classes" title="Permalink to this headline">¶</a></h2>
+<section id="module-text_importer.importers.mets_alto.classes">
+<span id="abstract-classes"></span><h2>Abstract classes<a class="headerlink" href="#module-text_importer.importers.mets_alto.classes" title="Link to this heading"></a></h2>
+<p>This module contains the definition of generic Mets/Alto importer classes.</p>
+<p>The classes define newspaper Issues and Pages objects which convert OCR data in
+Mets/Alto format to a unified canoncial format.
+The classes in this module are meant to be subclassed to handle independently
+the parsing for each version of the Mets/Atlo format and their specificities.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.classes.</span></span><span class="sig-name descname"><span class="pre">MetsAltoNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue" title="Link to this definition"></a></dt>
+<dd><p>Newspaper issue in generic Mets/Alto format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New Mets/Alto importers should sub-class this class and implement
+its abstract methods (i.e. <code class="docutils literal notranslate"><span class="pre">_find_pages()</span></code>, <code class="docutils literal notranslate"><span class="pre">_parse_mets()</span></code>).</p>
 </div>
-<div class="section" id="mets-parsing">
-<h2>Mets parsing<a class="headerlink" href="#mets-parsing" title="Permalink to this headline">¶</a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Identifying information about the issue.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dd><p>Lower case letter ordering issues of the same day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.journal">
+<span class="sig-name descname"><span class="pre">journal</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.journal" title="Link to this definition"></a></dt>
+<dd><p>Newspaper unique identifier or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.path" title="Link to this definition"></a></dt>
+<dd><p>Path to directory containing the issue’s OCR data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.date" title="Link to this definition"></a></dt>
+<dd><p>Publication date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dd><p>Issue data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.pages" title="Link to this definition"></a></dt>
+<dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">NewspaperPage</span></code> instances from this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.rights">
+<span class="sig-name descname"><span class="pre">rights</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.rights" title="Link to this definition"></a></dt>
+<dd><p>Access rights applicable to this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.image_properties">
+<span class="sig-name descname"><span class="pre">image_properties</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.image_properties" title="Link to this definition"></a></dt>
+<dd><p>metadata allowing to convert region
+OCR/OLR coordinates to iiif format compliant ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.ark_id">
+<span class="sig-name descname"><span class="pre">ark_id</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.ark_id" title="Link to this definition"></a></dt>
+<dd><p>Issue ARK identifier, for the issue’s pages’ iiif links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.xml">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue.xml" title="Link to this definition"></a></dt>
+<dd><p>Read Mets XML file of the issue and create a BeautifulSoup object.</p>
+<p>During the processing, some IO errors can randomly happen when listing
+the contents of the directory, or opening files, preventing the correct
+parsing of the issue. The error is raised after the third try.
+If the directory does not contain any Mets file, only try once.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>By default the issue Mets file is the only file containing
+<cite>mets.xml</cite> in its file name and located in the directory
+<cite>self.path</cite>. Individual importers can overwrite this behavior
+if necessary.</p>
 </div>
-<div class="section" id="alto-parsing">
-<h2>Alto parsing<a class="headerlink" href="#alto-parsing" title="Permalink to this headline">¶</a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BeautifulSoup object with Mets XML of the issue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>BeautifulSoup</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.classes.</span></span><span class="sig-name descname"><span class="pre">MetsAltoNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage" title="Link to this definition"></a></dt>
+<dd><p>Newspaper page in generic Alto format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>New Mets/Alto importers should sub-classes this class and implement
+its abstract methods (i.e. <a class="reference internal" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue" title="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_issue()</span></code></a>).</p>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Name of the Alto XML page file.</p></li>
+<li><p><strong>basedir</strong> (<em>str</em>) – Base directory where Alto files are located.</p></li>
+<li><p><strong>encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – Encoding of XML file. Defaults to ‘utf-8’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.number" title="Link to this definition"></a></dt>
+<dd><p>Page number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dd><p>Page data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue">NewspaperIssue</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.filename" title="Link to this definition"></a></dt>
+<dd><p>Name of the Alto XML page file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.basedir">
+<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.basedir" title="Link to this definition"></a></dt>
+<dd><p>Base directory where Alto files are located.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.encoding" title="Link to this definition"></a></dt>
+<dd><p>Encoding of XML file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the newspaper issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.parse" title="Link to this definition"></a></dt>
+<dd><p>Process the page XML file and transform into canonical Page format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This lazy behavior means that the page contents are not processed
+upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
+method is called.</p>
 </div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.xml">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_importer.importers.mets_alto.classes.MetsAltoNewspaperPage.xml" title="Link to this definition"></a></dt>
+<dd><p>Read Alto XML file of the page and create a BeautifulSoup object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BeautifulSoup object with Alto XML of the page.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>BeautifulSoup</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-text_importer.importers.mets_alto.mets">
+<span id="mets-parsing"></span><h2>Mets parsing<a class="headerlink" href="#module-text_importer.importers.mets_alto.mets" title="Link to this heading"></a></h2>
+<p>Utility functions to parse Mets XML files.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.mets.get_dmd_sec">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.mets.</span></span><span class="sig-name descname"><span class="pre">get_dmd_sec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mets_doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BeautifulSoup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tag</span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.mets.get_dmd_sec" title="Link to this definition"></a></dt>
+<dd><p>Extract the contents of a specific <code class="docutils literal notranslate"><span class="pre">&lt;dmdsec&gt;</span></code> from the Mets document.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;dmdsec&gt;</span></code> section contains descriptive metadata. It’s composed of
+several different subsections each identified with string IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mets_doc</strong> (<em>BeautifulSoup</em>) – BeautifulSoup object of Mets XML document.</p></li>
+<li><p><strong>filter</strong> (<em>str</em>) – ID of the subsection of interest to filter the search.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Contents of the desired <code class="docutils literal notranslate"><span class="pre">&lt;dmdsec&gt;</span></code> of the Mets XML document.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tag</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.mets.parse_mets_amdsec">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.mets.</span></span><span class="sig-name descname"><span class="pre">parse_mets_amdsec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mets_doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BeautifulSoup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_res_default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_res_default</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">300</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.mets.parse_mets_amdsec" title="Link to this definition"></a></dt>
+<dd><p>Parse the <code class="docutils literal notranslate"><span class="pre">&lt;amdsec&gt;</span></code> section of Mets XML to extract image properties.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;amdsec&gt;</span></code> section contains administrative metadata about the OCR, in
+particular information about the image resolution allowing the coordinates
+conversion to iiif format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mets_doc</strong> (<em>BeautifulSoup</em>) – BeautifulSoup object of Mets XML document.</p></li>
+<li><p><strong>x_res</strong> (<em>str</em>) – Name of field representing the X resolution.</p></li>
+<li><p><strong>y_res</strong> (<em>str</em>) – Name of field representing the Y resolution.</p></li>
+<li><p><strong>x_res_default</strong> (<em>int</em><em>, </em><em>optional</em>) – Default X_res. Defaults to 300.</p></li>
+<li><p><strong>y_res_default</strong> (<em>int</em><em>, </em><em>optional</em>) – Default Y res. Defaults to 300.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Parsed image properties with default values if the field was not</dt><dd><p>found in the document.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.mets.parse_mets_filegroup">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.mets.</span></span><span class="sig-name descname"><span class="pre">parse_mets_filegroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mets_doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BeautifulSoup</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.mets.parse_mets_filegroup" title="Link to this definition"></a></dt>
+<dd><p>Parse <code class="docutils literal notranslate"><span class="pre">&lt;fileGrp&gt;</span></code> section to extract the page’s OCR image ids.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;fileGrp&gt;</span></code> section contains the names and ids of the images and text
+files linked to the Mets XML file. Each page of the issue is associated to
+a scan image file and ids.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>mets_doc</strong> (<em>BeautifulSoup</em>) – BeautifulSoup object of Mets XML document.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping from page number to page image id.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[int, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-text_importer.importers.mets_alto.alto">
+<span id="alto-parsing"></span><h2>Alto parsing<a class="headerlink" href="#module-text_importer.importers.mets_alto.alto" title="Link to this heading"></a></h2>
+<p>Utility functions to parse Alto XML files.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.alto.distill_coordinates">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.alto.</span></span><span class="sig-name descname"><span class="pre">distill_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.alto.distill_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Extract image coordinates from any XML tag.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function assumes the following attributes to be present in the
+input XML element: <code class="docutils literal notranslate"><span class="pre">HPOS</span></code>, <code class="docutils literal notranslate"><span class="pre">VPOS</span></code>. <code class="docutils literal notranslate"><span class="pre">WIDTH</span></code>, <code class="docutils literal notranslate"><span class="pre">HEIGHT</span></code>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>element</strong> (<em>Tag</em>) – Input XML tag containing coordinates to distill.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>An ordered list of coordinates (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>,</dt><dd><p><code class="docutils literal notranslate"><span class="pre">height</span></code>).</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.alto.parse_printspace">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.alto.</span></span><span class="sig-name descname"><span class="pre">parse_printspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mappings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.alto.parse_printspace" title="Link to this definition"></a></dt>
+<dd><p>Parse the <code class="docutils literal notranslate"><span class="pre">&lt;PrintSpace&gt;</span></code> element of an ALTO XML document.</p>
+<p>This element contains all the OCR information about the content items of
+a page, up to the lowest level of the hierarchy: the regions, paragraphs,
+lines and tokens, each with their corresponding coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>Tag</em>) – Input XML element (<code class="docutils literal notranslate"><span class="pre">&lt;PrintSpace&gt;</span></code>).</p></li>
+<li><p><strong>mappings</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Mapping from OCR component ids to their
+corresponding canonical Content Item ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>List of page regions in the canonical</dt><dd><p>format and notes about potential parsing problems.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[list[dict], list[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.alto.parse_style">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.alto.</span></span><span class="sig-name descname"><span class="pre">parse_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style_div</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.alto.parse_style" title="Link to this definition"></a></dt>
+<dd><p>Parse the font-style information in the ALTO files (for BNL and BNF).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>style_div</strong> (<em>Tag</em>) – Element of XML file containing font-style information.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Parsed style for Issue canonical format.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, float | str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.mets_alto.alto.parse_textline">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.alto.</span></span><span class="sig-name descname"><span class="pre">parse_textline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.alto.parse_textline" title="Link to this definition"></a></dt>
+<dd><p>Parse the <code class="docutils literal notranslate"><span class="pre">&lt;TextLine&gt;</span></code> element of an ALTO XML document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>element</strong> (<em>Tag</em>) – Input XML element (<code class="docutils literal notranslate"><span class="pre">&lt;TextLine&gt;</span></code>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Parsed lines or text in the canonical format</dt><dd><p>and notes about potential missing token coordinates.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[dict, list[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="lux.html" class="btn btn-neutral float-right" title="BNL Mets/Alto importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="olive.html" class="btn btn-neutral float-left" title="Olive XML importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="olive.html" class="btn btn-neutral float-left" title="Olive XML importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lux.html" class="btn btn-neutral float-right" title="BNL Mets/Alto importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2019, Matteo Romanello &amp; Impresso team
-
-    </p>
+    <p>&#169; Copyright 2023, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

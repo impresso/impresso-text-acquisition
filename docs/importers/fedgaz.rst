@@ -11,8 +11,8 @@ Unless the attribute is set to `True`, the content of the shared page is automat
 
 
 
-Custom classes
---------------
+FedGaz Custom classes
+---------------------
 
 .. automodule:: text_importer.importers.fedgaz.classes
   :members:

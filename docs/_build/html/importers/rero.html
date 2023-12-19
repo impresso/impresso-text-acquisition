@@ -1,88 +1,50 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RERO Mets/Alto importer &mdash; Impresso TextImporter  documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
   
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="SWA Alto importer" href="swa.html" />
     <link rel="prev" title="BNL Mets/Alto importer" href="lux.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> Impresso TextImporter
           
-
-          
+          <a href="../index.html" class="icon icon-home">
+            Impresso TextImporter
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
@@ -92,157 +54,465 @@
 <li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">RERO Mets/Alto importer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#custom-classes">Custom classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#detect-functions">Detect functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.rero.classes">RERO Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.rero.detect">RERO Detect functions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#utilities">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Writing a new importer</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">Impresso TextImporter</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../importers.html">TextImporter</a> &raquo;</li>
-        
-      <li>RERO Mets/Alto importer</li>
-    
-    
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../importers.html">TextImporter</a></li>
+      <li class="breadcrumb-item active">RERO Mets/Alto importer</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="../_sources/importers/rero.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="rero-mets-alto-importer">
-<h1>RERO Mets/Alto importer<a class="headerlink" href="#rero-mets-alto-importer" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="rero-mets-alto-importer">
+<h1>RERO Mets/Alto importer<a class="headerlink" href="#rero-mets-alto-importer" title="Link to this heading"></a></h1>
 <p>This importer extends the generic Mets/Alto importer, and it was developed to
 handle OCR newspaper data provided by RERO in Mets/Alto format (the rest of
 the data is in Olive format).</p>
-<div class="section" id="custom-classes">
-<h2>Custom classes<a class="headerlink" href="#custom-classes" title="Permalink to this headline">¶</a></h2>
+<section id="module-text_importer.importers.rero.classes">
+<span id="rero-custom-classes"></span><h2>RERO Custom classes<a class="headerlink" href="#module-text_importer.importers.rero.classes" title="Link to this heading"></a></h2>
+<p>This module contains the definition of the RERO importer classes.</p>
+<p>The classes define newspaper Issues and Pages objects which convert OCR data in
+the RERO version of the Mets/Alto format to a unified canoncial format.
+Theses classes are subclasses of generic Mets/Alto importer classes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">ReroNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue" title="Link to this definition"></a></dt>
+<dd><p>Newspaper Issue in RERO (Mets/Alto) format.</p>
+<p>All functions defined in this child class are specific to parsing RERO
+Mets/Alto format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Identifying information about the issue.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dd><p>Lower case letter ordering issues of the same day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.journal">
+<span class="sig-name descname"><span class="pre">journal</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.journal" title="Link to this definition"></a></dt>
+<dd><p>Newspaper unique identifier or name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.path" title="Link to this definition"></a></dt>
+<dd><p>Path to directory containing the issue’s OCR data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.date" title="Link to this definition"></a></dt>
+<dd><p>Publication date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dd><p>Issue data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.pages" title="Link to this definition"></a></dt>
+<dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">NewspaperPage</span></code> instances from this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.rights">
+<span class="sig-name descname"><span class="pre">rights</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.rights" title="Link to this definition"></a></dt>
+<dd><p>Access rights applicable to this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.image_properties">
+<span class="sig-name descname"><span class="pre">image_properties</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.image_properties" title="Link to this definition"></a></dt>
+<dd><p>metadata allowing to convert region
+OCR/OLR coordinates to iiif format compliant ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperIssue.ark_id">
+<span class="sig-name descname"><span class="pre">ark_id</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperIssue.ark_id" title="Link to this definition"></a></dt>
+<dd><p>Issue ARK identifier, for the issue’s pages’ iiif links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">ReroNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage" title="Link to this definition"></a></dt>
+<dd><p>Newspaper page in RERO (Mets/Alto) format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Name of the Alto XML page file.</p></li>
+<li><p><strong>basedir</strong> (<em>str</em>) – Base directory where Alto files are located.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.number" title="Link to this definition"></a></dt>
+<dd><p>Page number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dd><p>Page data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue">NewspaperIssue</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.filename" title="Link to this definition"></a></dt>
+<dd><p>Name of the Alto XML page file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.basedir">
+<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.basedir" title="Link to this definition"></a></dt>
+<dd><p>Base directory where Alto files are located.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.encoding" title="Link to this definition"></a></dt>
+<dd><p>Encoding of XML file. Defaults to ‘utf-8’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.page_width">
+<span class="sig-name descname"><span class="pre">page_width</span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.page_width" title="Link to this definition"></a></dt>
+<dd><p>The page width used for the coordinate system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.ReroNewspaperPage.add_issue">
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mets-alto.html#text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue" title="text_importer.importers.mets_alto.classes.MetsAltoNewspaperIssue"><span class="pre">MetsAltoNewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.rero.classes.ReroNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the newspaper issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.rero.classes.convert_coordinates">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">convert_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.rero.classes.convert_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Convert the coordinates using true and coordinate system resolutions.</p>
+<p>The coordinate system resolution is not necessarily the same as the true
+resolution of the image. A conversion, or rescaling can thus be necessary.
+Essentially computes fact = coordinate_width / true_width,
+and converts using x/fact.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coords</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – List of coordinates to convert</p></li>
+<li><p><strong>resolution</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em>) – True resolution of the images (keys
+<cite>x_resolution</cite> and <cite>y_resolution</cite> of the dict).</p></li>
+<li><p><strong>page_width</strong> (<em>float</em>) – The page width used for the coordinate system.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coordinates rescaled to match the true image resolution.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-text_importer.importers.rero.detect">
+<span id="rero-detect-functions"></span><h2>RERO Detect functions<a class="headerlink" href="#module-text_importer.importers.rero.detect" title="Link to this heading"></a></h2>
+<p>This module contains helper functions to find RERO OCR data to be imported.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_importer.importers.rero.detect.Rero2IssueDir">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">Rero2IssueDir</span></span><a class="headerlink" href="#text_importer.importers.rero.detect.Rero2IssueDir" title="Link to this definition"></a></dt>
+<dd><p>A light-weight data structure to represent a newspaper issue.</p>
+<p>This named tuple contains basic metadata about a newspaper issue. They
+can then be used to locate the relevant data in the filesystem or to create
+canonical identifiers for the issue and its pages.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case of newspaper published multiple times per day, a lowercase letter
+is used to indicate the edition number: ‘a’ for the first, ‘b’ for the
+second, etc.</p>
 </div>
-<div class="section" id="detect-functions">
-<h2>Detect functions<a class="headerlink" href="#detect-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>journal</strong> (<em>str</em>) – Newspaper ID.</p></li>
+<li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date or issue.</p></li>
+<li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.).</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing the issue’s OCR data.</p></li>
+<li><p><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.).</p></li>
+</ul>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">Rero2IssueDir</span><span class="p">(</span><span class="s1">&#39;BLB&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1845</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">28</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./BLB/data/BLB/18451228_01&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">)</span>
+</pre></div>
 </div>
-</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.rero.detect.detect_issues">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'data'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.rero.detect.detect_issues" title="Link to this definition"></a></dt>
+<dd><p>Detect newspaper issues to import within the filesystem.</p>
+<p>This function expects the directory structure that RERO used to
+organize the dump of Mets/Alto OCR data.</p>
+<p>TODO: add info on the file structure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
+<li><p><strong>data_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory where data is stored
+(usually <cite>data/</cite>). Defaults to ‘data’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of <cite>Rero2IssueDir</cite> instances, to be imported.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[Rero2IssueDir]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.rero.detect.dir2issue">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span></span></span><a class="headerlink" href="#text_importer.importers.rero.detect.dir2issue" title="Link to this definition"></a></dt>
+<dd><p>Create a <cite>Rero2IssueDir</cite> from a directory (RERO format).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path of issue.</p></li>
+<li><p><strong>access_rights</strong> (<em>dict</em>) – dictionary for access rights.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New <cite>Rero2IssueDir</cite> object matching the path and rights.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Rero2IssueDir</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.importers.rero.detect.select_issues">
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.rero.detect.select_issues" title="Link to this definition"></a></dt>
+<dd><p>Detect selectively newspaper issues to import.</p>
+<p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.rero.detect.detect_issues" title="text_importer.importers.rero.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
+difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
+import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
+further details on how to configure filtering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
+<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><cite>Rero2IssueDir</cite> instances to be imported.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[Rero2IssueDir] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="swa.html" class="btn btn-neutral float-right" title="SWA Alto importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="lux.html" class="btn btn-neutral float-left" title="BNL Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lux.html" class="btn btn-neutral float-left" title="BNL Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="swa.html" class="btn btn-neutral float-right" title="SWA Alto importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2019, Matteo Romanello &amp; Impresso team
-
-    </p>
+    <p>&#169; Copyright 2023, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

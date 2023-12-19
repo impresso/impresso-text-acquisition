@@ -1,5 +1,5 @@
 Generic Mets/Alto importer
-======================
+==========================
 
 A back-bone for any Mets/Alto importer.
 

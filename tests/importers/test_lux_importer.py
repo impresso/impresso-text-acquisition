@@ -1,10 +1,9 @@
 import json
 import logging
-import os
 
-import pkg_resources
-from dask import bag as db
+from contextlib import ExitStack
 
+from text_importer.utils import get_pkg_resource
 from text_importer.importers.core import import_issues
 from text_importer.importers.lux.classes import LuxNewspaperIssue
 from text_importer.importers.lux.detect import detect_issues as lux_detect_issues
@@ -15,15 +14,20 @@ logger = logging.getLogger(__name__)
 
 # TODO: adapt code after refactoring
 def test_import_issues():
-    inp_dir = pkg_resources.resource_filename(
-            'text_importer',
-            'data/sample_data/Luxembourg/'
-            )
-    out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
+    """Test the Luxembourg XML importer with sample data."""
+
+    logger.info("Starting test_import_issues in test_lux_importer.py.")
+
+    f_mng = ExitStack()
+    inp_dir = get_pkg_resource(f_mng, 'data/sample_data/Luxembourg/')
+    out_dir = get_pkg_resource(f_mng, 'data/out/')
+    
     output_bucket = None  # this disables the s3 upload
 
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
+    assert len(issues) > 0
+
     import_issues(
         issues, out_dir,
         s3_bucket=output_bucket,
@@ -33,42 +37,49 @@ def test_import_issues():
         chunk_size=None
     )
 
+    logger.info("Finished test_import_issues, closing file manager.")
+    f_mng.close()
 
+ 
 def test_selective_import():
     """Tests selective ingestion of BNL data.
 
     What to ingest is specified in a JSON configuration file.
 
-    ..todo::
-
+    TODO: 
         - add support filtering/selection based on dates and date-ranges;
         - add support for exclusion of newspapers
     """
-    cfg_file = pkg_resources.resource_filename(
-            'text_importer',
-            'config/import_BNL.json'
-            )
+    logger.info("Starting test_selective_import in test_lux_importer.py.")
+
+    f_mng = ExitStack()
+    cfg_file = get_pkg_resource(f_mng, 'config/import_BNL.json')
+    inp_dir = get_pkg_resource(f_mng, 'data/sample_data/Luxembourg/')
+    out_dir = get_pkg_resource(f_mng, 'data/out/')
+
     with open(cfg_file, 'r') as f:
         config = json.load(f)
 
-    inp_dir = pkg_resources.resource_filename(
-            'text_importer',
-            'data/sample_data/Luxembourg/'
-            )
-    out_dir = pkg_resources.resource_filename('text_importer', 'data/out/')
-    """
-    inp_dir = "/mnt/project_impresso/original/BNL/"
-    out_dir = pkg_resources.resource_filename(
-        'text_importer',
-        'data/out/debug/'
+    issues = lux_select_issues(
+        base_dir=inp_dir, config=config, access_rights=""
     )
-    """
-    issues = lux_select_issues(base_dir=inp_dir, config=config, access_rights="")
+
     assert issues is not None and len(issues) > 0
+    assert all([i.journal in config['newspapers'] for i in issues])
 
     logger.info(f'There are {len(issues)} to ingest')
-    import_issues(issues, out_dir, s3_bucket=None, issue_class=LuxNewspaperIssue,
-                  image_dirs=None, temp_dir=None, chunk_size=None)
+    import_issues(
+        issues, out_dir, 
+        s3_bucket=None, 
+        issue_class=LuxNewspaperIssue,
+        image_dirs=None, 
+        temp_dir=None, 
+        chunk_size=None
+    )
+
+    logger.info("Finished test_selective_import, closing file manager.")
+    f_mng.close()
+
 
 # # TODO: adapt it to Lux data
 # def test_verify_imported_issues():
