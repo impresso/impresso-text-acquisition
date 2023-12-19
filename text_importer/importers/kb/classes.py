@@ -184,16 +184,6 @@ class KbNewspaperIssue(NewspaperIssue):
 
         self._find_pages()
         self._parse_didl()
-        
-        self.issue_data = {
-            'id': self.id,
-            'cdt': strftime("%Y-%m-%d %H:%M:%S"),
-            'i': self.content_items,
-            'ar': self.rights,
-            'pp': [p.id for p in self.pages],
-            's': self.text_styles,
-            'notes': self._notes
-        }
 
     @property
     def xml(self) -> BeautifulSoup:
@@ -224,7 +214,6 @@ class KbNewspaperIssue(NewspaperIssue):
                 if len(didl_file) == 0:
                     logger.critical(f"Could not find Didl file in {self.path}")
                     tries = 1
-                    #return
                 
                 didl_file = didl_file[0]
 
@@ -232,6 +221,7 @@ class KbNewspaperIssue(NewspaperIssue):
                     raw_xml = f.read()
                 
                 didl_doc = BeautifulSoup(raw_xml, 'xml')
+
                 return didl_doc
             except IOError as e:
                 if i < tries - 1: # i is zero indexed
@@ -256,39 +246,15 @@ class KbNewspaperIssue(NewspaperIssue):
         Raises:
             ValueError: No page was found for this issue.
         """
-        if len(self.page_files) == 0:
-            raise ValueError(f"Could not find any page for {self.id}.")
-
-        for n, (p_id, p_file) in enumerate(self.page_files):
-            # page_files is sorted by page number
-            if int(p_file.replace('.xml', '')) == n + 1:
-                page = KbNewspaperPage(p_id, n + 1, p_file, self.path, 
-                                        self.iiif_identifier)
-                self.pages.append(page)
-                self.text_styles.extend(page.text_styles)
-            else:
-                # No list of pages per issue;
-                # a page is missing if a number is skipped.
-                self._notes.append(f"Issue {self.id}: No Alto "
-                                   f"file for page {n + 1} in {self.path}")
+        pass
                 
-    def _find_content_items(self) -> None:
+    def _parse_content_items(self) -> None:
         """Create content items for the pages in this issue.
 
         Given that KB data do not entail article-level segmentation,
         each page is considered as a content item.
         """
-        for page in sorted(self.pages, key=lambda x: x.number):
-            p_num = page.number
-            ci = {
-                'm': {
-                    'id': self.id + '-i' + str(p_num).zfill(4),
-                    'pp': [p_num],
-                    'l': page.languages,
-                    'tp': 'page',
-                }
-            }
-            self.content_items.append(ci)
+        pass
 
     def _parse_didl(self) -> None:
         """Parse the Mets XML file corresponding to this issue.
@@ -299,14 +265,17 @@ class KbNewspaperIssue(NewspaperIssue):
         """
         didl_doc = self.xml
         
-        
         # Parse all the content items
         content_items = self._parse_content_items(didl_doc)
         
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "i": content_items,
             "id": self.id,
+            "i": content_items,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
         }
+
+        # TODO add text_styles
+        if self._notes:
+            self.issue_data["n"] = "\n".join(self._notes)
