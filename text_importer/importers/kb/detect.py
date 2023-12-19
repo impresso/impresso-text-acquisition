@@ -3,31 +3,17 @@
 import logging
 import os
 from collections import namedtuple
-from datetime import datetime, timedelta
+import datetime
 from string import ascii_lowercase
 from typing import Optional
 
-import requests
 import pandas as pd
 import numpy as np
 import string
-from bs4 import BeautifulSoup
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
-from tqdm import tqdm
-from multiprocessing import Pool, cpu_count
 
 logger = logging.getLogger(__name__)
-
-EDITIONS_MAPPINGS = {
-    1: 'a',
-    2: 'b',
-    3: 'c',
-    4: 'd',
-    5: 'e',
-    6: 'f',
-    7: 'g'
-}
 
 KbIssueDir = namedtuple(
     "IssueDirectory", [
@@ -59,7 +45,9 @@ Args:
     identifier (str): Unique identifier associated with this issue in KB's API.
 
 >>> from datetime import date
->>> i = KbIssueDir('0001', date(1618,06,14), 'a', './1618/06/14/DDD_ddd_010500649_mpeg21/', 'open', 'DDD:ddd:010500649:mpeg21')
+>>> i = KbIssueDir('00000001', date(1618,06,14), 'a', 
+                   './1618/06/14/DDD_ddd_010500649_mpeg21/', 
+                   'open', 'DDD:ddd:010500649:mpeg21')
 """
 
 OAI_API_ISSUE_METADATA_URI = "https://services.kb.nl/mdo/oai?verb=GetRecord&identifier={identifier}&metadataPrefix=didl"
@@ -68,6 +56,27 @@ API_ISSUE_IMGS_URI = "http://resolver.kb.nl/resolve?urn={identifier}:pdf"
 
 
 def load_issues_index(base_dir: str, basedir_files: list[str]) -> pd.DataFrame:
+    """Find the collection index file and load its contents to a pd.DataFrame.
+
+    The index is a `.tsv` file in the base directory containing the journal
+    title, publication date and path in the KB file structure for each issue.
+    The columns of the returned DataFrame are: 
+    - 'journal', 'date', 'source_file', 'relative_path': already present.
+    - 'issue_identifier' and 'delpher_issue_identifier': constructed and added,
+        these identifiers are useful for various API requests, each issue's OCR
+        data files are located in a directory with named with its identifier.
+    
+    Args:
+        base_dir (str): Base directory containing KB OCR data input files.
+        basedir_files (list[str]): List of files directly inside `base_dir`.
+
+    Raises:
+        KeyError: No file with `index` in the name was found in `base_dir`.
+        KeyError: More than one file with `index` in the name was found
+
+    Returns:
+        pd.DataFrame: DataFrame with the list of issues present in the index.
+    """
     index_filename = [f for f in basedir_files if 'index' in f]
 
     if len(index_filename) == 0:
@@ -94,15 +103,47 @@ def load_issues_index(base_dir: str, basedir_files: list[str]) -> pd.DataFrame:
         lambda x: ':'.join(x.split(':')[1:])
     )
 
-    # remove issues which correspond to "No journal"
-    index_df = index_df[ index_df['journal'] != '[Zonder titel]']
+    # remove issues for which the journal is to "No Title"
+    index_df = index_df[index_df['journal'] != '[Zonder titel]']
 
-    # There should be no duplicated issues
+    # There should be no duplicated issues (esp. identifier)
     return index_df.drop_duplicates()
+
 
 def get_or_create_journal_ids(
     index_data: pd.DataFrame | None = None, filepath: str | None = None
 ) -> dict[str, dict[str, str]]:
+    """Create an impresso internal identifier system for KB titles or load it.
+
+    KB titles have no short identifiers, and present a very large variety in 
+    length and format. This identifier indexes each journal by assigning it a
+    8-character string of a number.
+    This indexing leverages the index file, but should remain constant between
+    runs.
+
+    The format of the output dict is:
+    ```
+    {journal_title_1: {'journal_idx': '00000001'},
+     journal_title_2: {'journal_idx': '00000002'},
+     ...
+    }
+    ```
+
+    Note:
+        At least one of `index_data` and `filepath` should be defined.
+
+    TODO: Adapt this method in the case identifiers provided by KB exist.
+
+    Args:
+        index_data (pd.DataFrame | None, optional): Index data with all issues. 
+            Defaults to None.
+        filepath (str | None, optional): Path to the `csv` file containing an 
+            existing or already computed journal ID mapping. Defaults to None.
+
+    Returns:
+        dict[str, dict[str, str]]: Dict where each key is a journal's title as
+            given in the index.
+    """
     # If the file with the journal->id mapping already exists, use it
     if filepath is not None and os.path.exists(filepath):
         journals_idx_ids = pd.read_csv(filepath, index_col=0)
@@ -122,9 +163,39 @@ def get_or_create_journal_ids(
 
     return journals_idx_ids.to_dict('index')
 
+
 def get_mult_editions_issues(
     grouped_df: pd.DataFrame
 ) -> dict[tuple[str, str], dict]:
+    """Identify all the journal-date pairs for which two editions exist.
+
+    Since the KB data is not organized by journal, this step is necessary to 
+    properly assign the edition to each issue.
+
+    The format of the output dict is:
+    ```
+    {(journal_title_1, date_1): 
+        {'issue_identifier': [issue_ID_1, issue_ID_2]},
+     (journal_title_1, date_2): 
+        {'issue_identifier': [issue_ID_3, issue_ID_4, issue_ID_5]},
+     (journal_title_2, date_3): 
+        {'issue_identifier': [issue_ID_6, issue_ID_7]},
+     ...
+    }
+    ```
+
+    Note: 
+        Only journal-date pairs for which multiple issues were published are 
+        present as keys of the output dict. 
+
+    Args:
+        grouped_df (pd.DataFrame): DataFrame containing the index data, which
+            has been grouped by `journal` and `date`.
+
+    Returns:
+        dict[tuple[str, str], dict]: Resulting dict mapping (`journal`, `date`)
+            pairs with multiple editions to the KB identifiers of the issues.
+    """
     # only keep entries for journals and date with more than one issue
     journals_by_date = grouped_df[grouped_df['issue_identifier'].map(len) > 1]
 
@@ -133,11 +204,49 @@ def get_mult_editions_issues(
 
 
 def identify_mult_editions(
-    grpd_index: pd.DataFrame, journal_idx_ids: dict[str, dict]
+    grouped_index: pd.DataFrame, journal_idx_ids: dict[str, dict]
 ) -> dict[str, dict]:
+    """Identify journal-date pairs with multiple editions, add to journal IDs.
 
+    Once the journal-date pairs for which two editions exist are identified, 
+    they are added to the journal IDs dict to allow easy and O(1) access to 
+    the concerned issues when creating the `KbIssueDir`.
+
+    The format of the output dict is:
+    ```
+    {journal_title_1: {
+        'journal_idx': '00000001',
+        'dates': {date_1: [issue_ID_1, issue_ID_2]},
+     },
+     journal_title_2: {'journal_idx': '00000002'},
+     journal_title_3: {
+        'journal_idx': '00000003',
+        'dates': {
+            date_2: [issue_ID_3, issue_ID_4],
+            date_3: [issue_ID_5, issue_ID_6]
+        },
+     },
+     ...
+    }
+    ```
+
+    Note:
+        All journals in the collection are present in the dict keys, but only
+        ones for which multiple editions exist within a day have the `dates` 
+        key inside its value dict.
+
+    Args:
+        grouped_index (pd.DataFrame): DataFrame containing the index data, 
+            which has been grouped by `journal` and `date`.
+        journal_idx_ids (dict[str, dict]): Dict mapping each journal to an
+            8-char string internal identifier.
+
+    Returns:
+        dict[str, dict]: Dict with journal names as keys, containing their ID
+            and when multiple editions exist, the date and issue identifiers.
+    """
     # identifies which journals and dates count multiple issues 
-    mult_editions = get_mult_editions_issues(grpd_index)
+    mult_editions = get_mult_editions_issues(grouped_index)
     logger.info(f"Found {len(mult_editions)} journal-date pairs "
                 "with multiple issue editions.")
     
@@ -153,22 +262,43 @@ def identify_mult_editions(
 
 def dir2issue(row: pd.Series, base_dir: str, 
               journals_idx_dict: dict[str], 
-              access_rights: dict | None = None) -> Optional[KbIssueDir]:
-    
+              access_rights: dict | None = None
+) -> Optional[KbIssueDir]:
+    """Given a row of index data, and the journals index create a `KbIssueDir`.
+
+    TODO: modify approach to include the access rights once we have them.
+
+    Args:
+        row (pd.Series): Row of the index data corresponding to one issue.
+        base_dir (str): Base directory where the KB OCR data files are.
+        journals_idx_dict (dict[str]): Dict containing the journal IDs to use,
+            as well as dates for which multiple editions exist.
+        access_rights (dict | None, optional): Access rights dict, to be used
+            once access rights data is available. Defaults to None.
+
+    Returns:
+        Optional[KbIssueDir]: Created `KbIssueDir` object corresponding to the
+            given issue.
+    """
     pub_date = datetime.date.fromisoformat(row['date'])
-    # dict mode
+    # fetch the created internal journal identifier
     journal = journals_idx_dict[row['journal']]['journal_idx']
-    # df mode
-    #journals_index.loc[journals_index['journal'] == row['journal'], 'journal_idx'].values[0]
-    path = os.path.join(base_dir, row['date'])
+
+    # construct the issue path, removing the leading './' in the relative path
+    path = os.path.join(base_dir, row['relative_path'][2:])
     identifier = row['issue_identifier']
+
+    # in the case there are multiple issues for the given journal and day,
+    # the editions are sorted as the issues are in the index.
     if ('dates' in journals_idx_dict[row['journal']] and 
         row['date'] in journals_idx_dict[row['journal']]['dates']):
         edition_index = (journals_idx_dict[row['journal']]['dates'][row['date']]
                          .index(row['issue_identifier']))
     else:
         edition_index = 0
-    edition = string.ascii_lowercase[edition_index]
+    # assign an edition letter
+    edition = ascii_lowercase[edition_index]
+
     if access_rights is not None:
         rights = None
     else:
@@ -189,7 +319,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[KbIssueDir]:
         access_rights (str): Not used for this importer (kept for conformity).
 
     Returns:
-        List[BnfEnIssueDir]: List of `BnfEnIssueDir` instances to import.
+        List[KbIssueDir]: List of `KbIssueDir` instances to import.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
 
@@ -209,7 +339,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[KbIssueDir]:
     )
 
     # identify journal & dates on which multiple editions exist
-    j_ids_and_editions = identify_mult_editions(journal_idx_ids, grpd_index)
+    j_ids_and_editions = identify_mult_editions(grpd_index, journal_idx_ids)
     
     issue_dirs = index_df.apply(
         lambda row: dir2issue(row, base_dir, j_ids_and_editions), axis=1
@@ -234,7 +364,7 @@ def select_issues(
         access_rights (str): Not used for this importer (kept for conformity).
 
     Returns:
-        Optional[list[BnfEnIssueDir]]: `BnfEnIssueDir` instances to import.
+        Optional[list[KbIssueDir]]: `KbIssueDir` instances to import.
     """
     try:
         filter_dict = config["newspapers"]
@@ -247,6 +377,7 @@ def select_issues(
         return
     
     issues = detect_issues(base_dir, access_rights)
+
     issue_bag = db.from_sequence(issues)
     selected_issues = (
         issue_bag.filter(
