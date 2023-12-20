@@ -12,11 +12,17 @@ will first be converted to Alto before using this importer.
 
 import logging
 import os
+import re
 from time import strftime
 from bs4 import BeautifulSoup
 
+from text_importer.importers import (CONTENTITEM_TYPE_IMAGE, 
+                                     CONTENTITEM_TYPE_ADVERTISEMENT,
+                                     CONTENTITEM_TYPE_ARTICLE)
 from text_importer.importers.classes import NewspaperIssue
-from text_importer.importers.mets_alto.alto import parse_printspace, parse_style
+from text_importer.importers.mets_alto.alto import (parse_printspace, 
+                                                    parse_style,
+                                                    find_alto_files_or_retry)
 from text_importer.importers.mets_alto.classes import MetsAltoNewspaperPage
 from text_importer.importers.kb.detect import KbIssueDir
 
@@ -25,6 +31,13 @@ IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 IIIF_SUFFIX = 'info.json'
 IIIF_IMAGE_SUFFIX = 'full/full/0/default.jpg'
 
+
+TYPE_MAPPING = {
+    'advertentie': CONTENTITEM_TYPE_ADVERTISEMENT, 
+    'artikel': CONTENTITEM_TYPE_ARTICLE, 
+    'familiebericht': 'Familial message',
+    'Unknown': CONTENTITEM_TYPE_IMAGE
+}
 class KbNewspaperPage(MetsAltoNewspaperPage):
     """Newspaper page in KB (Mets/Alto) format.
 
@@ -48,15 +61,15 @@ class KbNewspaperPage(MetsAltoNewspaperPage):
         languages (list[str]): List of languages present on this page.
     """
 
-    def __init__(self, _id: str, number: int, filename: str, basedir: str, 
-                 iiif_identifier: str, encoding: str = 'utf-8') -> None:
+    def __init__(self, _id: str, number: int, filename: str, 
+                 basedir: str, encoding: str = 'utf-8') -> None:
         super().__init__(_id, number, filename, basedir, encoding)
         # create iiif base image URI for KB
         self.iiif = os.path.join(IIIF_ENDPOINT_URI, 
-                                 iiif_identifier, 
+                                 self.id, 
                                  str(number).zfill(8))
         self.page_data['iiif_img_base_uri'] = self.iiif
-        self.parse_info_for_issue()
+        #self.parse_info_for_issue()
 
     def parse_info_for_issue(self) -> None:
         """Parse some the languages and text_styles page properties.
@@ -177,7 +190,10 @@ class KbNewspaperIssue(NewspaperIssue):
 
     def __init__(self, issue_dir: KbIssueDir) -> None:
         super().__init__(issue_dir)
+        # of format 'DDD:ddd:xxxxxxxxx:mpeg21'
         self.api_identifier = issue_dir.identifier
+        # of format 'ddd:xxxxxxxxx:mpeg21'
+        self.identifier = issue_dir.identifier[:4]
         self.content_items = []
 
         self.text_styles = [] 
@@ -246,15 +262,81 @@ class KbNewspaperIssue(NewspaperIssue):
         Raises:
             ValueError: No page was found for this issue.
         """
-        pass
+        page_file_names = find_alto_files_or_retry(self.path, self.id, 
+                                                   name_contents='alto.xml')
+
+        page_numbers = [int(fname.split('_')[-2]) for fname in page_file_names]
+
+        page_canonical_names = [
+            "{}-p{}".format(self.id, str(page_n).zfill(4))
+            for page_n in page_numbers
+        ]
+
+        self.pages = []
+        for filename, page_no, page_id in zip(page_file_names, 
+                                              page_numbers, 
+                                              page_canonical_names):
+            try:
+                self.pages.append(
+                    KbNewspaperPage(page_id, page_no, filename, self.path)
+                )
+            except Exception as e:
+                logger.error(
+                    f'Adding page {page_no} {page_id} {filename}',
+                    f'raised following exception: {e}'
+                )
+                raise e
+            
+    def _parse_content_item(self, item_tag, counter, didl_doc) -> dict:
+
+        elem_type = item_tag.find('dc:subject').text
+
+        if elem_type not in TYPE_MAPPING.keys:
+            logger.warning(f"Found new content item type: {elem_type}")
+        else:
+            # uniformize types
+            item_type = TYPE_MAPPING[elem_type]
+
+        item_title = item_tag.find('dc:title').text
+
+        # maybe keep original article numbering instead of counted
+        metadata = {
+            'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
+            'tp': item_type,
+            'pp': [],
+            't': item_title
+        }
+        
+        content_item = {"m": metadata}
+
+        # TODO add language and parse text style if possible
+        # TODO add legacy + CI ID in alto data
+        return content_item
                 
-    def _parse_content_items(self) -> None:
+    def _parse_content_items(self, didl_doc: BeautifulSoup) -> None:
         """Create content items for the pages in this issue.
 
         Given that KB data do not entail article-level segmentation,
         each page is considered as a content item.
         """
-        pass
+        # fetch the articles page by page, to ensure they are sorted
+        articles, content_items = [], []
+        
+        id_parts = [self.identifier, 'a\d{4}']
+        articles = didl_doc.findAll(
+            'Item', {'dc:identifier': re.compile(':'.join(id_parts))}
+        )
+
+        counter = 1
+        for item in articles:
+            # Parse each article content item
+            content_items.append(
+                self._parse_content_item(item, counter, didl_doc)
+            )
+            counter += 1
+
+        return content_items
+
 
     def _parse_didl(self) -> None:
         """Parse the Mets XML file corresponding to this issue.

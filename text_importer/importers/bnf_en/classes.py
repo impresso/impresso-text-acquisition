@@ -20,7 +20,8 @@ from text_importer.importers import (CONTENTITEM_TYPES,
                                      CONTENTITEM_TYPE_TABLE)
 from text_importer.importers.bnf.helpers import BNF_CONTENT_TYPES
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
-                                               MetsAltoNewspaperPage)
+                                               MetsAltoNewspaperPage,
+                                               find_alto_files_or_retry)
 from text_importer.utils import get_issue_schema, get_page_schema
 
 IssueSchema = get_issue_schema()
@@ -113,14 +114,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         """
         alto_path = os.path.join(self.path, 'ALTO')
         
-        if not os.path.exists(alto_path):
-            logger.critical(f"Could not find pages for {self.id}")
-        
-        page_file_names = [
-            file
-            for file in os.listdir(alto_path)
-            if not file.startswith('.') and '.xml' in file
-            ]
+        page_file_names = find_alto_files_or_retry(alto_path, self.id)
         
         page_numbers = []
         

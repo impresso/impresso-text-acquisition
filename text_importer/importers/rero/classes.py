@@ -16,7 +16,8 @@ from bs4.element import NavigableString, Tag
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPES
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage,
-                                               parse_mets_amdsec)
+                                               parse_mets_amdsec,
+                                               find_alto_files_or_retry)
 from text_importer.utils import get_issue_schema, get_page_schema
 
 IssueSchema = get_issue_schema()
@@ -172,7 +173,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         """
         alto_path = os.path.join(self.path, 'ALTO')
 
-        page_file_names = self._find_alto_files_or_retry(alto_path)
+        page_file_names = find_alto_files_or_retry(alto_path, self.id)
         
         page_numbers = []
         
@@ -199,48 +200,6 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                     f'raised following exception: {e}'
                 )
                 raise e
-            
-    def _find_alto_files_or_retry(self, alto_path: str) -> list[str]:
-        """List XML files present in given page file dir, retry up to 3 times.
-
-        During the processing, some IO errors can randomly happen when listing
-        the contents of the ALTO directory, preventing the correct parsing of 
-        the issue. The error is raised after the third try.
-        If the Alto directory does not exist, only try once.
-
-        Args:
-            alto_path (str): Path to the directory with the Alto XML files.
-
-        Raises:
-            e: Given directory does not exist, or listing its contents failed
-                three times in a row.
-
-        Returns:
-            list[str]: List of paths of the pages' Alto XML files.
-        """
-        if not os.path.exists(alto_path):
-            logger.critical(f"Could not find pages for {self.id}")
-            tries = 1
-
-        tries = 3
-        for i in range(tries):
-            try:
-                page_file_names = [
-                    file
-                    for file in os.listdir(alto_path)
-                    if not file.startswith('.') and '.xml' in file
-                ]
-                return page_file_names
-            except IOError as e:
-                if i < tries - 1: # i is zero indexed
-                    logger.warning(f"Caught error for {self.id}, "
-                                   f"retrying (up to {tries} times) "
-                                   f"to find pages. Error: {e}.")
-                    continue
-                else:
-                    logger.warning("Reached maximum amount "
-                                   f"of errors for {self.id}.")
-                    raise e
     
     def _parse_content_parts(self, div: Tag) -> list[dict[str, str | int]]:
         """Parse the children of a content item div for its legacy `parts`.
@@ -396,9 +355,9 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         """
         content_items = []
         divs = mets_doc.find('div', {'TYPE': 'CONTENT'}).findChildren(
-                'div',
-                recursive=False
-                )  # Children of "Content" tag
+            'div',
+            recursive=False
+        )  # Children of "Content" tag
         
         # Sort to have same naming
         sorted_divs = sorted(divs, key=lambda x: x.get('ID').lower())
