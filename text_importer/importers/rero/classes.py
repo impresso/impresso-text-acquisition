@@ -286,7 +286,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             'tp': div_type,
             'pp': [],
             't': item_div.get('LABEL')
-            }
+        }
         
         # Get CI language
         language = self._get_ci_language(item_div.get('DMDID'), mets_doc)
@@ -298,8 +298,8 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             "l": {
                 "id": item_div.get('ID'),
                 "parts": self._parse_content_parts(item_div)
-                }
             }
+        }
         for p in content_item['l']['parts']:
             pge_no = p["comp_page_no"]
             if pge_no not in content_item['m']['pp']:

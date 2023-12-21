@@ -1,13 +1,8 @@
 """This module contains the definition of the KB importer classes.
 
 The classes define newspaper Issues and Pages objects which convert OCR data in
-the KB version of the Mets/Alto format to a unified canoncial format.
-Theses classes are subclasses of generic Mets/Alto importer classes.
-
-Note: These classes only handle the case for ANNO data for now. Titles which
-are part of the ANNOP collection cannot be imported with them for now.
-Either two separate importers will be implemented, or the titles part of ANNOP
-will first be converted to Alto before using this importer.
+the KB version of the Didl/Alto format to a unified canonical format.
+The Page class is a subclass of generic Alto importer Page class.
 """
 
 import logging
