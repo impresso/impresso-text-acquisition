@@ -14,7 +14,8 @@ import logging
 import os
 import re
 from time import strftime
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
+from typing import Any
 
 from text_importer.importers import (CONTENTITEM_TYPE_IMAGE, 
                                      CONTENTITEM_TYPE_ADVERTISEMENT,
@@ -162,11 +163,7 @@ class KbNewspaperPage(MetsAltoNewspaperPage):
         return notes
 
 class KbNewspaperIssue(NewspaperIssue):
-    """Newspaper issue in KB Mets/Alto format.
-
-    Note: 
-        KB is in ALTO format, but there isn't any Mets file. So in that case,
-        issues are simply a collection of pages.
+    """Newspaper issue in KB Didl/Alto format.
 
     Args:
         issue_dir (KBIssueDir): Identifying information about the issue.
@@ -209,12 +206,6 @@ class KbNewspaperIssue(NewspaperIssue):
         the contents of the directory, or opening files, preventing the correct
         parsing of the issue. The error is raised after the third try.
         If the directory does not contain any Mets file, only try once.
-
-        Note:
-            By default the issue Mets file is the only file containing
-            `mets.xml` in its file name and located in the directory
-            `self.path`. Individual importers can overwrite this behavior
-            if necessary.
     
         Returns:
             BeautifulSoup: BeautifulSoup object with Mets XML of the issue.
@@ -287,7 +278,63 @@ class KbNewspaperIssue(NewspaperIssue):
                 )
                 raise e
             
-    def _parse_content_item(self, item_tag, counter, didl_doc) -> dict:
+    def _parse_content_parts(
+        self, item_tag: Tag
+    ) -> tuple[dict[str, Any], list[int]]:
+        """Parse the various parts composing the given content item.
+
+        Content items (often representing articles) are separated into various
+        parts (title, paragraphs etc), which are identified with the IDs used
+        in the corresponding ALTO files.
+
+        Args:
+            item_tag (Tag): Tag corresponding to a content item from the issue.
+
+        Returns:
+            tuple[dict[str, Any], list[int]]: List of parts composing the item.
+        """
+        parts = []
+        page_nums = set()
+
+        for ci_pt in item_tag.find_all('dcx:article-part'):
+            for block in ci_pt.find_all('TextBlock'):
+                # component id in the ALTO files 
+                comp_id = block.get('ID')
+                # page name
+                comp_filename = block.parent.get('alto')
+                # page id in the KB identifier system
+                comp_page_id = ci_pt.get('pageid')
+                # extract the page number from the kb identifier
+                comp_page_no = int(comp_page_id.split(':')[-1].replace('p', ''))
+
+                page_nums.add(comp_page_no)
+
+                parts.append({
+                    'comp_id': comp_id,
+                    'comp_filename': comp_filename,
+                    'comp_page_id': comp_page_id,
+                    'comp_page_no': comp_page_no
+                })
+
+        page_nums = list(page_nums)
+
+        parts, page_nums
+            
+    def _parse_content_item(
+        self, item_tag: Tag, didl_doc: BeautifulSoup
+    ) -> dict[str, Any]:
+        """Parse the given tag representing a content item form the Didl file.
+
+        Args:
+            item_tag (Tag): Tag corresponding to a content item from the issue.
+            didl_doc (BeautifulSoup): Contents of this issue's Didl XML file.
+
+        Returns:
+            dict[str, Any]: Parsed content item based to the Canonical format.
+        """
+        # of format '{issue_identifier}:a{article number}'
+        item_kb_id = item_tag.get('dc:identifier')
+        item_num = int(item_kb_id.split(':')[-1].replace('a', ''))
 
         elem_type = item_tag.find('dc:subject').text
 
@@ -299,41 +346,62 @@ class KbNewspaperIssue(NewspaperIssue):
 
         item_title = item_tag.find('dc:title').text
 
-        # maybe keep original article numbering instead of counted
+        art_parts, page_nums = self._parse_content_parts(item_tag)
+
         metadata = {
-            'id': "{}-i{}".format(self.id, str(counter).zfill(4)),
+            'id': "{}-i{}".format(self.id, str(item_num).zfill(4)),
             'tp': item_type,
-            'pp': [],
-            't': item_title
+            'pp': page_nums,
+            't': item_title,
         }
+
+        # add language (only at issue level for KB) 
+        issue_lang = didl_doc.find('language')
+        if issue_lang is not None:
+            metadata['l'] = issue_lang.text
+        else:
+            m = f"Issue {self.id} did not contain language information"
+            logger.info(m)
+            self._notes.append(m)
         
-        content_item = {"m": metadata}
+        content_item = {
+            "m": metadata,
+            "l": {
+                "id": item_kb_id,
+                "parts": art_parts
+            }
+        }
 
-        # TODO add language and parse text style if possible
-        # TODO add legacy + CI ID in alto data
         return content_item
-                
-    def _parse_content_items(self, didl_doc: BeautifulSoup) -> None:
-        """Create content items for the pages in this issue.
+             
+    def _parse_content_items(
+        self, didl_doc: BeautifulSoup
+    ) -> list[dict[str, Any]]:
+        """Parse the content items ofr this issue based on the didl file.
 
-        Given that KB data do not entail article-level segmentation,
-        each page is considered as a content item.
+        Note: 
+            No case of segmented illustration was found in the samples, 
+            and all items segmented by OLR are named "articles".
+
+        Args:
+            didl_doc (BeautifulSoup): Contents of the Didl file for this issue.
+
+        Returns:
+            list[dict[str, Any]]: List of content items in Canonical format.
         """
         # fetch the articles page by page, to ensure they are sorted
         articles, content_items = [], []
         
-        id_parts = [self.identifier, 'a\d{4}']
+        article_id_parts = [self.identifier, 'a\d{4}']
         articles = didl_doc.findAll(
-            'Item', {'dc:identifier': re.compile(':'.join(id_parts))}
+            'Item', {'dc:identifier': re.compile(':'.join(article_id_parts))}
         )
 
-        counter = 1
+        # TODO double check for illustration and/or ask KB.
+
         for item in articles:
             # Parse each article content item
-            content_items.append(
-                self._parse_content_item(item, counter, didl_doc)
-            )
-            counter += 1
+            content_items.append(self._parse_content_item(item, didl_doc))
 
         return content_items
 
@@ -350,14 +418,18 @@ class KbNewspaperIssue(NewspaperIssue):
         # Parse all the content items
         content_items = self._parse_content_items(didl_doc)
         
+        text_styles = []
+        for p in self.pages:
+            text_styles.extend(p.text_styles)
+
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
             "i": content_items,
             "ar": self.rights,
-            "pp": [p.id for p in self.pages]
+            "pp": [p.id for p in self.pages],
+            "s": text_styles
         }
 
-        # TODO add text_styles
         if self._notes:
             self.issue_data["n"] = "\n".join(self._notes)
