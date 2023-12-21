@@ -59,7 +59,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
             'id': _id,
             'cdt': strftime("%Y-%m-%d %H:%M:%S"),
             'r': []  # here go the page regions
-            }
+        }
     
     @property
     def xml(self) -> BeautifulSoup:
@@ -81,10 +81,13 @@ class MetsAltoNewspaperPage(NewspaperPage):
                 return alto_doc
             except IOError as e:
                 if i < tries - 1: # i is zero indexed
-                    logger.warning(f"Caught error for {self.id}, retrying (up to {tries} times) to read xml file. Error: {e}.")
+                    logger.warning(f"Caught error for {self.id}, "
+                                   f"retrying (up to {tries} times) to read "
+                                   f"xml file. Error: {e}.")
                     continue
                 else:
-                    logger.warning(f"Reached maximum amount of errors for {self.id}.")
+                    m = f"Reached maximum amount of errors for {self.id}."
+                    logger.warning(m)
                     raise e
 
     
@@ -116,8 +119,13 @@ class MetsAltoNewspaperPage(NewspaperPage):
                 for part in ci['l']['parts']:
                     mappings[part['comp_id']] = ci_id
         
+        if hasattr(self, 'styles_dict'):
+            styles_dict = self.styles_dict
+        else:
+            styles_dict = None
         pselement = doc.find('PrintSpace')
-        page_regions, notes = alto.parse_printspace(pselement, mappings)
+        page_regions, notes = alto.parse_printspace(pselement, mappings, 
+                                                    styles_dict)
         self.page_data['cc'], self.page_data["r"] = self._convert_coordinates(
             page_regions
         )

@@ -61,24 +61,10 @@ class KbNewspaperPage(MetsAltoNewspaperPage):
                  basedir: str, encoding: str = 'utf-8') -> None:
         super().__init__(_id, number, filename, basedir, encoding)
         # create iiif base image URI for KB
-        self.iiif = os.path.join(IIIF_ENDPOINT_URI, 
-                                 self.id, 
-                                 str(number).zfill(8))
+        self.iiif = os.path.join(IIIF_ENDPOINT_URI, self.id)
         self.page_data['iiif_img_base_uri'] = self.iiif
-        #self.parse_info_for_issue()
-
-    def parse_info_for_issue(self) -> None:
-        """Parse some the languages and text_styles page properties.
-
-        This information is necessary for the `NewspaperIssue` this page is
-        from, and is thus necessary upon creation of this page instead of when
-        it's parsed. 
-        Parsing both properties at once allows to prevent unnecessary calls to
-        `self.xml` which are costly in processing time when repeated.
-        """
-        alto_doc = self.xml
-        self.language_list = self.languages(alto_doc)
-        _ = self.text_styles(alto_doc)
+        self.styles_dict = None
+        self.text_styles
 
     def add_issue(self, issue: NewspaperIssue) -> None:
         self.issue = issue
@@ -101,61 +87,9 @@ class KbNewspaperPage(MetsAltoNewspaperPage):
             alto_doc = self.xml if alto_doc is None else alto_doc
             self.styles_dict = {
                 x.get('ID'): parse_style(x, page_num=self.number)
-                for x in alto_doc.findAll('TextStyle')}
+                for x in alto_doc.findAll('TextStyle')
+            }
         return list(self.styles_dict.values())
-    
-    @property
-    def languages(self, alto_doc: BeautifulSoup | None = None) -> list[str]:
-        """Return the languages present on the page.
-
-        Given that each KB page is considered as a content item, it can happen
-        that multiple languages are present in the text.
-
-        Returns:
-            list[str]: List of languages present in this page's text.
-        """
-        # only parse the xml for the languages once
-        if not self.language_list:
-            alto_doc = self.xml if alto_doc is None else alto_doc
-            lang_map = map(
-                lambda x: x.get('language'), alto_doc.findAll('TextBlock')
-            )
-            self.language_list = list(set(lang_map))
-        return self.language_list
-    
-    @property
-    def ci_id(self) -> str:
-        """Return the content item ID of the page.
-
-        Given that KB data do not entail article-level segmentation,
-        each page is considered as a content item. Thus, to mint the content
-        item ID we take the canonical page ID and simply replace the "p"
-        prefix with "i".
-
-        Returns:
-            str: Content item id corresponding to this page.
-        """
-        split = self.id.split('-')
-        split[-1] = split[-1].replace('p', 'i')
-        return "-".join(split)
-
-    def parse(self) -> None:
-        doc = self.xml
-        pselement = doc.find('PrintSpace')
-        ci_id = self.ci_id
-        
-        text_blocks = pselement.findAll('TextBlock')
-        mappings = {k.get('ID'): ci_id for k in pselement.findAll('TextBlock')}
-        page_data, notes = parse_printspace(pselement, mappings, self.styles_dict)
-        
-        # the coordinates in the XML files are already correct
-        self.page_data['cc'], self.page_data['r'] = True, page_data
-        self.language_list = self.languages(doc)
-
-        # Add notes to page data
-        if len(notes) > 0:
-            self.page_data['n'] = notes
-        return notes
 
 class KbNewspaperIssue(NewspaperIssue):
     """Newspaper issue in KB Didl/Alto format.
@@ -185,7 +119,7 @@ class KbNewspaperIssue(NewspaperIssue):
         # of format 'DDD:ddd:xxxxxxxxx:mpeg21'
         self.api_identifier = issue_dir.identifier
         # of format 'ddd:xxxxxxxxx:mpeg21'
-        self.identifier = issue_dir.identifier[:4]
+        self.identifier = issue_dir.identifier[4:]
         self.content_items = []
 
         self.text_styles = [] 
@@ -273,6 +207,8 @@ class KbNewspaperIssue(NewspaperIssue):
                 )
                 raise e
             
+        self.pages = sorted(self.pages, key = lambda p: p.number)
+            
     def _parse_content_parts(
         self, item_tag: Tag
     ) -> tuple[dict[str, Any], list[int]]:
@@ -313,7 +249,7 @@ class KbNewspaperIssue(NewspaperIssue):
 
         page_nums = list(page_nums)
 
-        parts, page_nums
+        return parts, page_nums
             
     def _parse_content_item(
         self, item_tag: Tag, didl_doc: BeautifulSoup
@@ -333,7 +269,7 @@ class KbNewspaperIssue(NewspaperIssue):
 
         elem_type = item_tag.find('dc:subject').text
 
-        if elem_type not in TYPE_MAPPING.keys:
+        if elem_type not in TYPE_MAPPING.keys():
             logger.warning(f"Found new content item type: {elem_type}")
         else:
             # uniformize types
@@ -385,7 +321,7 @@ class KbNewspaperIssue(NewspaperIssue):
             list[dict[str, Any]]: List of content items in Canonical format.
         """
         # fetch the articles page by page, to ensure they are sorted
-        articles, content_items = [], []
+        content_items = []
         
         article_id_parts = [self.identifier, 'a\d{4}']
         articles = didl_doc.findAll(

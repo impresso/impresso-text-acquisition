@@ -31,11 +31,13 @@ def distill_coordinates(element: Tag) -> list[int]:
     return [hpos, vpos, width, height]
 
 
-def parse_textline(element: Tag) -> tuple[dict, list[str]]:
+def parse_textline(element: Tag, text_style: str | None = None
+) -> tuple[dict, list[str]]:
     """Parse the ``<TextLine>`` element of an ALTO XML document.
 
     Args:
         element (Tag): Input XML element (``<TextLine>``).
+        text_style (str | None, optional): text style ID. Defaults to None.
 
     Returns:
         tuple[dict, list[str]]: Parsed lines or text in the canonical format
@@ -64,6 +66,9 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
                 'tx': child.get('CONTENT')
             }
             
+            if text_style is not None:
+                token['s'] = text_style
+
             if child.get('SUBS_TYPE') == "HypPart1":
                 # token['tx'] += u"\u00AD"
                 token['tx'] += "-"
@@ -77,7 +82,8 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     return line, notes
 
 
-def parse_printspace(element: Tag, mappings: dict[str, str]
+def parse_printspace(element: Tag, mappings: dict[str, str],
+                     text_styles: dict[str, dict] | None = None
 ) -> tuple[list[dict], list[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
@@ -89,6 +95,9 @@ def parse_printspace(element: Tag, mappings: dict[str, str]
         element (Tag): Input XML element (``<PrintSpace>``).
         mappings (dict[str, str]): Mapping from OCR component ids to their 
             corresponding canonical Content Item ID.
+        text_styles (dict[str, dict], optional): Text styles present on this
+            page, with their page-level IDs as key and the text style object 
+            containing issue-level IDs as value. Defaults to None.
 
     Returns:
         tuple[list[dict], list[str]]: List of page regions in the canonical
@@ -112,9 +121,16 @@ def parse_printspace(element: Tag, mappings: dict[str, str]
                 part_of_contentitem = None
             
             coordinates = distill_coordinates(block)
+
+            # fetch the issue-level text style id for this font
+            block_style_id = (
+                text_styles[block.get('STYLEREFS').split(' ')[0]]['id']
+                if block.get('STYLEREFS') and text_styles
+                else None
+            )
             
             tmp = [
-                parse_textline(line_element)
+                parse_textline(line_element, block_style_id)
                 for line_element in block.findAll('TextLine')
             ]
             
@@ -141,11 +157,19 @@ def parse_printspace(element: Tag, mappings: dict[str, str]
             regions.append(region)
     return regions, notes
 
-def parse_style(style_div: Tag) -> dict[str, float | str]:
-    """Parse the font-style information in the ALTO files (for BNL and BNF).
+def parse_style(
+    style_div: Tag, page_num: int | None = None
+) -> dict[str, float | str]:
+    """Parse the font-style information in the ALTO files.
+    
+    Function used by ONB, KB, BNL and BNF.
+    Font style information defined at page-level, but gathered at issue level
+    in the canonical format. When font IDs across pages don't match, the page 
+    number can be defined to add it to the font's id.
 
     Args:
         style_div (Tag): Element of XML file containing font-style information.
+        page_num (int | None, optional): Page number. Defaults to None.
 
     Returns:
         dict[str, float | str]: Parsed style for Issue canonical format.
@@ -159,6 +183,10 @@ def parse_style(style_div: Tag) -> dict[str, float | str]:
     if font_style is not None:
         font_name = "{}-{}".format(font_name, font_style)
     
+    # add the page number when multiple pages have different ids for the fonts
+    if page_num is not None:
+        font_id = f"page_{str(page_num)}-{font_id}"
+
     style = {
         "id": font_id,
         "fs": float(font_size),
