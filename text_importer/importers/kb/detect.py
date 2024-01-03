@@ -308,15 +308,18 @@ def dir2issue(row: pd.Series, base_dir: str,
                       path=path, rights=rights, identifier=identifier)
 
 
-def detect_issues(base_dir: str, access_rights: str) -> list[KbIssueDir]:
+def detect_issues(base_dir: str, access_rights: str = '') -> list[KbIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNF-EN used to
     organize the dump of Mets/Alto OCR data.
 
+    TODO: modify the default value for access_rights.
+
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): Not used for this importer (kept for conformity).
+        access_rights (str): Not used for this importer yet 
+            (kept for conformity). Defaults to the empty string,
 
     Returns:
         List[KbIssueDir]: List of `KbIssueDir` instances to import.

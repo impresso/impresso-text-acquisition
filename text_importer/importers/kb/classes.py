@@ -16,8 +16,7 @@ from text_importer.importers import (CONTENTITEM_TYPE_IMAGE,
                                      CONTENTITEM_TYPE_ADVERTISEMENT,
                                      CONTENTITEM_TYPE_ARTICLE)
 from text_importer.importers.classes import NewspaperIssue
-from text_importer.importers.mets_alto.alto import (parse_printspace, 
-                                                    parse_style,
+from text_importer.importers.mets_alto.alto import (parse_style,
                                                     find_alto_files_or_retry)
 from text_importer.importers.mets_alto.classes import MetsAltoNewspaperPage
 from text_importer.importers.kb.detect import KbIssueDir
@@ -31,8 +30,8 @@ IIIF_IMAGE_SUFFIX = 'full/full/0/default.jpg'
 TYPE_MAPPING = {
     'advertentie': CONTENTITEM_TYPE_ADVERTISEMENT, 
     'artikel': CONTENTITEM_TYPE_ARTICLE, 
-    'familiebericht': 'Familial message',
-    'Unknown': CONTENTITEM_TYPE_IMAGE
+    'familiebericht': 'Familial message', # TODO discuss what type should be used
+    'Unknown': CONTENTITEM_TYPE_IMAGE # TODO communicate with KB to ask if they have image segmentation
 }
 class KbNewspaperPage(MetsAltoNewspaperPage):
     """Newspaper page in KB (Mets/Alto) format.
