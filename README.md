@@ -1,6 +1,6 @@
 # Impresso Text Importer
 
-[![Documentation Status](https://readthedocs.org/projects/impresso-pycommons/badge/?version=latest)](https://impresso-text-importer.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/impresso-text-importer/badge/?version=latest)](https://impresso-text-importer.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/impresso-text-importer.svg)](https://badge.fury.io/py/impresso-text-importer)
 ![PyPI - License](https://img.shields.io/pypi/l/impresso-text-importer)
 
@@ -13,7 +13,7 @@ Please refer to the [documentation](http://impresso-text-importer.rtfd.io/) for 
 With `pip`:
 
 ```bash
-pip install text-importer
+pip install impresso-text-importer
 ```
 
 ## License
