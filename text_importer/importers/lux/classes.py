@@ -462,8 +462,8 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 img_props = self.image_properties[curr_page.number]
                 x_resolution = img_props['x_resolution']
                 y_resolution = img_props['y_resolution']
-                # height and width should be switched! hpos, vpos, width, height
-                coordinates = convert_coordinates(hpos, vpos, height, width, 
+                # order should be: hpos, vpos, width, height
+                coordinates = convert_coordinates(hpos, vpos, width, height,
                                                   x_resolution, y_resolution)
                 encoded_ark_id = encode_ark(self.ark_id)
                 iiif_base_link = f'{IIIF_ENDPOINT_URI}/{encoded_ark_id}'
