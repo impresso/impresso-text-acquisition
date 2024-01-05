@@ -31,7 +31,7 @@ from text_importer.utils import get_issue_schema, get_page_schema
 logger = logging.getLogger(__name__)
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
-IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
+IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
 class OliveNewspaperPage(NewspaperPage):
@@ -93,7 +93,8 @@ class OliveNewspaperPage(NewspaperPage):
         )
         
         self.page_data['id'] = self.id
-        self.page_data['iiif'] = os.path.join(IMPRESSO_IIIF_BASEURI, self.id)
+        self.page_data['iiif_img_base_uri'] = os.path.join(IIIF_ENDPOINT_URI, 
+                                                            self.id)
         
         if len(self.page_data['r']) == 0:
             logger.warning(f"Page {self.id} has not OCR text")

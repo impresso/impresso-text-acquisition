@@ -6,7 +6,6 @@ to a unified canoncial format.
 Theses classes are subclasses of generic Mets/Alto importer classes.
 """
 
-import codecs
 import logging
 import os
 import re
@@ -38,7 +37,8 @@ IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
-IIIF_ENDPOINT_URL = "https://iiif.eluxemburgensia.lu/image/iiif/2"
+IIIF_ENDPOINT_URI = "https://iiif.eluxemburgensia.lu/image/iiif/2"
+IIIF_SUFFIX = "info.json"
 
 
 class LuxNewspaperPage(MetsAltoNewspaperPage):
@@ -75,9 +75,9 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
     def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
-        iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
-        iiif_link = f'{iiif_base_link}%2fpages%2f{self.number}/info.json'
-        self.page_data['iiif'] = iiif_link
+        iiif_base_link = f'{IIIF_ENDPOINT_URI}/{encoded_ark_id}'
+        iiif_link = f'{iiif_base_link}%2fpages%2f{self.number}'
+        self.page_data['iiif_img_base_uri'] = iiif_link
         self._parse_font_styles()
     
     def _convert_coordinates(
@@ -225,16 +225,18 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     comp_page_no = int(comp_fileid.replace('ALTO', ''))
                     
                     parts.append(
-                            {
-                                'comp_role': comp_role,
-                                'comp_id': comp_id,
-                                'comp_fileid': comp_fileid,
-                                'comp_page_no': comp_page_no
-                                }
-                            )
+                        {
+                            'comp_role': comp_role,
+                            'comp_id': comp_id,
+                            'comp_fileid': comp_fileid,
+                            'comp_page_no': comp_page_no
+                        }
+                    )
         return parts
     
-    def _parse_dmdsec(self) -> tuple[list[dict[str, Any]], int]:
+    def _parse_dmdsec(
+        self, mets_doc: BeautifulSoup
+    ) -> tuple[list[dict[str, Any]], int]:
         """Parse `<dmdSec>` tags of Mets file to find some content items.
         
         Only articles and pictures are in this section and are identified
@@ -243,18 +245,21 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         The numbering of the content items (used for the canonical IDs) is
         generated based on the sorting of the ID strings of the sections.
 
+        Args:
+            mets_doc (BeautifulSoup): Contents of Mets XML file.
+
         Returns:
             tuple[list[dict[str, Any]], int]: Parsed CI's and counter to keep
                 track of the item numbers.
         """
         content_items = []
-        sections = self.xml.findAll('dmdSec')
+        sections = mets_doc.findAll('dmdSec')
         
         # sort based on the ID string to pinpoint the generated canonical IDs
         sections = sorted(
-                sections,
-                key=lambda elem: elem.get('ID').split("_")[1]
-                )
+            sections,
+            key=lambda elem: elem.get('ID').split("_")[1]
+        )
         counter = 1
         for section in sections:
             section_id = section.get('ID')
@@ -281,7 +286,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 
                 # Find the parts
                 try:
-                    item_div = self.xml.findAll('div', {'DMDID':section_id})[0]
+                    item_div = mets_doc.findAll('div', {'DMDID':section_id})[0]
                     parts = self._parse_mets_div(item_div)
                 except IndexError:
                     err_msg = f"<div DMID={section_id}> not found {self.path}"
@@ -317,12 +322,13 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         return content_items, counter
     
     def _parse_structmap_divs(
-        self, start_counter: int
+        self, start_counter: int, mets_doc: BeautifulSoup
     ) -> tuple[list[dict[str, Any]], int]:
         """Parse content items only in the Logical `<structMap>` of Mets file.
 
         Args:
             start_counter (int): item number to start with for the CIs found
+            mets_doc (BeautifulSoup): Contents of Mets XML file.
 
         Returns:
             tuple[list[dict[str, Any]], int]: Parsed CI's and updated counter
@@ -330,7 +336,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         """
         content_items = []
         counter = start_counter
-        element = self.xml.find('structMap', {'TYPE': 'LOGICAL'})
+        element = mets_doc.find('structMap', {'TYPE': 'LOGICAL'})
         
         allowed_types = ["ADVERTISEMENT", "DEATH_NOTICE", "WEATHER"]
         divs = []
@@ -375,13 +381,16 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             counter += 1
         return content_items, counter
     
-    def _process_image_ci(self, ci: dict[str, Any]) -> None:
+    def _process_image_ci(
+        self, ci: dict[str, Any], mets_doc: BeautifulSoup
+    ) -> None:
         """Process an image content item to complete its information.
 
         Args:
             ci (dict[str, Any]): Image content item to be processed.
+            mets_doc (BeautifulSoup): Contents of Mets XML file.
         """
-        item_div = self.xml.findAll('div', {'DMDID': ci['l']['id']})
+        item_div = mets_doc.findAll('div', {'DMDID': ci['l']['id']})
         if len(item_div) > 0:
             item_div = item_div[0]
         else:
@@ -432,16 +441,18 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             
             try:
                 # parse the Alto file to fetch the coordinates
-                composed_block = curr_page.xml.find('ComposedBlock', 
+                page_xml = curr_page.xml
+                
+                composed_block = page_xml.find('ComposedBlock', 
                                                     {"ID": part['comp_id']})
                 
                 if composed_block:
                     graphic_el = composed_block.find('GraphicalElement')
                     
                     if graphic_el is None:
-                        graphic_el = curr_page.xml.find('Illustration')
+                        graphic_el = page_xml.find('Illustration')
                 else:
-                    graphic_el = curr_page.xml.find('Illustration', 
+                    graphic_el = page_xml.find('Illustration', 
                                                     {"ID": part['comp_id']})
 
                 hpos = int(graphic_el.get('HPOS'))
@@ -451,10 +462,11 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 img_props = self.image_properties[curr_page.number]
                 x_resolution = img_props['x_resolution']
                 y_resolution = img_props['y_resolution']
-                coordinates = convert_coordinates(hpos, vpos, height, width, 
+                # order should be: hpos, vpos, width, height
+                coordinates = convert_coordinates(hpos, vpos, width, height,
                                                   x_resolution, y_resolution)
                 encoded_ark_id = encode_ark(self.ark_id)
-                iiif_base_link = f'{IIIF_ENDPOINT_URL}/{encoded_ark_id}'
+                iiif_base_link = f'{IIIF_ENDPOINT_URI}/{encoded_ark_id}'
                 ci['m']['iiif_link'] = (
                     f'{iiif_base_link}%2fpages%2f{curr_page.number}/info.json'
                 )
@@ -520,19 +532,23 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             }
         return item
     
-    def _parse_sections(self, content_items: list[dict[str, Any]], 
-                        start_counter: int) -> list[dict[str, Any]]:
+    def _parse_sections(
+        self, 
+        content_items: list[dict[str, Any]], 
+        start_counter: int, 
+        mets_doc: BeautifulSoup
+    ) -> list[dict[str, Any]]:
         """Reconstruct all the sections from the METS file (bugfix by Edoardo).
 
         Args:
             content_items (list[dict[str, Any]]): Current content items.
             start_counter (int):  Content item counter.
+            mets_doc (BeautifulSoup): Contents of Mets XML file.
 
         Returns:
             list[dict[str, Any]]: Updated content items
         """
         counter = start_counter
-        mets_doc = self.xml
         sections = mets_doc.findAll('dmdSec')
         
         sections = sorted(
@@ -574,13 +590,13 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         )
         
         # First find `ARTICLE` and `PICTURE` content items
-        content_items, counter = self._parse_dmdsec()
+        content_items, counter = self._parse_dmdsec(mets_doc)
         # Then find other content items
-        new_cis, counter = self._parse_structmap_divs(start_counter=counter)
+        new_cis, counter = self._parse_structmap_divs(counter, mets_doc)
         content_items += new_cis
         
         # Reconstruct sections
-        section_cis = self._parse_sections(content_items, start_counter=counter)
+        section_cis = self._parse_sections(content_items, counter, mets_doc)
         # Remove cis that are contained in sections
         content_items, removed = remove_section_cis(content_items, section_cis)
         
@@ -596,7 +612,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             # ci['l']['parts'] = self._parse_mets_div(item_div)
             
             if ci['m']['tp'] == 'image':
-                self._process_image_ci(ci)
+                self._process_image_ci(ci, mets_doc)
             elif ci['m']['tp']:
                 for part in ci['l']['parts']:
                     page_no = part["comp_page_no"]

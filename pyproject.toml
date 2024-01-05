@@ -3,8 +3,11 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "text_importer"
-authors = [{name="Matteo Romanello", email="matteo.romanello@gmail.com"}]
+name = "impresso_text_importer"
+authors = [
+    {name="Maud Ehrmann", email="maud.ehrmann@epfl.ch"},
+    {name="Matteo Romanello", email="matteo.romanello@gmail.com"}
+]
 description = "Library to import newspaper data from a variety of OCR formats into Impresso's JSON format."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -13,7 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: AGPL License",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
@@ -27,11 +30,10 @@ dependencies = [
     "pandas",
     "dask[complete]",
     "lxml",
-    "boto",
     "python-jsonschema-objects",
     "regex",
     "filelock",
-    "impresso_pycommons"
+    "impresso_commons"
 ]
 
 [project.urls]

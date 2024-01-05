@@ -17,6 +17,8 @@ The following importer CLI scripts are already available:
   <https://bnl.public.lu/>`_ to encode and deliver its newspaper data.
 - :py:mod:`text_importer.scripts.bnfimporter`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de France (BNF)
   <https://www.bnf.fr/en/>`_ to encode and deliver its newspaper data.
+- :py:mod:`text_importer.scripts.bnfen_importer`: importer for the Mets/ALTO flavor used by the `Bibliothèque nationale de France (BNF)
+  <https://www.bnf.fr/en/>`_  to encode and deliver its newspaper data for the Europeana collection.
 - :py:mod:`text_importer.scripts.swaimporter`: ALTO flavor of the `Basel University Library`.
 - :py:mod:`text_importer.scripts.blimporter`: importer for the Mets/ALTO flavor used by the `British Library (BL) <https://www.bl.uk/>`_
   to encode and deliver its newspaper data.
@@ -37,6 +39,7 @@ For further details on any of these implementations, please do refer to its docu
    importers/swa
    importers/bl
    importers/bnf
+   importers/bnf-en
    importers/tetml
    importers/fedgaz
 

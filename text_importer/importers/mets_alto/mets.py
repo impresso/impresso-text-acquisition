@@ -25,9 +25,9 @@ def parse_mets_filegroup(mets_doc: BeautifulSoup) -> dict[int, str]:
     )[0]
 
     return {
-            int(child.get("SEQ")): child.get("ADMID")
-            for child in image_filegroup.findAll('file')
-            }
+        int(child.get("SEQ")): child.get("ADMID")
+        for child in image_filegroup.findAll('file')
+    }
 
 
 def parse_mets_amdsec(
@@ -43,9 +43,6 @@ def parse_mets_amdsec(
     particular information about the image resolution allowing the coordinates 
     conversion to iiif format.
 
-    TODO: Error occurs when `x_res` and `y_res` are not in `amd_sect` -> check
-    before.
-
     Args:
         mets_doc (BeautifulSoup): BeautifulSoup object of Mets XML document.
         x_res (str): Name of field representing the X resolution.
@@ -60,26 +57,36 @@ def parse_mets_amdsec(
     page_image_ids = parse_mets_filegroup(mets_doc) # Returns {page: im_id}
     
     amd_sections = {
-            # Returns {page_id: amdsec}
-            image_id: mets_doc.findAll('amdSec', {'ID': image_id})[0]  
-            for image_id in page_image_ids.values()
-            }
+        # Returns {page_id: amdsec}
+        image_id: mets_doc.findAll('amdSec', {'ID': image_id})[0]  
+        for image_id in page_image_ids.values()
+    }
     
     image_properties_dict = {}
     for image_no, image_id in page_image_ids.items():
         amd_sect = amd_sections[image_id]
         try:
+            x_res_val = (
+                int(amd_sect.find(x_res).text) 
+                if amd_sect.find(x_res) is not None 
+                else x_res_default
+            )
+            y_res_val = (
+                int(amd_sect.find(x_res).text) 
+                if amd_sect.find(x_res) is not None 
+                else x_res_default
+            )
             image_properties_dict[image_no] = {
-                    'x_resolution': int(amd_sect.find(x_res).text),
-                    'y_resolution': int(amd_sect.find(y_res).text)
-                    }
+                'x_resolution': x_res_val,
+                'y_resolution': y_res_val
+            }
         # if it fails it's because of value < 1
         except Exception as e:
             logger.debug(f'Error occured when parsing {e}')
             image_properties_dict[image_no] = {
-                    'x_resolution': x_res_default,
-                    'y_resolution': y_res_default
-                    }
+                'x_resolution': x_res_default,
+                'y_resolution': y_res_default
+            }
     return image_properties_dict
 
 

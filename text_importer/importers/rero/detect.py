@@ -108,6 +108,7 @@ def detect_issues(
         os.path.join(j_dir, l) 
         for j_dir in journal_dirs 
         for l in os.listdir(j_dir)
+        if '.DS_Store' not in l
     ]
 
     with open(access_rights, 'r') as f:

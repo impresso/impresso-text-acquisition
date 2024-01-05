@@ -24,8 +24,8 @@ Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URL = "https://impresso-project.ch/api/proxy/iiif/"
-IIIF_MANIFEST_SUFFIX = 'info.json'
+IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
+IIIF_SUFFIX = 'info.json'
 IIIF_IMAGE_SUFFIX = 'full/full/0/default.jpg'
 
 # Types used in RERO2/RERO3 that are not in impresso schema
@@ -90,7 +90,8 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
     
     def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
         self.issue = issue
-        self.page_data['iiif'] = os.path.join(IIIF_ENDPOINT_URL, self.id)
+        self.page_data['iiif_img_base_uri'] = os.path.join(IIIF_ENDPOINT_URI, 
+                                                           self.id)
     
     # no coordinate conversion needed, but keeping it here for now
     def _convert_coordinates(
@@ -170,15 +171,8 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             e: Instantiation of a page or adding it to :attr:`pages` failed.
         """
         alto_path = os.path.join(self.path, 'ALTO')
-        
-        if not os.path.exists(alto_path):
-            logger.critical(f"Could not find pages for {self.id}")
-        
-        page_file_names = [
-            file
-            for file in os.listdir(alto_path)
-            if not file.startswith('.') and '.xml' in file
-        ]
+
+        page_file_names = self._find_alto_files_or_retry(alto_path)
         
         page_numbers = []
         
@@ -192,24 +186,61 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         ]
         
         self.pages = []
-        for filename, page_no, page_id in zip(
-                page_file_names, page_numbers, page_canonical_names
-                ):
+        for filename, page_no, page_id in zip(page_file_names, 
+                                              page_numbers, 
+                                              page_canonical_names):
             try:
                 self.pages.append(
-                        ReroNewspaperPage(
-                                page_id,
-                                page_no,
-                                filename,
-                                alto_path
-                                )
-                        )
+                    ReroNewspaperPage(page_id, page_no, filename, alto_path)
+                )
             except Exception as e:
                 logger.error(
-                        f'Adding page {page_no} {page_id} {filename}',
-                        f'raised following exception: {e}'
-                        )
+                    f'Adding page {page_no} {page_id} {filename}',
+                    f'raised following exception: {e}'
+                )
                 raise e
+            
+    def _find_alto_files_or_retry(self, alto_path: str) -> list[str]:
+        """List XML files present in given page file dir, retry up to 3 times.
+
+        During the processing, some IO errors can randomly happen when listing
+        the contents of the ALTO directory, preventing the correct parsing of 
+        the issue. The error is raised after the third try.
+        If the Alto directory does not exist, only try once.
+
+        Args:
+            alto_path (str): Path to the directory with the Alto XML files.
+
+        Raises:
+            e: Given directory does not exist, or listing its contents failed
+                three times in a row.
+
+        Returns:
+            list[str]: List of paths of the pages' Alto XML files.
+        """
+        if not os.path.exists(alto_path):
+            logger.critical(f"Could not find pages for {self.id}")
+            tries = 1
+
+        tries = 3
+        for i in range(tries):
+            try:
+                page_file_names = [
+                    file
+                    for file in os.listdir(alto_path)
+                    if not file.startswith('.') and '.xml' in file
+                ]
+                return page_file_names
+            except IOError as e:
+                if i < tries - 1: # i is zero indexed
+                    logger.warning(f"Caught error for {self.id}, "
+                                   f"retrying (up to {tries} times) "
+                                   f"to find pages. Error: {e}.")
+                    continue
+                else:
+                    logger.warning("Reached maximum amount "
+                                   f"of errors for {self.id}.")
+                    raise e
     
     def _parse_content_parts(self, div: Tag) -> list[dict[str, str | int]]:
         """Parse the children of a content item div for its legacy `parts`.
@@ -246,7 +277,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                     })
         return parts
     
-    def _get_ci_language(self, dmdid: str) -> str | None:
+    def _get_ci_language(self, dmdid: str, mets_doc: BeautifulSoup) -> str | None:
         """Find the language code of the content item with given a `DMDID`.
         
         Languages are usually in a `<dmdSec>` at the beginning of a METS file,
@@ -254,12 +285,12 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
 
         Args:
             dmdid (str): Descriptive metadata id of a content item.
+            mets_doc (BeautifulSoup): Contents of Mets XML file.
 
         Returns:
             str | None: Language if defined in the file else `None`.
         """
-        doc = self.xml
-        lang = doc.find("dmdSec", {"ID": dmdid})
+        lang = mets_doc.find("dmdSec", {"ID": dmdid})
         if lang is None:
             return None
         lang = lang.find("MODS:languageTerm")
@@ -267,7 +298,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             return None
         return lang.text
     
-    def _parse_content_item(self, item_div: Tag, counter:int) -> dict[str,Any]:
+    def _parse_content_item(self, item_div: Tag, counter: int, mets_doc: BeautifulSoup) -> dict[str,Any]:
         """Parse a content item div and create the dictionary representing it.
 
         The dictionary corresponding to a content item needs to be of a precise
@@ -277,6 +308,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         Args:
             item_div (Tag): Div of content item.
             counter (int): Number of content items already added to the issue.
+            mets_doc (BeautifulSoup): Contents of Mets XML file.
 
         Returns:
             dict[str, Any]: Content item in canonical format.
@@ -298,7 +330,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             }
         
         # Get CI language
-        language = self._get_ci_language(item_div.get('DMDID'))
+        language = self._get_ci_language(item_div.get('DMDID'), mets_doc)
         if language is not None:
             metadata['l'] = language
         
@@ -379,10 +411,10 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             if div_type is not None and (div_type.lower() == SECTION_TYPE):
                 section_divs = self._decompose_section(div)
                 for d in section_divs:
-                    content_items.append(self._parse_content_item(d, counter))
+                    content_items.append(self._parse_content_item(d, counter, mets_doc))
                     counter += 1
             else:
-                content_items.append(self._parse_content_item(div, counter))
+                content_items.append(self._parse_content_item(div, counter, mets_doc))
                 counter += 1
         return content_items
     
@@ -392,19 +424,16 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         Once the :attr:`issue_data` is created, containing all the relevant 
         information in the canonical Issue format, the `ReroNewspaperIssue`
         instance is ready for serialization.
-
-        TODO: call to parse_mets_amdsec often raises error, if 'ImageWidth'
-        and 'ImageLength' not in mets file.
         """
         mets_doc = self.xml
         
         self.image_properties = parse_mets_amdsec(
-                mets_doc,
-                x_res='ImageWidth',
-                y_res='ImageLength',
-                x_res_default=0,
-                y_res_default=0,
-                )  # Parse the resolution of page images
+            mets_doc,
+            x_res='ImageWidth',
+            y_res='ImageLength',
+            x_res_default=0,
+            y_res_default=0,
+        )  # Parse the resolution of page images
         
         # Parse all the content items
         content_items = self._parse_content_items(mets_doc)
@@ -415,7 +444,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             "id": self.id,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
-            }
+        }
     
     def _get_image_info(
         self, content_item: dict[str, Any]
@@ -473,6 +502,6 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                                      self.image_properties[page.number], 
                                      page.page_width)
         
-        iiif_link = os.path.join(IIIF_ENDPOINT_URL, page.id, IIIF_MANIFEST_SUFFIX)
+        iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.id, IIIF_SUFFIX)
         
         return coords, iiif_link

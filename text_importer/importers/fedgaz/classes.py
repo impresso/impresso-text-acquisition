@@ -19,7 +19,7 @@ from text_importer.importers.tetml.helpers import compute_bb
 
 logger = logging.getLogger(__name__)
 
-IMPRESSO_IIIF_BASEURI = "https://impresso-project.ch/api/proxy/iiif/"
+IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
 class TokPosition(namedtuple("TokPosition", "art page reg para line tok")):
@@ -48,7 +48,7 @@ class FedgazNewspaperPage(TetmlNewspaperPage):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "cc": True,
-            "iiif": os.path.join(IMPRESSO_IIIF_BASEURI, self.id),
+            "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
         }
 

@@ -53,12 +53,12 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
             try:
                 coords = distill_coordinates(child)
             except TypeError as e:
-                notes.append("Token {} does not have coordinates".format(child.get('ID')))
+                notes.append(f"Token {child.get('ID')} does not have coordinates")
                 continue
             token = {
                 'c': coords,
                 'tx': child.get('CONTENT')
-                }
+            }
             
             if child.get('SUBS_TYPE') == "HypPart1":
                 # token['tx'] += u"\u00AD"
@@ -112,7 +112,7 @@ def parse_printspace(element: Tag, mappings: dict[str, str]
             tmp = [
                 parse_textline(line_element)
                 for line_element in block.findAll('TextLine')
-                ]
+            ]
             
             if len(tmp) > 0:
                 lines, new_notes = list(zip(*tmp))
@@ -123,12 +123,12 @@ def parse_printspace(element: Tag, mappings: dict[str, str]
             paragraph = {
                 "c": coordinates,
                 "l": lines
-                }
+            }
             
             region = {
                 "c": coordinates,
                 "p": [paragraph]
-                }
+            }
             
             if part_of_contentitem:
                 region['pOf'] = part_of_contentitem
@@ -159,5 +159,5 @@ def parse_style(style_div: Tag) -> dict[str, float | str]:
         "id": font_id,
         "fs": float(font_size),
         "f": font_name
-        }
+    }
     return style
