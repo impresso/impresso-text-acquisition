@@ -320,15 +320,15 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                 'id': article_id,
                 'tp': type_translation[div_type],
                 'pp': [],
-                }
+            }
             if label is not None:
                 metadata['t'] = label
             ci = {
                 'm': metadata,
                 'l': {
                     'parts': parts
-                    }
                 }
+            }
             item_counter += 1
         else:  # Otherwise, only parse embedded CIs
             article_id = None

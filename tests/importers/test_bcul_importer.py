@@ -4,7 +4,7 @@ import json
 from contextlib import ExitStack
 
 from text_importer.utils import get_pkg_resource
-from text_importer.importers.bcul.classes import BCULNewspaperIssue
+from text_importer.importers.bcul.classes import BculNewspaperIssue
 from text_importer.importers.bcul.detect import detect_issues, select_issues
 from text_importer.importers.core import import_issues
 
@@ -21,10 +21,8 @@ def test_import_issues():
     out_dir = get_pkg_resource(f_mng, 'data/out/')
     tmp_dir = get_pkg_resource(f_mng, 'data/temp/')
     
-    issues = detect_issues(
-            base_dir=inp_dir,
-            access_rights=None
-            )
+    issues = detect_issues(base_dir=inp_dir, access_rights=None)
+
     assert issues is not None
     assert len(issues) > 0
     
@@ -32,7 +30,7 @@ def test_import_issues():
         issues,
         out_dir=out_dir,
         s3_bucket=None,
-        issue_class=BCULNewspaperIssue,
+        issue_class=BculNewspaperIssue,
         image_dirs=None,
         temp_dir=tmp_dir,
         chunk_size=None
@@ -72,7 +70,7 @@ def test_selective_import():
     import_issues(
         issues, out_dir, 
         s3_bucket=None, 
-        issue_class=BCULNewspaperIssue,
+        issue_class=BculNewspaperIssue,
         image_dirs=None, 
         temp_dir=None, 
         chunk_size=None

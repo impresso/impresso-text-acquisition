@@ -1,7 +1,9 @@
+"""This module contains helper functions to find BCUL OCR data to import.
+"""
 import logging
 import os
 from collections import namedtuple
-from typing import List, Optional
+from typing import Optional
 
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
@@ -10,26 +12,56 @@ from text_importer.importers.bcul.helpers import parse_info, find_mit_file
 
 logger = logging.getLogger(__name__)
 
-BCULIssueDir = namedtuple(
-        "IssueDirectory", [
-            'journal',
-            'date',
-            'edition',
-            'path',
-            'rights'
-            ]
-        )
+BculIssueDir = namedtuple(
+    "IssueDirectory", [
+        'journal',
+        'date',
+        'edition',
+        'path',
+        'rights'
+    ]
+)
+"""A light-weight data structure to represent a newspaper issue.
+
+This named tuple contains basic metadata about a newspaper issue. They
+can then be used to locate the relevant data in the filesystem or to create
+canonical identifiers for the issue and its pages.
+
+Note:
+    In case of newspaper published multiple times per day, a lowercase letter
+    is used to indicate the edition number: 'a' for the first, 'b' for the
+    second, etc.
+
+Args:
+    journal (str): Newspaper ID.
+    date (datetime.date): Publication date or issue.
+    edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
+    path (str): Path to the directory containing the issue's OCR data.
+    rights (str): Access rights on the data (open, closed, etc.).
+
+>>> from datetime import date
+>>> i = BculIssueDir(
+    journal='FAL', 
+    date=datetime.date(1762, 12, 07), 
+    edition='a', 
+    path='./BCUL/46165', 
+    rights='open_public'
+)
+"""
 
 
-def dir2issue(path: str, access_rights: dict) -> Optional[BCULIssueDir]:
-    """ Creates a `BCULIssueDir` from a directory (RERO format)
+def dir2issue(path: str, access_rights: dict) -> Optional[BculIssueDir]:
+    """Create a `BculIssueDir` object from a directory.
 
-    .. note ::
-        This function is called internally by :func:`detect_issues`
+    Note:
+        This function is called internally by `detect_issues`
 
-    :param str path: Path of issue.
-    :param dict access_rights: Dictionary for access rights.
-    :return: New ``Rero2IssueDir`` object.
+    Args:
+        path (str): The path of the issue.
+        access_rights (dict): Dictionary for access rights.
+
+    Returns:
+        Optional[BculIssueDir]: New `BculIssueDir` object.
     """
     mit_file = find_mit_file(path)
     if mit_file is None:
@@ -37,19 +69,22 @@ def dir2issue(path: str, access_rights: dict) -> Optional[BCULIssueDir]:
         return None
     date, journal = parse_info(mit_file)
     
-    return BCULIssueDir(journal=journal, date=date, edition="a", path=path,
-                        rights="open_public")
+    return BculIssueDir(journal=journal, date=date, edition="a",
+                        path=path, rights="open_public")
 
 
-def detect_issues(base_dir: str, access_rights: str) -> List[BCULIssueDir]:
-    """Detect newspaper issues to import within the filesystem.
+def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
+    """Detect BCUL newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BCUL used to
-    organize the dump of Abbyy
+    organize the dump of Abbyy files.
 
-    :param str base_dir: Path to the base directory of newspaper data.
-    :param str access_rights: Path to ``access_rights.json`` file.
-    :return: List of `BCULIssueDir` instances, to be imported.
+    Args:
+        base_dir (str): Path to the base directory of newspaper data.
+        access_rights (str): Path to ``access_rights.json`` file.
+
+    Returns:
+        list[BculIssueDir]: List of `BCULIssueDir` instances, to be imported.
     """
     
     dir_path, dirs, files = next(os.walk(base_dir))
@@ -58,7 +93,9 @@ def detect_issues(base_dir: str, access_rights: str) -> List[BCULIssueDir]:
     return [dir2issue(_dir, None) for _dir in issue_dirs]
 
 
-def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[List[BCULIssueDir]]:
+def select_issues(
+    base_dir: str, config: dict, access_rights: str
+) -> Optional[list[BculIssueDir]]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -66,10 +103,14 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[L
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
 
-    :param str base_dir: Path to the base directory of newspaper data.
-    :param dict config: Config dictionary for filtering.
-    :param str access_rights: Path to ``access_rights.json`` file.
-    :return: List of `Rero2IssueDir` instances, to be imported.
+    Args:
+        base_dir (str): Path to the base directory of newspaper data.
+        config (dict): Config dictionary for filtering.
+        access_rights (str): Not used for this imported, but argument is kept 
+            for uniformity.
+
+    Returns:
+        Optional[list[BculIssueDir]]: List of `BculIssueDir` to import.
     """
     
     # read filters from json configuration (see config.example.json)
@@ -79,22 +120,25 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> Optional[L
         year_flag = config["year_only"]
     
     except KeyError:
-        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] is missing in the config file.")
+        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] "
+                        "is missing in the config file.")
         return
     
     issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
-    selected_issues = issue_bag \
-        .filter(lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys()) and i.journal not in exclude_list) \
-        .compute()
+    selected_issues = (
+        issue_bag.filter(
+            lambda i: (
+                len(filter_dict) == 0 or i.journal in filter_dict.keys()
+            ) and i.journal not in exclude_list
+        ).compute()
+    )
     
     exclude_flag = False if not exclude_list else True
-    filtered_issues = _apply_datefilter(filter_dict, selected_issues,
-                                        year_only=year_flag) if not exclude_flag else selected_issues
-    logger.info(
-            "{} newspaper issues remained after applying filter: {}".format(
-                    len(filtered_issues),
-                    filtered_issues
-                    )
-            )
+    filtered_issues = _apply_datefilter(
+        filter_dict, selected_issues, year_only=year_flag
+    ) if not exclude_flag else selected_issues
+    logger.info(f"{len(filtered_issues)} newspaper issues remained "
+                f"after applying filter: {filtered_issues}")
+    
     return filtered_issues
