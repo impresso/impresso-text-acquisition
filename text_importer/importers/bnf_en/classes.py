@@ -299,7 +299,8 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         
         dmd_sections = doc.findAll("dmdSec")
         struct_map = doc.find("div", {"TYPE": "CONTENT"})
-        # Sort to have same naming
+        # Sort to have same namings
+        # TODO fix this ordering!
         sorted_divs = sorted(dmd_sections, key=lambda x: x.get('ID').lower())
         
         counter = 1
