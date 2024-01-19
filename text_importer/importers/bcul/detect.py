@@ -88,8 +88,17 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
     """
     
     dir_path, dirs, files = next(os.walk(base_dir))
-    issue_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
     
+    journal_dirs = [os.path.join(dir_path, _dir) 
+                    for _dir in dirs 
+                    if _dir not in ['OLD', 'wrong_BCUL']]
+
+    issue_dirs = []
+    for journal in journal_dirs:
+        for dir_path, dirs, files in os.walk(journal):
+            if len(files)>1 and 'solr' not in dir_path:
+                issue_dirs.append(dir_path)
+
     return [dir2issue(_dir, None) for _dir in issue_dirs]
 
 
