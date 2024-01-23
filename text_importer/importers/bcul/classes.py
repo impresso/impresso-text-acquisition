@@ -12,7 +12,9 @@ import requests
 from bs4 import BeautifulSoup, Tag
 
 from text_importer.importers.bcul.helpers import (find_mit_file, get_page_number, 
-                                                  get_div_coords, parse_textblock)
+                                                  get_div_coords, parse_textblock,
+                                                  verify_issue_has_ocr_files,
+                                                  find_page_file_in_dir)
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
 
@@ -237,9 +239,12 @@ class BculNewspaperIssue(NewspaperIssue):
                 logger.error("Page {} not found in {}".format(p, self.path))
     
     def _find_pages_json(self) -> None:
-        """Finds the pages when the format for the `fit_file` is JSON.
+        """Finds the pages when the format for the `mit_file` is JSON.
         """
-        # Get all exif files
+        # Ensure issue has OCR data files before processing it.
+        verify_issue_has_ocr_files(self.path)
+
+        # If it does, get all exif files
         files = [
             os.path.join(self.path, x) 
             for x in os.listdir(self.path) 
@@ -249,7 +254,8 @@ class BculNewspaperIssue(NewspaperIssue):
             # Page file is the same name without `_exif`
             file_id = (os.path.splitext(os.path.basename(f))[0]
                        .replace("_exif", ""))
-            page_path = os.path.join(self.path, "{}.xml".format(file_id))
+            # check the page xml file exists
+            page_path = find_page_file_in_dir(self.path, file_id)
             page_no = get_page_number(f)
             page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
             page_iiif = self._get_iiif_link_json(page_path)

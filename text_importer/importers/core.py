@@ -27,7 +27,6 @@ from dask import bag as db
 from dask.distributed import Client
 from filelock import FileLock
 from impresso_commons.path.path_fs import IssueDir, canonical_path
-from impresso_commons.text.rebuilder import cleanup
 from impresso_commons.utils import chunk
 from impresso_commons.utils.s3 import get_s3_resource
 from smart_open import open as smart_open_function
@@ -69,6 +68,23 @@ def write_error(
 
     with open(failed_log, "a+") as f:
         f.write(note + "\n")
+
+def cleanup(upload_success, filepath):
+    """Removes a file if it has been successfully uploaded to S3.
+
+    :param upload_success: whether the upload was successful
+    :type upload_success: bool
+    :param filepath: path to the uploaded file
+    :type filepath: str
+    """
+    if upload_success and os.path.exists(filepath):
+        try:
+            os.remove(filepath)
+            logger.info(f'Removed temporary file {filepath}')
+        except Exception as e:
+            logger.warning(f"Error {e} occurred when removing {filepath}.")
+    else:
+        logger.info(f'Not removing {filepath} as upload has failed')
 
 
 def dir2issue(
