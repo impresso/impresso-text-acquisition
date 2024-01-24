@@ -41,7 +41,7 @@ def parse_info(mit_filename: str) -> tuple[date, str]:
 
     # extract journal name alias
     basename = os.path.splitext(split[-1])[0]
-    journal_alias = replace_alias(basename.split('_')[0], split[-5])
+    journal_alias = replace_alias(basename.split('_')[0], split[-6])
     
     return datetime(year, month, day).date(), journal_alias
 
