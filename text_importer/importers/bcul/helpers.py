@@ -7,6 +7,7 @@ from typing import Any
 
 
 def replace_alias(current_alias: str, journal_name: str) -> str:
+    # TODO replace by a csv file
     # some title aliases repeat or don't match our format restrictions
     if 'GAV' in current_alias:
         return 'GAVi'
