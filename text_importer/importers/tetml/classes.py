@@ -34,6 +34,7 @@ class TetmlNewspaperPage(NewspaperPage):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "cc": True,
+            "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
         }
 
