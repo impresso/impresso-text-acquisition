@@ -346,8 +346,10 @@ def main():
 
     issue_stats = copy.deepcopy(nzz_stats_from_issues)
 
+    # keep track of the issues, default dict allows to prevent checking if key exists in it
+    issues_with_patched_pages = defaultdict(list)
+
     # fill in the manifest statistics and prepare issues to be uploaded to their new s3 bucket.
-    issues_with_patched_pages = {}
     for issue_id, (success, path) in zip(uzh_patched_pages[::2], uzh_patched_pages[1::2])
         title, year, month, day, edition = issue_id.split('-')
 
@@ -366,14 +368,15 @@ def main():
 
             # if patching and addition to manifest was successful, the issue can be copied to the new bucket
             specific_issue = [i for i in nzz_issues if i['id']==issue_id]
-            
-            assert len(specific_issue) == 1, f"More or less than one issue had the exact issue id: {issue_id}"
+            # ensure there is only one issue.
+            if len(specific_issue) != 1:
+                logger.warning("Multiple issues had the exact id %s: %s", issue_id, specific_issue)
 
-            key = '-'.join([title, year])
-            if key not in issues_with_patched_pages:
-                issues_with_patched_pages[key] = specific_issue
-            else:
-                issues_with_patched_pages[key].extend(specific_issue)
+            # remove issue from the list of possible issues to reduce the search time
+            nzz_issues.remove(specific_issue)
+
+            # add to list of issues for this specific year
+            issues_with_patched_pages['-'.join([title, year])].extend(specific_issue)
         elif not success:
             logger.warning("The pages for issue %s were not correctly uploaded", issue_id)
 
