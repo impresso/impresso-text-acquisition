@@ -1,7 +1,7 @@
 """Command-line script to perform the patch #1 on the UZH canonical data (FedGaz, NZZ).
 
 Usage:
-    canonical_patch_1_uzh.py --input-bucket=<ib> --output-bucket=<ob> --canonical-repo-path=<crp> --prev-manifest-path=<pmp> --temp-dir=<td> --log-file=<lf> --error-log=<el>
+    canonical_patch_1_uzh.py --input-bucket=<ib> --output-bucket=<ob> --canonical-repo-path=<crp> --prev-manifest-path=<pmp> --temp-dir=<td> --log-file=<lf> --error-log=<el> --patch-outputs-filename=<pof>
     
 Options:
 
@@ -12,6 +12,7 @@ Options:
 --temp-dir=<td>  Temporary directory to write files in.
 --log-file=<lf>  Path to log file.
 --error-log=<el>  Path to error log file.
+--patch-outputs-filename=<pof>  Filename of the .txt file containing the output of the patches.
 """
 
 import os
@@ -33,6 +34,7 @@ from text_importer.utils import init_logger
 import copy
 from dask.distributed import Client
 from docopt import docopt
+from collections import defaultdict
 
 IMPRESSO_STORAGEOPT = s3.get_storage_options()
 UZH_TITLES = ['FedGazDe', 'FedGazFr', 'NZZ']
@@ -258,6 +260,21 @@ def to_issue_id_pages_dict(pages: list[dict[str, Any]]) -> dict[str, list[dict[s
 
     return issues_present
 
+def title_year_pair_to_issues(issues: list[dict[str, Any]]) -> tuple[tuple[str, str], list[dict[str, Any]]]:
+    keys_present = set()
+    for issue in issues:
+        title, year = issue['id'].split('-')[:2]
+        keys_present.add((title, year)) 
+
+    keys = list(keys_present)
+    if len(keys)!=1: 
+        logger.warning("Did not find exactly one key. Keys: %s", keys)
+        if len(keys)==0:
+            return '', issues
+    assert len(keys)>=1, "there should only be one key"
+
+    return keys[0], issues
+
 
 def nzz_write_upload_pages(
     issues_to_pages: dict[str, list[dict[str, Any]]], 
@@ -285,6 +302,7 @@ def main():
     temp_dir = arguments["--temp-dir"]
     log_file = arguments["--log-file"]
     error_log = arguments["--error-log"]
+    patch_outputs = arguments["--patch-outputs-filename"]
 
     # initialize values for patch
     UZH_TITLES = ['NZZ']
@@ -294,6 +312,7 @@ def main():
     canonical_repo = git.Repo(canonical_repo_path)
 
     schema_path = f'{canonical_repo_path}/text_importer/impresso-schemas/json/versioning/manifest.schema.json'
+    final_patches_output_path = os.path.join(os.path.dirname(log_file), patch_outputs)
 
     init_logger(logger, logging.INFO, log_file)
     logger.info("Patching titles %s: adding %s property at page level", UZH_TITLES, PROP_NAME)
@@ -353,8 +372,11 @@ def main():
     for issue_id, (success, path) in zip(uzh_patched_pages[::2], uzh_patched_pages[1::2])
         title, year, month, day, edition = issue_id.split('-')
 
+        # write to file to track potential missing data.
+        with open(final_patches_output_path, "a", encoding="utf-8") as outfile:
+            outfile.write(f"{issue_id}: {success}, {path} \n")
+
         if success:
-            logger.info("Processing outputs to add to manifest for %s", issue_id)
             if not nzz_patch_1_manifest.has_title_year_key(title, year):
                 logger.info("Adding stats for %s-%s to manifest", title, year)
                 current_stats = [d for d in issue_stats if d['np_id']==title and d['year']==year][0]
@@ -364,28 +386,26 @@ def main():
                 del current_stats['np_id']
                 del current_stats['year']
 
-                add_ok = nzz_patch_1_manifest.replace_by_title_year(title, year, current_stats)
+                nzz_patch_1_manifest.replace_by_title_year(title, year, current_stats)
 
-            # if patching and addition to manifest was successful, the issue can be copied to the new bucket
-            specific_issue = [i for i in nzz_issues if i['id']==issue_id]
-            # ensure there is only one issue.
-            if len(specific_issue) != 1:
-                logger.warning("Multiple issues had the exact id %s: %s", issue_id, specific_issue)
-
-            # remove issue from the list of possible issues to reduce the search time
-            nzz_issues.remove(specific_issue)
-
-            # add to list of issues for this specific year
-            issues_with_patched_pages['-'.join([title, year])].extend(specific_issue)
         elif not success:
             logger.warning("The pages for issue %s were not correctly uploaded", issue_id)
 
     logger.info("Uploading the issue files to the new bucket")
     # write and upload the issues to the new s3 bucket
-    for key, issues in issues_with_patched_pages.items():
-        success, issue_path = write_upload_issues(key.split('-'), issues, temp_dir, s3_output_bucket, error_log)
-        if not success:
-            logger.warning("The copy of issues %s had a problem", key)
+    yearly_issue_files = (
+        nzz_issues
+            .map_partitions(lambda issues: [i for i in issues])
+            .map_partitions(title_year_pair_to_issues)
+            .map_partitions(lambda issues: write_upload_issues(
+                issues[0], issues[1],
+                output_dir=temp_dir,
+                bucket_name= s3_output_bucket,
+                failed_log=error_log,
+            )
+        )
+    ).compute()
+
 
     logger.info("Finalizing, computing and exporting the manifest")
     # finalize the manifest and export it
