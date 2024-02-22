@@ -2,7 +2,7 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
-    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar>]
+    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar> --git-repo=<gr>]
     <importer-name>importer.py --version
 
 Options:
@@ -16,6 +16,7 @@ Options:
     --log-file=<f>      Log file; when missing print log to stdout
     --access-rights=<ar>  Access right file if relevant (only for `olive` and `rero` importers)
     --chunk-size=<cs>   Chunk size in years used to group issues when importing
+    --git-repo=<gr>   Local path to the "impresso-text-acquisition" git directory (including it).
     --verbose   Verbose log messages (good for debugging)
     --clear    Removes the output folder (if already existing)
     --incremental   Skips issues already present in output directory 
@@ -32,11 +33,16 @@ from typing import Any, Type, Callable
 
 from dask.distributed import Client, LocalCluster
 from docopt import docopt
+import git
 from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
                                            detect_canonical_issues,
                                            IssueDir)
 
+from impresso_commons.versioning.data_manifest import DataManifest
+from impresso_commons.versioning.helpers import DataStage
+
 from text_importer import __version__
+
 from text_importer.importers.classes import NewspaperIssue
 from text_importer.importers.bl.classes import BlNewspaperIssue
 from text_importer.importers.core import import_issues
@@ -194,6 +200,7 @@ def main(
     log_level = logging.DEBUG if args["--verbose"] else logging.INFO
     print_version = args["--version"]
     config_file = args["--config-file"]
+    repo_path = args["--git-repo"]
     
     if print_version:
         print(f'impresso-txt-importer v{__version__}')
@@ -246,6 +253,16 @@ def main(
     logger.debug("Following issues will be imported:{}".format(issues))
     
     assert outp_dir is not None or out_bucket is not None
+
+    # ititialize manifest
+    manifest = DataManifest(
+        data_stage='canonical',
+        s3_output_bucket=out_bucket,
+        git_repo=git.Repo(repo_path),
+        temp_dir=temp_dir
+    )
+    manifest_note = f'Ingestion of {len(issues)} Newspaper titles into canonical format.'
+    manifest.append_to_notes(manifest_note)
     
     import_issues(issues, outp_dir, out_bucket, issue_class, 
-                  image_dirs, temp_dir, chunk_size, client)
+                  image_dirs, temp_dir, chunk_size, manifest, client)
