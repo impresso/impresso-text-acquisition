@@ -29,6 +29,8 @@ from filelock import FileLock
 from impresso_commons.path.path_fs import IssueDir, canonical_path
 from impresso_commons.utils import chunk
 from impresso_commons.utils.s3 import get_s3_resource
+from impresso_commons.versioning.data_manifest import DataManifest
+from impresso_commons.versioning.helpers import DataStage, counts_for_canonical_issue
 from smart_open import open as smart_open_function
 
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
@@ -258,6 +260,7 @@ def import_issues(
     image_dirs: str | None,
     temp_dir: str | None,
     chunk_size: int | None,
+    manifest: DataManifest,
     client: Client | None = None,
 ) -> None:
     """Import a bunch of newspaper issues.
@@ -317,11 +320,15 @@ def import_issues(
         compressed_issue_files = (
             issue_bag.groupby(lambda i: (i.journal, i.date.year)) 
             .starmap(compress_issues, 
+                     manifest=manifest,
                      output_dir=out_dir,
                      failed_log=failed_log_path) 
             .compute()
         )
 
+        # recover the updated manifest
+        manifest = compressed_issue_files[0][2]
+        
         logger.info(f'Done compressing issues for {period}')
 
         logger.info(f'Start uploading issues for {period}')
@@ -336,6 +343,7 @@ def import_issues(
         # to get cleaner code while ensuring proper partitioning.
 
         (db.from_sequence(set(compressed_issue_files)) 
+         .map(lambda tuple: (tuple[0], tuple[1])) 
          .starmap(upload_issues, bucket_name=s3_bucket)
          .starmap(cleanup).compute())
 
@@ -387,6 +395,10 @@ def import_issues(
             del issue_bag
 
     remove_filelocks(out_dir)
+
+    # finalize and compute the manifest
+    manifest.compute(export_to_git_and_s3 = False)
+    manifest.validate_and_export_manifest(push_to_git=False)
 
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -450,9 +462,10 @@ def compress_pages(
 def compress_issues(
     key: Tuple[str, int],
     issues: list[NewspaperIssue],
+    manifest: DataManifest,
     output_dir: str | None = None,
     failed_log: str | None = None,
-) -> Tuple[str, str]:
+) -> Tuple[str, str, str]:
     """Compress issues of the same Journal-year and save them in a json file.
 
     First check if the file exists, load it and then over-write/add the newly
@@ -479,13 +492,13 @@ def compress_issues(
 
     # put a file lock to avoid the overwriting of files due to parallelization
     lock = FileLock(filepath + ".lock", timeout=13)
-
+    items = [issue.issue_data for issue in issues]
     try:
         with lock:
             with smart_open_function(filepath, 'ab') as fout:
                 writer = jsonlines.Writer(fout)
 
-                items = [issue.issue_data for issue in issues]
+                #items = [issue.issue_data for issue in issues]
                 writer.write_all(items)
 
                 logger.info(f'Written {len(items)} issues to {filepath}')
@@ -495,7 +508,11 @@ def compress_issues(
         logger.exception(e)
         write_error(filepath, e, failed_log)
 
-    return f'{newspaper}-{year}', filepath
+    # Once the issues were written without issues, add their info to the manifest
+    for i in items:
+        manifest.add_by_title_year(newspaper, year, counts_for_canonical_issue(i))
+
+    return f'{newspaper}-{year}', filepath, manifest
 
 
 def upload_issues(
