@@ -50,11 +50,17 @@ def add_property(object_dict: dict[str, Any], prop_name: str, prop_function: Cal
     logger.debug("%s -> Added property %s: %s", object_dict['id'], prop_name, object_dict[prop_name])
     return object_dict
 
-def empty_folder(dir_path: str):
+def empty_folder(dir_path: str) -> None:
+    """Empty a directoy given its path if it exists.
+
+    Args:
+        dir_path (str): Path to the directory to empty.
+    """
     if os.path.exists(dir_path):
         shutil.rmtree(dir_path)
         logger.info("Emptied directory at %s", dir_path)
     os.mkdir(dir_path)
+
 
 def write_error(
     thing_id: str,
@@ -64,9 +70,12 @@ def write_error(
 ) -> None:
     """Write the given error of a failed import to the `failed_log` file.
 
+    Adapted from `impresso-text-acquisition/text_importer/importers/core.py` to allow
+    using a issue or page id, and provide the function in which the error took place.
+
     Args:
-        thing (NewspaperIssue | NewspaperPage | IssueDir): Object for which
-            the error occurred.
+        thing_id (str): Canonical ID of the object/file for which the error occurred.
+        origin_function (str): Function in which the exception occured.
         error (Exception): Error that occurred and should be logged.
         failed_log (str): Path to log file for failed imports.
     """
@@ -106,35 +115,35 @@ def write_upload_issues(
     output_dir: str,
     bucket_name: str,
     failed_log: str | None = None
-) -> tuple[str, str]:
+) -> tuple[bool, str]:
     """Compress issues for a Journal-year in a json file and upload them to s3.
 
     The compressed ``.bz2`` output file is a JSON-line file, where each line
     corresponds to an individual issue document in the canonical format.
 
     Args:
-        key (str): Hyphen separated Newspaper ID and year of input issues, e.g. `GDL-1900`.
+        key (tuple[str, str]): Newspaper ID and year of input issues, e.g. `GDL,1900`.
         issues (list[dict[str, Any]]): A list of issues as dicts.
         output_dir (str): Local output directory.
         bucket_name (str): Name of S3 bucket where to upload the file.
+        failed_log (str | None): Path to the log in which failed operations are logged.
+            Defaults to None.
 
     Returns:
-        Tuple[str, str]: Label following the template `<NEWSPAPER>-<YEAR>` and 
-            the path to the the compressed `.bz2` file.
+        tuple[bool, str]: Whether the upload was successful and the path to the 
+            uploaded file.
     """
     newspaper, year = key
     filename = f'{newspaper}-{year}-issues.jsonl.bz2'
     filepath = os.path.join(output_dir, newspaper, filename)
     logger.info(f'Compressing {len(issues)} JSON files into {filepath}')
 
-    write_jsonlines_file(filepath, issues, 'issues', failed_log)
-
     if os.path.exists(filepath) and os.path.isfile(filepath):
         # file shsould only be modified once
         logger.warning("The file %s already exists, not modifying it.", filepath)
         return False, filepath
 
-    remove_filelocks(os.path.join(output_dir, newspaper))
+    write_jsonlines_file(filepath, issues, 'issues', failed_log)
 
     return upload_issues('-'.join(key), filepath, bucket_name)
 
@@ -173,8 +182,6 @@ def write_upload_pages(
  
     logger.info("uploading pages for %s", key)
     write_jsonlines_file(filepath, pages, 'pages', failed_log)
-    
-    remove_filelocks(os.path.dirname(filepath))
 
     return key, (upload_pages(key, filepath, bucket_name))
 
@@ -283,7 +290,7 @@ def nzz_write_upload_pages(
     output_dir: str,
     bucket_name: str,
     failed_log: str | None = None,
-) -> tuple[str, tuple[bool, str]]:
+) -> list[str, tuple[bool, str]]:
 
     if len(issues_to_pages) == 0:
         return '', (False, '')
@@ -357,6 +364,7 @@ def main():
                     failed_log=error_log,
                 )
             )
+            .flatten()
     ).compute()
 
     # free the memory allocated 
@@ -371,6 +379,7 @@ def main():
     issues_with_patched_pages = defaultdict(list)
 
     # fill in the manifest statistics and prepare issues to be uploaded to their new s3 bucket.
+    logger.info(f"nzz_patched_pages[0], nzz_patched_pages[1]: {nzz_patched_pages[0]}, {nzz_patched_pages[1]}")
     for issue_id, (success, path) in zip(nzz_patched_pages[::2], nzz_patched_pages[1::2]):
         title, year, month, day, edition = issue_id.split('-')
 
@@ -390,6 +399,9 @@ def main():
 
                 nzz_patch_1_manifest.replace_by_title_year(title, year, current_stats)
 
+                # remove all the filelocks for this title and year
+                remove_filelocks(os.path.join(temp_dir, title, f"{title}-{year}"))
+
         elif not success:
             logger.warning("The pages for issue %s were not correctly uploaded", issue_id)
 
@@ -402,12 +414,11 @@ def main():
             .map_partitions(lambda issues: write_upload_issues(
                 issues[0], issues[1],
                 output_dir=temp_dir,
-                bucket_name= s3_output_bucket,
+                bucket_name=s3_output_bucket,
                 failed_log=error_log,
             )
         )
     ).compute()
-
 
     logger.info("Finalizing, computing and exporting the manifest")
     # finalize the manifest and export it
