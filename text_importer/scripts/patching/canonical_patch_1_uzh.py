@@ -371,7 +371,7 @@ def main():
     issues_with_patched_pages = defaultdict(list)
 
     # fill in the manifest statistics and prepare issues to be uploaded to their new s3 bucket.
-    for issue_id, (success, path) in zip(uzh_patched_pages[::2], uzh_patched_pages[1::2]):
+    for issue_id, (success, path) in zip(nzz_patched_pages[::2], nzz_patched_pages[1::2]):
         title, year, month, day, edition = issue_id.split('-')
 
         # write to file to track potential missing data.
