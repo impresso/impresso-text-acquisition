@@ -24,7 +24,7 @@ from impresso_commons.utils import s3
 from impresso_commons.path.path_s3 import fetch_files, list_files, list_newspapers
 from impresso_commons.utils.s3 import fixed_s3fs_glob
 from impresso_commons.versioning.data_manifest import DataManifest
-from text_importer.importers.core import upload_issues, upload_pages
+from text_importer.importers.core import upload_issues, upload_pages, remove_filelocks
 from smart_open import open as smart_open_function
 from impresso_commons.versioning.helpers import counts_for_canonical_issue
 import dask.bag as db
@@ -35,6 +35,8 @@ import copy
 from dask.distributed import Client
 from docopt import docopt
 from collections import defaultdict
+import shutil
+from filelock import FileLock
 
 IMPRESSO_STORAGEOPT = s3.get_storage_options()
 UZH_TITLES = ['FedGazDe', 'FedGazFr', 'NZZ']
@@ -166,7 +168,7 @@ def write_upload_pages(
     
     if os.path.exists(filepath) and os.path.isfile(filepath):
         # file shsould only be modified once
-        logger.warning("The file %s already exists, not modifying it.", filepath)
+        logger.info("The file %s already exists, not modifying it.", filepath)
         return key, (False, filepath)
  
     logger.info("uploading pages for %s", key)
@@ -369,7 +371,7 @@ def main():
     issues_with_patched_pages = defaultdict(list)
 
     # fill in the manifest statistics and prepare issues to be uploaded to their new s3 bucket.
-    for issue_id, (success, path) in zip(uzh_patched_pages[::2], uzh_patched_pages[1::2])
+    for issue_id, (success, path) in zip(uzh_patched_pages[::2], uzh_patched_pages[1::2]):
         title, year, month, day, edition = issue_id.split('-')
 
         # write to file to track potential missing data.
