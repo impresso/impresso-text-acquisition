@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import copy
 from contextlib import ExitStack
 import pathlib
 import importlib_resources

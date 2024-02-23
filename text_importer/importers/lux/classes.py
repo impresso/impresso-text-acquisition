@@ -627,8 +627,8 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "i": content_items,
             "id": self.id,
+            "i": content_items,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
         }
