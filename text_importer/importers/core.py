@@ -588,5 +588,8 @@ def remove_filelocks(output_dir: str) -> None:
     files = os.listdir(output_dir)
 
     for file in files:
-        if file.endswith(".lock"):
-            os.remove(os.path.join(output_dir, file))
+        try:
+            if file.endswith(".lock"):
+                os.remove(os.path.join(output_dir, file))
+        except FileNotFoundError as e:
+            logger.error("File %s could not be removed as it does not exist: %s.", file, e)

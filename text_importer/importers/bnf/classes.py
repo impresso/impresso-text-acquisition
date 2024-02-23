@@ -24,7 +24,7 @@ from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage)
 from text_importer.importers.mets_alto.alto import (distill_coordinates, 
                                                     parse_style)
-from text_importer.utils import get_issue_schema, get_page_schema
+from text_importer.utils import get_issue_schema, get_page_schema, get_reading_order
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -400,14 +400,20 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                                                     item_counter, mets_doc)
                 content_items += cis
         
-        # Finally add the pages and iiif link
+        # Finally add the pages and iiif link 
         for x in content_items:
             x['m']['pp'] = list(set(c['comp_page_no'] for c in x['l']['parts']))
             if x['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
                 x['c'], x['m']['iiif_link'] = self._get_image_iiif_link(
                     x['m']['id'], x['l']['parts']
                 )
-        
+
+        # once the pages are added to the metadata, compute & add the reading order
+        reading_order_dict = get_reading_order(content_items)
+        for item in content_items:
+            item['m']['ro'] = reading_order_dict[item['m']['id']]
+
+
         self.pages = list(self.pages.values())
         
         # Issue manifest iiif URI is in format {iiif_prefix}/{ark_id}/manifest.json
