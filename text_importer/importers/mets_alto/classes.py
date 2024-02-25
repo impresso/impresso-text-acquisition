@@ -59,7 +59,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
             'id': _id,
             'cdt': strftime("%Y-%m-%d %H:%M:%S"),
             'r': []  # here go the page regions
-            }
+        }
     
     @property
     def xml(self) -> BeautifulSoup:

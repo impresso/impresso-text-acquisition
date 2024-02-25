@@ -356,7 +356,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
             p for p in parts 
             if p['comp_role'] == CONTENTITEM_TYPE_IMAGE
         ]
-        iiif_link = None
+        iiif_link, coords = None, None
         if len(image_part) == 0:
             message = (f"Content item {ci_id} of type "
                        f"{CONTENTITEM_TYPE_IMAGE} does not have image part.")
