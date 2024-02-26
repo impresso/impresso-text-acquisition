@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import copy
 from contextlib import ExitStack
 import pathlib
 import importlib_resources
@@ -172,3 +173,24 @@ def verify_imported_issues(
 
         logger.info(f"Content item {actual_content_item['m']['id']}"
                      "dit not change (legacy metadata are identical)")
+
+
+def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
+    """Generate a reading order for items based on their id and the pages they span.
+
+    This reading order can be used to display the content items properly in a table
+    of contents without skipping form page to page.
+
+    Args:
+        items (list[dict[str, Any]]): List of items to reorder for the ToC.
+
+    Returns:
+        dict[str, int]: A dictionary mapping item IDs to their reading order.
+    """
+    items_copy = copy.deepcopy(items)
+    ids_and_pages = [(i['m']['id'], i['m']['pp']) for i in items_copy]
+    sorted_ids = sorted(
+        sorted(ids_and_pages, key=lambda x: int(x[0].split('-i')[-1])), 
+        key=lambda x: x[1]
+    )
+    return {t[0]: index+1 for index, t in enumerate(sorted_ids)}

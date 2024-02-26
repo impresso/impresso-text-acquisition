@@ -381,8 +381,8 @@ def import_issues(
     remove_filelocks(out_dir)
 
     # finalize and compute the manifest
-    manifest.compute(export_to_git_and_s3 = False)
-    manifest.validate_and_export_manifest(push_to_git=False)
+    manifest.compute(export_to_git_and_s3 = True)
+    # manifest.validate_and_export_manifest(push_to_git=False)
 
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -588,5 +588,8 @@ def remove_filelocks(output_dir: str) -> None:
     files = os.listdir(output_dir)
 
     for file in files:
-        if file.endswith(".lock"):
-            os.remove(os.path.join(output_dir, file))
+        try:
+            if file.endswith(".lock"):
+                os.remove(os.path.join(output_dir, file))
+        except FileNotFoundError as e:
+            logger.error("File %s could not be removed as it does not exist: %s.", file, e)

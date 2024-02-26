@@ -31,7 +31,7 @@ from text_importer.importers.mets_alto.alto import parse_style
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage,
                                                parse_mets_amdsec)
-from text_importer.utils import get_issue_schema, get_page_schema
+from text_importer.utils import get_issue_schema, get_page_schema, get_reading_order
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -607,6 +607,9 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         ark_link = mets_doc.find('mets').get('OBJID')
         self.ark_id = ark_link.replace('https://persist.lu/ark:/', 'ark:')
         
+        # compute the reading order for the issue's items
+        reading_order_dict = get_reading_order(content_items)
+
         for ci in content_items:
             
             # ci['l']['parts'] = self._parse_mets_div(item_div)
@@ -618,11 +621,14 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     page_no = part["comp_page_no"]
                     if page_no not in ci['m']['pp']:
                         ci['m']['pp'].append(page_no)
+
+            # add the reading order
+            ci['m']['ro'] = reading_order_dict[ci['m']['id']]
         
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "i": content_items,
             "id": self.id,
+            "i": content_items,
             "ar": self.rights,
             "pp": [p.id for p in self.pages]
         }
