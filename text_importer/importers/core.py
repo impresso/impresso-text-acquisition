@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 def write_error(
     thing: NewspaperIssue | NewspaperPage | IssueDir,
     error: Exception, 
-    failed_log: str
+    failed_log: str | None
 ) -> None:
     """Write the given error of a failed import to the `failed_log` file.
 
@@ -69,8 +69,9 @@ def write_error(
         f"{error}"
     )
 
-    with open(failed_log, "a+") as f:
-        f.write(note + "\n")
+    if failed_log is not None:
+        with open(failed_log, "a+") as f:
+            f.write(note + "\n")
 
 
 def dir2issue(
@@ -304,14 +305,19 @@ def import_issues(
         compressed_issue_files = (
             issue_bag.groupby(lambda i: (i.journal, i.date.year)) 
             .starmap(compress_issues, 
-                     manifest=manifest,
                      output_dir=out_dir,
                      failed_log=failed_log_path) 
             .compute()
         )
 
+        # Once the issues were written to the fs without issues, add their info to the manifest
+        for index, (np_year, filepath, yearly_stats) in enumerate(compressed_issue_files):
+            manifest.add_count_list_by_title_year(np_year.split('-')[0], np_year.split('-')[1], yearly_stats)
+            # remove the yearly stats from the filenames
+            compressed_issue_files[index] = (np_year, filepath)
+
         # recover the updated manifest
-        manifest = compressed_issue_files[0][2]
+        #manifest = compressed_issue_files[0][2]
         
         logger.info(f'Done compressing issues for {period}')
 
@@ -326,9 +332,8 @@ def import_issues(
         # TODO: The issues should be processed within a dask dataframe instead of bag
         # to get cleaner code while ensuring proper partitioning.
 
-        (db.from_sequence(set(compressed_issue_files)) 
-         .map(lambda tuple: (tuple[0], tuple[1])) 
-         .starmap(upload_issues, bucket_name=s3_bucket)
+        (db.from_sequence(set(compressed_issue_files))
+         .starmap(upload_issues, bucket_name=s3_bucket, failed_log=failed_log_path)
          .starmap(cleanup).compute())
 
         logger.info(f'Done uploading issues for {period}')
@@ -361,9 +366,12 @@ def import_issues(
                     ).replace('/', '-')
                 )
                 .starmap(
-                    compress_pages, suffix='pages', output_dir=pages_out_dir
+                    compress_pages, 
+                    suffix='pages', 
+                    output_dir=pages_out_dir, 
+                    failed_log=failed_log_path
                 )
-                .starmap(upload_pages, bucket_name=s3_bucket) 
+                .starmap(upload_pages,bucket_name=s3_bucket,failed_log=failed_log_path)
                 .starmap(cleanup) 
                 .compute()
             )
@@ -398,7 +406,8 @@ def compress_pages(
     key: str,
     json_files: list[str],
     output_dir: str,
-    suffix: str = ""
+    suffix: str = "",
+    failed_log: str | None = None
 ) -> Tuple[str, str]:
     """Merge a set of JSON line files into a single compressed archive.
 
@@ -434,6 +443,7 @@ def compress_pages(
                 except JSONDecodeError as e:
                     logger.error(f'Reading data from {json_file} failed')
                     logger.exception(e)
+                    write_error(filepath, e, failed_log)
             logger.info(
                 f'Written {items_count} docs from {json_file} to {filepath}'
             )
@@ -446,10 +456,9 @@ def compress_pages(
 def compress_issues(
     key: Tuple[str, int],
     issues: list[NewspaperIssue],
-    manifest: DataManifest,
     output_dir: str | None = None,
     failed_log: str | None = None,
-) -> Tuple[str, str, str]:
+) -> Tuple[str, str, list[dict[str, int]]]:
     """Compress issues of the same Journal-year and save them in a json file.
 
     First check if the file exists, load it and then over-write/add the newly
@@ -468,6 +477,7 @@ def compress_issues(
     Returns:
         Tuple[str, str]: Label following the template `<NEWSPAPER>-<YEAR>` and 
             the path to the the compressed `.bz2` file.
+            TODO: add update
     """
     newspaper, year = key
     filename = f'{newspaper}-{year}-issues.jsonl.bz2'
@@ -493,16 +503,19 @@ def compress_issues(
         write_error(filepath, e, failed_log)
 
     # Once the issues were written without issues, add their info to the manifest
+    yearly_stats = []
     for i in items:
-        manifest.add_by_title_year(newspaper, year, counts_for_canonical_issue(i))
+        yearly_stats.append(counts_for_canonical_issue(i))
+        #manifest.add_by_title_year(newspaper, year, counts_for_canonical_issue(i))
 
-    return f'{newspaper}-{year}', filepath, manifest
+    return f'{newspaper}-{year}', filepath, yearly_stats
 
 
 def upload_issues(
     sort_key: str,
     filepath: str,
-    bucket_name: str | None = None
+    bucket_name: str | None = None,
+    failed_log: str | None = None
 ) -> Tuple[bool, str]:
     """Upload an issues JSON-line file to a given S3 bucket.
 
@@ -513,7 +526,7 @@ def upload_issues(
         filepath (str): Path of the file to upload to S3.
         bucket_name (str | None, optional): Name of S3 bucket where to upload
             the file. Defaults to None.
-
+        TODO: update docstring
     Returns:
         Tuple[bool, str]: Whether the upload was successful and the path to the
             uploaded file.
@@ -535,6 +548,7 @@ def upload_issues(
             return True, filepath
         except Exception as e:
             logger.error(f'The upload of {filepath} failed with error {e}')
+            write_error(filepath, e, failed_log)
     else:
         logger.info(f'Bucket name is None, not uploading issue {filepath}.')
     return False, filepath
@@ -543,7 +557,8 @@ def upload_issues(
 def upload_pages( 
     sort_key: str,
     filepath: str,
-    bucket_name: str | None = None
+    bucket_name: str | None = None,
+    failed_log: str | None = None
 ) -> Tuple[bool, str]:
     """Upload a page JSON file to a given S3 bucket.
 
@@ -552,7 +567,7 @@ def upload_pages(
         filepath (str): Path of the file to upload to S3.
         bucket_name (str | None, optional): Name of S3 bucket where to upload
             the file. Defaults to None.
-
+        TODO: update docstring
     Returns:
         Tuple[bool, str]: Whether the upload was successful and the path to the
             uploaded file.
@@ -574,6 +589,7 @@ def upload_pages(
             return True, filepath
         except Exception as e:
             logger.error(f'The upload of {filepath} failed with error {e}')
+            write_error(filepath, e, failed_log)
     else:
         logger.info(f'Bucket name is None, not uploading page {filepath}.')
     return False, filepath

@@ -246,7 +246,6 @@ def select_issues(
             ) and i.journal not in exclude_list
         ).compute()
     )
-    
     exclude_flag = False if not exclude_list else True
     filtered_issues = _apply_datefilter(
         filter_dict, selected_issues, year_only=year_flag

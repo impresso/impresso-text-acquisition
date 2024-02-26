@@ -261,7 +261,12 @@ def main(
         git_repo=git.Repo(repo_path),
         temp_dir=temp_dir
     )
-    manifest_note = f'Ingestion of {len(issues)} Newspaper titles into canonical format.'
+
+    if config_file:
+        newspapers = f" for titles {list(config['newspapers'].keys())}"
+    else:
+        newspapers = ''
+    manifest_note = f'Ingestion of {len(issues)} Newspaper issues into canonical format{newspapers}.'
     manifest.append_to_notes(manifest_note)
     
     import_issues(issues, outp_dir, out_bucket, issue_class, 
