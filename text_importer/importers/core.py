@@ -310,16 +310,12 @@ def import_issues(
             .compute()
         )
 
+        logger.info(f'Done compressing issues for {period}, updating the manifest...')
         # Once the issues were written to the fs without issues, add their info to the manifest
         for index, (np_year, filepath, yearly_stats) in enumerate(compressed_issue_files):
             manifest.add_count_list_by_title_year(np_year.split('-')[0], np_year.split('-')[1], yearly_stats)
             # remove the yearly stats from the filenames
             compressed_issue_files[index] = (np_year, filepath)
-
-        # recover the updated manifest
-        #manifest = compressed_issue_files[0][2]
-        
-        logger.info(f'Done compressing issues for {period}')
 
         logger.info(f'Start uploading issues for {period}')
 

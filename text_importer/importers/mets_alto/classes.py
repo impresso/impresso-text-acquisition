@@ -81,10 +81,10 @@ class MetsAltoNewspaperPage(NewspaperPage):
                 return alto_doc
             except IOError as e:
                 if i < tries - 1: # i is zero indexed
-                    logger.warning(f"Caught error for {self.id}, retrying (up to {tries} times) to read xml file. Error: {e}.")
+                    logger.error(f"Caught error for {self.id}, retrying (up to {tries} times) to read xml file. Error: {e}.")
                     continue
                 else:
-                    logger.warning(f"Reached maximum amount of errors for {self.id}.")
+                    logger.erro(f"Reached maximum amount of errors for {self.id}.")
                     raise e
 
     
