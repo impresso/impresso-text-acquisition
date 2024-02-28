@@ -98,7 +98,7 @@ def get_dask_client(
     if scheduler is None:
         #cluster = LocalCluster(n_workers=32, memory_limit='auto', threads_per_worker=2)
         #client = Client(cluster)
-        client = Client(n_workers=16, threads_per_worker=2)
+        client = Client(n_workers=24, threads_per_worker=2)
     else:
         client = Client(scheduler)
         client.run(
