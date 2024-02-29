@@ -159,7 +159,7 @@ def parse_style(style_div: Tag) -> dict[str, float | str]:
     
     style = {
         "id": font_id,
-        "fs": float(font_size),
+        "fs": float(font_size) if font_size!='' else None,
         "f": font_name
     }
     return style
