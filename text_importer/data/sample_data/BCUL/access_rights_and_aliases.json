@@ -1,0 +1,202 @@
+{
+    "Mercure_suisse": {
+        "alias": "ME",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Nouvelliste_suisse": {
+        "alias": "NS",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Journal_helvÃ©tique": {
+        "alias": "JH",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Messager_boÃ®teux": {
+        "alias": "MB",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Lâami_de_la_vÃ©ritÃ©__journal_du_Canton_de_Vaud": {
+        "alias": "NV",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Almanach_pour_le_commerce": {
+        "alias": "ACI",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_PÃ¨re_JÃ©rÃ´me": {
+        "alias": "PJ",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_Charivari_[1]": {
+        "alias": "Charivari",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_Phare_de_Nyon": {
+        "alias": "PDN",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Le_Phare_du_LÃ©man": {
+        "alias": "PDL",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Journal_d'Yverdon_2": {
+        "alias": "JY2",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Feuille_d'avis_de_Payerne": {
+        "alias": "feuilleP",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Le_Grelot": {
+        "alias": "Grelot",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_peuple_souverain": {
+        "alias": "PS",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Feuille_d'avis_de_Payerne,_Moudon_et_Avenches": {
+        "alias": "feuillePMA",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "La_GuÃªpe_[1]": {
+        "alias": "Guepe1851",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Feuille_d'avis_de_Moudon": {
+        "alias": "FAMDE",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "L'Observateur_du_LÃ©man": {
+        "alias": "OBS",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "La_Griffe": {
+        "alias": "Griffe",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Feuille_d'avis_de_Nyon": {
+        "alias": "FAN",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Gazette_des_Villages": {
+        "alias": "GAVi",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "La_Fronde": {
+        "alias": "Fronde",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_Charivari_[2]": {
+        "alias": "CharivariCH",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Castigat_ridendo_mores": {
+        "alias": "Castigat",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_Moniteur": {
+        "alias": "Moniteur",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_messager": {
+        "alias": "MESSAGER",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Le_Ouistiti": {
+        "alias": "ouistiti",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_Touriste__La_Suisse_illustrÃ©e": {
+        "alias": "TouSuIl",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Journal_de_Vevey": {
+        "alias": "JV",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Indicateur_de_Lausanne": {
+        "alias": "AV",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Courrier_du_LÃ©man": {
+        "alias": "CL",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Croquis_vaudois": {
+        "alias": "Croquis",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_Moustique_(Vevey)": {
+        "alias": "Moustique",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "La_Bombe": {
+        "alias": "Bombe",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Le_Veveysan_1": {
+        "alias": "VVS1",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "null": {
+        "alias": null,
+        "file_type": null,
+        "access_right": "open_public"
+    },
+    "Journal_de_vevey_et_des_Ã©trangers": {
+        "alias": "JVE",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "La_GuÃªpe_[2]": {
+        "alias": "Guepe1887",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "La_Cancoire": {
+        "alias": "Cancoire",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "La_revue_agricole": {
+        "alias": "RLA",
+        "file_type": "xml",
+        "access_right": "open_public"
+    }
+}
