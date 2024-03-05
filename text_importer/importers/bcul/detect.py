@@ -69,7 +69,7 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> Optional[BculIssueDir]
     if not mit_file.endswith(journal_info["file_type"]):
         logger.warning(
             "Found mit file %s does not correspond to mit file type %s",
-            path,
+            os.path.join(path, mit_file),
             journal_info["file_type"],
         )
         # override the mit file type if the extension of the file found does not match
