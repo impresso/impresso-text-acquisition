@@ -114,13 +114,15 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         alto_path = os.path.join(self.path, 'ALTO')
         
         if not os.path.exists(alto_path):
-            logger.critical(f"Could not find pages for {self.id}")
+            msg = f"Could not find pages for {self.id}, non-existing path: {alto_path}"
+            logger.critical(msg)
+            raise Exception(msg)
         
         page_file_names = [
             file
             for file in os.listdir(alto_path)
             if not file.startswith('.') and '.xml' in file
-            ]
+        ]
         
         page_numbers = []
         
@@ -131,7 +133,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         page_canonical_names = [
             "{}-p{}".format(self.id, str(page_n).zfill(4))
             for page_n in page_numbers
-            ]
+        ]
         
         self.pages = []
         for filename, page_no, page_id in zip(
@@ -147,9 +149,9 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                                 )
                         )
             except Exception as e:
-                logger.error(f'Adding page {page_no} {page_id} {filename}',
-                             f'raised following exception: {e}')
-                raise e
+                msg = f'Adding page {page_no} {page_id} {filename} raised following exception: {e}'
+                logger.error(msg)
+                raise Exception(msg) from e
     
     def _parse_content_parts(self, content_div: Tag) -> list[dict[str, Any]]:
         """Parse given div's children tags to create legacy `parts` component.
@@ -372,8 +374,8 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                 continue
             
             element = elements[0]
-            hpos, vpos= element.get('HPOS'), element.get('VPOS')
-            width, height =  element.get('WIDTH'), element.get('HEIGHT')
+            hpos, vpos = element.get('HPOS'), element.get('VPOS')
+            width, height = element.get('WIDTH'), element.get('HEIGHT')
             
             # Select largest image
             area = int(float(width)) * int(float(height))

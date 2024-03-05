@@ -53,7 +53,6 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
             try:
                 coords = distill_coordinates(child)
             except TypeError as e:
-                logger.error(f"Token {child.get('ID')} does not have coordinates")
                 notes.append(f"Token {child.get('ID')} does not have coordinates")
                 coords = None
                 continue
@@ -160,7 +159,7 @@ def parse_style(style_div: Tag) -> dict[str, float | str]:
     
     style = {
         "id": font_id,
-        "fs": float(font_size),
+        "fs": float(font_size) if font_size!='' else None,
         "f": font_name
     }
     return style
