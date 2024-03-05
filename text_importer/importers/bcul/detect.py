@@ -115,8 +115,9 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
     for journal in journal_dirs:
         logger.info("Detecting issues for %s.", journal)
         for dir_path, dirs, files in os.walk(journal):
+            title = journal.split('/')[-1]
             if len(files) > 1 and "solr" not in dir_path:
-                issue_dirs.append(dir2issue(dir_path, ar_and_alias[journal]))
+                issue_dirs.append(dir2issue(dir_path, ar_and_alias[title]))
 
     return issue_dirs
 
