@@ -1,10 +1,13 @@
 """Helper functions to parse BCUL OCR files."""
 
+import logging
 import os
 from datetime import datetime, date
 import json
 from bs4 import Tag
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 def replace_alias(current_alias: str, journal_name: str) -> str:
@@ -99,11 +102,12 @@ def find_page_file_in_dir(base_path: str, file_id: str) -> str | None:
         # some xml files are compressed
         page_path = f"{page_path}.bz2"
         if not os.path.isfile(page_path):
-            # logger.critical instead? if yes, add continue in classes line 258
-            raise Exception(
-                f"The page file {page_path} couldn't be found."
-                "Skipping this page, please verify input data."
+            msg = (
+                f"The page file {page_path} couldn't be found. Skipping this page, "
+                "please verify input data."
             )
+            logger.critical(msg)
+            return None
 
     return page_path
 

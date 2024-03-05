@@ -3,6 +3,7 @@
 The classes define newspaper Issues and Pages objects which convert OCR data in
 the ABBYY format to a unified canoncial format.
 """
+
 import codecs
 import logging
 import os
@@ -11,10 +12,14 @@ import requests
 
 from bs4 import BeautifulSoup, Tag
 
-from text_importer.importers.bcul.helpers import (find_mit_file, get_page_number, 
-                                                  get_div_coords, parse_textblock,
-                                                  verify_issue_has_ocr_files,
-                                                  find_page_file_in_dir)
+from text_importer.importers.bcul.helpers import (
+    find_mit_file,
+    get_page_number,
+    get_div_coords,
+    parse_textblock,
+    verify_issue_has_ocr_files,
+    find_page_file_in_dir,
+)
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
 
@@ -25,12 +30,12 @@ BCUL_TABLE_TYPE = "Table"
 BCUL_CI_TYPES = {BCUL_IMAGE_TYPE, BCUL_TABLE_TYPE}
 BCUL_CI_TRANSLATION = {
     BCUL_IMAGE_TYPE: CONTENTITEM_TYPE_IMAGE,
-    BCUL_TABLE_TYPE: CONTENTITEM_TYPE_TABLE
+    BCUL_TABLE_TYPE: CONTENTITEM_TYPE_TABLE,
 }
 IIIF_PRES_BASE_URI = "https://scriptorium.bcu-lausanne.ch/api/iiif"
 IIIF_IMG_BASE_URI = f"{IIIF_PRES_BASE_URI}-img"
-IIIF_SUFFIX = 'info.json'
-IIIF_MANIFEST_SUFFIX = 'manifest'
+IIIF_SUFFIX = "info.json"
+IIIF_MANIFEST_SUFFIX = "manifest"
 
 
 class BculNewspaperPage(NewspaperPage):
@@ -41,7 +46,7 @@ class BculNewspaperPage(NewspaperPage):
         number (int): Page number.
         page_path (str): Path to the Abby XML page file.
         iiif_uri (str): URI to image IIIF of this page.
-    
+
     Attributes:
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
@@ -51,29 +56,27 @@ class BculNewspaperPage(NewspaperPage):
         iiif_base_uri (str): URI to image IIIF of this page.
     """
 
-    def __init__(
-        self, _id: str, number: int, page_path: str, iiif_uri: str
-    ) -> None:
+    def __init__(self, _id: str, number: int, page_path: str, iiif_uri: str) -> None:
         super().__init__(_id, number)
         self.path = page_path
         self.iiif_base_uri = iiif_uri
         self.page_data = {
-            'id': _id,
-            'cdt': strftime("%Y-%m-%d %H:%M:%S"),
-            'r': [],  # here go the page regions
-            'iiif_img_base_uri': iiif_uri,
+            "id": _id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "r": [],  # here go the page regions
+            "iiif_img_base_uri": iiif_uri,
         }
-    
+
     @property
     def xml(self) -> BeautifulSoup:
         if self.path.endswith("bz2"):
             with codecs.open(self.path, encoding="bz2") as f:
                 xml = BeautifulSoup(f, "xml")
         elif self.path.endswith("xml"):
-            with open(self.path) as f:
+            with open(self.path, encoding="utf-8") as f:
                 xml = BeautifulSoup(f, "xml")
         return xml
-    
+
     @property
     def ci_id(self) -> str:
         """Create and return the content item ID of the page.
@@ -86,13 +89,13 @@ class BculNewspaperPage(NewspaperPage):
         Returns:
             str: Content item id.
         """
-        split = self.id.split('-')
-        split[-1] = split[-1].replace('p', 'i')
+        split = self.id.split("-")
+        split[-1] = split[-1].replace("p", "i")
         return "-".join(split)
-    
+
     def add_issue(self, issue: NewspaperIssue) -> None:
         self.issue = issue
-    
+
     def get_ci_divs(self) -> list[Tag]:
         """Fetch and return the divs of tables and pictures from this page.
 
@@ -103,9 +106,8 @@ class BculNewspaperPage(NewspaperPage):
         Returns:
             list[Tag]: List of segmented table and picture elements.
         """
-        return self.xml.findAll("block", 
-                                {"blockType": lambda x: x in BCUL_CI_TYPES})
-    
+        return self.xml.findAll("block", {"blockType": lambda x: x in BCUL_CI_TYPES})
+
     def parse(self) -> None:
         doc = self.xml
         text_blocks = doc.findAll("block", {"blockType": "Text"})
@@ -135,33 +137,39 @@ class BculNewspaperIssue(NewspaperIssue):
         iiif_manifest (str): Presentation iiif manifest for this issue.
         content_items (list[dict]): List of content items in this issue.
     """
+
     def __init__(self, issue_dir) -> None:
         super().__init__(issue_dir)
         self.mit_file = find_mit_file(issue_dir.path)
-        self.is_json = self.mit_file.endswith(".json")
-        self.is_xml = self.mit_file.endswith(".xml")
-        
+        self.is_json = issue_dir.mit_file_type == "json"
+        self.is_xml = issue_dir.mit_file_type == "xml"
+
+        if self.path is None:
+            if issue_dir.path is None:
+                raise ValueError(f"{self.id}: provided path is None")
         # Check if MIT file in one of the two required formats
         if not (self.is_json or self.is_xml):
-            logger.error("Mit file {} is not JSON nor XML".format(self.mit_file))
-            raise ValueError
-        
+            err_msg = f"Mit file {self.mit_file} is not JSON nor XML"
+            logger.error(err_msg)
+            raise ValueError(err_msg)
+
         # issue manifest, identifier is directory name
-        self.iiif_manifest = os.path.join(IIIF_PRES_BASE_URI, 
-                                          self.path.split('/')[-1], 
-                                          IIIF_MANIFEST_SUFFIX)
+        self.iiif_manifest = os.path.join(
+            IIIF_PRES_BASE_URI, self.path.split("/")[-1], IIIF_MANIFEST_SUFFIX
+        )
         self.content_items = []
-        
+
         self._find_pages()
         self._find_content_items()
-        
+
         self.issue_data = {
-            'id': self.id,
-            'cdt': strftime("%Y-%m-%d %H:%M:%S"),
-            'i': self.content_items,
-            'ar': self.rights,
-            'pp': [p.id for p in self.pages],
-            'iiif_manifest_uri': self.iiif_manifest
+            "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "i": self.content_items,
+            "ar": self.rights,
+            "pp": [p.id for p in self.pages],
+            "iiif_manifest_uri": self.iiif_manifest,
+            "n": self._notes,
         }
 
     def _get_iiif_link_json(self, page_path: str) -> str:
@@ -176,7 +184,7 @@ class BculNewspaperIssue(NewspaperIssue):
             str: IIIF image base uri (without suffix).
         """
         # when mit file is a JSON, each page file's name is the iiif identifier
-        page_identifier = os.path.basename(page_path).split('.')[0]
+        page_identifier = os.path.basename(page_path).split(".")[0]
         return os.path.join(IIIF_IMG_BASE_URI, page_identifier)
 
     def _get_iiif_link_xml(self, page_number: int) -> str | None:
@@ -189,79 +197,85 @@ class BculNewspaperIssue(NewspaperIssue):
             page_number (int): Page number for which to fetch the iiif URI.
 
         Returns:
-            str | None: IIIF image base uri (no suffix) or None if request to 
+            str | None: IIIF image base uri (no suffix) or None if request to
                 presentation API failed.
         """
         try:
-            response = requests.get(self.iiif_manifest)
+            response = requests.get(self.iiif_manifest, timeout=10)
             if response.status_code == 200:
-                iiif = (
-                    response.json()['sequences'][0]['canvases'][page_number]
-                        ['images'][0]['resource']['@id']
-                )
+                iiif = response.json()["sequences"][0]["canvases"][page_number][
+                    "images"
+                ][0]["resource"]["@id"]
                 # replace suffix mapping to page's image by information json.
-                return '/'.join(iiif.split('/')[:-4])
-            else:
-                logger.error(f"Got {response.status_code} response while "
-                             f"querying the IIIF API for {self.id}.")
+                return "/".join(iiif.split("/")[:-4])
+
+            err_msg = (
+                f"Got {response.status_code} response while "
+                f"querying the IIIF API for {self.id}."
+            )
+            logger.error(err_msg)
         except Exception as e:
-            logger.error(f'Error while querying IIIF API for {self.id}: {e}.')
-        logger.warning(f"No iiif link stored for content item {self.id}.")
+            logger.error("Error while querying IIIF API for %s: %e.", self.id, e)
+        logger.warning("No iiif link stored for content item %s.", self.id)
         # Exception or wrong HTTP response, so no iiif link to return
         return None
-    
+
     def _find_pages_xml(self) -> None:
-        """Finds the pages when the format for the `fit_file` is XML.
-        """
+        """Finds the pages when the format for the `fit_file` is XML."""
         # List all files and get the filenames from the MIT file
         files = os.listdir(self.path)
-        
-        with open(self.mit_file) as f:
+
+        with open(self.mit_file, encoding="utf-8") as f:
             mit = BeautifulSoup(f, "xml")
-        
-        pages = sorted([os.path.basename(x.get('xml')) 
-                        for x in mit.findAll("image")])
+
+        pages = sorted([os.path.basename(x.get("xml")) for x in mit.findAll("image")])
         for p in pages:
             found = False
-            # Since files are in .xml.bz2 format, 
+            # Since files are in .xml.bz2 format,
             # need to check which one corresponds
             for f in files:
                 if p in f:
                     page_path = os.path.join(self.path, f)
-                    page_no = int(f.split('.')[0].split('_')[-1])
+                    page_no = int(f.split(".")[0].split("_")[-1])
                     page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
                     page_iiif = self._get_iiif_link_xml(page_no)
-                    page = BculNewspaperPage(page_id, page_no, 
-                                             page_path, page_iiif)
+                    page = BculNewspaperPage(page_id, page_no, page_path, page_iiif)
                     self.pages.append(page)
                     found = True
             if not found:
-                logger.error("Page {} not found in {}".format(p, self.path))
-    
+                logger.error("Page %s not found in %s", p, self.path)
+                self._notes.append(f"Page {p} not found in {self.path}")
+
     def _find_pages_json(self) -> None:
-        """Finds the pages when the format for the `mit_file` is JSON.
-        """
+        """Finds the pages when the format for the `mit_file` is JSON."""
         # Ensure issue has OCR data files before processing it.
         verify_issue_has_ocr_files(self.path)
 
         # If it does, get all exif files
         files = [
-            os.path.join(self.path, x) 
-            for x in os.listdir(self.path) 
+            os.path.join(self.path, x)
+            for x in os.listdir(self.path)
             if os.path.splitext(x)[0].endswith("exif")
         ]
+
         for f in files:
             # Page file is the same name without `_exif`
-            file_id = (os.path.splitext(os.path.basename(f))[0]
-                       .replace("_exif", ""))
+            file_id = os.path.splitext(os.path.basename(f))[0].replace("_exif", "")
             # check the page xml file exists
             page_path = find_page_file_in_dir(self.path, file_id)
+            if page_path is None:
+                # if the page does not exist, skip this page
+                self._notes.append(f"Couldn't find the page corresponding to {file_id}")
+                logger.info(
+                    "%s: Did not find the page for %s skipping.", self.id, file_id
+                )
+                continue
             page_no = get_page_number(f)
             page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
             page_iiif = self._get_iiif_link_json(page_path)
             page = BculNewspaperPage(page_id, page_no, page_path, page_iiif)
             self.pages.append(page)
-    
+
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
@@ -277,47 +291,45 @@ class BculNewspaperIssue(NewspaperIssue):
         """Find the various content items in this Newspaper issue.
 
         In the BCUL Format, articles are not segmented, but tables and pictures
-        are. As a result, each page is a content item, as well as the tables 
+        are. As a result, each page is a content item, as well as the tables
         and pictures that were segmented.
         """
         # First add the pages as content items
         for n, page in enumerate(sorted(self.pages, key=lambda x: x.number)):
-            ci_id = self.id + '-i' + str(n + 1).zfill(4)
+            ci_id = self.id + "-i" + str(n + 1).zfill(4)
             ci = {
-                'm': {
-                    'id': ci_id,
-                    'pp': [page.number],
-                    'tp': 'page',
+                "m": {
+                    "id": ci_id,
+                    "pp": [page.number],
+                    "tp": "page",
                 }
             }
             self.content_items.append(ci)
-        
+
         n = len(self.content_items) + 1
         # Get all images and tables
         for p in sorted(self.pages, key=lambda x: x.number):
             # Get page
             page_cis = [
-                (div.get('blockType'), get_div_coords(div)) 
-                for div in p.get_ci_divs()
-            ]  
+                (div.get("blockType"), get_div_coords(div)) for div in p.get_ci_divs()
+            ]
             # Sort by coordinates
-            for div_type, coords in sorted(page_cis, key=lambda x: x[1]):  
-                ci_id = self.id + '-i' + str(n).zfill(4)
+            for div_type, coords in sorted(page_cis, key=lambda x: x[1]):
+                ci_id = self.id + "-i" + str(n).zfill(4)
 
                 ci = {
-                    'm': {
-                        'id': ci_id,
-                        'pp': [p.number],
-                        'tp': BCUL_CI_TRANSLATION[div_type],
+                    "m": {
+                        "id": ci_id,
+                        "pp": [p.number],
+                        "tp": BCUL_CI_TRANSLATION[div_type],
                     },
                 }
 
-                # Content item is an image 
+                # Content item is an image
                 # TODO check this works with samples that have images
-                if ci['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
-                    ci['m']['iiif_link'] = os.path.join(p.iiif_base_uri, 
-                                                        IIIF_SUFFIX)
-                    ci['c'] = coords
+                if ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
+                    ci["m"]["iiif_link"] = os.path.join(p.iiif_base_uri, IIIF_SUFFIX)
+                    ci["c"] = coords
 
                 self.content_items.append(ci)
                 n += 1
