@@ -467,7 +467,6 @@ def compress_pages(
 def compress_issues(
     key: Tuple[str, int],
     issues: list[NewspaperIssue],
-    manifest: DataManifest,
     output_dir: str | None = None,
     failed_log: str | None = None,
 ) -> Tuple[str, str, list[dict[str, int]]]:
