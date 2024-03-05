@@ -201,7 +201,7 @@ class BculNewspaperIssue(NewspaperIssue):
                 presentation API failed.
         """
         try:
-            response = requests.get(self.iiif_manifest, timeout=10)
+            response = requests.get(self.iiif_manifest, timeout=100)
             if response.status_code == 200:
                 iiif = response.json()["sequences"][0]["canvases"][page_number][
                     "images"
