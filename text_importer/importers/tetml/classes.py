@@ -1,5 +1,6 @@
 """Classes to handle the TETML OCR format."""
 
+import os
 import logging
 from pathlib import Path
 from time import strftime
@@ -12,6 +13,7 @@ from text_importer.importers.tetml.parsers import tetml_parser
 
 logger = logging.getLogger(__name__)
 
+IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 class TetmlNewspaperPage(NewspaperPage):
     """Generic class representing a page in Tetml format.
@@ -34,6 +36,7 @@ class TetmlNewspaperPage(NewspaperPage):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "cc": True,
+            "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
         }
 

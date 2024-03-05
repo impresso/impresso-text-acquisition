@@ -53,8 +53,11 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
             try:
                 coords = distill_coordinates(child)
             except TypeError as e:
+                logger.error(f"Token {child.get('ID')} does not have coordinates")
                 notes.append(f"Token {child.get('ID')} does not have coordinates")
+                coords = None
                 continue
+
             token = {
                 'c': coords,
                 'tx': child.get('CONTENT')

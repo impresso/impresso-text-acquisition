@@ -21,7 +21,7 @@ from text_importer.importers import (CONTENTITEM_TYPES,
 from text_importer.importers.bnf.helpers import BNF_CONTENT_TYPES
 from text_importer.importers.mets_alto import (MetsAltoNewspaperIssue,
                                                MetsAltoNewspaperPage)
-from text_importer.utils import get_issue_schema, get_page_schema
+from text_importer.utils import get_issue_schema, get_page_schema, get_reading_order
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -299,7 +299,8 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         
         dmd_sections = doc.findAll("dmdSec")
         struct_map = doc.find("div", {"TYPE": "CONTENT"})
-        # Sort to have same naming
+        # Sort to have same namings
+        # TODO fix this ordering!
         sorted_divs = sorted(dmd_sections, key=lambda x: x.get('ID').lower())
         
         counter = 1
@@ -321,6 +322,12 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                 else:
                     content_items.append(self._parse_content_item(div, counter, doc))
                     counter += 1
+
+        # add the reading order to the items metadata
+        reading_order_dict = get_reading_order(content_items)
+        for item in content_items:
+            item['m']['ro'] = reading_order_dict[item['m']['id']]
+
         return content_items
     
     def _get_image_info(
@@ -390,8 +397,8 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "i": content_items,
             "id": self.id,
+            "i": content_items,
             "ar": self.rights,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest

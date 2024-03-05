@@ -172,8 +172,8 @@ class SWANewspaperIssue(NewspaperIssue):
             try:
                 archive = ZipFile(self.path)
                 logger.debug(
-                        f"Contents of archive for {self.id}: {archive.namelist()}"
-                        )
+                    f"Contents of archive for {self.id}: {archive.namelist()}"
+                )
                 return ZipArchive(archive, temp_dir)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
@@ -218,6 +218,6 @@ class SWANewspaperIssue(NewspaperIssue):
                     'id': ci_id,
                     'pp': [page_number],
                     'tp': 'page',
-                    }
                 }
+            }
             self.content_items.append(ci)
