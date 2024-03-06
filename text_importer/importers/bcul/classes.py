@@ -22,6 +22,7 @@ from text_importer.importers.bcul.helpers import (
 )
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
+from text_importer.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
@@ -201,12 +202,20 @@ class BculNewspaperIssue(NewspaperIssue):
                 presentation API failed.
         """
         try:
-            response = requests.get(self.iiif_manifest, timeout=100)
+            response = requests.get(self.iiif_manifest, timeout=45)
             if response.status_code == 200:
-                iiif = response.json()["sequences"][0]["canvases"][page_number][
-                    "images"
-                ][0]["resource"]["@id"]
-                # replace suffix mapping to page's image by information json.
+                page_canvas = response.json()["sequences"][0]["canvases"][page_number-1]
+                page_canvas_num = int(page_canvas['label'])
+                if page_canvas_num!=page_number:
+                    page_canvas = None
+                    for c in response.json()["sequences"][0]["canvases"].items():
+                        #if 
+                        if c['label'] == page_number:
+                            page_canvas = c
+                            break
+                if page_canvas is None:
+                    raise Exception(f"{self.id}: Could not find the iiif link for page {page_number}.")
+                iiif = page_canvas["images"][0]["resource"]["@id"]
                 return "/".join(iiif.split("/")[:-4])
 
             err_msg = (
@@ -215,8 +224,8 @@ class BculNewspaperIssue(NewspaperIssue):
             )
             logger.error(err_msg)
         except Exception as e:
-            logger.error("Error while querying IIIF API for %s: %e.", self.id, e)
-        logger.warning("No iiif link stored for content item %s.", self.id)
+            logger.error("Error while querying IIIF API for %s (iiif: %s): %e.", self.id, self.iiif_manifest, e)
+        logger.warning("%s: Page %s will not be included.", self.id, page_number)
         # Exception or wrong HTTP response, so no iiif link to return
         return None
 
@@ -239,12 +248,20 @@ class BculNewspaperIssue(NewspaperIssue):
                     page_no = int(f.split(".")[0].split("_")[-1])
                     page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
                     page_iiif = self._get_iiif_link_xml(page_no)
+                    if page_iiif is None:
+                        logger.error(
+                            "%s: No iiif link found for Page %s on API (manifest: %s)", 
+                            self.id, 
+                            page_no, 
+                            self.iiif_manifest
+                        )
+                        continue
                     page = BculNewspaperPage(page_id, page_no, page_path, page_iiif)
                     self.pages.append(page)
                     found = True
             if not found:
                 logger.error("Page %s not found in %s", p, self.path)
-                self._notes.append(f"Page {p} not found in {self.path}")
+                self._notes.append(f"Page {p} missing: not found in {self.path} or on API.")
 
     def _find_pages_json(self) -> None:
         """Finds the pages when the format for the `mit_file` is JSON."""
@@ -333,3 +350,8 @@ class BculNewspaperIssue(NewspaperIssue):
 
                 self.content_items.append(ci)
                 n += 1
+
+        # once the pages are added to the metadata, compute & add the reading order
+        reading_order_dict = get_reading_order(self.content_items)
+        for item in self.content_items:
+            item['m']['ro'] = reading_order_dict[item['m']['id']]
