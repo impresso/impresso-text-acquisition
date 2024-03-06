@@ -9,6 +9,7 @@ import logging
 import os
 from time import strftime
 import requests
+from typing import Any
 
 from bs4 import BeautifulSoup, Tag
 
@@ -188,7 +189,40 @@ class BculNewspaperIssue(NewspaperIssue):
         page_identifier = os.path.basename(page_path).split(".")[0]
         return os.path.join(IIIF_IMG_BASE_URI, page_identifier)
 
-    def _get_iiif_link_xml(self, page_number: int) -> str | None:
+    def query_iiif_api(self, num_tries: int = 0, max_retries: int = 3) -> dict[str, Any]:
+        """Query the Scriptorium IIIF API for the issue's manifest data.
+
+        Args:
+            num_tries (int, optional): Number of retry attempts. Defaults to 0.
+            max_retries (int, optional): Maximum number of attempts. Defaults to 3.
+
+        Returns:
+            dict[str, Any]: Issue's IIIF "canvases" for each page.
+            
+        Raises:
+            Exception: If the maximum number of retry attempts is reached.
+        """
+        try:
+            logger.info("Submitting request to iiif API for %s: %s", self.id, self.iiif_manifest)
+            response = requests.get(self.iiif_manifest, timeout=60) 
+            #TODO increase to 1min or add retry with longer one.
+            if response.status_code == 200:
+                return response.json()["sequences"][0]["canvases"]
+            else:
+                msg = f"{self.id}: Request failed with response code: {response.status_code}"
+        except Exception as e:
+            msg = f"Error while querying IIIF API for {self.id} (iiif: {elf.iiif_manifest}): {e}."
+        
+        if num_tries < max_retries:
+            msg += f" Retrying {3-num_tries} times."
+            logger.error(msg)
+            return self.query_iiif_api(num_tries+1)
+    
+        msg += f" Max number of retries reached, {self.id} will not be processed."
+        logger.error(msg)
+        raise Exception(msg)
+
+    def _get_iiif_link_xml(self, page_number: int, canvases: dict[str, Any]) -> str | None:
         """Return iiif image base uri in case `mit` file is in XML.
 
         In this case, the iiif URI to images needs to be fetched from the iiif
@@ -196,39 +230,27 @@ class BculNewspaperIssue(NewspaperIssue):
 
         Args:
             page_number (int): Page number for which to fetch the iiif URI.
+            canvases (dict[str, Any]): Page canvases from the IIIF issue manifest.
 
         Returns:
-            str | None: IIIF image base uri (no suffix) or None if request to
-                presentation API failed.
+            str | None: IIIF image base uri (no suffix) if found in manifest else None.
         """
-        try:
-            response = requests.get(self.iiif_manifest, timeout=45)
-            if response.status_code == 200:
-                page_canvas = response.json()["sequences"][0]["canvases"][page_number-1]
-                page_canvas_num = int(page_canvas['label'])
-                if page_canvas_num!=page_number:
-                    page_canvas = None
-                    for c in response.json()["sequences"][0]["canvases"].items():
-                        #if 
-                        if c['label'] == page_number:
-                            page_canvas = c
-                            break
-                if page_canvas is None:
-                    raise Exception(f"{self.id}: Could not find the iiif link for page {page_number}.")
-                iiif = page_canvas["images"][0]["resource"]["@id"]
-                return "/".join(iiif.split("/")[:-4])
+        page_canvas = canvases[page_number-1]
+        page_canvas_num = int(page_canvas['label'])
+        if page_canvas_num!=page_number:
+            for c in canvases.items():
+                page_canvas = None
+                if c['label'] == page_number:
+                    page_canvas = c
+                    break
+        if page_canvas is None:
+            logger.warning("%s: Page %s will not be included.", self.id, page_number)
+            return None
+            
+        iiif = page_canvas["images"][0]["resource"]["@id"]
+        return "/".join(iiif.split("/")[:-4])
 
-            err_msg = (
-                f"Got {response.status_code} response while "
-                f"querying the IIIF API for {self.id}."
-            )
-            logger.error(err_msg)
-        except Exception as e:
-            logger.error("Error while querying IIIF API for %s (iiif: %s): %e.", self.id, self.iiif_manifest, e)
-        logger.warning("%s: Page %s will not be included.", self.id, page_number)
-        # Exception or wrong HTTP response, so no iiif link to return
-        return None
-
+            
     def _find_pages_xml(self) -> None:
         """Finds the pages when the format for the `fit_file` is XML."""
         # List all files and get the filenames from the MIT file
@@ -236,6 +258,9 @@ class BculNewspaperIssue(NewspaperIssue):
 
         with open(self.mit_file, encoding="utf-8") as f:
             mit = BeautifulSoup(f, "xml")
+
+        # fetch the issue's iiif manifest
+        iiif_canvases = self.query_iiif_api()
 
         pages = sorted([os.path.basename(x.get("xml")) for x in mit.findAll("image")])
         for p in pages:
@@ -247,7 +272,7 @@ class BculNewspaperIssue(NewspaperIssue):
                     page_path = os.path.join(self.path, f)
                     page_no = int(f.split(".")[0].split("_")[-1])
                     page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
-                    page_iiif = self._get_iiif_link_xml(page_no)
+                    page_iiif = self._get_iiif_link_xml(page_no, iiif_canvases)
                     if page_iiif is None:
                         logger.error(
                             "%s: No iiif link found for Page %s on API (manifest: %s)", 
