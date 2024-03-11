@@ -108,7 +108,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
     journal_dirs = [
         os.path.join(dir_path, _dir)
         for _dir in dirs
-        if _dir not in ["OLD", "wrong_BCUL"] and _dir in ar_and_alias
+        if _dir not in ["OLD", "wrong_BCUL", ".DS_Store"] and _dir in ar_and_alias
     ]
 
     issue_dirs = []
