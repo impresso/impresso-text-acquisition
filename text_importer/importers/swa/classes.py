@@ -29,7 +29,7 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         _id (str): Canonical page ID.
         number (int): Page number.
         alto_path (str): Full path to the Alto XML file.
-    
+
     Attributes:
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
@@ -40,18 +40,17 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         encoding (str, optional): Encoding of XML file.
         iiif (str): The iiif URI to the newspaper page image.
     """
-    
+
     def __init__(self, _id: str, number: int, alto_path: str) -> None:
         self.alto_path = alto_path
         basedir, filename = os.path.split(alto_path)
-        super().__init__(_id, number, filename, basedir, 
-                         encoding=SWA_XML_ENCODING)
-        self.iiif = os.path.join(IIIF_IMG_BASE_URI, filename.split('.')[0])
-        self.page_data['iiif_img_base_uri'] = self.iiif
-    
+        super().__init__(_id, number, filename, basedir, encoding=SWA_XML_ENCODING)
+        self.iiif = os.path.join(IIIF_IMG_BASE_URI, filename.split(".")[0])
+        self.page_data["iiif_img_base_uri"] = self.iiif
+
     def add_issue(self, issue: NewspaperIssue) -> None:
         self.issue = issue
- 
+
     @property
     def ci_id(self) -> str:
         """Return the content item ID of the page.
@@ -64,10 +63,10 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         Returns:
             str: Content item id.
         """
-        split = self.id.split('-')
-        split[-1] = split[-1].replace('p', 'i')
+        split = self.id.split("-")
+        split[-1] = split[-1].replace("p", "i")
         return "-".join(split)
-    
+
     @property
     def file_exists(self) -> bool:
         """Check whether the Alto XML file exists for this page.
@@ -75,24 +74,23 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         Returns:
             bool: True if the Alto XML file exists, False otherwise.
         """
-        return (os.path.exists(self.alto_path) and 
-                os.path.isfile(self.alto_path))
-    
+        return os.path.exists(self.alto_path) and os.path.isfile(self.alto_path)
+
     def parse(self) -> None:
         doc = self.xml
-        pselement = doc.find('PrintSpace')
+        pselement = doc.find("PrintSpace")
         ci_id = self.ci_id
-        
-        mappings = {k.get('ID'): ci_id for k in pselement.findAll('TextBlock')}
+
+        mappings = {k.get("ID"): ci_id for k in pselement.findAll("TextBlock")}
         page_data, notes = parse_printspace(pselement, mappings)
-        
-        self.page_data['cc'], self.page_data['r'] = True, page_data
-        
+
+        self.page_data["cc"], self.page_data["r"] = True, page_data
+
         # Add notes to page data
         if len(notes) > 0:
-            self.page_data['n'] = notes
+            self.page_data["n"] = notes
         return notes
-    
+
     def get_iiif_image(self) -> str:
         """Create the iiif URI to the full journal page image.
 
@@ -105,7 +103,7 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
 class SWANewspaperIssue(NewspaperIssue):
     """Newspaper issue in SWA Mets/Alto format.
 
-    Note: 
+    Note:
         SWA is in ALTO format, but there isn't any Mets file. So in that case,
         issues are simply a collection of pages.
 
@@ -130,31 +128,31 @@ class SWANewspaperIssue(NewspaperIssue):
         content_items (list[dict[str,Any]]): Content items from this issue.
         notes (list[str]): Notes of missing pages gathered while parsing.
     """
-    
+
     def __init__(self, issue_dir: SwaIssueDir, temp_dir: str) -> None:
         super().__init__(issue_dir)
         self.archive = self._parse_archive(temp_dir)
         self.temp_pages = issue_dir.pages
         self.content_items = []
-        
+
         self._notes = []
         self._find_pages()
         self._find_content_items()
 
-        iiif_manifest = os.path.join(IIIF_PRES_BASE_URI, 
-                                     f"{self.id}-issue",
-                                     IIIF_MANIFEST_SUFFIX)
-        
+        iiif_manifest = os.path.join(
+            IIIF_PRES_BASE_URI, f"{self.id}-issue", IIIF_MANIFEST_SUFFIX
+        )
+
         self.issue_data = {
-            'id': self.id,
-            'cdt': strftime("%Y-%m-%d %H:%M:%S"),
-            'i': self.content_items,
-            'ar': self.rights,
-            'pp': [p.id for p in self.pages],
-            'iiif_manifest_uri': iiif_manifest,
-            'notes': self._notes
+            "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "i": self.content_items,
+            "ar": self.rights,
+            "pp": [p.id for p in self.pages],
+            "iiif_manifest_uri": iiif_manifest,
+            "notes": self._notes,
         }
-    
+
     def _parse_archive(self, temp_dir: str) -> ZipArchive:
         """Open and parse the Zip archive located at :attr:`path` if possible.
 
@@ -172,7 +170,7 @@ class SWANewspaperIssue(NewspaperIssue):
             try:
                 archive = ZipFile(self.path)
                 logger.debug(
-                    f"Contents of archive for {self.id}: {archive.namelist()}"
+                    "Contents of archive for %s: %s", self.id, archive.namelist()
                 )
                 return ZipArchive(archive, temp_dir)
             except Exception as e:
@@ -181,7 +179,7 @@ class SWANewspaperIssue(NewspaperIssue):
         else:
             msg = f"Could not find archive {self.path} for {self.id}"
             raise ValueError(msg)
-    
+
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
@@ -194,16 +192,16 @@ class SWANewspaperIssue(NewspaperIssue):
             page_id, page_path = val
             page_path = os.path.join(self.archive.dir, page_path)
             page = SWANewspaperPage(page_id, n + 1, page_path)
-            
+
             # Check page existence
             if not page.file_exists:
                 self._notes.append(f"Alto file for {page_id} missing {page_path}")
             else:
                 self.pages.append(page)
-            
+
         if len(self.pages) == 0:
             raise ValueError(f"Could not find any page for {self.id}")
-    
+
     def _find_content_items(self) -> None:
         """Create content items for the pages in this issue.
 
@@ -212,12 +210,12 @@ class SWANewspaperIssue(NewspaperIssue):
         """
         for page in sorted(self.pages, key=lambda x: x.id):
             page_number = page.number
-            ci_id = self.id + '-i' + str(page_number).zfill(4)
+            ci_id = self.id + "-i" + str(page_number).zfill(4)
             ci = {
-                'm': {
-                    'id': ci_id,
-                    'pp': [page_number],
-                    'tp': 'page',
+                "m": {
+                    "id": ci_id,
+                    "pp": [page_number],
+                    "tp": "page",
                 }
             }
             self.content_items.append(ci)
