@@ -211,7 +211,7 @@ class BculNewspaperIssue(NewspaperIssue):
             else:
                 msg = f"{self.id}: Request failed with response code: {response.status_code}"
         except Exception as e:
-            msg = f"Error while querying IIIF API for {self.id} (iiif: {elf.iiif_manifest}): {e}."
+            msg = f"Error while querying IIIF API for {self.id} (iiif: {self.iiif_manifest}): {e}."
         
         if num_tries < max_retries:
             msg += f" Retrying {3-num_tries} times."
@@ -220,7 +220,7 @@ class BculNewspaperIssue(NewspaperIssue):
     
         msg += f" Max number of retries reached, {self.id} will not be processed."
         logger.error(msg)
-        raise Exception(msg)
+        raise Exception
 
     def _get_iiif_link_xml(self, page_number: int, canvases: dict[str, Any]) -> str | None:
         """Return iiif image base uri in case `mit` file is in XML.
