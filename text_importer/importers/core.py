@@ -41,29 +41,34 @@ logger = logging.getLogger(__name__)
 
 
 def write_error(
-    thing: NewspaperIssue | NewspaperPage | IssueDir,
-    error: Exception,
+    thing: NewspaperIssue | NewspaperPage | IssueDir | str,
+    error: Exception | str,
     failed_log: str | None,
 ) -> None:
     """Write the given error of a failed import to the `failed_log` file.
 
     Args:
-        thing (NewspaperIssue | NewspaperPage | IssueDir): Object for which
-            the error occurred.
+        thing (NewspaperIssue | NewspaperPage | IssueDir | str): Object for which
+            the error occurred, or corresponding canonical ID.
         error (Exception): Error that occurred and should be logged.
         failed_log (str): Path to log file for failed imports.
     """
     logger.error("Error when processing %s: %s", thing, error)
     logger.exception(error)
-    if isinstance(thing, NewspaperPage):
-        issuedir = thing.issue.issuedir
-    elif isinstance(thing, NewspaperIssue):
-        issuedir = thing.issuedir
-    else:
-        # if it's neither an issue nor a page it must be an issuedir
-        issuedir = thing
 
-    note = f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: " f"{error}"
+    if isinstance(thing, str):
+        # if thing is a string, it's the canonical id of the object
+        note = f"{thing}: {error}"
+    else:
+        if isinstance(thing, NewspaperPage):
+            issuedir = thing.issue.issuedir
+        elif isinstance(thing, NewspaperIssue):
+            issuedir = thing.issuedir
+        else:
+            # if it's neither an issue nor a page it must be an issuedir
+            issuedir = thing
+        
+        note = f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: {error}"
 
     if failed_log is not None:
         with open(failed_log, "a+") as f:
@@ -593,8 +598,9 @@ def upload_pages(
             logger.info(f"Uploaded {filepath} to {key_name}")
             return True, filepath
         except Exception as e:
-            logger.error(f"The upload of {filepath} failed with error {e}")
-            write_error(filepath, e, failed_log)
+            msg = f"The upload of {filepath} failed with error {e}"
+            logger.error(msg)
+            write_error(sort_key, e, failed_log)
     else:
         logger.info(f"Bucket name is None, not uploading page {filepath}.")
     return False, filepath
