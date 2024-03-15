@@ -4,8 +4,8 @@
 import logging
 import os
 import json
+import string
 from collections import namedtuple
-from typing import Optional
 
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
@@ -47,8 +47,10 @@ Args:
 )
 """
 
+# issues that lead to HTTP response 404. Skipping them altogether.
+FAULTY_ISSUES = ['127626', '127627', '127628', '127629', '127630', '127631', '127625']
 
-def dir2issue(path: str, journal_info: dict[str, str]) -> Optional[BculIssueDir]:
+def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
     """Create a `BculIssueDir` object from a directory.
 
     Note:
@@ -59,7 +61,7 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> Optional[BculIssueDir]
         access_rights (dict): Dictionary for access rights.
 
     Returns:
-        Optional[BculIssueDir]: New `BculIssueDir` object.
+        BculIssueDir | None: New `BculIssueDir` object.
     """
     mit_file = find_mit_file(path)
     if mit_file is None:
@@ -76,11 +78,23 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> Optional[BculIssueDir]
         journal_info["file_type"] = mit_file.split(".")[-1]
 
     date = parse_date(mit_file)
+    
+    # check if multiple issues are at this date:
+    day_dir = os.path.dirname(path)
+    if len(os.listdir(day_dir)) > 1:
+        # if multiple issues exist for a given day, find the correct edition
+        print("Multiple issues for %s, finding the edition", day_dir)
+        day_editions = [str(i) for i in os.listdir(day_dir) if i not in FAULTY_ISSUES]
+        index = sorted(day_editions).index(path.split('/')[-1])
+        edition = string.ascii_lowercase[index]
+    else:
+        edition = "a"
+
 
     return BculIssueDir(
         journal=journal_info["alias"],
         date=date,
-        edition="a",
+        edition=edition,
         path=path,
         rights=journal_info["access_right"],
         mit_file_type=journal_info["file_type"],
@@ -116,7 +130,12 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
         logger.info("Detecting issues for %s.", journal)
         for dir_path, dirs, files in os.walk(journal):
             title = journal.split('/')[-1]
-            if len(files) > 1 and "solr" not in dir_path:
+            # check if we are in the directory of a (valid) issue
+            if (
+                len(files) > 1 and 
+                "solr" not in dir_path and 
+                os.path.dirname(dir_path) not in FAULTY_ISSUES
+            ):
                 issue_dirs.append(dir2issue(dir_path, ar_and_alias[title]))
 
     return issue_dirs
@@ -124,7 +143,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
 
 def select_issues(
     base_dir: str, config: dict, access_rights: str
-) -> Optional[list[BculIssueDir]]:
+) -> list[BculIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -139,7 +158,7 @@ def select_issues(
             for uniformity.
 
     Returns:
-        Optional[list[BculIssueDir]]: List of `BculIssueDir` to import.
+        list[BculIssueDir] | None: List of `BculIssueDir` to import.
     """
 
     # read filters from json configuration (see config.example.json)

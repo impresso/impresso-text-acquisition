@@ -220,7 +220,7 @@ class BculNewspaperIssue(NewspaperIssue):
     
         msg += f" Max number of retries reached, {self.id} will not be processed."
         logger.error(msg)
-        raise Exception
+        raise Exception(msg)
 
     def _get_iiif_link_xml(self, page_number: int, canvases: dict[str, Any]) -> str | None:
         """Return iiif image base uri in case `mit` file is in XML.
