@@ -81,11 +81,15 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
     
     # check if multiple issues are at this date:
     day_dir = os.path.dirname(path)
-    if len(os.listdir(day_dir)) > 1:
+    day_editions = list(os.listdir(day_dir))
+    # sometimes, DS_store files are created in directories by macos
+    if '.DS_Store' in day_editions:
+        day_editions.remove('.DS_Store')
+    if len(day_editions) > 1:
         # if multiple issues exist for a given day, find the correct edition
-        print("Multiple issues for %s, finding the edition", day_dir)
+        logger.info("Multiple issues for %s, finding the edition", day_dir)
         day_editions = [str(i) for i in os.listdir(day_dir) if i not in FAULTY_ISSUES]
-        index = sorted(day_editions).index(path.split('/')[-1])
+        index = sorted(day_editions).index(os.path.basename(path))
         edition = string.ascii_lowercase[index]
     else:
         edition = "a"
@@ -134,7 +138,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
             if (
                 len(files) > 1 and 
                 "solr" not in dir_path and 
-                os.path.dirname(dir_path) not in FAULTY_ISSUES
+                os.path.basename(dir_path) not in FAULTY_ISSUES
             ):
                 issue_dirs.append(dir2issue(dir_path, ar_and_alias[title]))
 
