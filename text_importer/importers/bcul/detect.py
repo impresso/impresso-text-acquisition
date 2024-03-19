@@ -48,7 +48,7 @@ Args:
 """
 
 # issues that lead to HTTP response 404. Skipping them altogether.
-FAULTY_ISSUES = ['127626', '127627', '127628', '127629', '127630', '127631', '127625']
+FAULTY_ISSUES = ['127626', '127627', '127628', '127629', '127630', '127631', '127625', '287371', '287365', '287373']
 CORRECT_ISSUE_DATES = {
     '170463': '08',
     '170468': '09',

@@ -208,6 +208,12 @@ class BculNewspaperIssue(NewspaperIssue):
             #TODO increase to 1min or add retry with longer one.
             if response.status_code == 200:
                 return response.json()["sequences"][0]["canvases"]
+            elif response.status_code == 404:
+                msg = (
+                    f"{self.id}: Request failed with response code: {response.status_code}. "
+                    "Issue will not be processed."
+                )
+                raise Exception(msg)
             else:
                 msg = f"{self.id}: Request failed with response code: {response.status_code}"
         except Exception as e:
