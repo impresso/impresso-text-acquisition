@@ -9,6 +9,11 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+CORRECT_ISSUE_DATES = {
+    '170463': '08',
+    '170468': '09',
+    '170466': '11',
+} 
 
 def replace_alias(current_alias: str, journal_name: str) -> str:
     # TODO replace by a csv file
@@ -43,6 +48,10 @@ def parse_date(mit_filename: str) -> tuple[date, str]:
     split = mit_filename.split("/")
     # extract date of publication
     year, month, day = int(split[-5]), int(split[-4]), int(split[-3])
+
+    # some issues are not placed in the correct folder
+    if split[-2] in CORRECT_ISSUE_DATES:
+        month = int(CORRECT_ISSUE_DATES[split([-2])])
     # normalize the month & day values if they are out of range
     month = max(min(month, 12), 1)
     day = max(min(day, 31), 1)

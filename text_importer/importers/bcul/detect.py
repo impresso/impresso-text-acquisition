@@ -49,6 +49,11 @@ Args:
 
 # issues that lead to HTTP response 404. Skipping them altogether.
 FAULTY_ISSUES = ['127626', '127627', '127628', '127629', '127630', '127631', '127625']
+CORRECT_ISSUE_DATES = {
+    '170463': '08',
+    '170468': '09',
+    '170466': '11',
+} 
 
 def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
     """Create a `BculIssueDir` object from a directory.
@@ -82,13 +87,25 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
     # check if multiple issues are at this date:
     day_dir = os.path.dirname(path)
     day_editions = list(os.listdir(day_dir))
+    day_editions = [
+        str(i) for i in os.listdir(day_dir) 
+        if i not in FAULTY_ISSUES and 
+        i not in CORRECT_ISSUE_DATES and
+        i != '.DS_Store'
+    ]
+    
     # sometimes, DS_store files are created in directories by macos
-    if '.DS_Store' in day_editions:
-        day_editions.remove('.DS_Store')
-    if len(day_editions) > 1:
+    #if '.DS_Store' in day_editions:
+    #    day_editions.remove('.DS_Store')
+    if len(day_editions) > 1 and os.path.basename(path) not in CORRECT_ISSUE_DATES:
         # if multiple issues exist for a given day, find the correct edition
         logger.info("Multiple issues for %s, finding the edition", day_dir)
-        day_editions = [str(i) for i in os.listdir(day_dir) if i not in FAULTY_ISSUES]
+        # exclude incorrect issues from the list 
+        """day_editions = [
+            str(i) for i in os.listdir(day_dir) 
+            if i not in FAULTY_ISSUES and 
+            i not in CORRECT_ISSUE_DATES
+        ]"""
         index = sorted(day_editions).index(os.path.basename(path))
         edition = string.ascii_lowercase[index]
     else:
