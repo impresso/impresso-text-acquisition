@@ -51,7 +51,7 @@ def parse_date(mit_filename: str) -> tuple[date, str]:
 
     # some issues are not placed in the correct folder
     if split[-2] in CORRECT_ISSUE_DATES:
-        month = int(CORRECT_ISSUE_DATES[split([-2])])
+        month = int(CORRECT_ISSUE_DATES[split[-2]])
     # normalize the month & day values if they are out of range
     month = max(min(month, 12), 1)
     day = max(min(day, 31), 1)
