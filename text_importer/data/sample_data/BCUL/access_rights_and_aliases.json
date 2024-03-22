@@ -232,5 +232,60 @@
         "file_type": "xml",
         "access_right": "open_public",
         "bin_title": "La_revue_agricole"
+    },
+    "Bulletins_du_Grand_Conseil": {
+        "alias": "RN",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Feuille_d'avis_de_Morges_1": {
+        "alias": "FAM",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Feuille_d'avis_de_Vevey_1": {
+        "alias": "FAV1",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "L'Echo_de_Morges": {
+        "alias": "EM",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "L'Estafette_Journal_suisse": {
+        "alias": "esta",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "La_Patrie": {
+        "alias": "PAT",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "La_Veveysane": {
+        "alias": "VVS",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Le_Nouvelliste_vaudois": {
+        "alias": "NV1",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Nouvelliste_vaudois_et_journal_national_suisse": {
+        "alias": "NV2",
+        "file_type": "xml",
+        "access_right": "open_public"
+    },
+    "Repertoires_de_Bulletins_du_Grand_Conseil": {
+        "alias": "RN1",
+        "file_type": "json",
+        "access_right": "open_public"
+    },
+    "Travaux_des_Constituantes": {
+        "alias": "RN2",
+        "file_type": "json",
+        "access_right": "open_public"
     }
 }
