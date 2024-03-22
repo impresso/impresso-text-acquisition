@@ -282,14 +282,20 @@ def main():
     patch_info_issues = (
         patched_rero_issues
             .map_partitions(lambda i_l: [i[1] for i in i_l])
-            .to_dataframe()
+            .to_dataframe(meta={'issue_id': str, 'issue_patching_done': bool, 
+                            'num_pages': "Int64", 'dest_res': "Int64", 
+                            "curr_res":  "Int64", 'zip_contents': str,
+                            'used_image_info_file': bool})
         ).compute()
     
     logger.info("Aggregating the patching information of pages for future reference...")
     patch_info_pages = (
         patched_rero_pages
             .map_partitions(lambda i_l: [i[1] for i in i_l])
-            .to_dataframe()
+            .to_dataframe(meta={'issue_id': str, 'page_patching_done': bool, 
+                            'page_id': str, 'dest_res': "Int64", 
+                            "curr_res":  "Int64", 'zip_contents': str,
+                            'used_image_info_file': bool, "all_scaled": bool})
             .groupby(by=['issue_id', 'page_patching_done', 'dest_res', 
                          'curr_res', 'used_image_info_file', 'all_scaled'])
             .agg({'page_id': 'count'})
@@ -316,7 +322,7 @@ def main():
         "is_staging": True,
         "is_patch": True,
         "patched_fields": [PROP_NAME],
-        "push_to_git": False,
+        "push_to_git": True,
         "file_extensions": "issues.jsonl.bz2",
         "log_file": log_file, 
         "notes": f"Patching RERO 1 data ({RERO_1_TITLES}) to rescale their coordinates (patch_7)."
