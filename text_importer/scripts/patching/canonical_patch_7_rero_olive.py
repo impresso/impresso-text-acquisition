@@ -125,7 +125,7 @@ def find_convert_coords(
     
 
     # for LCG, only years later than 1891 need to be fixed
-    if title != 'LCG' or issue_id.split('-')[1]>1891:
+    if title != 'LCG' or int(issue_id.split('-')[1])>1891:
         if issue_id in to_patch:
             res = to_patch[issue_id]
             # keep trace of whether or not we fetched the information from the image info file
