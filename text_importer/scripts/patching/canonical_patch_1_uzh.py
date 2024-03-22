@@ -262,7 +262,7 @@ def to_issue_id_pages_dict(pages: list[dict[str, Any]]) -> dict[str, list[dict[s
 
     if len(issues_present)!=1: 
         logger.warning("Did not find exactly one issue in the pages; issue(s): %s", issues_present)
-        print("Did not find exactly one issue in the pages; issue(s): %s", issues_present)
+        print("Did not find exactly one issue in the pages; issue(s): %s", issues_present.keys())
         if len(issues_present) >1:
             pairs = [((k, [p['id'] for p in ps]) for k,ps in issues_present)]
             print(f"Here are the specific contents of the pages: {pairs}")
