@@ -53,7 +53,7 @@ class FedgazNewspaperPage(TetmlNewspaperPage):
         }
 
         if not self.page_data["r"]:
-            logger.warning(f"Page {self.id} has no OCR text")
+            logger.warning("Page %s has no OCR text", self.id)
 
 
 class FedgazNewspaperIssue(TetmlNewspaperIssue):
@@ -77,7 +77,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
     def __init__(self, issue_dir: IssueDir):
         NewspaperIssue.__init__(self, issue_dir)
 
-        logger.info(f"Starting to parse {self.id}")
+        logger.info("Starting to parse %s", self.id)
 
         # get all tetml files of this issue
         self.files = self._index_issue_files()
@@ -92,7 +92,9 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         self._heuristic_article_segmentation(candidates_only=True)
 
         # using canonical ('m') and additional non-canonical ('meta') metadata
-        self.content_items = [{"m": art["m"], "meta": art["meta"]} for art in self.article_data]
+        self.content_items = [
+            {"m": art["m"], "meta": art["meta"]} for art in self.article_data
+        ]
 
         # instantiate the individual pages
         self._find_pages()
@@ -106,7 +108,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             "ar": self.rights,
         }
 
-        logger.info(f"Finished parsing {self.id}")
+        logger.info("Finished parsing %s", self.id)
 
     def parse_articles(self):
         """
@@ -120,7 +122,9 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
                 data = tetml_parser(fname)
 
                 # canonical identifier
-                data["m"]["id"] = canonical_path(self.issuedir, name=f"i{i+1:04}", extension="")
+                data["m"]["id"] = canonical_path(
+                    self.issuedir, name=f"i{i+1:04}", extension=""
+                )
 
                 # reference to content item per region
                 for page in data["pages"]:
@@ -139,7 +143,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
                 articles.append(data)
 
             except Exception as e:
-                logger.error(f"Parsing of {fname} failed for {self.id}")
+                logger.error("Parsing of %s failed for %s", fname, self.id)
                 raise e
 
         return articles
@@ -162,7 +166,9 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             for can_page, page_content in zip(can_pages, art["pages"]):
                 can_id = f"{self.id}-p{can_page:04}"
                 self.pages.append(
-                    TetmlNewspaperPage(can_id, can_page, page_content, art["meta"]["tetml_path"])
+                    TetmlNewspaperPage(
+                        can_id, can_page, page_content, art["meta"]["tetml_path"]
+                    )
                 )
 
     def _parse_metadata(self, fname="metadata.tsv"):
@@ -186,11 +192,12 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             date = pd.Timestamp(self.date)
             df = df[df["issue_date"] == date]
 
-        except FileNotFoundError:
-            raise FileNotFoundError(
-                f"File with additional metadata needs to be placed in \
-            the top newspaper directory and named {fname}"
+        except FileNotFoundError as e:
+            msg = (
+                "File with additional metadata needs to be placed in "
+                f"the top newspaper directory and named {fname}"
             )
+            raise FileNotFoundError(msg) from e
 
         return df
 
@@ -289,7 +296,13 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             max_cost_total = max(2, int(0.2 * len(title)))
             max_insert = int(0.3 * len(title))
             # scaled by 3 to make insertions very cheap to account for bad OCR
-            fuzzy_cost = "{i<=" + str(max_insert) + ",1i+3d+3s<=" + str(max_cost_total * 3) + r"}"
+            fuzzy_cost = (
+                "{i<="
+                + str(max_insert)
+                + ",1i+3d+3s<="
+                + str(max_cost_total * 3)
+                + r"}"
+            )
             # fuzzy match article headline to locate (bestmatch flag)
             pattern = r"(?b)(" + title + r")" + fuzzy_cost
 
@@ -301,9 +314,9 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
 
                 error_msg = (
                     f"Positive fuzzy match (sanity check):\n"
-                    + f'\ttitle: {art["m"]["t"]}\n'
-                    + f"\tpattern: {pattern}\n"
-                    + f"\tmatch: {match}"
+                    f'\ttitle: {art["m"]["t"]}\n'
+                    f"\tpattern: {pattern}\n"
+                    f"\tmatch: {match}"
                 )
 
                 logger.info(error_msg)
@@ -314,9 +327,9 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             except AttributeError:
                 error_msg = (
                     f"Error while searching for the logical boundary.\n"
-                    + f"The fuzzy match failed to match anything in the following article:\n"
-                    + f"{art['meta']}\n"
-                    + f"Pattern:\n{pattern}"
+                    f"The fuzzy match failed to match anything in the following article:\n"
+                    f"{art['meta']}\n"
+                    f"Pattern:\n{pattern}"
                 )
                 logger.error(error_msg)
 
@@ -330,8 +343,8 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
                 self._set_new_article_boundary(bound)
             except Exception as e:
                 error_msg = (
-                    f"Error while drawing a new article boundary at position {bound} in the issue {self.id}.\n"
-                    + f"Error: {e}"
+                    f"Error while drawing a new article boundary at position {bound} "
+                    f"in the issue {self.id}.\n Error: {e}"
                 )
                 logger.error(error_msg)
 

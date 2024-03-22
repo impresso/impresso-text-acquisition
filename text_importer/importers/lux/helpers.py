@@ -5,8 +5,9 @@ from typing import Any
 NON_ARTICLE = ["advertisement", "death_notice"]
 
 
-def convert_coordinates(hpos: int, vpos: int, width: int, height: int,
-                        x_res: float, y_res: float) -> list[int]:
+def convert_coordinates(
+    hpos: int, vpos: int, width: int, height: int, x_res: float, y_res: float
+) -> list[int]:
     """Convert the coordinates to iiif-compliant ones using the resolution.
 
     - x = (coordinate['xResolution']/254.0) * coordinate['hpos']
@@ -31,6 +32,7 @@ def convert_coordinates(hpos: int, vpos: int, width: int, height: int,
     h = (y_res / 254) * height
     return [int(x), int(y), int(w), int(h)]
 
+
 def encode_ark(ark: str) -> str:
     """Replaces (encodes) backslashes in the Ark identifier.
 
@@ -40,10 +42,10 @@ def encode_ark(ark: str) -> str:
     Returns:
         str: New ark identifier with encoded backslashes.
     """
-    return ark.replace('/', '%2f')
+    return ark.replace("/", "%2f")
 
 
-def div_has_body(div: Tag, body_type='body') -> bool:
+def div_has_body(div: Tag, body_type="body") -> bool:
     """Checks if the given `div` has a body in it's direct children.
 
     Args:
@@ -54,8 +56,8 @@ def div_has_body(div: Tag, body_type='body') -> bool:
         bool: True if one or more of `div`'s direct children have a body.
     """
     children_types = set()
-    for i in div.findChildren('div', recursive=False):
-        child_type = i.get('TYPE')
+    for i in div.findChildren("div", recursive=False):
+        child_type = i.get("TYPE")
         if child_type is not None:
             children_types.add(child_type.lower())
     return body_type in children_types
@@ -74,9 +76,9 @@ def section_is_article(section_div: Tag) -> bool:
         bool: True if given `div` is an article section.
     """
     types = []
-    for c in section_div.findChildren('div'):
-        _type = c.get('TYPE').lower()
-        if not (_type == 'body' or _type == 'body_content'):
+    for c in section_div.findChildren("div"):
+        _type = c.get("TYPE").lower()
+        if not (_type == "body" or _type == "body_content"):
             types.append(_type)
     return not all(t in NON_ARTICLE for t in types)
 
@@ -86,7 +88,7 @@ def find_section_articles(
 ) -> list[str]:
     """Parse the articles inside the section div and get their content item ID.
 
-    Recover the content item canonical ID corresponding to each article using 
+    Recover the content item canonical ID corresponding to each article using
     the legacy ID (from the OCR) of the articles found in `div`'s children.
 
     Args:
@@ -98,16 +100,16 @@ def find_section_articles(
     """
     articles_lid = []
     for d in section_div.findChildren("div", {"TYPE": "ARTICLE"}):
-        article_id = d.get('DMDID')
+        article_id = d.get("DMDID")
         if article_id is not None:
             articles_lid.append(article_id)
-    
+
     children_art = []
     # Then search for corresponding content item
     for i in articles_lid:
         for ci in content_items:
-            if i == ci['l']['id']:
-                children_art.append(ci['m']['id'])
+            if i == ci["l"]["id"]:
+                children_art.append(ci["m"]["id"])
     return children_art
 
 
@@ -117,7 +119,7 @@ def remove_section_cis(
     """Remove undesired content items based on the formed sections.
 
     Some content items are contained within a section and should not be in the
-    content items. Given the recovered section content items, they can be 
+    content items. Given the recovered section content items, they can be
     removed.
 
     Args:
@@ -125,21 +127,19 @@ def remove_section_cis(
         sections (list[dict[str, Any]]): Formed section content items.
 
     Returns:
-        tuple[list[dict[str, Any]], list[dict[str, Any]]]: Filtered 
+        tuple[list[dict[str, Any]], list[dict[str, Any]]]: Filtered
             content items and ones that were removed.
     """
-    to_remove = [j for i in sections for j in i['l']['canonical_parts']]
+    to_remove = [j for i in sections for j in i["l"]["canonical_parts"]]
     if len(to_remove) == 0:
         return content_items, []
-        
+
     to_remove = set(to_remove)
     new_cis = []
     removed = []
     for ci in content_items:
-        if ci['m']['id'] not in to_remove or ci['m']['tp'] == CONTENTITEM_TYPE_IMAGE:
+        if ci["m"]["id"] not in to_remove or ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
             new_cis.append(ci)
-            removed.append(ci['m']['id'])
-    
+            removed.append(ci["m"]["id"])
+
     return new_cis, list(to_remove)
-
-
