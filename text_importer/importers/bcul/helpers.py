@@ -163,6 +163,81 @@ def parse_token(t: Tag) -> dict[str, list[int] | str]:
     tx = t.getText()
     return {"c": coords, "tx": tx}
 
+def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]]:
+    """Parse the given div Tag to extract the token and coordinates.
+
+    Args:
+        char_tokens (list[Tag]): div tag corresponding to a line of tokens to parse.
+
+    Returns:
+        list[dict[str, list[int] | str]]: List of reconstructed parsed token.
+    """
+    print(f"inside parse_char_tokens: {char_tokens}")
+    tokens = []
+    last_token = {} 
+    coords = []
+    tx = None
+    # the first token is always a start of word
+    last_token_space = True
+    for idx, t in enumerate(char_tokens):
+
+        # not all OCR has the same indication for word start: 'wordStart', 'wordFirst'
+        is_word_start = (
+            t.get('wordStart') in ['true', '1'] 
+            if t.get('wordStart') is not None else False
+        )
+        is_word_first = (
+            t.get('wordFirst') in ['true', '1'] 
+            if t.get('wordFirst') is not None else False
+        )
+        curr_t = t.getText()
+        
+        # if start of a new word, add the last token to the list of tokens (if not new line)
+        if idx==0 or is_word_start or is_word_first or last_token_space:
+            if curr_t != ' ' and curr_t is not None:
+                if tx is not None and len(coords) !=0: 
+                    tokens.append(last_token)
+
+                # restart the values for the new token
+                tx = curr_t
+                coords = get_div_coords(t)
+                last_token_space = False
+            else:
+                continue
+        # continuing a word
+        else:
+            if curr_t == ' ' or curr_t is None:
+                # if the token is a space, it's the end of the word.
+                last_token_space = True
+            else:
+                # if it's not ne end of the word, add the character to the others.
+                tx = tx + curr_t
+                # fetch the bottom right coordinates of the last char to create the workd coordinates
+                b, r = int(t.get("b")), int(t.get("r"))
+                coords[2:] = [r - coords[0], b - coords[1]]
+        # ensure the current progress is saved for next token
+        last_token = {"c": coords, "tx": tx}
+    tokens.append(last_token)
+    
+    return tokens
+
+
+def parse_line_tokens(line_tokens: list[Tag]) -> dict[str, list[int] | str]:
+    """Parse the given div Tag to extract the token and coordinates.
+
+    Args:
+        t (Tag): div tag corresponding to a token to parse.
+
+    Returns:
+        dict[str, list[int] | str]: dict with the coordinates ans token.
+    """
+    tokens = []
+    for t in line_tokens:
+        tokens.append({"c": get_div_coords(t), "tx": t.getText()})
+    coords = get_div_coords(t)
+    tx = t.getText()
+    return {"c": coords, "tx": tx}
+
 
 def parse_textline(line: Tag) -> dict[str, list[Any]]:
     """Parse the div element corresponding to a textline.
@@ -174,8 +249,18 @@ def parse_textline(line: Tag) -> dict[str, list[Any]]:
         dict[str, list]: Parsed line of text.
     """
     line_ci = {"c": get_div_coords(line)}
-    tokens = [parse_token(t) for t in line.findAll("charParams")]
-
+    # there are two types of tokens: characters and lines, that need to be handled differently
+    char_tokens = line.findAll("charParams")
+    if len(char_tokens) != 0:
+        tokens = parse_char_tokens(char_tokens)
+    else:
+        line_tokens = line.findAll("formatting")
+        if len(line_tokens) != 0:
+            # when lines are not separated into tokens, we have no other coordinates.
+            tokens = [{"c": line_ci["c"], "tx": t.getText()} for t in line_tokens]
+        else:
+            raise Exception("Tokens within lines are not characters or lines.")
+        
     line_ci["t"] = tokens
     return line_ci
 
