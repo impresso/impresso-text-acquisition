@@ -146,6 +146,15 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
         if _dir not in ["OLD", "wrong_BCUL", ".DS_Store"] and _dir in ar_and_alias
     ]
 
+    # for the case of 'La_Veveysanne__La_Patrie' add them also
+    vvs_pat_base_dir = os.path.join(dir_path, 'La_Veveysanne__La_Patrie')
+    vvs_pat_dirs = [
+        os.path.join(vvs_pat_base_dir, _dir)
+        for _dir in os.listdir(vvs_pat_base_dir) 
+        if ".DS_Store" not in _dir and _dir in ar_and_alias
+    ]
+    journal_dirs.extend(vvs_pat_dirs)
+
     issue_dirs = []
     for journal in journal_dirs:
         logger.info("Detecting issues for %s.", journal)
