@@ -15,35 +15,15 @@ CORRECT_ISSUE_DATES = {
     '170466': '11',
 } 
 
-def replace_alias(current_alias: str, journal_name: str) -> str:
-    # TODO replace by a csv file
-    # some title aliases repeat or don't match our format restrictions
-    if "GAV" in current_alias:
-        return "GAVi"
-    elif "feuille" in current_alias:
-        return (
-            "feuilleP" if journal_name in "Feuille_d'avis_de_Payerne" else "feuillePMA"
-        )
-    elif "TO-SU-IL" in current_alias:
-        return "TouSuIl"
-    elif "Le_Phare_de_Nyon" in journal_name:
-        return "PDN"
-    elif "FAN" in current_alias and "Le_Phare_du_" in journal_name:
-        return "PDL"
-    elif "VVS" in current_alias and "Le_Veveysan_1" in journal_name:
-        return "VVS1"
-    else:
-        return current_alias
 
-
-def parse_date(mit_filename: str) -> tuple[date, str]:
-    """Given the Mit filename, parse the Journal name and the date.
+def parse_date(mit_filename: str) -> date:
+    """Given the Mit filename, parse the date and ensure it is valid.
 
     Args:
         mit_filename (str): Filename of the 'mit' file.
 
     Returns:
-        Tuple[date, str]: Publication date of the issue, and journal name.
+        date: Publication date of the issue
     """
     split = mit_filename.split("/")
     # extract date of publication
@@ -52,15 +32,12 @@ def parse_date(mit_filename: str) -> tuple[date, str]:
     # some issues are not placed in the correct folder
     if split[-2] in CORRECT_ISSUE_DATES:
         month = int(CORRECT_ISSUE_DATES[split[-2]])
+
     # normalize the month & day values if they are out of range
     month = max(min(month, 12), 1)
     day = max(min(day, 31), 1)
 
-    # extract journal name alias
-    # basename = os.path.splitext(split[-1])[0]
-    # journal_alias = replace_alias(basename.split('_')[0], split[-6])
-
-    return datetime(year, month, day).date()  # , journal_alias
+    return datetime(year, month, day).date() 
 
 
 def find_mit_file(_dir: str) -> str:
@@ -106,6 +83,15 @@ def get_page_number(exif_file: str) -> int:
 
 
 def find_page_file_in_dir(base_path: str, file_id: str) -> str | None:
+    """Find the page file in a directory given the name it should have.
+
+    Args:
+        base_path (str): The base path of the directory.
+        file_id (str): The name of the page file if present.
+
+    Returns:
+        str | None: The path to the page file if found, otherwise None.
+    """
     page_path = os.path.join(base_path, "{}.xml".format(file_id))
     if not os.path.isfile(page_path):
         # some xml files are compressed
@@ -150,29 +136,15 @@ def get_div_coords(div: Tag) -> list[int]:
     return [l, t, r - l, b - t]
 
 
-def parse_token(t: Tag) -> dict[str, list[int] | str]:
-    """Parse the given div Tag to extract the token and coordinates.
-
-    Args:
-        t (Tag): div tag corresponding to a token to parse.
-
-    Returns:
-        dict[str, list[int] | str]: dict with the coordinates ans token.
-    """
-    coords = get_div_coords(t)
-    tx = t.getText()
-    return {"c": coords, "tx": tx}
-
 def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]]:
-    """Parse the given div Tag to extract the token and coordinates.
+    """Parse a list of div Tag to extract the tokens and coordinates within a line.
 
     Args:
-        char_tokens (list[Tag]): div tag corresponding to a line of tokens to parse.
+        char_tokens (list[Tag]): div Tags corresponding to a line of tokens to parse.
 
     Returns:
-        list[dict[str, list[int] | str]]: List of reconstructed parsed token.
+        list[dict[str, list[int] | str]]: List of reconstructed parsed tokens.
     """
-    print(f"inside parse_char_tokens: {char_tokens}")
     tokens = []
     last_token = {} 
     coords = []
@@ -212,31 +184,16 @@ def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]
             else:
                 # if it's not ne end of the word, add the character to the others.
                 tx = tx + curr_t
-                # fetch the bottom right coordinates of the last char to create the workd coordinates
+                # fetch the bottom & right coordinates of the last char to create the word coordinates
                 b, r = int(t.get("b")), int(t.get("r"))
                 coords[2:] = [r - coords[0], b - coords[1]]
         # ensure the current progress is saved for next token
         last_token = {"c": coords, "tx": tx}
+
+    # when all tokens have been processed, add the last token that was constructed.
     tokens.append(last_token)
     
     return tokens
-
-
-def parse_line_tokens(line_tokens: list[Tag]) -> dict[str, list[int] | str]:
-    """Parse the given div Tag to extract the token and coordinates.
-
-    Args:
-        t (Tag): div tag corresponding to a token to parse.
-
-    Returns:
-        dict[str, list[int] | str]: dict with the coordinates ans token.
-    """
-    tokens = []
-    for t in line_tokens:
-        tokens.append({"c": get_div_coords(t), "tx": t.getText()})
-    coords = get_div_coords(t)
-    tx = t.getText()
-    return {"c": coords, "tx": tx}
 
 
 def parse_textline(line: Tag) -> dict[str, list[Any]]:
