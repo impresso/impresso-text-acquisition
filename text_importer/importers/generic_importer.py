@@ -2,7 +2,7 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
-    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar> --git-repo=<gr>]
+    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar> --git-repo=<gr> --num-workers=<nw>]
     <importer-name>importer.py --version
 
 Options:
@@ -17,6 +17,7 @@ Options:
     --access-rights=<ar>  Access right file if relevant (only for `olive` and `rero` importers)
     --chunk-size=<cs>   Chunk size in years used to group issues when importing
     --git-repo=<gr>   Local path to the "impresso-text-acquisition" git directory (including it).
+    --num-workers=<nw>  Number of workers to use for local dask cluster
     --verbose   Verbose log messages (good for debugging)
     --clear    Removes the output folder (if already existing)
     --incremental   Skips issues already present in output directory 
@@ -78,7 +79,7 @@ def clear_output_dir(out_dir: str | None, clear_output: bool | None) -> None:
 
 
 def get_dask_client(
-    scheduler: str | None, log_file: str | None, log_level: int
+    scheduler: str | None, log_file: str | None, log_level: int, n_workers: int | None
 ) -> Client:
     """Instantiate Dask client with given scheduler address or default values.
 
@@ -91,6 +92,7 @@ def get_dask_client(
         scheduler (str | None): TCP address of the Dask scheduler to use.
         log_file (str | None): File to use for logging.
         log_level (int): Log level used, either INFO or DEBUG in verbose mode.
+        n_workers (int | None): Number of workers to use in local cluster
 
     Returns:
         Client: A client connected to and allowing to manage the Dask cluster.
@@ -98,7 +100,10 @@ def get_dask_client(
     if scheduler is None:
         #cluster = LocalCluster(n_workers=32, memory_limit='auto', threads_per_worker=2)
         #client = Client(cluster)
-        client = Client(n_workers=24, threads_per_worker=2)
+        if n_workers is not None:
+            client = Client(n_workers=n_workers, threads_per_worker=2)
+        else:
+            client = Client(n_workers=24, threads_per_worker=2)
     else:
         client = Client(scheduler)
         client.run(
@@ -201,6 +206,7 @@ def main(
     print_version = args["--version"]
     config_file = args["--config-file"]
     repo_path = args["--git-repo"]
+    num_workers = args["--num-workers"]
     
     if print_version:
         print(f'impresso-txt-importer v{__version__}')
