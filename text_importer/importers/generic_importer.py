@@ -216,7 +216,7 @@ def main(
     logger.info("CLI arguments received: {}".format(args))
     
     # start the dask local cluster
-    client = get_dask_client(scheduler, log_file, log_level)
+    client = get_dask_client(scheduler, log_file, log_level, int(num_workers))
     
     logger.info(f"Dask cluster: {client}")
     
