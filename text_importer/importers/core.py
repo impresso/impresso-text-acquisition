@@ -498,12 +498,11 @@ def compress_issues(
     except Exception as e:
         logger.error("Error for %s: %s", filepath, e)
         write_error(filepath, e, failed_log)
-
-    # Once the issues were written without issues, add their info to the manifest
-    yearly_stats = []
-    for i in items:
-        yearly_stats.append(counts_for_canonical_issue(i))
-        # manifest.add_by_title_year(newspaper, year, counts_for_canonical_issue(i))
+    else:
+        # Once the issues were written without problems, add their info to the manifest
+        yearly_stats = []
+        for i in items:
+            yearly_stats.append(counts_for_canonical_issue(i))
 
     return f"{newspaper}-{year}", filepath, yearly_stats
 

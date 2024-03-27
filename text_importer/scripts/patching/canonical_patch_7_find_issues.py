@@ -14,20 +14,13 @@ Options:
 import os
 import json
 import logging
-import jsonlines
-from impresso_commons.utils import s3
-from impresso_commons.path.path_s3 import fetch_files
-from impresso_commons.versioning.data_manifest import DataManifest
-from text_importer.importers.core import remove_filelocks
-import dask.bag as db
-from typing import Any, Callable
-import git
-from text_importer.utils import init_logger
-import copy
-from docopt import docopt
-from collections import defaultdict
 import shutil
+from typing import Any, Callable
 from zipfile import ZipFile, BadZipFile
+from docopt import docopt
+
+from impresso_commons.utils import s3
+from text_importer.utils import init_logger
 
 IMPRESSO_STORAGEOPT = s3.get_storage_options()
 UZH_TITLES = ["FedGazDe", "FedGazFr", "NZZ"]
@@ -35,22 +28,6 @@ IMPRESSO_IIIF_BASE_URI = "https://impresso-project.ch/api/proxy/iiif/"
 PROP_NAME = "iiif_img_base_uri"
 
 logger = logging.getLogger()
-
-
-def add_property(
-    object_dict: dict[str, Any],
-    prop_name: str,
-    prop_function: Callable[[str], str],
-    function_input: str,
-):
-    object_dict[prop_name] = prop_function(function_input)
-    logger.debug(
-        "%s -> Added property %s: %s",
-        object_dict["id"],
-        prop_name,
-        object_dict[prop_name],
-    )
-    return object_dict
 
 
 def empty_folder(dir_path: str) -> None:
@@ -81,12 +58,12 @@ def write_error(
     """
     note = f"Error in {origin_function} for {thing_id}: {error}"
     logger.exception(note)
-    with open(failed_log, "a+") as f:
+    with open(failed_log, "a+", encoding="utf-8") as f:
         f.write(note + "\n")
 
 
-def extract_zip_contents(zip_path):
-   
+def extract_zip_contents(zip_path: str) -> tuple[list[str], list[str]]:
+
     zip_contents = ZipFile(zip_path).namelist()
 
     pg_res_files = [f for f in zip_contents if "Img" in f and "Pg" in f]
@@ -101,17 +78,23 @@ def extract_zip_contents(zip_path):
     #            pg_res[pg] = [res]
     return pg_res_files, pg_res
 
+
 def load_json(f_path: str) -> dict:
     with open(f_path, mode="r", encoding="utf-8") as f_in:
         file = json.load(f_in)
     return file
+
 
 def fetch_needed_info_for_title(title, og_data_path, img_data_path, out_path):
 
     # resume a listing in the middle
     if os.path.exists(out_path):
         title_info = load_json(out_path)
-        logger.info("Continuing to fetch for %s, restarting from %a issues", title, len(title_info))
+        logger.info(
+            "Continuing to fetch for %s, restarting from %a issues",
+            title,
+            len(title_info),
+        )
     else:
         title_info = {}
 
@@ -123,10 +106,10 @@ def fetch_needed_info_for_title(title, og_data_path, img_data_path, out_path):
 
     for dir_path, sub_dirs, files in os.walk(os.path.join(img_data_path, title)):
         # only consider the cases where we are in an issue directory
-        if len(sub_dirs) == 0 :
+        if len(sub_dirs) == 0:
             issue_sub_path = dir_path.replace(img_data_path, "")
             issue_id = issue_sub_path.replace("/", "-")
-            if title != 'LCE' or issue_id not in title_info:
+            if title != "LCE" or issue_id not in title_info:
 
                 # add the image info
                 img_info_file = [f for f in files if f.endswith("image-info.json")]
@@ -150,7 +133,9 @@ def fetch_needed_info_for_title(title, og_data_path, img_data_path, out_path):
                         }
 
                 elif len(img_info_file) == 0:
-                    print(f"Warining: Missing image-info file for {issue_id}: {dir_path}")
+                    print(
+                        f"Warining: Missing image-info file for {issue_id}: {dir_path}"
+                    )
                     title_info[issue_id] = {
                         "img": {"file_present": False, "img_info_file": dir_path}
                     }
@@ -168,11 +153,15 @@ def fetch_needed_info_for_title(title, og_data_path, img_data_path, out_path):
                 doc_zip_path = os.path.join(og_data_dir_path, "Document.zip")
                 if os.path.exists(doc_zip_path):
                     try:
-                        title_info[issue_id]["original"] = {"zip_doc_path": doc_zip_path}
+                        title_info[issue_id]["original"] = {
+                            "zip_doc_path": doc_zip_path
+                        }
                         pg_res_files, pg_res = extract_zip_contents(
                             title_info[issue_id]["original"]["zip_doc_path"]
                         )
-                        title_info[issue_id]["original"]["zip_img_contents"] = pg_res_files
+                        title_info[issue_id]["original"][
+                            "zip_img_contents"
+                        ] = pg_res_files
                         if len(pg_res) != 0:
                             title_info[issue_id]["original"]["resolutions"] = pg_res
                     except BadZipFile as e:
@@ -186,7 +175,9 @@ def fetch_needed_info_for_title(title, og_data_path, img_data_path, out_path):
 
                 if len(title_info) % 50 == 0:
                     logger.info(
-                        "Currently on issue %s, done %s issues.", issue_id, len(title_info)
+                        "Currently on issue %s, done %s issues.",
+                        issue_id,
+                        len(title_info),
                     )
                     if len(title_info) % 500 == 0:
                         logger.info("Done 500 issues, saving file temporarily.")
@@ -228,7 +219,6 @@ def main():
     # set some titles at the front of the line as priority
     rero_titles = ["LCG", "DLE", "LNF", "LBP", "LSE", "EXP"]
     rero_titles.extend(rero_journal_dirs)
-    #rero_titles = rero_journal_dirs
 
     logger.info("Will process titles: %s", rero_titles)
 
@@ -237,7 +227,7 @@ def main():
 
         img_info_paths_file = f"{local_base_path}/{journal}_img_res_info.json"
 
-        if not os.path.exists(img_info_paths_file) or journal == 'LCE':
+        if not os.path.exists(img_info_paths_file) or journal == "LCE":
             title_info, missing_info_files, mltp_if = fetch_needed_info_for_title(
                 journal, og_data_base_path, images_base_path, img_info_paths_file
             )
