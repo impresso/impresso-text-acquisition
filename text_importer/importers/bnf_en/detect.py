@@ -9,6 +9,7 @@ from string import ascii_lowercase
 
 import requests
 from bs4 import BeautifulSoup
+from bs4.element import Tag
 from dask import bag as db
 from impresso_commons.path.path_fs import _apply_datefilter
 from tqdm import tqdm
@@ -76,6 +77,71 @@ def get_api_id(journal: str, api_issue: tuple[str, datetime.date], edition: str)
         journal, date.year, date.month, date.day, ascii_lowercase[edition]
     )
 
+def fix_api_year_mismatch(journal: str, year: int, api_issues: list[Tag], last_i: Tag) -> tuple[list[Tag], Tag | None]:
+    """Modify proivded list of issues fetched from the API to fix some issues present.
+
+    Indeed, the API currently wronly stores the issues for december 31st of some years,
+    with some issues being shifted from one year. 
+    This is not the case for all years, and the correct issue can be present or not.
+    This function aims to rectify this issue and fetch the correct IIIF ark IDs.
+
+    Args:
+        journal (str): Alias of the journal currently under processing.
+        year (int): Year for which the API was queried.
+        api_issues (list[Tag]): List of issues as returned from the API.
+        last_i (Tag): Last december 31st issue entry, returned for the wrong year.
+
+    Returns:
+        tuple[list[Tag], Tag | None]: Corrected issue list and next december 31st issue
+            if the error was present again, None otherwise.
+    """
+    curr_last_i = last_i
+
+    # if there is indeed a mismatch in the year
+    if str(year-1) in api_issues[-1].getText():
+        if '31 décembre' not in api_issues[-1].getText():
+            logger.warning(
+                '%s-%s: Mismatch in year for another day!!: %s', 
+                journal, year, api_issues[-1]
+            )  
+            next_last_i = None
+        else:
+            # store this api_issue for the following year
+            next_last_i = api_issues[-1]
+            # sanity check that the previously stored value corresponds to the correct year
+            if curr_last_i is None:
+                msg = (
+                    f"{journal}-{year}: No previously stored Dec 31s value since "
+                    "it's the last available year, removing the incorrect issue."
+                )
+                logger.info(msg)
+                # if ark is not available: delete the wrong last issue
+                api_issues = api_issues[:-1]
+            elif str(year) in curr_last_i.getText():
+                # replace the final issue by the one with the correct year
+                api_issues[-1] = curr_last_i
+                msg = f"{journal}-{year}: Setting the value of api_issues[-1] to {curr_last_i}"
+                logger.debug(msg)
+            else:
+                msg = (
+                    f"{journal}-{year}: The previously stored dec 31st issue does "
+                    f"not correspond to this year {curr_last_i}"
+                )
+                logger.info(msg)
+    elif str(year) in curr_last_i.getText():
+        # if the last stored value corresponds to this year and december 31st is missing, add it
+        if '31 décembre' in curr_last_i.getText() and '31 décembre' not in api_issues[-1].getText():
+            api_issues.append(curr_last_i)
+            msg = f"{journal}-{year}: Appending {curr_last_i} to api_issues."
+            logger.info(msg)
+            next_last_i = None
+        # if it's not missing but corresponds to another day, log it
+        else:
+            msg = f"{journal}-{year}: api_issues[-1] corresponding to another day than the previous one: {api_issues[-1].getText()}"
+            logger.warning(msg)
+
+    return api_issues, next_last_i
+
 
 def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
     """Given a journal name and Ark, fetch its issues' Ark in the Gallica API.
@@ -114,14 +180,27 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
     years = [int(x.contents[0]) for x in years]
 
     links = []
-    for year in tqdm(years):
+    next_year_last_i = None 
+
+    # start with the last year
+    for year in tqdm(years[::-1]):
         # API requrest
         url = API_ISSUE_URL.format(ark=API_MAPPING[journal], year=year)
         r = requests.get(url, timeout=60)
         api_issues = BeautifulSoup(r.content, "lxml").findAll("issue")
+
+        # fix the problem stemming from the API with dec. 31st being of following year
+        if str(year-1) in api_issues[-1].getText() or (next_year_last_i is not None and str(year) in next_year_last_i.getText()):
+            logger.debug("%s-%s: api_issues[-1].getText(): %s", journal, year, api_issues[-1].getText())
+            api_issues, next_year_last_i = fix_api_year_mismatch(journal, year, api_issues, next_year_last_i)
+        else:
+            # reset the value since it won't be valid anymore
+            next_year_last_i = None
+
         # Parse dates and editions
         api_issues = [
-            (i.get("ark"), get_date(i.get("dayofyear"), year)) for i in api_issues
+            (i.get("ark"), get_date(i.get("dayofyear"), year)) 
+            for i in api_issues
         ]
 
         editions = []
@@ -139,8 +218,9 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
             (get_api_id(journal, i, edition), i[0])
             for i, edition in zip(api_issues, editions)
         ]
-        links += api_issues
-    return links
+        links += api_issues[::-1]
+    # flip the resulting links since they were fetched from end to start
+    return links[::-1]
 
 
 def construct_iiif_arks() -> dict[str, str]:
