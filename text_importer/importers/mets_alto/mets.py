@@ -98,7 +98,7 @@ def get_dmd_sec(mets_doc: BeautifulSoup, _filter: str) -> Tag:
 
     Args:
         mets_doc (BeautifulSoup): BeautifulSoup object of Mets XML document.
-        filter (str): ID of the subsection of interest to filter the search.
+        _filter (str): ID of the subsection of interest to filter the search.
 
     Returns:
         Tag: Contents of the desired ``<dmdsec>`` of the Mets XML document.

@@ -19,7 +19,7 @@ from text_importer.importers.mets_alto import (
     MetsAltoNewspaperPage,
     parse_mets_amdsec,
 )
-from text_importer.utils import get_issue_schema, get_page_schema
+from text_importer.utils import get_issue_schema, get_page_schema, get_reading_order
 
 IssueSchema = get_issue_schema()
 Pageschema = get_page_schema()
@@ -397,8 +397,6 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
     def _parse_content_items(self, mets_doc: BeautifulSoup) -> list[dict[str, Any]]:
         """Extract content item elements from the issue's Mets XML file.
 
-        TODO add reading order
-
         Args:
             mets_doc (BeautifulSoup): Mets document as BeautifulSoup object.
 
@@ -427,6 +425,11 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                 content_items.append(self._parse_content_item(div, counter, mets_doc))
                 counter += 1
 
+        # add the reading order to the items metadata
+        reading_order_dict = get_reading_order(content_items)
+        for item in content_items:
+            item["m"]["ro"] = reading_order_dict[item["m"]["id"]]
+
         return content_items
 
     def _parse_mets(self) -> None:
@@ -451,7 +454,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
 
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "i": content_items,  # TODO add reading order
+            "i": content_items,
             "id": self.id,
             "ar": self.rights,
             "pp": [p.id for p in self.pages],

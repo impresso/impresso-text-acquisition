@@ -77,11 +77,14 @@ def get_api_id(journal: str, api_issue: tuple[str, datetime.date], edition: str)
         journal, date.year, date.month, date.day, ascii_lowercase[edition]
     )
 
-def fix_api_year_mismatch(journal: str, year: int, api_issues: list[Tag], last_i: list[Tag]|None) -> tuple[list[Tag], Tag | None]:
+
+def fix_api_year_mismatch(
+    journal: str, year: int, api_issues: list[Tag], last_i: list[Tag] | None
+) -> tuple[list[Tag], list[Tag] | None]:
     """Modify proivded list of issues fetched from the API to fix some issues present.
 
     Indeed, the API currently wronly stores the issues for december 31st of some years,
-    with some issues being shifted from one year. 
+    with some issues being shifted from one year.
     This is not the case for all years, and the correct issue can be present or not.
     This function aims to rectify this issue and fetch the correct IIIF ark IDs.
 
@@ -92,22 +95,24 @@ def fix_api_year_mismatch(journal: str, year: int, api_issues: list[Tag], last_i
         last_i (Tag): Last december 31st issue entry, returned for the wrong year.
 
     Returns:
-        tuple[list[Tag], Tag | None]: Corrected issue list and next december 31st issue
-            if the error was present again, None otherwise.
+        tuple[list[Tag], list[Tag] | None]: Corrected issue list and next december 31st
+            issue(s) if the error was present again, None otherwise.
     """
     curr_last_i = last_i
 
     # if there is indeed a mismatch in the year
-    if str(year-1) in api_issues[-1].getText():
-        if '31 décembre' not in api_issues[-1].getText():
+    if str(year - 1) in api_issues[-1].getText():
+        if "31 décembre" not in api_issues[-1].getText():
             logger.warning(
-                '%s-%s: Mismatch in year for another day!!: %s', 
-                journal, year, api_issues[-1]
-            )  
+                "%s-%s: Mismatch in year for another day!!: %s",
+                journal,
+                year,
+                api_issues[-1],
+            )
             next_last_i = None
         else:
-            #it can happen that there are 2 issues on Dec 31st:
-            if str(year-1) in api_issues[-2].getText():
+            # it can happen that there are 2 issues on Dec 31st:
+            if str(year - 1) in api_issues[-2].getText():
                 # save the last 2 issues
                 msg = f"{journal}-{year}: Saving 2 editions for Dec 31st {curr_last_i}"
                 logger.info(msg)
@@ -141,7 +146,10 @@ def fix_api_year_mismatch(journal: str, year: int, api_issues: list[Tag], last_i
                 logger.info(msg)
     elif all(str(year) in i.getText() for i in curr_last_i):
         # if the last stored value corresponds to this year and december 31st is missing, add it
-        if all('31 décembre' in i.getText() for i in curr_last_i) and '31 décembre' not in api_issues[-1].getText():
+        if (
+            all("31 décembre" in i.getText() for i in curr_last_i)
+            and "31 décembre" not in api_issues[-1].getText()
+        ):
             api_issues.extend(curr_last_i)
             msg = f"{journal}-{year}: Appending {curr_last_i} to api_issues."
             logger.info(msg)
@@ -191,7 +199,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
     years = [int(x.contents[0]) for x in years]
 
     links = []
-    next_year_last_i = None 
+    next_year_last_i = None
 
     # start with the last year
     for year in tqdm(years[::-1]):
@@ -201,17 +209,27 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
         api_issues = BeautifulSoup(r.content, "lxml").findAll("issue")
 
         # fix the problem stemming from the API with dec. 31st being of following year
-        if str(year-1) in api_issues[-1].getText() or (next_year_last_i is not None and all(str(year) in i.getText() for i in next_year_last_i)):
-            logger.debug("%s-%s: api_issues[-1].getText(): %s, next_year_last_i: %s", journal, year, api_issues[-1].getText(), next_year_last_i)
-            api_issues, next_year_last_i = fix_api_year_mismatch(journal, year, api_issues, next_year_last_i)
+        if str(year - 1) in api_issues[-1].getText() or (
+            next_year_last_i is not None
+            and all(str(year) in i.getText() for i in next_year_last_i)
+        ):
+            logger.debug(
+                "%s-%s: api_issues[-1].getText(): %s, next_year_last_i: %s",
+                journal,
+                year,
+                api_issues[-1].getText(),
+                next_year_last_i,
+            )
+            api_issues, next_year_last_i = fix_api_year_mismatch(
+                journal, year, api_issues, next_year_last_i
+            )
         else:
             # reset the value since it won't be valid anymore
             next_year_last_i = None
 
         # Parse dates and editions
         api_issues = [
-            (i.get("ark"), get_date(i.get("dayofyear"), year)) 
-            for i in api_issues
+            (i.get("ark"), get_date(i.get("dayofyear"), year)) for i in api_issues
         ]
 
         editions = []

@@ -256,6 +256,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             content_item["c"], content_item["m"]["iiif_link"] = self._get_image_info(
                 content_item
             )
+
         return content_item
 
     def _decompose_section(self, div: Tag) -> list[Tag]:
@@ -287,6 +288,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                     final_divs += self._decompose_section(d)
                 else:
                     final_divs.append(d)
+
         return final_divs
 
     def _parse_content_items(self) -> list[dict[str, Any]]:

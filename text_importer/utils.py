@@ -1,14 +1,17 @@
+"""This module contains generic helper functions for the text-importer module.
+"""
+
 import json
 import logging
 import os
 import copy
+from datetime import date
+from typing import Any
 from contextlib import ExitStack
 import pathlib
 import importlib_resources
 
 import python_jsonschema_objects as pjs
-from datetime import date
-from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -80,7 +83,7 @@ def get_page_schema(
     """
     file_manager = ExitStack()
     schema_path = get_pkg_resource(file_manager, schema_folder)
-    with open(os.path.join(schema_path), "r") as f:
+    with open(os.path.join(schema_path), "r", encoding="utf-8") as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().NewspaperPage
@@ -102,7 +105,7 @@ def get_issue_schema(
     """
     file_manager = ExitStack()
     schema_path = get_pkg_resource(file_manager, schema_folder)
-    with open(os.path.join(schema_path), "r") as f:
+    with open(os.path.join(schema_path), "r", encoding="utf-8") as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().NewspaperIssue
@@ -111,13 +114,13 @@ def get_issue_schema(
 
 
 def get_access_right(
-    journal: str, date: date, access_rights: dict[str, dict[str, str]]
+    journal: str, _date: date, access_rights: dict[str, dict[str, str]]
 ) -> str:
     """Fetch the access rights for a specific journal and publication date.
 
     Args:
         journal (str): Journal name.
-        date (date): Publication date of the journal
+        _date (date): Publication date of the journal
         access_rights (dict[str, dict[str, str]]): Access rights for various
             journals.
 
@@ -127,9 +130,11 @@ def get_access_right(
     rights = access_rights[journal]
     if rights["time"] == "all":
         return rights["access-right"].replace("-", "_")
-    else:
-        # TODO: this should rather be a custom exception
-        logger.warning(f"Access right not defined for {journal}-{date}")
+
+    # TODO: this should rather be a custom exception
+    logger.warning("Access right not defined for %s-%s", journal, _date)
+
+    return "undefined"
 
 
 def verify_imported_issues(
@@ -147,9 +152,10 @@ def verify_imported_issues(
     actual_ids = set([i["m"]["id"] for i in actual_issue_json["i"]])
     expected_ids = set([i["m"]["id"] for i in expected_issue_json["i"]])
     logger.info(
-        f"[{actual_issue_json['id']}] "
-        f"Expected IDs: {len(expected_ids)}"
-        f"; actual IDs: {len(actual_ids)}"
+        "[%s] Expected IDs: %s; actual IDs: %s",
+        actual_issue_json["id"],
+        len(expected_ids),
+        len(actual_ids),
     )
     assert expected_ids.difference(actual_ids) == set()
 
@@ -173,8 +179,8 @@ def verify_imported_issues(
         assert actual_content_item["l"] == expected_content_item["l"]
 
         logger.info(
-            f"Content item {actual_content_item['m']['id']}"
-            "dit not change (legacy metadata are identical)"
+            "Content item %s did not change (legacy metadata are identical)",
+            actual_content_item["m"]["id"],
         )
 
 
