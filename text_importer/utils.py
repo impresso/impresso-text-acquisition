@@ -22,7 +22,7 @@ def init_logger(
         _logger (logging.RootLogger): Logger instance to initialise.
         log_level (int): Desidered logging level (e.g. ``logging.INFO``).
         log_file (str): Path to destination file for logging output. If no
-            output file is provided (``log_file`` is ``None``) logs will 
+            output file is provided (``log_file`` is ``None``) logs will
             be written to standard output.
 
     Returns:
@@ -36,23 +36,22 @@ def init_logger(
     else:
         handler = logging.StreamHandler()
 
-    formatter = logging.Formatter(
-        "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
-    )
+    formatter = logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
     handler.setFormatter(formatter)
     _logger.addHandler(handler)
 
     _logger.info("Logger successfully initialised")
     return _logger
 
+
 def get_pkg_resource(
     file_manager: ExitStack, path: str, package: str = "text_importer"
 ) -> pathlib.PosixPath:
     """Return the resource at `path` in `package`, using a context manager.
 
-    Note: 
-        The context manager `file_manager` needs to be instantiated prior to 
-        calling this function and should be closed once the package resource 
+    Note:
+        The context manager `file_manager` needs to be instantiated prior to
+        calling this function and should be closed once the package resource
         is no longer of use.
 
     Args:
@@ -63,12 +62,12 @@ def get_pkg_resource(
     Returns:
         pathlib.PosixPath: Path to desired managed resource.
     """
-    ref = importlib_resources.files(package)/path
+    ref = importlib_resources.files(package) / path
     return file_manager.enter_context(importlib_resources.as_file(ref))
 
 
 def get_page_schema(
-    schema_folder: str = "impresso-schemas/json/newspaper/page.schema.json"
+    schema_folder: str = "impresso-schemas/json/newspaper/page.schema.json",
 ) -> pjs.util.Namespace:
     """Generate a list of python classes starting from a JSON schema.
 
@@ -90,7 +89,7 @@ def get_page_schema(
 
 
 def get_issue_schema(
-    schema_folder: str = "impresso-schemas/json/newspaper/issue.schema.json"
+    schema_folder: str = "impresso-schemas/json/newspaper/issue.schema.json",
 ) -> pjs.util.Namespace:
     """Generate a list of python classes starting from a JSON schema.
 
@@ -138,7 +137,7 @@ def verify_imported_issues(
 ) -> None:
     """Verify that the imported issues fit expectations.
 
-    Two verifications are done: the number of content items, and their IDs. 
+    Two verifications are done: the number of content items, and their IDs.
 
     Args:
         actual_issue_json (dict[str, Any]): Created issue json,
@@ -147,9 +146,11 @@ def verify_imported_issues(
     # FIRST CHECK: number of content items
     actual_ids = set([i["m"]["id"] for i in actual_issue_json["i"]])
     expected_ids = set([i["m"]["id"] for i in expected_issue_json["i"]])
-    logger.info(f"[{actual_issue_json['id']}] "
-                f"Expected IDs: {len(expected_ids)}"
-                f"; actual IDs: {len(actual_ids)}")
+    logger.info(
+        f"[{actual_issue_json['id']}] "
+        f"Expected IDs: {len(expected_ids)}"
+        f"; actual IDs: {len(actual_ids)}"
+    )
     assert expected_ids.difference(actual_ids) == set()
 
     # SECOND CHECK: identity of content items
@@ -171,8 +172,10 @@ def verify_imported_issues(
 
         assert actual_content_item["l"] == expected_content_item["l"]
 
-        logger.info(f"Content item {actual_content_item['m']['id']}"
-                     "dit not change (legacy metadata are identical)")
+        logger.info(
+            f"Content item {actual_content_item['m']['id']}"
+            "dit not change (legacy metadata are identical)"
+        )
 
 
 def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
@@ -188,9 +191,10 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
         dict[str, int]: A dictionary mapping item IDs to their reading order.
     """
     items_copy = copy.deepcopy(items)
-    ids_and_pages = [(i['m']['id'], i['m']['pp']) for i in items_copy]
+    ids_and_pages = [(i["m"]["id"], i["m"]["pp"]) for i in items_copy]
     sorted_ids = sorted(
-        sorted(ids_and_pages, key=lambda x: int(x[0].split('-i')[-1])), 
-        key=lambda x: x[1]
+        sorted(ids_and_pages, key=lambda x: int(x[0].split("-i")[-1])),
+        key=lambda x: x[1],
     )
-    return {t[0]: index+1 for index, t in enumerate(sorted_ids)}
+
+    return {t[0]: index + 1 for index, t in enumerate(sorted_ids)}
