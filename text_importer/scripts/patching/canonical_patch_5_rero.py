@@ -16,14 +16,13 @@ Options:
 
 import os
 import logging
-import copy
 from typing import Any
 from docopt import docopt
 
 from impresso_commons.utils import s3
 from impresso_commons.path.path_s3 import fetch_files
 from impresso_commons.versioning.compute_manifest import create_manifest
-from text_importer.utils import init_logger
+from text_importer.utils import init_logger, get_reading_order
 from text_importer.scripts.patching.canonical_patch_1_uzh import (
     title_year_pair_to_issues,
     write_upload_issues,
@@ -33,27 +32,6 @@ from text_importer.scripts.patching.canonical_patch_1_uzh import (
 
 IMPRESSO_STORAGEOPT = s3.get_storage_options()
 logger = logging.getLogger()
-
-
-def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
-    """Generate a reading order for items based on their id and the pages they span.
-
-    This reading order can be used to display the content items properly in a table
-    of contents without skipping form page to page.
-
-    Args:
-        items (list[dict[str, Any]]): List of items to reorder for the ToC.
-
-    Returns:
-        dict[str, int]: A dictionary mapping item IDs to their reading order.
-    """
-    items_copy = copy.deepcopy(items)
-    ids_and_pages = [(i["m"]["id"], i["m"]["pp"]) for i in items_copy]
-    sorted_ids = sorted(
-        sorted(ids_and_pages, key=lambda x: int(x[0].split("-i")[-1])),
-        key=lambda x: x[1],
-    )
-    return {t[0]: index + 1 for index, t in enumerate(sorted_ids)}
 
 
 def add_ro_to_items(issue: dict[str, Any]) -> list[dict[str, Any]]:

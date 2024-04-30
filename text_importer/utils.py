@@ -5,12 +5,16 @@ import json
 import logging
 import os
 import copy
-from datetime import date
-from typing import Any
-from contextlib import ExitStack
+import shutil
 import pathlib
+from datetime import date
+from typing import Any, Callable
+from contextlib import ExitStack
+from filelock import FileLock
+import jsonlines
 import importlib_resources
 
+from smart_open import open as smart_open_function
 import python_jsonschema_objects as pjs
 
 logger = logging.getLogger(__name__)
@@ -204,3 +208,104 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
     )
 
     return {t[0]: index + 1 for index, t in enumerate(sorted_ids)}
+
+
+def add_property(
+    object_dict: dict[str, Any],
+    prop_name: str,
+    prop_function: Callable[[str], str],
+    function_input: str,
+) -> dict[str, Any]:
+    """Add a property and value to a given object dict computed with a given function.
+
+    Args:
+        object_dict (dict[str, Any]): Object to which the property is added.
+        prop_name (str): Name of the property to add.
+        prop_function (Callable[[str], str]): Function computing the property value.
+        function_input (str): Input to `prop_function` for this object.
+
+    Returns:
+        dict[str, Any]: Updated object.
+    """
+    object_dict[prop_name] = prop_function(function_input)
+    logger.debug(
+        "%s -> Added property %s: %s",
+        object_dict["id"],
+        prop_name,
+        object_dict[prop_name],
+    )
+    return object_dict
+
+
+def empty_folder(dir_path: str) -> None:
+    """Empty a directoy given its path if it exists.
+
+    Args:
+        dir_path (str): Path to the directory to empty.
+    """
+    if os.path.exists(dir_path):
+        shutil.rmtree(dir_path)
+        logger.info("Emptied directory at %s", dir_path)
+    os.mkdir(dir_path)
+
+
+def write_error(
+    thing_id: str, origin_function: str, error: Exception, failed_log: str
+) -> None:
+    """Write the given error of a failed import to the `failed_log` file.
+
+    Adapted from `impresso-text-acquisition/text_importer/importers/core.py` to allow
+    using a issue or page id, and provide the function in which the error took place.
+
+    Args:
+        thing_id (str): Canonical ID of the object/file for which the error occurred.
+        origin_function (str): Function in which the exception occured.
+        error (Exception): Error that occurred and should be logged.
+        failed_log (str): Path to log file for failed imports.
+    """
+    note = f"Error in {origin_function} for {thing_id}: {error}"
+    logger.exception(note)
+    with open(failed_log, "a+", encoding="utf-8") as f:
+        f.write(note + "\n")
+
+
+def write_jsonlines_file(
+    filepath: str,
+    contents: str | list[str],
+    content_type: str,
+    failed_log: str | None = None,
+) -> None:
+    """Write the given contents to a JSONL file given its path.
+
+    Filelocks are used here to prevent concurrent writing to the files.
+
+    Args:
+        filepath (str): Path to the JSONL file to write to.
+        contents (str | list[str]): Dump contents to write to the file.
+        content_type (str): Type of content that is being written to the file.
+        failed_log (str | None, optional): Path to a log to keep track of failed
+            operations. Defaults to None.
+    """
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+    # put a file lock to avoid the overwriting of files due to parallelization
+    lock = FileLock(filepath + ".lock", timeout=13)
+
+    try:
+        with lock:
+            with smart_open_function(filepath, "ab") as fout:
+                writer = jsonlines.Writer(fout)
+
+                writer.write_all(contents)
+
+                logger.info(
+                    "Written %s %s to %s", len(contents), content_type, filepath
+                )
+                writer.close()
+    except Exception as e:
+        logger.error("Error for %s", filepath)
+        logger.exception(e)
+        if failed_log is not None:
+            write_error(
+                os.path.basename(filepath), "write_jsonlines_file()", e, failed_log
+            )

@@ -32,15 +32,16 @@ import shutil
 import time
 from typing import Any, Type, Callable
 
-from dask.distributed import Client, LocalCluster
+from dask.distributed import Client
 from docopt import docopt
 import git
-from impresso_commons.path.path_fs import (KNOWN_JOURNALS,
-                                           detect_canonical_issues,
-                                           IssueDir)
+from impresso_commons.path.path_fs import (
+    KNOWN_JOURNALS,
+    detect_canonical_issues,
+    IssueDir,
+)
 
 from impresso_commons.versioning.data_manifest import DataManifest
-from impresso_commons.versioning.helpers import DataStage
 
 from text_importer import __version__
 
@@ -83,7 +84,7 @@ def get_dask_client(
 ) -> Client:
     """Instantiate Dask client with given scheduler address or default values.
 
-    If a scheduler is given, a Dask scheduler and workers should have been 
+    If a scheduler is given, a Dask scheduler and workers should have been
     previously launched in terminals separate to the one used for the importer.
     If no scheduler is given, the created Dask distributed cluster will have 8
     workers, each with 2 threads.
@@ -98,26 +99,24 @@ def get_dask_client(
         Client: A client connected to and allowing to manage the Dask cluster.
     """
     if scheduler is None:
-        #cluster = LocalCluster(n_workers=32, memory_limit='auto', threads_per_worker=2)
-        #client = Client(cluster)
+        # cluster = LocalCluster(n_workers=32, memory_limit='auto', threads_per_worker=2)
+        # client = Client(cluster)
         if n_workers is not None:
             client = Client(n_workers=n_workers, threads_per_worker=2)
         else:
             client = Client(n_workers=24, threads_per_worker=2)
     else:
         client = Client(scheduler)
-        client.run(
-            init_logger, _logger=logger, log_level=log_level, log_file=log_file
-        )
+        client.run(init_logger, _logger=logger, log_level=log_level, log_file=log_file)
     return client
 
 
 def apply_detect_func(
-    issue_class: Type[NewspaperIssue], 
-    input_dir: str, 
-    access_rights: str, 
-    detect_func: Callable[[str, str], list[IssueDir]], 
-    tmp_dir: str
+    issue_class: Type[NewspaperIssue],
+    input_dir: str,
+    access_rights: str,
+    detect_func: Callable[[str, str], list[IssueDir]],
+    tmp_dir: str,
 ) -> list[IssueDir]:
     """Apply the given `detect_func` function of the importer in use.
 
@@ -133,20 +132,18 @@ def apply_detect_func(
         list[IssueDir]: List of detected issues for this importer.
     """
     if issue_class is BlNewspaperIssue:
-        return detect_func(
-            input_dir, access_rights=access_rights, tmp_dir=tmp_dir
-        )
+        return detect_func(input_dir, access_rights=access_rights, tmp_dir=tmp_dir)
     else:
         return detect_func(input_dir, access_rights=access_rights)
 
 
 def apply_select_func(
-    issue_class: Type[NewspaperIssue], 
-    config: dict[str, Any], 
-    input_dir: str, 
-    access_rights: str, 
+    issue_class: Type[NewspaperIssue],
+    config: dict[str, Any],
+    input_dir: str,
+    access_rights: str,
     select_func: Callable[[str, str, str], list[IssueDir]],
-    tmp_dir: str
+    tmp_dir: str,
 ) -> list[IssueDir]:
     """Apply the given `select_func` function of the importer in use.
 
@@ -155,7 +152,7 @@ def apply_select_func(
         config (dict[str, Any]): Configuration to filter issues to import.
         input_dir (str): Directory containing this importer's newspaper data.
         access_rights (str): Path to the access rights file for this importer.
-        select_func (Callable[[str, str, str], list[IssueDir]]): Function 
+        select_func (Callable[[str, str, str], list[IssueDir]]): Function
             detecting and selecting the issues to import using `config`.
         tmp_dir (str): Temporary directory used to unpack zip archives.
 
@@ -166,14 +163,14 @@ def apply_select_func(
         return select_func(
             input_dir, config=config, access_rights=access_rights, tmp_dir=tmp_dir
         )
-    else:
-        return select_func(input_dir, config=config, access_rights=access_rights)
+
+    return select_func(input_dir, config=config, access_rights=access_rights)
 
 
 def main(
     issue_class: NewspaperIssue,
-    detect_func: Callable[[str, str], list[IssueDir]], 
-    select_func: Callable[[str, str, str], list[IssueDir]]
+    detect_func: Callable[[str, str], list[IssueDir]],
+    select_func: Callable[[str, str, str], list[IssueDir]],
 ) -> None:
     """Import and convert newspapers to Impresso's format using CLI parameters.
 
@@ -185,20 +182,20 @@ def main(
         issue_class (NewspaperIssue): Importer to use for the conversion
         detect_func (Callable[[str, str], list[IssueDir]]): `detect` function
             of the used importer.
-        select_func (Callable[[str, str, str], list[IssueDir]]): `select` 
+        select_func (Callable[[str, str, str], list[IssueDir]]): `select`
             function of the used importer.
     """
-    
+
     # store CLI parameters
     args = docopt(__doc__)
     inp_dir = args["--input-dir"]
     outp_dir = args["--output-dir"]
-    temp_dir = args['--temp-dir']
+    temp_dir = args["--temp-dir"]
     image_dirs = args["--image-dirs"]
     out_bucket = args["--s3-bucket"]
     log_file = args["--log-file"]
-    access_rights_file = args['--access-rights']
-    chunk_size = args['--chunk-size']
+    access_rights_file = args["--access-rights"]
+    chunk_size = args["--chunk-size"]
     scheduler = args["--scheduler"]
     clear_output = args["--clear"]
     incremental_output = args["--incremental"]
@@ -207,73 +204,91 @@ def main(
     config_file = args["--config-file"]
     repo_path = args["--git-repo"]
     num_workers = args["--num-workers"]
-    
+
     if print_version:
-        print(f'impresso-txt-importer v{__version__}')
+        print(f"impresso-txt-importer v{__version__}")
         return
-    
+
     init_logger(logger, log_level, log_file)
-    logger.info("CLI arguments received: {}".format(args))
-    
+    logger.info("CLI arguments received: %s", args)
+
     # start the dask local cluster
     client = get_dask_client(scheduler, log_file, log_level, int(num_workers))
-    
-    logger.info(f"Dask cluster: {client}")
-    
+
+    logger.info("Dask cluster: %s", client)
+
     # Checks if out dir exists (Creates it if not) and if should empty it
-    clear_output_dir(outp_dir, clear_output)  
-    
+    clear_output_dir(outp_dir, clear_output)
+
     # detect/select issues
     if config_file and os.path.isfile(config_file):
-        logger.info(f"Found config file: {os.path.realpath(config_file)}")
-        with open(config_file, 'r') as f:
+        logger.info("Found config file: %s", os.path.realpath(config_file))
+        with open(config_file, "r", encoding="utf-8") as f:
             config = json.load(f)
-        issues = apply_select_func(issue_class, config, input_dir=inp_dir, 
-                                   access_rights=access_rights_file, 
-                                   select_func=select_func, tmp_dir=temp_dir)
+        issues = apply_select_func(
+            issue_class,
+            config,
+            input_dir=inp_dir,
+            access_rights=access_rights_file,
+            select_func=select_func,
+            tmp_dir=temp_dir,
+        )
         logger.info(
-            f"{len(issues)} newspaper remained after applying filter: {issues}"
+            "%s newspaper remained after applying filter: %s", len(issues), issues
         )
     else:
         logger.info("No config file found.")
-        issues = apply_detect_func(issue_class, inp_dir, access_rights_file, 
-                                   detect_func=detect_func, tmp_dir=temp_dir)
-        logger.info(f'{len(issues)} newspaper issues detected')
-    
+        issues = apply_detect_func(
+            issue_class,
+            inp_dir,
+            access_rights_file,
+            detect_func=detect_func,
+            tmp_dir=temp_dir,
+        )
+        logger.info("%s newspaper issues detected", len(issues))
+
     if outp_dir is not None and os.path.exists(outp_dir) and incremental_output:
         issues_to_skip = [
             (issue.journal, issue.date, issue.edition)
             for issue in detect_canonical_issues(outp_dir, KNOWN_JOURNALS)
         ]
-        logger.debug(f"Issues to skip: {issues_to_skip}")
-        logger.info(f"{len(issues_to_skip)} issues to skip")
+        logger.debug("Issues to skip: %s", issues_to_skip)
+        logger.info("%s issues to skip", len(issues_to_skip))
         issues = list(
             filter(
-                lambda x: (x.journal, x.date, x.edition) not in issues_to_skip,
-                issues
+                lambda x: (x.journal, x.date, x.edition) not in issues_to_skip, issues
             )
         )
-        logger.debug(f"Remaining issues: {issues}")
-        logger.info(f"{len(issues)} remaining issues")
-    
-    logger.debug("Following issues will be imported:{}".format(issues))
-    
+        logger.debug("Remaining issues: %s", issues)
+        logger.info("%s remaining issues", len(issues))
+
+    logger.debug("Following issues will be imported: %s", issues)
+
     assert outp_dir is not None or out_bucket is not None
 
     # ititialize manifest
-    manifest = DataManifest(
-        data_stage='canonical',
-        s3_output_bucket=out_bucket,
-        git_repo=git.Repo(repo_path),
-        temp_dir=temp_dir
-    )
-
     if config_file:
         newspapers = f" for titles {list(config['newspapers'].keys())}"
     else:
-        newspapers = ''
-    manifest_note = f'Ingestion of {len(issues)} Newspaper issues into canonical format{newspapers}.'
-    manifest.append_to_notes(manifest_note)
-    
-    import_issues(issues, outp_dir, out_bucket, issue_class, 
-                  image_dirs, temp_dir, chunk_size, manifest, client)
+        newspapers = ""
+    manifest_note = f"Ingestion of {len(issues)} Newspaper issues into canonical format{newspapers}."
+
+    manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket=out_bucket,
+        git_repo=git.Repo(repo_path),
+        temp_dir=temp_dir,
+        notes=manifest_note,
+    )
+
+    import_issues(
+        issues,
+        outp_dir,
+        out_bucket,
+        issue_class,
+        image_dirs,
+        temp_dir,
+        chunk_size,
+        manifest,
+        client,
+    )

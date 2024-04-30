@@ -14,8 +14,6 @@ Options:
 import os
 import json
 import logging
-import shutil
-from typing import Any, Callable
 from zipfile import ZipFile, BadZipFile
 from docopt import docopt
 
@@ -30,40 +28,18 @@ PROP_NAME = "iiif_img_base_uri"
 logger = logging.getLogger()
 
 
-def empty_folder(dir_path: str) -> None:
-    """Empty a directoy given its path if it exists.
-
-    Args:
-        dir_path (str): Path to the directory to empty.
-    """
-    if os.path.exists(dir_path):
-        shutil.rmtree(dir_path)
-        logger.info("Emptied directory at %s", dir_path)
-    os.mkdir(dir_path)
-
-
-def write_error(
-    thing_id: str, origin_function: str, error: Exception, failed_log: str
-) -> None:
-    """Write the given error of a failed import to the `failed_log` file.
-
-    Adapted from `impresso-text-acquisition/text_importer/importers/core.py` to allow
-    using a issue or page id, and provide the function in which the error took place.
-
-    Args:
-        thing_id (str): Canonical ID of the object/file for which the error occurred.
-        origin_function (str): Function in which the exception occured.
-        error (Exception): Error that occurred and should be logged.
-        failed_log (str): Path to log file for failed imports.
-    """
-    note = f"Error in {origin_function} for {thing_id}: {error}"
-    logger.exception(note)
-    with open(failed_log, "a+", encoding="utf-8") as f:
-        f.write(note + "\n")
-
-
 def extract_zip_contents(zip_path: str) -> tuple[list[str], list[str]]:
+    """Extract the filenames contained in a Olive data `Document.zip` archive.
 
+    In particular, return the files names of the images contained in the archive
+    and identify the ones which are likely to contain the resolution in their name.
+
+    Args:
+        zip_path (str): Path to an issue's `Document.zip` archive.
+
+    Returns:
+        tuple[list[str], list[str]]: Filenames of images and ones with the resolution.
+    """
     zip_contents = ZipFile(zip_path).namelist()
 
     pg_res_files = [f for f in zip_contents if "Img" in f and "Pg" in f]
@@ -85,8 +61,36 @@ def load_json(f_path: str) -> dict:
     return file
 
 
-def fetch_needed_info_for_title(title, og_data_path, img_data_path, out_path):
+def fetch_needed_info_for_title(
+    title: str, og_data_path: str, img_data_path: str, out_path: str
+) -> tuple[dict, list, list]:
+    """For each title in the RERO 1 (Olive) collection, fetch information needed.
 
+    The information fetched is necessary to perform the March 2024 patch 7, rescaling
+    the coordinates of certain titles.
+    For each issue, the step to get the information required are the following:
+    - Identify if an `image-info.json` is available along with its image files converted
+    to jp2, in the `img_data_path` directory.
+      - If the file exists and is not empty, keep track of the information within it,
+      in particular the source file used and strategy used to perform the conversion.
+      - If the file does not exist, take note of the issue.
+    - Look at the contents of the issue's `Document.zip` archive in the `og_data_path`.
+      - Identify what image files were present within the original data, and potentially
+      their resolutions. Keep this information for each issue
+
+    The fetched information then allows to identify which issues need a rescaling of
+    their coordinates.
+
+    Args:
+        title (str): Alias of the newspaper title for which to fetch information.
+        og_data_path (str): Path to the directory containing all the original data files.
+        img_data_path (str): Path to the directory containing all converted images.
+        out_path (str): Path where to write the fetched information every 500 issues.
+
+    Returns:
+        tuple[dict, list, list]: Dict of fetched information, and lists of issues with
+            missing `image-info` files and more than 1 respectively.
+    """
     # resume a listing in the middle
     if os.path.exists(out_path):
         title_info = load_json(out_path)
