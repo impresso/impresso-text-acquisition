@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TextImporter &mdash; Impresso TextImporter  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -65,12 +63,17 @@
 <li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-file">Configuration file</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-text_importer.utils">Utilities</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.add_property"><code class="docutils literal notranslate"><span class="pre">add_property()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.empty_folder"><code class="docutils literal notranslate"><span class="pre">empty_folder()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_access_right"><code class="docutils literal notranslate"><span class="pre">get_access_right()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_issue_schema"><code class="docutils literal notranslate"><span class="pre">get_issue_schema()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_page_schema"><code class="docutils literal notranslate"><span class="pre">get_page_schema()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_pkg_resource"><code class="docutils literal notranslate"><span class="pre">get_pkg_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_reading_order"><code class="docutils literal notranslate"><span class="pre">get_reading_order()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.verify_imported_issues"><code class="docutils literal notranslate"><span class="pre">verify_imported_issues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.write_error"><code class="docutils literal notranslate"><span class="pre">write_error()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.write_jsonlines_file"><code class="docutils literal notranslate"><span class="pre">write_jsonlines_file()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -149,7 +152,7 @@ are import-specific (see documentation below).</p>
 </div>
 <p id="module-text_importer.importers.generic_importer">Functions and CLI script to convert any OCR data into Impresso’s format.</p>
 <dl>
-<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –chunk-size=&lt;cs&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –access-rights=&lt;ar&gt;]
+<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –chunk-size=&lt;cs&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –access-rights=&lt;ar&gt; –git-repo=&lt;gr&gt; –num-workers=&lt;nw&gt;]
 &lt;importer-name&gt;importer.py –version</p>
 </dd>
 <dt>Options:</dt><dd><dl class="option-list">
@@ -182,6 +185,12 @@ are import-specific (see documentation below).</p>
 </dd>
 <dt><kbd><span class="option">--chunk-size=<var>&lt;cs&gt;</var></span></kbd></dt>
 <dd><p>Chunk size in years used to group issues when importing</p>
+</dd>
+<dt><kbd><span class="option">--git-repo=<var>&lt;gr&gt;</var></span></kbd></dt>
+<dd><p>Local path to the “impresso-text-acquisition” git directory (including it).</p>
+</dd>
+<dt><kbd><span class="option">--num-workers=<var>&lt;nw&gt;</var></span></kbd></dt>
+<dd><p>Number of workers to use for local dask cluster</p>
 </dd>
 <dt><kbd><span class="option">--verbose</span></kbd></dt>
 <dd><p>Verbose log messages (good for debugging)</p>
@@ -239,15 +248,49 @@ your data imports into batches or homogeneous collections.</p>
 </section>
 <section id="module-text_importer.utils">
 <span id="utilities"></span><h2>Utilities<a class="headerlink" href="#module-text_importer.utils" title="Link to this heading"></a></h2>
+<p>This module contains generic helper functions for the text-importer module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.utils.add_property">
+<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">add_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop_function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.utils.add_property" title="Link to this definition"></a></dt>
+<dd><p>Add a property and value to a given object dict computed with a given function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Object to which the property is added.</p></li>
+<li><p><strong>prop_name</strong> (<em>str</em>) – Name of the property to add.</p></li>
+<li><p><strong>prop_function</strong> (<em>Callable</em><em>[</em><em>[</em><em>str</em><em>]</em><em>, </em><em>str</em><em>]</em>) – Function computing the property value.</p></li>
+<li><p><strong>function_input</strong> (<em>str</em>) – Input to <cite>prop_function</cite> for this object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Updated object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.utils.empty_folder">
+<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">empty_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.utils.empty_folder" title="Link to this definition"></a></dt>
+<dd><p>Empty a directoy given its path if it exists.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dir_path</strong> (<em>str</em>) – Path to the directory to empty.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="text_importer.utils.get_access_right">
-<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">get_access_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">journal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_importer.utils.get_access_right" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">get_access_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">journal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_importer.utils.get_access_right" title="Link to this definition"></a></dt>
 <dd><p>Fetch the access rights for a specific journal and publication date.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>journal</strong> (<em>str</em>) – Journal name.</p></li>
-<li><p><strong>date</strong> (<em>date</em>) – Publication date of the journal</p></li>
+<li><p><strong>_date</strong> (<em>date</em>) – Publication date of the journal</p></li>
 <li><p><strong>access_rights</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – Access rights for various
 journals.</p></li>
 </ul>
@@ -325,6 +368,25 @@ is no longer of use.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="text_importer.utils.get_reading_order">
+<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">get_reading_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.utils.get_reading_order" title="Link to this definition"></a></dt>
+<dd><p>Generate a reading order for items based on their id and the pages they span.</p>
+<p>This reading order can be used to display the content items properly in a table
+of contents without skipping form page to page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>list</em><em>[</em><em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>]</em>) – List of items to reorder for the ToC.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary mapping item IDs to their reading order.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="text_importer.utils.init_logger">
 <span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">init_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RootLogger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RootLogger</span></span></span><a class="headerlink" href="#text_importer.utils.init_logger" title="Link to this definition"></a></dt>
 <dd><p>Initialise the logger.</p>
@@ -362,6 +424,42 @@ be written to standard output.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.utils.write_error">
+<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">write_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thing_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin_function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.utils.write_error" title="Link to this definition"></a></dt>
+<dd><p>Write the given error of a failed import to the <cite>failed_log</cite> file.</p>
+<p>Adapted from <cite>impresso-text-acquisition/text_importer/importers/core.py</cite> to allow
+using a issue or page id, and provide the function in which the error took place.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>thing_id</strong> (<em>str</em>) – Canonical ID of the object/file for which the error occurred.</p></li>
+<li><p><strong>origin_function</strong> (<em>str</em>) – Function in which the exception occured.</p></li>
+<li><p><strong>error</strong> (<em>Exception</em>) – Error that occurred and should be logged.</p></li>
+<li><p><strong>failed_log</strong> (<em>str</em>) – Path to log file for failed imports.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_importer.utils.write_jsonlines_file">
+<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">write_jsonlines_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.utils.write_jsonlines_file" title="Link to this definition"></a></dt>
+<dd><p>Write the given contents to a JSONL file given its path.</p>
+<p>Filelocks are used here to prevent concurrent writing to the files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<em>str</em>) – Path to the JSONL file to write to.</p></li>
+<li><p><strong>contents</strong> (<em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em>) – Dump contents to write to the file.</p></li>
+<li><p><strong>content_type</strong> (<em>str</em>) – Type of content that is being written to the file.</p></li>
+<li><p><strong>failed_log</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to a log to keep track of failed
+operations. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -376,7 +474,7 @@ be written to standard output.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+    <p>&#169; Copyright 2024, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
