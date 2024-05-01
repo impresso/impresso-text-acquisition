@@ -1,9 +1,9 @@
-BCUL ABBY importer
+BCUL ABBYY importer
 =========================
 
-This importer is written to accomodate the ABBY OCR format.
+This importer is written to accomodate the ABBYY OCR format.
 It was developed to handle OCR newspaper data provided by the `Bibliothèque Cantonale Universitaire de Lausanne 
-(BCUL - Lausanne Cantonal University Library) <https://www.bcu-lausanne.ch/en/>`_, which are part of the `Scriptorium interface <https://scriptorium.bcu-lausanne.ch/page/home>` and collection.
+(BCUL - Lausanne Cantonal University Library) <https://www.bcu-lausanne.ch/en/>`_, which are part of the `Scriptorium interface <https://scriptorium.bcu-lausanne.ch/page/home>`_ and collection.
 
 BCUL Custom classes
 ---------------------

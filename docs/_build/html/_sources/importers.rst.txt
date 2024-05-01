@@ -19,8 +19,8 @@ The following importer CLI scripts are already available:
   <https://www.bnf.fr/en/>`_ to encode and deliver its newspaper data.
 - :py:mod:`text_importer.scripts.bnfen_importer`: importer for the *Mets/ALTO flavor* used by the `Bibliothèque nationale de France (BNF)
   <https://www.bnf.fr/en/>`_  to encode and deliver its newspaper data for the Europeana collection.
-- :py:mod:`text_importer.scripts.bcul_importer`: importer for the *ABBY format* used by the `Bibliothèque Cantonale Universitaire de Lausanne (BCUL)
-  <https://www.bcu-lausanne.ch/en/>`_  to encode and deliver the newspaper data which is on the `Scriptorium interface <https://scriptorium.bcu-lausanne.ch/page/home>`.
+- :py:mod:`text_importer.scripts.bcul_importer`: importer for the *ABBYY format* used by the `Bibliothèque Cantonale Universitaire de Lausanne (BCUL)
+  <https://www.bcu-lausanne.ch/en/>`_  to encode and deliver the newspaper data which is on the `Scriptorium interface <https://scriptorium.bcu-lausanne.ch/page/home>`_.
 - :py:mod:`text_importer.scripts.swaimporter`: *ALTO flavor* of the `Basel University Library`.
 - :py:mod:`text_importer.scripts.blimporter`: importer for the *Mets/ALTO flavor* used by the `British Library (BL) <https://www.bl.uk/>`_
   to encode and deliver its newspaper data.
