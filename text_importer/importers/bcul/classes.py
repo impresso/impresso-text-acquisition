@@ -8,9 +8,9 @@ import codecs
 import logging
 import os
 from time import strftime
-import requests
 from typing import Any
 
+import requests
 from bs4 import BeautifulSoup, Tag
 
 from text_importer.importers.bcul.helpers import (
@@ -23,7 +23,10 @@ from text_importer.importers.bcul.helpers import (
 )
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
 from text_importer.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
-from text_importer.utils import get_reading_order
+from text_importer.utils import get_issue_schema, get_page_schema, get_reading_order
+
+IssueSchema = get_issue_schema()
+Pageschema = get_page_schema()
 
 logger = logging.getLogger(__name__)
 
@@ -189,8 +192,12 @@ class BculNewspaperIssue(NewspaperIssue):
         page_identifier = os.path.basename(page_path).split(".")[0]
         return os.path.join(IIIF_IMG_BASE_URI, page_identifier)
 
-    def query_iiif_api(self, num_tries: int = 0, max_retries: int = 3) -> dict[str, Any]:
+    def query_iiif_api(
+        self, num_tries: int = 0, max_retries: int = 3
+    ) -> dict[str, Any]:
         """Query the Scriptorium IIIF API for the issue's manifest data.
+
+        TODO: implement the retry approach with `celery` package or similar.
 
         Args:
             num_tries (int, optional): Number of retry attempts. Defaults to 0.
@@ -198,37 +205,41 @@ class BculNewspaperIssue(NewspaperIssue):
 
         Returns:
             dict[str, Any]: Issue's IIIF "canvases" for each page.
-            
+
         Raises:
             Exception: If the maximum number of retry attempts is reached.
         """
         try:
-            logger.info("Submitting request to iiif API for %s: %s", self.id, self.iiif_manifest)
-            response = requests.get(self.iiif_manifest, timeout=60) 
-            #TODO increase to 1min or add retry with longer one.
+            logger.info(
+                "Submitting request to iiif API for %s: %s", self.id, self.iiif_manifest
+            )
+            response = requests.get(self.iiif_manifest, timeout=60)
             if response.status_code == 200:
                 return response.json()["sequences"][0]["canvases"]
-            elif response.status_code == 404:
+
+            if response.status_code == 404:
                 msg = (
                     f"{self.id}: Request failed with response code: {response.status_code}. "
                     "Issue will not be processed."
                 )
-                raise Exception(msg)
+                raise requests.exceptions.HTTPError(msg)
             else:
                 msg = f"{self.id}: Request failed with response code: {response.status_code}"
         except Exception as e:
             msg = f"Error while querying IIIF API for {self.id} (iiif: {self.iiif_manifest}): {e}."
-        
+
         if num_tries < max_retries:
             msg += f" Retrying {3-num_tries} times."
             logger.error(msg)
-            return self.query_iiif_api(num_tries+1)
-    
+            return self.query_iiif_api(num_tries + 1)
+
         msg += f" Max number of retries reached, {self.id} will not be processed."
         logger.error(msg)
-        raise Exception(msg)
+        raise requests.exceptions.HTTPError(msg)
 
-    def _get_iiif_link_xml(self, page_number: int, canvases: dict[str, Any]) -> str | None:
+    def _get_iiif_link_xml(
+        self, page_number: int, canvases: dict[str, Any]
+    ) -> str | None:
         """Return iiif image base uri in case `mit` file is in XML.
 
         In this case, the iiif URI to images needs to be fetched from the iiif
@@ -241,24 +252,29 @@ class BculNewspaperIssue(NewspaperIssue):
         Returns:
             str | None: IIIF image base uri (no suffix) if found in manifest else None.
         """
-        page_canvas = canvases[page_number-1]
-        page_canvas_num = int(page_canvas['label'])
-        if page_canvas_num!=page_number:
+        page_canvas = canvases[page_number - 1]
+        page_canvas_num = int(page_canvas["label"])
+        if page_canvas_num != page_number:
             for c in canvases.items():
                 page_canvas = None
-                if c['label'] == page_number:
+                if c["label"] == page_number:
                     page_canvas = c
                     break
         if page_canvas is None:
             logger.warning("%s: Page %s will not be included.", self.id, page_number)
             return None
-            
+
         iiif = page_canvas["images"][0]["resource"]["@id"]
         return "/".join(iiif.split("/")[:-4])
 
-            
     def _find_pages_xml(self) -> None:
-        """Finds the pages when the format for the `fit_file` is XML."""
+        """Finds the pages when the format for the `mit_file` is XML.
+
+        In this case, the IIIF links for each page first need to be fetched using
+        the BCUL's IIIF presentation API, once per issue.
+        Any page for which the iiif link is missing will not be instantiated, and
+        the error will be logged.
+        """
         # List all files and get the filenames from the MIT file
         files = os.listdir(self.path)
 
@@ -281,10 +297,10 @@ class BculNewspaperIssue(NewspaperIssue):
                     page_iiif = self._get_iiif_link_xml(page_no, iiif_canvases)
                     if page_iiif is None:
                         logger.error(
-                            "%s: No iiif link found for Page %s on API (manifest: %s)", 
-                            self.id, 
-                            page_no, 
-                            self.iiif_manifest
+                            "%s: No iiif link found for Page %s on API (manifest: %s)",
+                            self.id,
+                            page_no,
+                            self.iiif_manifest,
                         )
                         continue
                     page = BculNewspaperPage(page_id, page_no, page_path, page_iiif)
@@ -292,10 +308,16 @@ class BculNewspaperIssue(NewspaperIssue):
                     found = True
             if not found:
                 logger.error("Page %s not found in %s", p, self.path)
-                self._notes.append(f"Page {p} missing: not found in {self.path} or on API.")
+                self._notes.append(
+                    f"Page {p} missing: not found in {self.path} or on API."
+                )
 
     def _find_pages_json(self) -> None:
-        """Finds the pages when the format for the `mit_file` is JSON."""
+        """Finds the pages when the format for the `mit_file` is JSON.
+
+        In this case, the filename for each page also corresponds to its IIIF
+        unique identifier, and can be used directly without using the API.
+        """
         # Ensure issue has OCR data files before processing it.
         verify_issue_has_ocr_files(self.path)
 
@@ -385,4 +407,4 @@ class BculNewspaperIssue(NewspaperIssue):
         # once the pages are added to the metadata, compute & add the reading order
         reading_order_dict = get_reading_order(self.content_items)
         for item in self.content_items:
-            item['m']['ro'] = reading_order_dict[item['m']['id']]
+            item["m"]["ro"] = reading_order_dict[item["m"]["id"]]

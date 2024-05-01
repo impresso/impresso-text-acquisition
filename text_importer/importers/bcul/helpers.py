@@ -4,16 +4,18 @@ import logging
 import os
 from datetime import datetime, date
 import json
-from bs4 import Tag
 from typing import Any
+
+from bs4 import Tag
 
 logger = logging.getLogger(__name__)
 
+# Some issues were listed with wrong dates (in particular month).
 CORRECT_ISSUE_DATES = {
-    '170463': '08',
-    '170468': '09',
-    '170466': '11',
-} 
+    "170463": "08",
+    "170468": "09",
+    "170466": "11",
+}
 
 
 def parse_date(mit_filename: str) -> date:
@@ -37,7 +39,7 @@ def parse_date(mit_filename: str) -> date:
     month = max(min(month, 12), 1)
     day = max(min(day, 31), 1)
 
-    return datetime(year, month, day).date() 
+    return datetime(year, month, day).date()
 
 
 def find_mit_file(_dir: str) -> str:
@@ -73,13 +75,13 @@ def get_page_number(exif_file: str) -> int:
         int: Page number extracted from the file.
     """
     try:
-        with open(exif_file) as f:
+        with open(exif_file, encoding="utf-8") as f:
             exif = json.load(f)[0]
             source = exif["SourceFile"].split("/")[-1]
             page_no = int(os.path.splitext(source)[0].split("_")[-1])
             return page_no
     except Exception as e:
-        raise ValueError("Could not get page number from {}".format(exif_file))
+        raise ValueError(f"Could not get page number from {exif_file}") from e
 
 
 def find_page_file_in_dir(base_path: str, file_id: str) -> str | None:
@@ -108,11 +110,20 @@ def find_page_file_in_dir(base_path: str, file_id: str) -> str | None:
 
 
 def verify_issue_has_ocr_files(path: str) -> None:
+    """Ensure the path to the issue considered contains xml files.
+
+    Args:
+        path (str): Path to the issue considered
+
+    Raises:
+        FileNotFoundError: No XNL OCR files were found in the path.
+    """
     if not any([".xml" in f for f in os.listdir(path)]):
-        raise Exception(
+        msg = (
             f"The issue's folder {path} does not contain any xml "
             "OCR files. Issue cannot be processed as a result."
         )
+        raise FileNotFoundError(msg)
 
 
 def get_div_coords(div: Tag) -> list[int]:
@@ -146,7 +157,7 @@ def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]
         list[dict[str, list[int] | str]]: List of reconstructed parsed tokens.
     """
     tokens = []
-    last_token = {} 
+    last_token = {}
     coords = []
     tx = None
     # the first token is always a start of word
@@ -155,19 +166,21 @@ def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]
 
         # not all OCR has the same indication for word start: 'wordStart', 'wordFirst'
         is_word_start = (
-            t.get('wordStart') in ['true', '1'] 
-            if t.get('wordStart') is not None else False
+            t.get("wordStart") in ["true", "1"]
+            if t.get("wordStart") is not None
+            else False
         )
         is_word_first = (
-            t.get('wordFirst') in ['true', '1'] 
-            if t.get('wordFirst') is not None else False
+            t.get("wordFirst") in ["true", "1"]
+            if t.get("wordFirst") is not None
+            else False
         )
         curr_t = t.getText()
-        
+
         # if start of a new word, add the last token to the list of tokens (if not new line)
-        if idx==0 or is_word_start or is_word_first or last_token_space:
-            if curr_t != ' ' and curr_t is not None:
-                if tx is not None and len(coords) !=0: 
+        if idx == 0 or is_word_start or is_word_first or last_token_space:
+            if curr_t != " " and curr_t is not None:
+                if tx is not None and len(coords) != 0:
                     tokens.append(last_token)
 
                 # restart the values for the new token
@@ -178,7 +191,7 @@ def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]
                 continue
         # continuing a word
         else:
-            if curr_t == ' ' or curr_t is None:
+            if curr_t == " " or curr_t is None:
                 # if the token is a space, it's the end of the word.
                 last_token_space = True
             else:
@@ -192,7 +205,7 @@ def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]
 
     # when all tokens have been processed, add the last token that was constructed.
     tokens.append(last_token)
-    
+
     return tokens
 
 
@@ -216,8 +229,8 @@ def parse_textline(line: Tag) -> dict[str, list[Any]]:
             # when lines are not separated into tokens, we have no other coordinates.
             tokens = [{"c": line_ci["c"], "tx": t.getText()} for t in line_tokens]
         else:
-            raise Exception("Tokens within lines are not characters or lines.")
-        
+            raise ValueError("Tokens within lines are not characters or lines.")
+
     line_ci["t"] = tokens
     return line_ci
 
