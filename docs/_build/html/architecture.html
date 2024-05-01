@@ -189,13 +189,14 @@ as it keeps everything together, by calling all other functions.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="text_importer.importers.core.cleanup">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upload_success</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.core.cleanup" title="Link to this definition"></a></dt>
-<dd><p>Removes a file if it has been successfully uploaded to S3.</p>
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upload_success</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.core.cleanup" title="Link to this definition"></a></dt>
+<dd><p>Remove a file if it has been successfully uploaded to S3.</p>
+<p>Copied and adapted from impresso-pycommons.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>upload_success</strong> (<em>bool</em>) – whether the upload was successful</p></li>
-<li><p><strong>filepath</strong> (<em>str</em>) – path to the uploaded file</p></li>
+<li><p><strong>upload_success</strong> (<em>bool</em>) – Whether the upload was successful</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – Path to the uploaded file</p></li>
 </ul>
 </dd>
 </dl>
