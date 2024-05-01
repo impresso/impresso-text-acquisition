@@ -28,7 +28,6 @@ from dask import bag as db
 from dask.distributed import Client
 from filelock import FileLock
 from impresso_commons.path.path_fs import IssueDir, canonical_path
-from impresso_commons.text.rebuilder import cleanup
 from impresso_commons.utils import chunk
 from impresso_commons.utils.s3 import get_s3_resource
 from impresso_commons.versioning.data_manifest import DataManifest
@@ -43,33 +42,57 @@ logger = logging.getLogger(__name__)
 
 
 def write_error(
-    thing: NewspaperIssue | NewspaperPage | IssueDir,
-    error: Exception,
+    thing: NewspaperIssue | NewspaperPage | IssueDir | str,
+    error: Exception | str,
     failed_log: str | None,
 ) -> None:
     """Write the given error of a failed import to the `failed_log` file.
 
     Args:
-        thing (NewspaperIssue | NewspaperPage | IssueDir): Object for which
-            the error occurred.
+        thing (NewspaperIssue | NewspaperPage | IssueDir | str): Object for which
+            the error occurred, or corresponding canonical ID.
         error (Exception): Error that occurred and should be logged.
         failed_log (str): Path to log file for failed imports.
     """
     logger.error("Error when processing %s: %s", thing, error)
     logger.exception(error)
-    if isinstance(thing, NewspaperPage):
-        issuedir = thing.issue.issuedir
-    elif isinstance(thing, NewspaperIssue):
-        issuedir = thing.issuedir
-    else:
-        # if it's neither an issue nor a page it must be an issuedir
-        issuedir = thing
 
-    note = f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: " f"{error}"
+    if isinstance(thing, str):
+        # if thing is a string, it's the canonical id of the object
+        note = f"{thing}: {error}"
+    else:
+        if isinstance(thing, NewspaperPage):
+            issuedir = thing.issue.issuedir
+        elif isinstance(thing, NewspaperIssue):
+            issuedir = thing.issuedir
+        else:
+            # if it's neither an issue nor a page it must be an issuedir
+            issuedir = thing
+
+        note = f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: {error}"
 
     if failed_log is not None:
         with open(failed_log, "a+", encoding="utf-8") as f:
             f.write(note + "\n")
+
+
+def cleanup(upload_success: bool, filepath: str) -> None:
+    """Remove a file if it has been successfully uploaded to S3.
+
+    Copied and adapted from impresso-pycommons.
+
+    Args:
+        upload_success (bool): Whether the upload was successful
+        filepath (str): Path to the uploaded file
+    """
+    if upload_success and os.path.exists(filepath):
+        try:
+            os.remove(filepath)
+            logger.info("Removed temporary file %s", filepath)
+        except Exception as e:
+            logger.warning("Error %s occurred when removing %s.", e, filepath)
+    else:
+        logger.info("Not removing %s as upload has failed", filepath)
 
 
 def dir2issue(
@@ -389,8 +412,12 @@ def import_issues(
     remove_filelocks(out_dir)
 
     # finalize and compute the manifest
-    manifest.compute(export_to_git_and_s3=True)
-    # manifest.validate_and_export_manifest(push_to_git=False)
+    if "sandbox" in s3_bucket:
+        # don't push to git if output bucket it sandbox
+        manifest.compute(export_to_git_and_s3=False)
+        manifest.validate_and_export_manifest(push_to_git=False)
+    else:
+        manifest.compute(export_to_git_and_s3=True)
 
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -531,7 +558,8 @@ def upload_issues(
     # create connection with bucket
     # copy contents to s3 key
     newspaper, _ = sort_key.split("-")
-    key_name = "{}/{}/{}".format(newspaper, "issues", os.path.basename(filepath))
+    key_name = os.path.join(newspaper, "issues", os.path.basename(filepath))
+    # key_name = "{}/{}/{}".format(newspaper, "issues", os.path.basename(filepath))
     s3 = get_s3_resource()
     if bucket_name is not None:
         try:
@@ -556,7 +584,7 @@ def upload_pages(
     """Upload a page JSON file to a given S3 bucket.
 
     Args:
-        sort_key (str): the key used to group articles (e.g. "GDL-1900").
+        sort_key (str): the key used to group articles (e.g. "GDL-1900-01-01-a").
         filepath (str): Path of the file to upload to S3.
         bucket_name (str | None, optional): Name of S3 bucket where to upload
             the file. Defaults to None.
@@ -569,9 +597,10 @@ def upload_pages(
     # create connection with bucket
     # copy contents to s3 key
     newspaper, year, _, _, _ = sort_key.split("-")
-    key_name = "{}/pages/{}/{}".format(
-        newspaper, f"{newspaper}-{year}", os.path.basename(filepath)
+    key_name = os.path.join(
+        newspaper, "pages", f"{newspaper}-{year}", os.path.basename(filepath)
     )
+    # key_name = "{}/pages/{}/{}".format(newspaper, f"{newspaper}-{year}", os.path.basename(filepath))
     s3 = get_s3_resource()
     if bucket_name is not None:
         try:

@@ -21,4 +21,4 @@ General installation:
 
 .. code-block:: bash
 
-  pip install text-importer
+  pip install impresso-text-importer
