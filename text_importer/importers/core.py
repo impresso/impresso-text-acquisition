@@ -76,13 +76,14 @@ def write_error(
             f.write(note + "\n")
 
 
-def cleanup(upload_success, filepath):
-    """Removes a file if it has been successfully uploaded to S3.
+def cleanup(upload_success: bool, filepath: str) -> None:
+    """Remove a file if it has been successfully uploaded to S3.
 
-    :param upload_success: whether the upload was successful
-    :type upload_success: bool
-    :param filepath: path to the uploaded file
-    :type filepath: str
+    Copied and adapted from impresso-pycommons.
+
+    Args:
+        upload_success (bool): Whether the upload was successful
+        filepath (str): Path to the uploaded file
     """
     if upload_success and os.path.exists(filepath):
         try:
