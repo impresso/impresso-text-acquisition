@@ -21,6 +21,7 @@ from json import JSONDecodeError
 from pathlib import Path
 from time import strftime
 from typing import Tuple, Type
+from botocore.exceptions import BotoCoreError
 
 import jsonlines
 from dask import bag as db
@@ -30,7 +31,7 @@ from impresso_commons.path.path_fs import IssueDir, canonical_path
 from impresso_commons.utils import chunk
 from impresso_commons.utils.s3 import get_s3_resource
 from impresso_commons.versioning.data_manifest import DataManifest
-from impresso_commons.versioning.helpers import DataStage, counts_for_canonical_issue
+from impresso_commons.versioning.helpers import counts_for_canonical_issue
 from smart_open import open as smart_open_function
 
 from text_importer.importers.classes import NewspaperIssue, NewspaperPage
@@ -67,11 +68,11 @@ def write_error(
         else:
             # if it's neither an issue nor a page it must be an issuedir
             issuedir = thing
-        
+
         note = f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: {error}"
 
     if failed_log is not None:
-        with open(failed_log, "a+") as f:
+        with open(failed_log, "a+", encoding="utf-8") as f:
             f.write(note + "\n")
 
 
@@ -86,11 +87,11 @@ def cleanup(upload_success, filepath):
     if upload_success and os.path.exists(filepath):
         try:
             os.remove(filepath)
-            logger.info(f"Removed temporary file {filepath}")
+            logger.info("Removed temporary file %s", filepath)
         except Exception as e:
-            logger.warning(f"Error {e} occurred when removing {filepath}.")
+            logger.warning("Error %s occurred when removing %s.", e, filepath)
     else:
-        logger.info(f"Not removing {filepath} as upload has failed")
+        logger.info("Not removing %s as upload has failed", filepath)
 
 
 def dir2issue(
@@ -218,10 +219,10 @@ def serialize_pages(
 
         with open(out_file, "w", encoding="utf-8") as jsonfile:
             json.dump(page.page_data, jsonfile)
-            logger.info(f"Written page '{page.number}' to {out_file}")
+            logger.info("Written page '%s' to %s", page.number, out_file)
         result.append((issue_dir, out_file))
 
-    # TODO: this can be deleted, I believe as it has no effect
+    # this can be deleted, I believe as it has no effect
     gc.collect()
     return result
 
@@ -284,15 +285,17 @@ def import_issues(
         )
 
         chunks = [(year, list(issues)) for year, issues in chunks]
-        logger.info(
+        msg = (
             f"Dividing issues into chunks of {chunk_size} years "
             f"({len(chunks)} chunks in total)"
         )
+        logger.info(msg)
         for year, issue_chunk in chunks:
-            logger.info(
+            msg = (
                 f"Chunk of period {year} - {year + csize - 1} covers "
                 f"{len(issue_chunk)} issues"
             )
+            logger.info(msg)
     else:
         chunks = [(None, issues)]
 
@@ -349,7 +352,7 @@ def import_issues(
             .compute()
         )
 
-        logger.info(f"Done uploading issues for {period}")
+        logger.info("Done uploading issues for %s", period)
 
         processed_issues = list(issue_bag)
         random.shuffle(processed_issues)
@@ -357,7 +360,7 @@ def import_issues(
         chunks = chunk(processed_issues, 400)
 
         for chunk_n, chunk_of_issues in enumerate(chunks):
-            logger.info(f"Processing chunk {chunk_n} of pages for {period}")
+            logger.info("Processing chunk %s of pages for %s", chunk_n, period)
 
             pages_bag = (
                 db.from_sequence(chunk_of_issues, partition_size=2)
@@ -375,7 +378,6 @@ def import_issues(
                 chunk_n,
                 period,
             )
-
             pages_bag = (
                 pages_bag.groupby(
                     lambda x: canonical_path(x[0], path_type="dir").replace("/", "-")
@@ -394,8 +396,9 @@ def import_issues(
             )
 
             logger.info(
-                f"Done compressing and uploading pages "
-                f"of chunk {chunk_n} for {period}"
+                "Done compressing and uploading pages of chunk %s for %s",
+                chunk_n,
+                period,
             )
 
         # free some dask memory
@@ -408,7 +411,7 @@ def import_issues(
     remove_filelocks(out_dir)
 
     # finalize and compute the manifest
-    if 'sandbox' in s3_bucket:
+    if "sandbox" in s3_bucket:
         # don't push to git if output bucket it sandbox
         manifest.compute(export_to_git_and_s3=False)
         manifest.validate_and_export_manifest(push_to_git=False)
@@ -445,11 +448,9 @@ def compress_pages(
     """
     newspaper, year, month, day, edition = key.split("-")
     suffix_string = "" if suffix == "" else f"-{suffix}"
-    filename = (
-        f"{newspaper}-{year}-{month}-{day}-{edition}" f"{suffix_string}.jsonl.bz2"
-    )
+    filename = f"{newspaper}-{year}-{month}-{day}-{edition}{suffix_string}.jsonl.bz2"
     filepath = os.path.join(output_dir, filename)
-    logger.info(f"Compressing {len(json_files)} JSON files into {filepath}")
+    logger.info("Compressing %s JSON files into %s", len(json_files), filepath)
 
     with smart_open_function(filepath, "wb") as fout:
         writer = jsonlines.Writer(fout)
@@ -457,16 +458,18 @@ def compress_pages(
         items_count = 0
         for issue, json_file in json_files:
 
-            with open(json_file, "r") as inpf:
+            with open(json_file, "r", encoding="utf-8") as inpf:
                 try:
                     item = json.load(inpf)
                     writer.write(item)
                     items_count += 1
                 except JSONDecodeError as e:
-                    logger.error(f"Reading data from {json_file} failed")
+                    logger.error("Reading data from %s failed", json_file)
                     logger.exception(e)
                     write_error(filepath, e, failed_log)
-            logger.info(f"Written {items_count} docs from {json_file} to {filepath}")
+            logger.info(
+                "Written %s docs from %s to %s", items_count, json_file, filepath
+            )
 
         writer.close()
 
@@ -485,6 +488,8 @@ def compress_issues(
     generated issues.
     The compressed ``.bz2`` output file is a JSON-line file, where each line
     corresponds to an individual and issue document in the canonical format.
+    Finally, yearly statistics are computed on the issues and included in the
+    returned values.
 
     Args:
         key (Tuple[str, int]): Newspaper ID and year of input issues
@@ -495,14 +500,13 @@ def compress_issues(
             instantiation was not successful. Defaults to None.
 
     Returns:
-        Tuple[str, str]: Label following the template `<NEWSPAPER>-<YEAR>` and
-            the path to the the compressed `.bz2` file.
-            TODO: add update
+        Tuple[str, str]: Label following the template `<NEWSPAPER>-<YEAR>`, the path to
+            the the compressed `.bz2` file, and the statistics computed on the issues.
     """
     newspaper, year = key
     filename = f"{newspaper}-{year}-issues.jsonl.bz2"
     filepath = os.path.join(output_dir, filename)
-    logger.info(f"Compressing {len(issues)} JSON files into {filepath}")
+    logger.info("Compressing %s JSON files into %s", len(issues), filepath)
 
     # put a file lock to avoid the overwriting of files due to parallelization
     lock = FileLock(filepath + ".lock", timeout=13)
@@ -515,18 +519,16 @@ def compress_issues(
                 # items = [issue.issue_data for issue in issues]
                 writer.write_all(items)
 
-                logger.info(f"Written {len(items)} issues to {filepath}")
+                logger.info("Written %s issues to %s", len(items), filepath)
                 writer.close()
     except Exception as e:
-        logger.error(f"Error for {filepath}")
-        logger.exception(e)
+        logger.error("Error for %s: %s", filepath, e)
         write_error(filepath, e, failed_log)
-
-    # Once the issues were written without issues, add their info to the manifest
-    yearly_stats = []
-    for i in items:
-        yearly_stats.append(counts_for_canonical_issue(i))
-        # manifest.add_by_title_year(newspaper, year, counts_for_canonical_issue(i))
+    else:
+        # Once the issues were written without problems, add their info to the manifest
+        yearly_stats = []
+        for i in items:
+            yearly_stats.append(counts_for_canonical_issue(i))
 
     return f"{newspaper}-{year}", filepath, yearly_stats
 
@@ -546,27 +548,29 @@ def upload_issues(
         filepath (str): Path of the file to upload to S3.
         bucket_name (str | None, optional): Name of S3 bucket where to upload
             the file. Defaults to None.
-        TODO: update docstring
+        failed_log (str | None, optional): Path to file where to log errors.
+
     Returns:
         Tuple[bool, str]: Whether the upload was successful and the path to the
             uploaded file.
     """
     # create connection with bucket
     # copy contents to s3 key
-    newspaper, year = sort_key.split("-")
-    key_name = "{}/{}/{}".format(newspaper, "issues", os.path.basename(filepath))
+    newspaper, _ = sort_key.split("-")
+    key_name = os.path.join(newspaper, "issues", os.path.basename(filepath))
+    # key_name = "{}/{}/{}".format(newspaper, "issues", os.path.basename(filepath))
     s3 = get_s3_resource()
     if bucket_name is not None:
         try:
             bucket = s3.Bucket(bucket_name)
             bucket.upload_file(filepath, key_name)
-            logger.info(f"Uploaded {filepath} to {key_name}")
+            logger.info("Uploaded %s to %s", filepath, key_name)
             return True, filepath
-        except Exception as e:
-            logger.error(f"The upload of {filepath} failed with error {e}")
+        except BotoCoreError as e:
+            logger.error("The upload of %s failed with error %s", filepath, e)
             write_error(filepath, e, failed_log)
     else:
-        logger.info(f"Bucket name is None, not uploading issue {filepath}.")
+        logger.info("Bucket name is None, not uploading issue %s.", filepath)
     return False, filepath
 
 
@@ -579,34 +583,36 @@ def upload_pages(
     """Upload a page JSON file to a given S3 bucket.
 
     Args:
-        sort_key (str): the key used to group articles (e.g. "GDL-1900").
+        sort_key (str): the key used to group articles (e.g. "GDL-1900-01-01-a").
         filepath (str): Path of the file to upload to S3.
         bucket_name (str | None, optional): Name of S3 bucket where to upload
             the file. Defaults to None.
-        TODO: update docstring
+        failed_log (str | None, optional): Path to file where to log errors.
+
     Returns:
         Tuple[bool, str]: Whether the upload was successful and the path to the
             uploaded file.
     """
     # create connection with bucket
     # copy contents to s3 key
-    newspaper, year, month, day, edition = sort_key.split("-")
-    key_name = "{}/pages/{}/{}".format(
-        newspaper, f"{newspaper}-{year}", os.path.basename(filepath)
+    newspaper, year, _, _, _ = sort_key.split("-")
+    key_name = os.path.join(
+        newspaper, "pages", f"{newspaper}-{year}", os.path.basename(filepath)
     )
+    # key_name = "{}/pages/{}/{}".format(newspaper, f"{newspaper}-{year}", os.path.basename(filepath))
     s3 = get_s3_resource()
     if bucket_name is not None:
         try:
             bucket = s3.Bucket(bucket_name)
             bucket.upload_file(filepath, key_name)
-            logger.info(f"Uploaded {filepath} to {key_name}")
+            logger.info("Uploaded %s to %s", filepath, key_name)
             return True, filepath
-        except Exception as e:
-            msg = f"The upload of {filepath} failed with error {e}"
-            logger.error(msg)
-            write_error(sort_key, e, failed_log)
+        except BotoCoreError as e:
+            logger.error("The upload of %s failed with error %s", filepath, e)
+            write_error(filepath, e, failed_log)
     else:
-        logger.info(f"Bucket name is None, not uploading page {filepath}.")
+        logger.info("Bucket name is None, not uploading page %s.", filepath)
+
     return False, filepath
 
 

@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Generic Mets/Alto importer &mdash; Impresso TextImporter  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
-
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -406,7 +404,7 @@ method is called.</p>
 <p>Utility functions to parse Mets XML files.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="text_importer.importers.mets_alto.mets.get_dmd_sec">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.mets.</span></span><span class="sig-name descname"><span class="pre">get_dmd_sec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mets_doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BeautifulSoup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tag</span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.mets.get_dmd_sec" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_importer.importers.mets_alto.mets.</span></span><span class="sig-name descname"><span class="pre">get_dmd_sec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mets_doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BeautifulSoup</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tag</span></span></span><a class="headerlink" href="#text_importer.importers.mets_alto.mets.get_dmd_sec" title="Link to this definition"></a></dt>
 <dd><p>Extract the contents of a specific <code class="docutils literal notranslate"><span class="pre">&lt;dmdsec&gt;</span></code> from the Mets document.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">&lt;dmdsec&gt;</span></code> section contains descriptive metadata. It’s composed of
 several different subsections each identified with string IDs.</p>
@@ -414,7 +412,7 @@ several different subsections each identified with string IDs.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mets_doc</strong> (<em>BeautifulSoup</em>) – BeautifulSoup object of Mets XML document.</p></li>
-<li><p><strong>filter</strong> (<em>str</em>) – ID of the subsection of interest to filter the search.</p></li>
+<li><p><strong>_filter</strong> (<em>str</em>) – ID of the subsection of interest to filter the search.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -586,7 +584,7 @@ corresponding canonical Content Item ID.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+    <p>&#169; Copyright 2024, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

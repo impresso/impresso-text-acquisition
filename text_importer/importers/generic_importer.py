@@ -32,7 +32,7 @@ import shutil
 import time
 from typing import Any, Type, Callable
 
-from dask.distributed import Client, LocalCluster
+from dask.distributed import Client
 from docopt import docopt
 import git
 from impresso_commons.path.path_fs import (
@@ -42,7 +42,6 @@ from impresso_commons.path.path_fs import (
 )
 
 from impresso_commons.versioning.data_manifest import DataManifest
-from impresso_commons.versioning.helpers import DataStage
 
 from text_importer import __version__
 
@@ -164,8 +163,8 @@ def apply_select_func(
         return select_func(
             input_dir, config=config, access_rights=access_rights, tmp_dir=tmp_dir
         )
-    else:
-        return select_func(input_dir, config=config, access_rights=access_rights)
+
+    return select_func(input_dir, config=config, access_rights=access_rights)
 
 
 def main(
@@ -211,20 +210,20 @@ def main(
         return
 
     init_logger(logger, log_level, log_file)
-    logger.info("CLI arguments received: {}".format(args))
+    logger.info("CLI arguments received: %s", args)
 
     # start the dask local cluster
     client = get_dask_client(scheduler, log_file, log_level, int(num_workers))
 
-    logger.info(f"Dask cluster: {client}")
+    logger.info("Dask cluster: %s", client)
 
     # Checks if out dir exists (Creates it if not) and if should empty it
     clear_output_dir(outp_dir, clear_output)
 
     # detect/select issues
     if config_file and os.path.isfile(config_file):
-        logger.info(f"Found config file: {os.path.realpath(config_file)}")
-        with open(config_file, "r") as f:
+        logger.info("Found config file: %s", os.path.realpath(config_file))
+        with open(config_file, "r", encoding="utf-8") as f:
             config = json.load(f)
         issues = apply_select_func(
             issue_class,
@@ -234,7 +233,9 @@ def main(
             select_func=select_func,
             tmp_dir=temp_dir,
         )
-        logger.info(f"{len(issues)} newspaper remained after applying filter: {issues}")
+        logger.info(
+            "%s newspaper remained after applying filter: %s", len(issues), issues
+        )
     else:
         logger.info("No config file found.")
         issues = apply_detect_func(
@@ -244,40 +245,41 @@ def main(
             detect_func=detect_func,
             tmp_dir=temp_dir,
         )
-        logger.info(f"{len(issues)} newspaper issues detected")
+        logger.info("%s newspaper issues detected", len(issues))
 
     if outp_dir is not None and os.path.exists(outp_dir) and incremental_output:
         issues_to_skip = [
             (issue.journal, issue.date, issue.edition)
             for issue in detect_canonical_issues(outp_dir, KNOWN_JOURNALS)
         ]
-        logger.debug(f"Issues to skip: {issues_to_skip}")
-        logger.info(f"{len(issues_to_skip)} issues to skip")
+        logger.debug("Issues to skip: %s", issues_to_skip)
+        logger.info("%s issues to skip", len(issues_to_skip))
         issues = list(
             filter(
                 lambda x: (x.journal, x.date, x.edition) not in issues_to_skip, issues
             )
         )
-        logger.debug(f"Remaining issues: {issues}")
-        logger.info(f"{len(issues)} remaining issues")
+        logger.debug("Remaining issues: %s", issues)
+        logger.info("%s remaining issues", len(issues))
 
-    logger.debug("Following issues will be imported:{}".format(issues))
+    logger.debug("Following issues will be imported: %s", issues)
 
     assert outp_dir is not None or out_bucket is not None
 
     # ititialize manifest
-    manifest = DataManifest(
-        data_stage="canonical",
-        s3_output_bucket=out_bucket,
-        git_repo=git.Repo(repo_path),
-        temp_dir=temp_dir,
-    )
     if config_file:
         newspapers = f" for titles {list(config['newspapers'].keys())}"
     else:
         newspapers = ""
     manifest_note = f"Ingestion of {len(issues)} Newspaper issues into canonical format{newspapers}."
-    manifest.append_to_notes(manifest_note)
+
+    manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket=out_bucket,
+        git_repo=git.Repo(repo_path),
+        temp_dir=temp_dir,
+        notes=manifest_note,
+    )
 
     import_issues(
         issues,

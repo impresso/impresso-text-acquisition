@@ -17,15 +17,16 @@ from text_importer.utils import get_access_right
 logger = logging.getLogger(__name__)
 
 SwaIssueDir = namedtuple(
-        "IssueDirectory", [
-            'journal',
-            'date',
-            'edition',
-            'path',
-            'rights',
-            'pages',
-            ]
-        )
+    "IssueDirectory",
+    [
+        "journal",
+        "date",
+        "edition",
+        "path",
+        "rights",
+        "pages",
+    ],
+)
 """A light-weight data structure to represent a SWA newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -79,10 +80,10 @@ def _get_csv_file(directory: str) -> str:
     files = os.listdir(directory)
     files = [f for f in files if f.endswith(".csv")]
     if len(files) == 0:
-        raise ValueError("Could not find csv file in {}".format(directory))
+        raise ValueError(f"Could not find csv file in {directory}")
     elif len(files) > 1:
-        raise ValueError("Found multiple csv files in {}".format(directory))
-    
+        raise ValueError(f"Found multiple csv files in {directory}")
+
     return os.path.join(directory, files[0])
 
 
@@ -92,7 +93,7 @@ def _parse_csv_apply(part: pd.DataFrame) -> pd.Series:
     For all the pages in the current issue, matches the pages' canonical ID to
     the corresponding XML file.
 
-    Note: 
+    Note:
         This function is called internally by :func:`detect_issues`.
 
     Args:
@@ -105,8 +106,8 @@ def _parse_csv_apply(part: pd.DataFrame) -> pd.Series:
     archives = set()
     for i, x in part.iterrows():
         res.append((x.identifier_impresso, x.full_xml_path))
-        archives.add(x.goobi_name + '.zip')
-    return pd.Series({'pages': res, 'archives': archives})
+        archives.add(x.goobi_name + ".zip")
+    return pd.Series({"pages": res, "archives": archives})
 
 
 def _get_issuedir(
@@ -117,7 +118,7 @@ def _get_issuedir(
     Each row of the CSV file contains the issue manifest ID, used to derive
     the issue canonical ID, and the path the XML files of the issue's pages.
 
-    Note: 
+    Note:
         This function is called internally by :func:`detect_issues`.
 
     Args:
@@ -130,28 +131,34 @@ def _get_issuedir(
     """
     if len(row.archives) > 1:
         logger.debug(
-            f"Issue {row.manifest_id} has more than one archive {row.archives}"
+            "Issue %s has more than one archive %s", row.manifest_id, row.archives
         )
 
     archive = os.path.join(journal_root, list(row.archives)[0])
-    
+
     if os.path.isfile(archive):
-        split = row.manifest_id.split('-')[:-1]
+        split = row.manifest_id.split("-")[:-1]
         if len(split) == 5:
             try:
                 journal, year, mo, day, edition = split
                 pub_date = date(int(year), int(mo), int(day))
                 rights = get_access_right(journal, pub_date, access_rights)
-                return SwaIssueDir(journal, pub_date, edition, path=archive, 
-                                   rights=rights, pages=row.pages)
+                return SwaIssueDir(
+                    journal,
+                    pub_date,
+                    edition,
+                    path=archive,
+                    rights=rights,
+                    pages=row.pages,
+                )
             except ValueError as e:
                 logger.debug(
-                    f"Issue {row.manifest_id} does not have a regular name"
+                    "Issue %s does not have a regular name: %s", row.manifest_id, e
                 )
         else:
-            logger.debug(f"Issue {row.manifest_id} does not have regular name")
+            logger.debug("Issue %s does not have regular name", row.manifest_id)
     else:
-        logger.debug(f"Issue {row.manifest_id} does not have archive")
+        logger.debug("Issue %s does not have archive", row.manifest_id)
     return None
 
 
@@ -160,7 +167,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[SwaIssueDir]:
 
     This function expects the directory structure that SWA used to
     organize the dump of Alto OCR data.
-    
+
     The access rights information is not in place yet, but needs
     to be specified by the content provider (SWA).
 
@@ -173,32 +180,32 @@ def detect_issues(base_dir: str, access_rights: str) -> list[SwaIssueDir]:
     Returns:
         list[SwaIssueDir]: list of ``SwaIssueDir`` instances, to be imported.
     """
-    dir_path, dirs, files = next(os.walk(base_dir))
+    dir_path, dirs, _ = next(os.walk(base_dir))
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
     journal_dirs = [(d, _get_csv_file(d)) for d in journal_dirs]
-    
-    with open(access_rights, 'r') as f:
+
+    with open(access_rights, "r", encoding="utf-8") as f:
         ar_dict = json.load(f)
-    
+
     results = []
     for journal_root, csv_file in journal_dirs:
         if os.path.isfile(csv_file):
-            df = (pd.read_csv(csv_file).groupby('manifest_id')
-                  .apply(_parse_csv_apply).reset_index())
-            result = df.apply(
-                lambda r: _get_issuedir(r, journal_root, ar_dict), axis=1
+            df = (
+                pd.read_csv(csv_file)
+                .groupby("manifest_id")
+                .apply(_parse_csv_apply)
+                .reset_index()
             )
+            result = df.apply(lambda r: _get_issuedir(r, journal_root, ar_dict), axis=1)
             result = result[~result.isna()].values.tolist()
             results += result
         else:
-            logger.warning(f"Could not find csv file {csv_file}")
-        
+            logger.warning("Could not find csv file %s", csv_file)
+
     return results
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> list[SwaIssueDir]:
+def select_issues(base_dir: str, config: dict, access_rights: str) -> list[SwaIssueDir]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -222,50 +229,54 @@ def select_issues(
         exclude_list = config["exclude_newspapers"]
         year_flag = config["year_only"]
     except KeyError:
-        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] "
-                         "is missing in the config file.")
+        logger.critical(
+            "The key [newspapers|exclude_newspapers|year_only] "
+            "is missing in the config file."
+        )
         return []
-    
+
     exclude_flag = False if not exclude_list else True
-    logger.debug(f"got filter_dict: {filter_dict}, "
-                 f"\nexclude_list: {exclude_list}, "
-                 f"\nyear_flag: {year_flag}"
-                 f"\nexclude_flag: {exclude_flag}")
-    
-    filter_newspapers = (set(filter_dict.keys()) 
-                        if not exclude_list 
-                        else set(exclude_list))
-    logger.debug(f"got filter_newspapers: {filter_newspapers}, "
-                 f"with exclude flag: {exclude_flag}")
+    msg = (
+        f"got filter_dict: {filter_dict}, "
+        f"\nexclude_list: {exclude_list}, "
+        f"\nyear_flag: {year_flag}"
+        f"\nexclude_flag: {exclude_flag}"
+    )
+    logger.debug(msg)
+
+    filter_newspapers = (
+        set(filter_dict.keys()) if not exclude_list else set(exclude_list)
+    )
+    logger.debug(
+        "got filter_newspapers: %s, with exclude flag: %s",
+        filter_newspapers,
+        exclude_flag,
+    )
 
     issues = detect_issues(base_dir, access_rights)
 
     issue_bag = db.from_sequence(issues)
-    selected_issues = (
-        issue_bag.filter(
-            lambda i: (
-                len(filter_dict) == 0 or i.journal in filter_dict.keys()
-            ) and i.journal not in exclude_list
-        ).compute()
-    )
-    
+    selected_issues = issue_bag.filter(
+        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
+        and i.journal not in exclude_list
+    ).compute()
+
     logger.info(
-        "{} newspaper issues remained after applying filter: {}".format(
-            len(selected_issues),
-            selected_issues
-        )
+        "%s newspaper issues remained after applying filter: %s",
+        len(selected_issues),
+        selected_issues,
     )
-    
+
     exclude_flag = False if not exclude_list else True
     filtered_issues = (
-        _apply_datefilter(filter_dict, selected_issues, year_only=year_flag) 
-        if not exclude_flag 
+        _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
+        if not exclude_flag
         else selected_issues
     )
     logger.info(
-        "{} newspaper issues remained after applying filter: {}".format(
-            len(filtered_issues),
-            filtered_issues
-        )
+        "%s newspaper issues remained after applying filter: %s",
+        len(filtered_issues),
+        filtered_issues,
     )
+
     return selected_issues

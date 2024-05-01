@@ -1,14 +1,26 @@
 """Set of helper functions for BNF importer"""
+
 import logging
 from datetime import datetime
-from typing import List, Optional, Tuple
+from typing import Optional
 
-from text_importer.importers import CONTENTITEM_TYPE_ADVERTISEMENT, CONTENTITEM_TYPE_ARTICLE, CONTENTITEM_TYPE_IMAGE, \
-    CONTENTITEM_TYPE_OBITUARY, CONTENTITEM_TYPE_TABLE
+from text_importer.importers import (
+    CONTENTITEM_TYPE_ADVERTISEMENT,
+    CONTENTITEM_TYPE_ARTICLE,
+    CONTENTITEM_TYPE_IMAGE,
+    CONTENTITEM_TYPE_OBITUARY,
+    CONTENTITEM_TYPE_TABLE,
+)
 
 # BNF types that do not have a direct `area` descendant
-BNF_CONTENT_TYPES = ["article", "advertisement", "illustration",
-                     "ornament", "freead", "table"]  
+BNF_CONTENT_TYPES = [
+    "article",
+    "advertisement",
+    "illustration",
+    "ornament",
+    "freead",
+    "table",
+]
 SECTION = "section"
 """
 Content types as defined in BNF Mets flavour. 
@@ -18,12 +30,12 @@ but it is needed to parse what's inside.
 """
 
 type_translation = {
-    'illustration': CONTENTITEM_TYPE_IMAGE,
-    'advertisement': CONTENTITEM_TYPE_ADVERTISEMENT,
-    'ornament': CONTENTITEM_TYPE_OBITUARY,
-    'table': CONTENTITEM_TYPE_TABLE,
-    'article': CONTENTITEM_TYPE_ARTICLE,
-    'freead': CONTENTITEM_TYPE_ADVERTISEMENT
+    "illustration": CONTENTITEM_TYPE_IMAGE,
+    "advertisement": CONTENTITEM_TYPE_ADVERTISEMENT,
+    "ornament": CONTENTITEM_TYPE_OBITUARY,
+    "table": CONTENTITEM_TYPE_TABLE,
+    "article": CONTENTITEM_TYPE_ARTICLE,
+    "freead": CONTENTITEM_TYPE_ADVERTISEMENT,
 }
 
 logger = logging.getLogger(__name__)
@@ -33,7 +45,7 @@ def add_div(
     _dict: dict[str, tuple[str, str]], _type: str, div_id: str, label: str
 ) -> dict[str, tuple[str, str]]:
     """Adds a div item to the given dictionary (sorted by type).
-    
+
     The types used as keys should be in `BNF_CONTENT_TYPES` or `SECTION`.
 
     Args:
@@ -51,7 +63,8 @@ def add_div(
         else:
             _dict[_type] = [(div_id, label)]
     else:
-        logger.warning(f"Tried to add div of type {_type}")
+        logger.warning("Tried to add div of type %s", _type)
+
     return _dict
 
 
@@ -66,8 +79,9 @@ def get_journal_name(archive_path: str) -> str:
     Returns:
         str: Extracted journal name in lowercase.
     """
-    journal = archive_path.split('/')[-2].split('-')
+    journal = archive_path.split("/")[-2].split("-")
     journal = "".join(journal).lower()
+
     return journal
 
 
@@ -102,6 +116,7 @@ def get_dates(date_string: str, separators: list[str]) -> list[Optional[str]]:
     for s in separators:
         if len(date_string.split(s)) == 2:
             return date_string.split(s)
+
     return [None, None]
 
 
@@ -111,7 +126,7 @@ def parse_date(
     """Parse a date given a list of formats.
 
     The input string can sometimes represent a pair of dates, in which case
-    they are both parsed if possible. 
+    they are both parsed if possible.
 
     Args:
         date_string (str): Date string to parse.
@@ -130,31 +145,32 @@ def parse_date(
     """
     date, secondary = None, None
     # Date_string 1 and 2
-    ds_1, ds_2 = None, None  
-    
-    # Dates have at least 10 characters. 
+    ds_1, ds_2 = None, None
+
+    # Dates have at least 10 characters.
     # Some (very rarely) issues have only year/month
     if len(date_string) < 10:
-        raise ValueError("Could not parse date {}".format(date_string))
+        raise ValueError(f"Could not parse date {date_string}")
     # Here we potentially have two dates, take the first one
-    elif is_multi_date(date_string):  
-        logger.info(f"Got two dates {date_string}")
+    elif is_multi_date(date_string):
+        logger.info("Got two dates %s", date_string)
         ds_1, ds_2 = get_dates(date_string, separators)
-        
+
         if ds_1 is None:
-            raise ValueError("Could not parse date {}".format(date_string))
+            raise ValueError(f"Could not parse date {date_string}")
     else:
         ds_1 = date_string
-    
+
     # Now parse
     for f in formats:
         try:
             date = datetime.strptime(ds_1, f).date()
             if ds_2 is not None:
                 secondary = datetime.strptime(ds_2, f).date()
-        except ValueError as e:
+        except ValueError:
             pass
-    
+
     if date is None:
-        raise ValueError("Could not parse date {}".format(date_string))
+        raise ValueError(f"Could not parse date {date_string}")
+
     return date, secondary

@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
+
 class TetmlNewspaperPage(NewspaperPage):
     """Generic class representing a page in Tetml format.
 
@@ -41,7 +42,7 @@ class TetmlNewspaperPage(NewspaperPage):
         }
 
         if not self.page_data["r"]:
-            logger.warning(f"Page {self.id} has no OCR text")
+            logger.warning("Page %s has no OCR text", self.id)
 
     def add_issue(self, issue: NewspaperIssue):
         if issue is None:
@@ -66,7 +67,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
     def __init__(self, issue_dir: IssueDir):
         super().__init__(issue_dir)
 
-        logger.info(f"Starting to parse {self.id}")
+        logger.info("Starting to parse %s", self.id)
 
         # get all tetml files of this issue
         self.files = self._index_issue_files()
@@ -75,7 +76,9 @@ class TetmlNewspaperIssue(NewspaperIssue):
         self.article_data = self.parse_articles()
 
         # using canonical ('m') and additional non-canonical ('meta') metadata
-        self.content_items = [{"m": art["m"], "meta": art["meta"]} for art in self.article_data]
+        self.content_items = [
+            {"m": art["m"], "meta": art["meta"]} for art in self.article_data
+        ]
 
         # instantiate the individual pages
         self._find_pages()
@@ -89,7 +92,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
             "ar": self.rights,
         }
 
-        logger.info(f"Finished parsing {self.id}")
+        logger.info("Finished parsing %s", self.id)
 
     def _index_issue_files(self, suffix=".tetml"):
         """
@@ -110,7 +113,9 @@ class TetmlNewspaperIssue(NewspaperIssue):
                 data = tetml_parser(fname)
 
                 # canonical identifier
-                data["m"]["id"] = canonical_path(self.issuedir, name=f"i{i+1:04}", extension="")
+                data["m"]["id"] = canonical_path(
+                    self.issuedir, name=f"i{i+1:04}", extension=""
+                )
 
                 # reference to content item per region
                 for page in data["pages"]:
@@ -127,7 +132,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
                 articles.append(data)
 
             except Exception as e:
-                logger.error(f"Parsing of {fname} failed for {self.id}")
+                logger.error("Parsing of %s failed for %s", fname, self.id)
                 raise e
 
         return articles
@@ -144,5 +149,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
             for can_page, page_content in zip(can_pages, art["pages"]):
                 can_id = f"{self.id}-p{can_page:04}"
                 self.pages.append(
-                    TetmlNewspaperPage(can_id, can_page, page_content, art["meta"]["tetml_path"])
+                    TetmlNewspaperPage(
+                        can_id, can_page, page_content, art["meta"]["tetml_path"]
+                    )
                 )
