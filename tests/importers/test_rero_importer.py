@@ -52,6 +52,21 @@ def check_image_coordinates(issue_data):
             all('c' in data['m'] and len(data['m']['c']) == 4 for data in imgs))
 
 
+def check_image_coordinates_and_iiif(issue_data):
+    """This function is derived from `check_image_coordinates`.
+
+    It checks the changes made in the following commit https://github.com/impresso/impresso-text-acquisition/commit/c6009d83f3801919e3e4944362dd472a1ede20fb, 
+    based on the issues https://github.com/impresso/impresso-text-acquisition/issues/104 and https://github.com/impresso/impresso-text-acquisition/issues/105.
+    """
+    items = issue_data['i']
+    imgs = [i for i in items if i['m']['tp'] == CONTENTITEM_TYPE_IMAGE]
+    if len(imgs) == 0:
+        return True
+    else:
+        return (all('c' in data and len(data['c']) == 4 for data in imgs) and 
+                all('iiif_link' in data['m'] and "info.json" in data['m']['iiif_link'] for data in imgs))
+
+
 def test_image_coordinates():
 
     logger.info("Starting test_image_coordinates in test_rero_importer.py")
@@ -78,7 +93,7 @@ def test_image_coordinates():
         with bz2.open(filename, "rt") as bzinput:
             for line in bzinput:
                 issue = json.loads(line)
-                assert check_image_coordinates(issue), (
+                assert check_image_coordinates_and_iiif(issue), (
                     "Images do not have coordinates"
                 )
 

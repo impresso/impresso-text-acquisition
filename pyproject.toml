@@ -6,7 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "impresso_text_importer"
 authors = [
     {name="Maud Ehrmann", email="maud.ehrmann@epfl.ch"},
-    {name="Matteo Romanello", email="matteo.romanello@gmail.com"}
+    {name="Matteo Romanello", email="matteo.romanello@gmail.com"},
+    {name="Pauline Conti", email="pauline.conti@epfl.ch"}
 ]
 description = "Library to import newspaper data from a variety of OCR formats into Impresso's JSON format."
 readme = "README.md"

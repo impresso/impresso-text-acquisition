@@ -5,19 +5,12 @@ import json
 from collections import namedtuple
 from typing import Any
 
-from impresso_commons.path.path_fs import (IssueDir, detect_issues,
-                                           select_issues)
+from impresso_commons.path.path_fs import IssueDir, detect_issues, select_issues
 
 from text_importer.utils import get_access_right
 
 OliveIssueDir = namedtuple(
-    "OliveIssueDirectory", [
-        'journal',
-        'date',
-        'edition',
-        'path',
-        'rights'
-    ]
+    "OliveIssueDirectory", ["journal", "date", "edition", "path", "rights"]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -58,12 +51,9 @@ def dir2olivedir(
         OliveIssueDir: New ``OliveIssueDir`` object.
     """
     ar = get_access_right(issue_dir.journal, issue_dir.date, access_rights)
+
     return OliveIssueDir(
-        issue_dir.journal,
-        issue_dir.date,
-        issue_dir.edition,
-        issue_dir.path,
-        rights=ar
+        issue_dir.journal, issue_dir.date, issue_dir.edition, issue_dir.path, rights=ar
     )
 
 
@@ -71,7 +61,7 @@ def olive_detect_issues(
     base_dir: str,
     access_rights: str,
     journal_filter: set | None = None,
-    exclude: bool = False
+    exclude: bool = False,
 ) -> list[OliveIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
@@ -81,7 +71,7 @@ def olive_detect_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         access_rights (str): Path to ``access_rights.json`` file.
-        journal_filter (set | None, optional): IDs of newspapers to consider. 
+        journal_filter (set | None, optional): IDs of newspapers to consider.
             Defaults to None.
         exclude (bool, optional): Whether ``journal_filter`` should determine
             exclusion. Defaults to False.
@@ -89,22 +79,16 @@ def olive_detect_issues(
     Returns:
         list[OliveIssueDir]: List of `OliveIssueDir` instances, to be imported.
     """
-    with open(access_rights, 'r') as f:
+    with open(access_rights, "r", encoding="utf-8") as f:
         access_rights_dict = json.load(f)
 
-    issues = detect_issues(
-        base_dir,
-        journal_filter=journal_filter,
-        exclude=exclude
-    )
+    issues = detect_issues(base_dir, journal_filter=journal_filter, exclude=exclude)
 
     return [dir2olivedir(x, access_rights_dict) for x in issues]
 
 
 def olive_select_issues(
-    base_dir: str,
-    config: dict[str, Any],
-    access_rights: str
+    base_dir: str, config: dict[str, Any], access_rights: str
 ) -> list[OliveIssueDir]:
     """Detect selectively newspaper issues to import.
 
@@ -121,7 +105,7 @@ def olive_select_issues(
     Returns:
         list[OliveIssueDir]: List of `OliveIssueDir` instances, to be imported.
     """
-    with open(access_rights, 'r') as f:
+    with open(access_rights, "r", encoding="utf-8") as f:
         access_rights_dict = json.load(f)
 
     issues = select_issues(config, base_dir)

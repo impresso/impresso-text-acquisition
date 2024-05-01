@@ -14,22 +14,10 @@ from text_importer.utils import get_access_right
 
 logger = logging.getLogger(__name__)
 
-EDITIONS_MAPPINGS = {
-    1: 'a',
-    2: 'b',
-    3: 'c',
-    4: 'd',
-    5: 'e'
-}
+EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
 Rero2IssueDir = namedtuple(
-    "IssueDirectory", [
-        'journal',
-        'date',
-        'edition',
-        'path',
-        'rights'
-    ]
+    "IssueDirectory", ["journal", "date", "edition", "path", "rights"]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -64,19 +52,23 @@ def dir2issue(path: str, access_rights: dict) -> Rero2IssueDir:
     Returns:
         Rero2IssueDir: New `Rero2IssueDir` object matching the path and rights.
     """
-    journal, issue = path.split('/')[-2:]
-    date, edition = issue.split('_')[:2]
-    date = datetime.strptime(date, '%Y%m%d').date()
+    journal, issue = path.split("/")[-2:]
+    date, edition = issue.split("_")[:2]
+    date = datetime.strptime(date, "%Y%m%d").date()
 
     edition = EDITIONS_MAPPINGS[int(edition)]
 
-    return Rero2IssueDir(journal=journal, date=date,
-                         edition=edition, path=path,
-                         rights=get_access_right(journal, date, access_rights))
+    return Rero2IssueDir(
+        journal=journal,
+        date=date,
+        edition=edition,
+        path=path,
+        rights=get_access_right(journal, date, access_rights),
+    )
 
 
 def detect_issues(
-    base_dir: str, access_rights: str, data_dir: str = 'data'
+    base_dir: str, access_rights: str, data_dir: str = "data"
 ) -> list[Rero2IssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
@@ -88,13 +80,13 @@ def detect_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         access_rights (str): Path to ``access_rights.json`` file.
-        data_dir (str, optional): Directory where data is stored 
+        data_dir (str, optional): Directory where data is stored
             (usually `data/`). Defaults to 'data'.
 
     Returns:
         list[Rero2IssueDir]: list of `Rero2IssueDir` instances, to be imported.
     """
-    dir_path, dirs, files = next(os.walk(base_dir))
+    dir_path, dirs, _ = next(os.walk(base_dir))
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
     journal_dirs = [
         os.path.join(journal, _dir, _dir2)
@@ -105,16 +97,17 @@ def detect_issues(
     ]
 
     issues_dirs = [
-        os.path.join(j_dir, l) 
-        for j_dir in journal_dirs 
+        os.path.join(j_dir, l)
+        for j_dir in journal_dirs
         for l in os.listdir(j_dir)
-        if '.DS_Store' not in l
+        if ".DS_Store" not in l
     ]
 
-    with open(access_rights, 'r') as f:
+    with open(access_rights, "r", encoding="utf-8") as f:
         access_rights_dict = json.load(f)
 
     return [dir2issue(_dir, access_rights_dict) for _dir in issues_dirs]
+
 
 def select_issues(
     base_dir: str, config: dict, access_rights: str
@@ -124,7 +117,7 @@ def select_issues(
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
-    further details on how to configure filtering. 
+    further details on how to configure filtering.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
@@ -141,29 +134,29 @@ def select_issues(
         year_flag = config["year_only"]
 
     except KeyError:
-        logger.critical(f"The key [newspapers|exclude_newspapers|year_only] "
-               "is missing in the config file.")
+        logger.critical(
+            "The key [newspapers|exclude_newspapers|year_only] "
+            "is missing in the config file."
+        )
         return
 
     issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
-    selected_issues = (
-        issue_bag.filter(
-            lambda i: (
-                len(filter_dict) == 0 or i.journal in filter_dict.keys()
-                ) and i.journal not in exclude_list
-        ).compute()
-    )
+    selected_issues = issue_bag.filter(
+        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
+        and i.journal not in exclude_list
+    ).compute()
 
     exclude_flag = False if not exclude_list else True
-    filtered_issues = _apply_datefilter(
-        filter_dict, selected_issues, year_only=year_flag
-    ) if not exclude_flag else selected_issues
+    filtered_issues = (
+        _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
+        if not exclude_flag
+        else selected_issues
+    )
 
     logger.info(
-        "{} newspaper issues remained after applying filter: {}".format(
-            len(filtered_issues),
-            filtered_issues
-        )
+        "%s newspaper issues remained after applying filter: %s",
+        len(filtered_issues),
+        filtered_issues,
     )
     return filtered_issues
