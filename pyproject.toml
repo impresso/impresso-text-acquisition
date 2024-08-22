@@ -42,10 +42,10 @@ Homepage = "https://github.com/impresso/impresso-text-acquisition"
 Documentaton = "https://impresso-text-importer.readthedocs.io/en/latest/index.html" 
 
 [tool.setuptools.dynamic]
-version = {attr = "text_importer.__version__"}
+version = {attr = "text_preparation.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["text_importer*"]
+include = ["text_preparation*"]
 namespaces = false
 
 [tool.setuptools.package-data]
@@ -56,4 +56,4 @@ text_importer = [
 ]
 
 [project.scripts]
-impresso-txt-importer = "text_importer.importer.generic_importer:main"
+impresso-txt-importer = "text_preparation.importers.generic_importer:main"

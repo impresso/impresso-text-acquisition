@@ -9,14 +9,21 @@ from pathlib import Path
 
 from dask import bag as db
 
-from text_importer.utils import verify_imported_issues, get_pkg_resource
-from text_importer.importers.core import import_issues, compress_issues, dirs2issues, issue2pages, process_pages, serialize_pages, compress_pages
-from text_importer.importers.tetml.detect import tetml_detect_issues
-from text_importer.importers.tetml.classes import TetmlNewspaperIssue
+from text_preparation.utils import verify_imported_issues, get_pkg_resource
+from text_preparation.importers.core import (
+    import_issues,
+    compress_issues,
+    dirs2issues,
+    issue2pages,
+    process_pages,
+    serialize_pages,
+    compress_pages,
+)
+from text_preparation.importers.tetml.detect import tetml_detect_issues
+from text_preparation.importers.tetml.classes import TetmlNewspaperIssue
 from impresso_commons.path.path_fs import canonical_path
 
 logger = logging.getLogger(__name__)
-
 
 
 def test_import_issues_no_dask():
@@ -25,16 +32,14 @@ def test_import_issues_no_dask():
     logger.info("Starting test_import_issues_no_dask in test_tetml_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng,'data/sample_data/Tetml/')
-    ar_file = get_pkg_resource(f_mng,'data/sample_data/Tetml/access_rights.json')
-    out_dir = get_pkg_resource(f_mng,'data/out/')
-    temp_dir = get_pkg_resource(f_mng,'data/temp/')
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/Tetml/")
+    ar_file = get_pkg_resource(f_mng, "data/sample_data/Tetml/access_rights.json")
+    out_dir = get_pkg_resource(f_mng, "data/out/")
+    temp_dir = get_pkg_resource(f_mng, "data/temp/")
 
     failed_log_path = os.path.join(
-            out_dir,
-            f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
-            )
-
+        out_dir, f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
+    )
 
     dir_issues = tetml_detect_issues(base_dir=inp_dir, access_rights=ar_file)
 
@@ -42,31 +47,24 @@ def test_import_issues_no_dask():
     assert len(dir_issues) > 0
 
     issues = dirs2issues(
-        dir_issues, 
-        issue_class=TetmlNewspaperIssue, 
-        failed_log=failed_log_path, 
-        temp_dir=temp_dir
+        dir_issues,
+        issue_class=TetmlNewspaperIssue,
+        failed_log=failed_log_path,
+        temp_dir=temp_dir,
     )
 
     for issue in issues:
-        compress_issues(
-            (issue.journal, issue.date.year), [issue], output_dir=out_dir
-        )
+        compress_issues((issue.journal, issue.date.year), [issue], output_dir=out_dir)
 
         pages = issue2pages(issue)
         parsed_pages = process_pages(pages, failed_log=failed_log_path)
         serialized_pages = serialize_pages(parsed_pages, output_dir=out_dir)
 
-        pages_out_dir = os.path.join(out_dir, 'pages')
+        pages_out_dir = os.path.join(out_dir, "pages")
         Path(pages_out_dir).mkdir(exist_ok=True)
 
-
-
-
-        key = canonical_path(issue, path_type='dir').replace('/', '-')
-        compress_pages(
-            key, serialized_pages, prefix='pages', output_dir=pages_out_dir
-        )
+        key = canonical_path(issue, path_type="dir").replace("/", "-")
+        compress_pages(key, serialized_pages, prefix="pages", output_dir=pages_out_dir)
 
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -77,17 +75,16 @@ def test_import_issues_no_dask():
     f_mng.close()
 
 
-
 def test_import_issues():
     """Test the Tetml importer with sample data."""
 
     logger.info("Starting test_import_issues in test_tetml_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng,'data/sample_data/Tetml/')
-    ar_file = get_pkg_resource(f_mng,'data/sample_data/Tetml/access_rights.json')
-    out_dir = get_pkg_resource(f_mng,'data/out/')
-    tmp_dir = get_pkg_resource(f_mng,'data/tmp/')
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/Tetml/")
+    ar_file = get_pkg_resource(f_mng, "data/sample_data/Tetml/access_rights.json")
+    out_dir = get_pkg_resource(f_mng, "data/out/")
+    tmp_dir = get_pkg_resource(f_mng, "data/tmp/")
 
     issues = tetml_detect_issues(base_dir=inp_dir, access_rights=ar_file)
     assert issues is not None
@@ -118,8 +115,8 @@ def test_verify_imported_issues():
     logger.info("Starting test_verify_imported_issues in test_tetml_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng,'data/out/')
-    expected_data_dir = get_pkg_resource(f_mng,'data/expected/Tetml')
+    inp_dir = get_pkg_resource(f_mng, "data/out/")
+    expected_data_dir = get_pkg_resource(f_mng, "data/expected/Tetml")
 
     # consider only newspapers in Tetml format
     newspapers = ["FedGazDe", "FedGazFr", "FedGazIt"]
