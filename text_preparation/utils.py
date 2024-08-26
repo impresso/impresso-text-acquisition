@@ -52,7 +52,7 @@ def init_logger(
 
 
 def get_pkg_resource(
-    file_manager: ExitStack, path: str, package: str = "text_importer"
+    file_manager: ExitStack, path: str, package: str = "text_preparation"
 ) -> pathlib.PosixPath:
     """Return the resource at `path` in `package`, using a context manager.
 
@@ -254,7 +254,7 @@ def write_error(
 ) -> None:
     """Write the given error of a failed import to the `failed_log` file.
 
-    Adapted from `impresso-text-acquisition/text_importer/importers/core.py` to allow
+    Adapted from `impresso-text-acquisition/text_preparation/importers/core.py` to allow
     using a issue or page id, and provide the function in which the error took place.
 
     Args:

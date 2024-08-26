@@ -82,4 +82,4 @@ screen -dmS workers dask worker localhost:8786 --nworkers $WORKERS --nthreads 1 
 
 echo "dask dashboard at localhost:8786/status"
 
-screen -dmS rebuilt python $pvc_path/impresso-pycommons/impresso_commons/text/rebuilder.py rebuild_articles --input-bucket=$input_bucket --log-file=$log_file --output-dir=$output_dir --output-bucket=$output_bucket --format=$format --filter-config=$filter_config --git-repo=$git_repo --temp-dir=$temp_dir --prev-manifest=$prev_manifest_path --scheduler=localhost:8786
+screen -dmS rebuilt python $pvc_path/impresso-text-acquisition/text_preparation/rebuilders/rebuilder.py rebuild_articles --input-bucket=$input_bucket --log-file=$log_file --output-dir=$output_dir --output-bucket=$output_bucket --format=$format --filter-config=$filter_config --git-repo=$git_repo --temp-dir=$temp_dir --prev-manifest=$prev_manifest_path --scheduler=localhost:8786

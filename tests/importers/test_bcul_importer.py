@@ -3,6 +3,8 @@ import json
 
 from contextlib import ExitStack
 
+from impresso_commons.versioning.data_manifest import DataManifest
+
 from text_preparation.utils import get_pkg_resource
 from text_preparation.importers.bcul.classes import BculNewspaperIssue
 from text_preparation.importers.bcul.detect import detect_issues, select_issues
@@ -18,8 +20,23 @@ def test_import_issues():
 
     f_mng = ExitStack()
     inp_dir = get_pkg_resource(f_mng, "data/sample_data/BCUL/")
-    out_dir = get_pkg_resource(f_mng, "data/out/")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
     tmp_dir = get_pkg_resource(f_mng, "data/temp/")
+
+    test_manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket="10-canonical-sandbox",
+        s3_input_bucket=None,
+        git_repo="../../",
+        temp_dir=tmp_dir,
+        staging=True,
+        is_patch=False,
+        patched_fields=None,
+        previous_mft_path=None,
+        only_counting=False,
+        push_to_git=False,
+        notes="Manifest from BCUL test_import_issues().",
+    )
 
     issues = detect_issues(base_dir=inp_dir, access_rights=None)
 
@@ -34,6 +51,7 @@ def test_import_issues():
         image_dirs=None,
         temp_dir=tmp_dir,
         chunk_size=None,
+        manifest=test_manifest,
     )
 
     logger.info("Finished test_import_issues, closing file manager.")
@@ -55,16 +73,32 @@ def test_selective_import():
     cfg_file = get_pkg_resource(f_mng, "config/import_BCUL.json")
     inp_dir = get_pkg_resource(f_mng, "data/sample_data/BCUL/")
     out_dir = get_pkg_resource(f_mng, "data/out/")
+    tmp_dir = get_pkg_resource(f_mng, "data/temp/")
 
-    with open(cfg_file, "r") as f:
+    with open(cfg_file, "r", encoding="utf-8") as f:
         config = json.load(f)
+
+    test_manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket="10-canonical-sandbox",
+        s3_input_bucket=None,
+        git_repo="../../",
+        temp_dir=tmp_dir,
+        staging=True,
+        is_patch=False,
+        patched_fields=None,
+        previous_mft_path=None,
+        only_counting=False,
+        push_to_git=False,
+        notes="Manifest from BCUL test_selective_import().",
+    )
 
     issues = select_issues(base_dir=inp_dir, config=config, access_rights="")
 
     assert issues is not None and len(issues) > 0
     assert all([i.journal in config["newspapers"] for i in issues])
 
-    logger.info(f"There are {len(issues)} to ingest")
+    logger.info("There are %s to ingest", len(issues))
     import_issues(
         issues,
         out_dir,
@@ -73,6 +107,7 @@ def test_selective_import():
         image_dirs=None,
         temp_dir=None,
         chunk_size=None,
+        manifest=test_manifest,
     )
 
     logger.info("Finished test_selective_import, closing file manager.")

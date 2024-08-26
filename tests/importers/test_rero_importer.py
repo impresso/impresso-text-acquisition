@@ -6,6 +6,8 @@ from glob import glob
 
 from contextlib import ExitStack
 
+from impresso_commons.versioning.data_manifest import DataManifest
+
 from text_preparation.utils import get_pkg_resource
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.core import import_issues
@@ -23,7 +25,23 @@ def test_import_issues():
     f_mng = ExitStack()
     inp_dir = get_pkg_resource(f_mng, "data/sample_data/RERO2/")
     ar_file = get_pkg_resource(f_mng, "data/sample_data/RERO2/rero2_access_rights.json")
-    out_dir = get_pkg_resource(f_mng, "data/out/")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
+    tmp_dir = get_pkg_resource(f_mng, "data/temp/")
+
+    test_manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket="10-canonical-sandbox",
+        s3_input_bucket=None,
+        git_repo="../../",
+        temp_dir=tmp_dir,
+        staging=True,
+        is_patch=False,
+        patched_fields=None,
+        previous_mft_path=None,
+        only_counting=False,
+        push_to_git=False,
+        notes="Manifest from RERO test_import_issues().",
+    )
 
     issues = detect_issues(base_dir=inp_dir, access_rights=ar_file)
 
@@ -38,6 +56,7 @@ def test_import_issues():
         temp_dir=None,
         image_dirs=None,
         chunk_size=None,
+        manifest=test_manifest,
     )
 
     logger.info("Finished test_import_issues, closing file manager.")
@@ -75,7 +94,7 @@ def test_image_coordinates():
     f_mng = ExitStack()
     inp_dir = get_pkg_resource(f_mng, "data/sample_data/RERO2/")
     ar_file = get_pkg_resource(f_mng, "data/sample_data/RERO2/rero2_access_rights.json")
-    out_dir = get_pkg_resource(f_mng, "data/out/")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
 
     issues = detect_issues(base_dir=inp_dir, access_rights=ar_file)
 

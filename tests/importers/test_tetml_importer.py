@@ -8,6 +8,7 @@ from contextlib import ExitStack
 from pathlib import Path
 
 from dask import bag as db
+from impresso_commons.versioning.data_manifest import DataManifest
 
 from text_preparation.utils import verify_imported_issues, get_pkg_resource
 from text_preparation.importers.core import (
@@ -64,7 +65,7 @@ def test_import_issues_no_dask():
         Path(pages_out_dir).mkdir(exist_ok=True)
 
         key = canonical_path(issue, path_type="dir").replace("/", "-")
-        compress_pages(key, serialized_pages, prefix="pages", output_dir=pages_out_dir)
+        compress_pages(key, serialized_pages, suffix="pages", output_dir=pages_out_dir)
 
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -86,6 +87,21 @@ def test_import_issues():
     out_dir = get_pkg_resource(f_mng, "data/out/")
     tmp_dir = get_pkg_resource(f_mng, "data/tmp/")
 
+    test_manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket="10-canonical-sandbox",
+        s3_input_bucket=None,
+        git_repo="../../",
+        temp_dir=tmp_dir,
+        staging=True,
+        is_patch=False,
+        patched_fields=None,
+        previous_mft_path=None,
+        only_counting=False,
+        push_to_git=False,
+        notes="Manifest from TETML test_import_issues().",
+    )
+
     issues = tetml_detect_issues(base_dir=inp_dir, access_rights=ar_file)
     assert issues is not None
     assert len(issues) > 0
@@ -98,6 +114,7 @@ def test_import_issues():
         image_dirs="/mnt/project_impresso/images/",
         temp_dir=tmp_dir,
         chunk_size=None,
+        manifest=test_manifest,
     )
 
     logger.info("Finished test_import_issues, closing file manager.")
@@ -128,11 +145,11 @@ def test_verify_imported_issues():
         if any([np in file for np in newspapers])
         and os.path.isfile(os.path.join(inp_dir, file))
     ]
-    logger.info(f"Found canonical files: {issue_archive_files}")
+    logger.info("Found canonical files: %s", issue_archive_files)
 
     # read issue JSON data from bz2 archives
     ingested_issues = db.read_text(issue_archive_files).map(json.loads).compute()
-    logger.info(f"Issues to verify: {[i['id'] for i in ingested_issues]}")
+    logger.info("Issues to verify: %s", [i["id"] for i in ingested_issues])
 
     for actual_issue_json in ingested_issues:
 
@@ -144,7 +161,7 @@ def test_verify_imported_issues():
             print(expected_output_path)
             continue
 
-        with open(expected_output_path, "r") as infile:
+        with open(expected_output_path, "r", encoding="utf-8") as infile:
             expected_issue_json = json.load(infile)
 
         verify_imported_issues(actual_issue_json, expected_issue_json)

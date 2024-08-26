@@ -3,14 +3,15 @@ import json
 import logging
 import os
 from glob import glob
-import logging
 
 from contextlib import ExitStack
+
+from impresso_commons.versioning.data_manifest import DataManifest
 
 from text_preparation.utils import get_pkg_resource
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.core import import_issues
-from text_preparation.importers.lux.classes import LuxNewspaperIssue, IIIF_ENDPOINT_URL
+from text_preparation.importers.lux.classes import LuxNewspaperIssue, IIIF_ENDPOINT_URI
 from text_preparation.importers.lux.detect import detect_issues as lux_detect_issues
 from text_preparation.importers.lux.detect import select_issues as lux_select_issues
 
@@ -25,9 +26,25 @@ def test_import_issues():
 
     f_mng = ExitStack()
     inp_dir = get_pkg_resource(f_mng, "data/sample_data/Luxembourg/")
-    out_dir = get_pkg_resource(f_mng, "data/out/")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
+    tmp_dir = get_pkg_resource(f_mng, "data/temp/")
 
     output_bucket = None  # this disables the s3 upload
+
+    test_manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket="10-canonical-sandbox",
+        s3_input_bucket=None,
+        git_repo="../../",
+        temp_dir=tmp_dir,
+        staging=True,
+        is_patch=False,
+        patched_fields=None,
+        previous_mft_path=None,
+        only_counting=False,
+        push_to_git=False,
+        notes="Manifest from BNL test_import_issues().",
+    )
 
     issues = lux_detect_issues(inp_dir)
     assert issues is not None
@@ -41,6 +58,7 @@ def test_import_issues():
         image_dirs=None,
         temp_dir=None,
         chunk_size=None,
+        manifest=test_manifest,
     )
 
     logger.info("Finished test_import_issues, closing file manager.")
@@ -61,17 +79,33 @@ def test_selective_import():
     f_mng = ExitStack()
     cfg_file = get_pkg_resource(f_mng, "config/import_BNL.json")
     inp_dir = get_pkg_resource(f_mng, "data/sample_data/Luxembourg/")
-    out_dir = get_pkg_resource(f_mng, "data/out/")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
+    tmp_dir = get_pkg_resource(f_mng, "data/temp/")
 
-    with open(cfg_file, "r") as f:
+    with open(cfg_file, "r", encoding="utf-8") as f:
         config = json.load(f)
+
+    test_manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket="10-canonical-sandbox",
+        s3_input_bucket=None,
+        git_repo="../../",
+        temp_dir=tmp_dir,
+        staging=True,
+        is_patch=False,
+        patched_fields=None,
+        previous_mft_path=None,
+        only_counting=False,
+        push_to_git=False,
+        notes="Manifest from BNL test_selective_import().",
+    )
 
     issues = lux_select_issues(base_dir=inp_dir, config=config, access_rights="")
 
     assert issues is not None and len(issues) > 0
     assert all([i.journal in config["newspapers"] for i in issues])
 
-    logger.info(f"There are {len(issues)} to ingest")
+    logger.info("There are %s to ingest", len(issues))
     import_issues(
         issues,
         out_dir,
@@ -80,6 +114,7 @@ def test_selective_import():
         image_dirs=None,
         temp_dir=None,
         chunk_size=None,
+        manifest=test_manifest,
     )
 
     logger.info("Finished test_selective_import, closing file manager.")
@@ -87,7 +122,7 @@ def test_selective_import():
 
 
 def check_link(link: str):
-    return IIIF_ENDPOINT_URL in link and "ark:" in link and "ark:/" not in link
+    return IIIF_ENDPOINT_URI in link and "ark:" in link and "ark:/" not in link
 
 
 def check_iiif_links(issue_data):
@@ -101,7 +136,7 @@ def test_image_iiif_links():
     logger.info("Starting test_image_iiif_links in test_lux_importer.py")
     f_mng = ExitStack()
     inp_dir = get_pkg_resource(f_mng, "data/sample_data/Luxembourg/")
-    out_dir = get_pkg_resource(f_mng, "data/out/")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
 
     issues = lux_detect_issues(
         base_dir=inp_dir,
