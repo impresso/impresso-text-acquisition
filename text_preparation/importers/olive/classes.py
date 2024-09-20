@@ -12,8 +12,8 @@ from time import strftime
 from typing import Any
 from zipfile import ZipFile
 
-from impresso_commons.path import IssueDir
-from impresso_commons.path.path_fs import canonical_path
+from impresso_essentials.utils import IssueDir
+from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.importers.classes import NewspaperIssue, NewspaperPage, ZipArchive
 from text_preparation.importers.olive.helpers import (
@@ -224,7 +224,7 @@ class OliveNewspaperIssue(NewspaperIssue):
         archive_path = os.path.join(self.path, file)
         if os.path.isfile(archive_path):
             archive_tmp_path = os.path.join(
-                temp_dir, canonical_path(self.issuedir, path_type="dir")
+                temp_dir, canonical_path(self.issuedir, as_dir=True)
             )
 
             try:
@@ -428,13 +428,13 @@ class OliveNewspaperIssue(NewspaperIssue):
             )
 
             image_info_name = canonical_path(
-                issue_w_images, name="image-info", extension=".json"
+                issue_w_images, suffix="image-info", extension=".json"
             )
 
             image_info_path = os.path.join(issue_w_images.path, image_info_name)
 
             if os.path.exists(image_info_path):
-                with open(image_info_path, "r") as inp_file:
+                with open(image_info_path, "r", encoding="utf-8") as inp_file:
                     try:
                         json_data = json.load(inp_file)
                         if len(json_data) == 0:

@@ -17,10 +17,10 @@ import logging
 from zipfile import ZipFile, BadZipFile
 from docopt import docopt
 
-from impresso_commons.utils import s3
-from text_preparation.utils import init_logger
+from impresso_essentials.io.s3 import get_storage_options
+from impresso_essentials.utils import init_logger
 
-IMPRESSO_STORAGEOPT = s3.get_storage_options()
+IMPRESSO_STORAGEOPT = get_storage_options()
 UZH_TITLES = ["FedGazDe", "FedGazFr", "NZZ"]
 IMPRESSO_IIIF_BASE_URI = "https://impresso-project.ch/api/proxy/iiif/"
 PROP_NAME = "iiif_img_base_uri"

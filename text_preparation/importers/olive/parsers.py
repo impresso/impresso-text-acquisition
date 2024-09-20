@@ -6,7 +6,8 @@ import re
 from typing import Any
 
 from bs4 import BeautifulSoup
-from impresso_commons.path.path_fs import canonical_path, IssueDir
+from impresso_essentials.io.fs_utils import canonical_path
+from impresso_essentials.utils import IssueDir
 
 from text_preparation.importers.olive.helpers import normalize_language, normalize_line
 
@@ -108,7 +109,7 @@ def olive_toc_parser(
             item = {
                 "legacy_id": item_legacy_id,
                 "id": canonical_path(
-                    issue_dir, name=f"i{str(global_counter).zfill(4)}", extension=""
+                    issue_dir, suffix=f"i{str(global_counter).zfill(4)}"
                 ),
                 "type": entity.get("entity_type"),
                 "seq": n + 1,

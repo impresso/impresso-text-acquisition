@@ -6,9 +6,9 @@ from glob import glob
 
 from contextlib import ExitStack
 
-from impresso_commons.versioning.data_manifest import DataManifest
+from impresso_essentials.versioning.data_manifest import DataManifest
+from impresso_essentials.utils import get_pkg_resource
 
-from text_preparation.utils import get_pkg_resource
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.bnf_en.classes import BnfEnNewspaperIssue
 from text_preparation.importers.bnf_en.detect import detect_issues
@@ -23,9 +23,9 @@ def test_import_issues():
     logger.info("Starting test_import_issues in test_bnf_en_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng, "data/sample_data/BNF-EN/")
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
-    tmp_dir = get_pkg_resource(f_mng, "data/tmp/")
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/BNF-EN/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    tmp_dir = get_pkg_resource(f_mng, "data/tmp/", "text_preparation")
 
     test_manifest = DataManifest(
         data_stage="canonical",
@@ -77,8 +77,8 @@ def test_image_coordinates():
 
     logger.info("Starting test_image_coordinates in test_bnf_en_importer.py")
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng, "data/sample_data/BNF-EN/")
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/BNF-EN/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
 
     issues = detect_issues(base_dir=inp_dir, access_rights="")
 

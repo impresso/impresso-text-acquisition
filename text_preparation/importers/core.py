@@ -27,11 +27,11 @@ import jsonlines
 from dask import bag as db
 from dask.distributed import Client
 from filelock import FileLock
-from impresso_commons.path.path_fs import IssueDir, canonical_path
-from impresso_commons.utils import chunk
-from impresso_commons.utils.s3 import get_s3_resource
-from impresso_commons.versioning.data_manifest import DataManifest
-from impresso_commons.versioning.helpers import counts_for_canonical_issue
+from impresso_essentials.utils import IssueDir, chunk
+from impresso_essentials.io.fs_utils import canonical_path
+from impresso_essentials.io.s3 import get_s3_resource
+from impresso_essentials.versioning.data_manifest import DataManifest
+from impresso_essentials.versioning.aggregators import counts_for_canonical_issue
 from smart_open import open as smart_open_function
 
 from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
@@ -69,7 +69,7 @@ def write_error(
             # if it's neither an issue nor a page it must be an issuedir
             issuedir = thing
 
-        note = f"{canonical_path(issuedir, path_type='dir').replace('/', '-')}: {error}"
+        note = f"{canonical_path(issuedir)}: {error}"
 
     if failed_log is not None:
         with open(failed_log, "a+", encoding="utf-8") as f:
@@ -207,7 +207,7 @@ def serialize_pages(
 
         issue_dir = copy(page.issue.issuedir)
 
-        out_dir = os.path.join(output_dir, canonical_path(issue_dir, path_type="dir"))
+        out_dir = os.path.join(output_dir, canonical_path(issue_dir, as_dir=True))
 
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
@@ -380,9 +380,7 @@ def import_issues(
                 period,
             )
             pages_bag = (
-                pages_bag.groupby(
-                    lambda x: canonical_path(x[0], path_type="dir").replace("/", "-")
-                )
+                pages_bag.groupby(lambda x: canonical_path(x[0]))
                 .starmap(
                     compress_pages,
                     suffix="pages",

@@ -17,12 +17,12 @@ import os
 import json
 import logging
 
+import shutil
 from typing import Any
 from docopt import docopt
-from impresso_commons.utils import s3
-from impresso_commons.path.path_s3 import fetch_files
-from impresso_commons.versioning.compute_manifest import create_manifest
-from text_preparation.utils import init_logger, empty_folder
+from impresso_essentials.io.s3 import fetch_files, get_storage_options
+from impresso_essentials.versioning.compute_manifest import create_manifest
+from impresso_essentials.utils import init_logger
 from text_preparation.importer_scripts.patching.canonical_patch_1_uzh import (
     title_year_pair_to_issues,
     write_upload_issues,
@@ -30,9 +30,9 @@ from text_preparation.importer_scripts.patching.canonical_patch_1_uzh import (
     nzz_write_upload_pages,
 )
 
-IMPRESSO_STORAGEOPT = s3.get_storage_options()
+IMPRESSO_STORAGEOPT = get_storage_options()
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def scale_coords(
@@ -213,13 +213,17 @@ def main():
         else "/home/piconti/impresso-text-acquisition"
     )
 
-    init_logger(logger, logging.INFO, log_file)
+    init_logger(logging.INFO, log_file)
     logger.info("Arguments: \n %s", arguments)
 
     RERO_1_TITLES = ["LCG", "LBP", "LTF", "DLE"]
     PROP_NAME = "c"
     temp_dir = os.path.join(local_base_path, "temp_dir")
-    empty_folder(temp_dir)
+    # empty the temp directoy if necessary
+    if os.path.exists(temp_dir):
+        shutil.rmtree(temp_dir)
+        logger.info("Emptied directory at %s", temp_dir)
+    os.mkdir(temp_dir)
 
     logger.info(
         "Patching titles %s: rescaling %s property at issue and page level",

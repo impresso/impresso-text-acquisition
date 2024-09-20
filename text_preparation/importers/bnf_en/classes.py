@@ -12,7 +12,7 @@ from typing import Any, Optional
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
-from impresso_commons.path import IssueDir
+from impresso_essentials.utils import IssueDir
 
 from text_preparation.importers import (
     CONTENTITEM_TYPES,

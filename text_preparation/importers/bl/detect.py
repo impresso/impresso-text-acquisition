@@ -9,7 +9,7 @@ import zipfile
 
 from glob import glob
 from dask import bag as db
-from impresso_commons.path.path_fs import _apply_datefilter
+from text_preparation.importers.detect import _apply_datefilter
 
 from bs4 import BeautifulSoup
 

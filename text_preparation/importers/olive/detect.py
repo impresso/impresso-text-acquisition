@@ -5,9 +5,12 @@ import json
 from collections import namedtuple
 from typing import Any
 
-from impresso_commons.path.path_fs import IssueDir, detect_issues, select_issues
-
-from text_preparation.utils import get_access_right
+from impresso_essentials.utils import IssueDir
+from text_preparation.importers.detect import (
+    detect_issues,
+    select_issues,
+    get_access_right,
+)
 
 OliveIssueDir = namedtuple(
     "OliveIssueDirectory", ["journal", "date", "edition", "path", "rights"]

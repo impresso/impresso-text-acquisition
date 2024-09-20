@@ -6,9 +6,10 @@ from contextlib import ExitStack
 
 from dask import bag as db
 
-from impresso_commons.versioning.data_manifest import DataManifest
+from impresso_essentials.versioning.data_manifest import DataManifest
+from impresso_essentials.utils import get_pkg_resource
 
-from text_preparation.utils import verify_imported_issues, get_pkg_resource
+from text_preparation.utils import verify_imported_issues
 from text_preparation.importers.core import import_issues
 from text_preparation.importers.olive.detect import olive_detect_issues
 from text_preparation.importers.olive.classes import OliveNewspaperIssue
@@ -22,10 +23,12 @@ def test_import_issues():
     logger.info("Starting test_import_issues in test_olive_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng, "data/sample_data/Olive/")
-    ar_file = get_pkg_resource(f_mng, "data/sample_data/Olive/access_rights.json")
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
-    tmp_dir = get_pkg_resource(f_mng, "data/temp/")
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/Olive/", "text_preparation")
+    ar_file = get_pkg_resource(
+        f_mng, "data/sample_data/Olive/access_rights.json", "text_preparation"
+    )
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     test_manifest = DataManifest(
         data_stage="canonical",
@@ -72,8 +75,10 @@ def test_verify_imported_issues():
     logger.info("Start test_verify_imported_issues in test_olive_importer.py")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng, "data/canonical_out/")
-    expected_data_dir = get_pkg_resource(f_mng, "data/expected/Olive")
+    inp_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    expected_data_dir = get_pkg_resource(
+        f_mng, "data/expected/Olive", "text_preparation"
+    )
 
     # consider only newspapers in Olive format
     newspapers = ["GDL", "JDG", "IMP"]

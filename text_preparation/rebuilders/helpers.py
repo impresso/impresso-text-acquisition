@@ -3,14 +3,15 @@
 import json
 import logging
 import os
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
-from impresso_commons.utils.s3 import (
+from impresso_essentials.io.s3 import (
     IMPRESSO_STORAGEOPT,
     alternative_read_text,
     get_s3_resource,
-    get_s3_versions,
 )
+
+from impresso_essentials.text_utils import WHITESPACE_RULES
 
 logger = logging.getLogger(__name__)
 
@@ -21,60 +22,10 @@ IIIF_ENDPOINT_BASE_2_SUFFIX = {
     "https://scriptorium.bcu-lausanne.ch/api": "300,/0/default.jpg",
 }
 
-WHITESPACE_RULES = {
-    "fr": {
-        "pct_no_ws_before": [".", ",", ")", "]", "}", "°", "...", ".-", "%"],
-        "pct_no_ws_after": ["(", "[", "{"],
-        "pct_no_ws_before_after": ["'", "-"],
-        "pct_number": [".", ","],
-    },
-    "de": {
-        "pct_no_ws_before": [
-            ".",
-            ",",
-            ")",
-            "]",
-            "}",
-            "°",
-            "...",
-            "?",
-            "!",
-            ":",
-            ";",
-            ".-",
-            "%",
-        ],
-        "pct_no_ws_after": ["(", "[", "{"],
-        "pct_no_ws_before_after": ["'", "-"],
-        "pct_number": [".", ","],
-    },
-    "other": {
-        "pct_no_ws_before": [
-            ".",
-            ",",
-            ")",
-            "]",
-            "}",
-            "°",
-            "...",
-            "?",
-            "!",
-            ":",
-            ";",
-            ".-",
-            "%",
-        ],
-        "pct_no_ws_after": ["(", "[", "{"],
-        "pct_no_ws_before_after": ["'", "-"],
-        "pct_number": [".", ","],
-    },
-}
-
 
 def read_issue(issue, bucket_name, s3_client=None):
     """Read the data from S3 for a given newspaper issue.
 
-    NB: It injects the s3_version into the returned object.
 
     :param issue: input issue
     :type issue: `IssueDir`
@@ -90,7 +41,6 @@ def read_issue(issue, bucket_name, s3_client=None):
     content_object = s3_client.Object(bucket_name, issue.path)
     file_content = content_object.get()["Body"].read().decode("utf-8")
     issue_json = json.loads(file_content)
-    issue_json["s3_version"] = get_s3_versions(bucket_name, issue.path)[0][0]
     logger.info("Read JSON of %s", issue)
     return (issue, issue_json)
 
@@ -102,7 +52,6 @@ def read_page(page_key, bucket_name, s3_client):
         content_object = s3_client.Object(bucket_name, page_key)
         file_content = content_object.get()["Body"].read().decode("utf-8")
         page_json = json.loads(file_content)
-        page_json["s3v"] = get_s3_versions(bucket_name, page_key)[0][0]
         logger.info("Read page %s from bucket %s", page_key, bucket_name)
         return page_json
     except Exception as e:
@@ -137,7 +86,6 @@ def rejoin_articles(issue, issue_json):
     for article in issue_json["i"]:
 
         art_id = article["m"]["id"]
-        article["m"]["s3v"] = issue_json["s3_version"]
         article["has_problem"] = False
         article["m"]["pp"] = sorted(list(set(article["m"]["pp"])))
 

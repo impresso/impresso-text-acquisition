@@ -35,20 +35,17 @@ from typing import Any, Type, Callable
 from dask.distributed import Client
 from docopt import docopt
 import git
-from impresso_commons.path.path_fs import (
-    KNOWN_JOURNALS,
-    detect_canonical_issues,
-    IssueDir,
-)
-
-from impresso_commons.versioning.data_manifest import DataManifest
+from impresso_essentials.utils import KNOWN_JOURNALS, IssueDir
+from impresso_essentials.versioning.data_manifest import DataManifest
+from impresso_essentials.utils import init_logger
 
 from text_preparation import __version__
 
 from text_preparation.importers.classes import NewspaperIssue
 from text_preparation.importers.bl.classes import BlNewspaperIssue
 from text_preparation.importers.core import import_issues
-from text_preparation.utils import init_logger
+from text_preparation.importers.detect import detect_issues
+
 
 __author__ = "Matteo Romanello"
 __email__ = "matteo.romanello@epfl.ch"
@@ -250,7 +247,7 @@ def main(
     if outp_dir is not None and os.path.exists(outp_dir) and incremental_output:
         issues_to_skip = [
             (issue.journal, issue.date, issue.edition)
-            for issue in detect_canonical_issues(outp_dir, KNOWN_JOURNALS)
+            for issue in detect_issues(outp_dir, w_edition=True)
         ]
         logger.debug("Issues to skip: %s", issues_to_skip)
         logger.info("%s issues to skip", len(issues_to_skip))

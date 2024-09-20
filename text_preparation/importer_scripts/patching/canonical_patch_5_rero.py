@@ -19,10 +19,10 @@ import logging
 from typing import Any
 from docopt import docopt
 
-from impresso_commons.utils import s3
-from impresso_commons.path.path_s3 import fetch_files
-from impresso_commons.versioning.compute_manifest import create_manifest
-from text_preparation.utils import init_logger, get_reading_order
+from impresso_essentials.io.s3 import get_storage_options, fetch_files
+from impresso_essentials.versioning.compute_manifest import create_manifest
+from impresso_essentials.utils import init_logger
+from text_preparation.utils import get_reading_order
 from text_preparation.importer_scripts.patching.canonical_patch_1_uzh import (
     title_year_pair_to_issues,
     write_upload_issues,
@@ -30,7 +30,7 @@ from text_preparation.importer_scripts.patching.canonical_patch_1_uzh import (
     nzz_write_upload_pages,
 )
 
-IMPRESSO_STORAGEOPT = s3.get_storage_options()
+IMPRESSO_STORAGEOPT = get_storage_options()
 logger = logging.getLogger()
 
 

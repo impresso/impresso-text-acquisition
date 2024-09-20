@@ -2,9 +2,13 @@ import json
 from collections import namedtuple
 from typing import List
 
-from impresso_commons.path.path_fs import IssueDir, detect_issues, select_issues
+from impresso_essentials.utils import IssueDir
 
-from text_preparation.utils import get_access_right
+from text_preparation.importers.detect import (
+    get_access_right,
+    detect_issues,
+    select_issues,
+)
 
 TetmlIssueDir = namedtuple(
     "TetmlIssueDirectory", ["journal", "date", "edition", "path", "rights"]
@@ -65,7 +69,7 @@ def tetml_detect_issues(
     :return: List of `TetmlIssueDir` instances, to be imported.
     """
 
-    with open(access_rights, "r") as f:
+    with open(access_rights, "r", encoding="utf-8") as f:
         access_rights_dict = json.load(f)
 
     issues = detect_issues(base_dir, journal_filter=journal_filter, exclude=exclude)

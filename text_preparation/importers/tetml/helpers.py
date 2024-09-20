@@ -8,14 +8,11 @@ import logging
 from math import ceil, floor
 import lxml.etree
 
-
 from text_preparation.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
 
 TETPREFIX = "{http://www.pdflib.com/XML/TET3/TET-3.0}"
-
-
 FILTER_WORDS = ["#", "ST", "#ST", "ST#", "#ST#"]
 
 

@@ -6,71 +6,17 @@ import logging
 import os
 import copy
 import shutil
-import pathlib
-from datetime import date
 from typing import Any, Callable
 from contextlib import ExitStack
 from filelock import FileLock
 import jsonlines
-import importlib_resources
 
 from smart_open import open as smart_open_function
 import python_jsonschema_objects as pjs
 
+from impresso_essentials.utils import get_pkg_resource
+
 logger = logging.getLogger(__name__)
-
-
-def init_logger(
-    _logger: logging.RootLogger, log_level: int, log_file: str
-) -> logging.RootLogger:
-    """Initialise the logger.
-
-    Args:
-        _logger (logging.RootLogger): Logger instance to initialise.
-        log_level (int): Desidered logging level (e.g. ``logging.INFO``).
-        log_file (str): Path to destination file for logging output. If no
-            output file is provided (``log_file`` is ``None``) logs will
-            be written to standard output.
-
-    Returns:
-        logging.RootLogger: The initialised logger object.
-    """
-    # Initialise the logger
-    _logger.setLevel(log_level)
-
-    if log_file is not None:
-        handler = logging.FileHandler(filename=log_file, mode="w")
-    else:
-        handler = logging.StreamHandler()
-
-    formatter = logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
-    handler.setFormatter(formatter)
-    _logger.addHandler(handler)
-
-    _logger.info("Logger successfully initialised")
-    return _logger
-
-
-def get_pkg_resource(
-    file_manager: ExitStack, path: str, package: str = "text_preparation"
-) -> pathlib.PosixPath:
-    """Return the resource at `path` in `package`, using a context manager.
-
-    Note:
-        The context manager `file_manager` needs to be instantiated prior to
-        calling this function and should be closed once the package resource
-        is no longer of use.
-
-    Args:
-        file_manager (contextlib.ExitStack): Context manager.
-        path (str): Path to the desired resource in given package.
-        package (str, optional): Package name. Defaults to "text_importer".
-
-    Returns:
-        pathlib.PosixPath: Path to desired managed resource.
-    """
-    ref = importlib_resources.files(package) / path
-    return file_manager.enter_context(importlib_resources.as_file(ref))
 
 
 def get_page_schema(
@@ -86,7 +32,7 @@ def get_page_schema(
         pjs.util.Namespace: Newspaper page schema based on canonical format.
     """
     file_manager = ExitStack()
-    schema_path = get_pkg_resource(file_manager, schema_folder)
+    schema_path = get_pkg_resource(file_manager, schema_folder, "text_preparation")
     with open(os.path.join(schema_path), "r", encoding="utf-8") as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
@@ -108,37 +54,13 @@ def get_issue_schema(
         pjs.util.Namespace: Newspaper issue schema based on canonical format.
     """
     file_manager = ExitStack()
-    schema_path = get_pkg_resource(file_manager, schema_folder)
+    schema_path = get_pkg_resource(file_manager, schema_folder, "text_preparation")
     with open(os.path.join(schema_path), "r", encoding="utf-8") as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
     ns = builder.build_classes().NewspaperIssue
     file_manager.close()
     return ns
-
-
-def get_access_right(
-    journal: str, _date: date, access_rights: dict[str, dict[str, str]]
-) -> str:
-    """Fetch the access rights for a specific journal and publication date.
-
-    Args:
-        journal (str): Journal name.
-        _date (date): Publication date of the journal
-        access_rights (dict[str, dict[str, str]]): Access rights for various
-            journals.
-
-    Returns:
-        str: Access rights for specific journal issue.
-    """
-    rights = access_rights[journal]
-    if rights["time"] == "all":
-        return rights["access-right"].replace("-", "_")
-
-    # TODO: this should rather be a custom exception
-    logger.warning("Access right not defined for %s-%s", journal, _date)
-
-    return "undefined"
 
 
 def verify_imported_issues(

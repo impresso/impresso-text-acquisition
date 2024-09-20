@@ -40,19 +40,19 @@ from dask.distributed import Client, progress
 from docopt import docopt
 from smart_open import smart_open
 
-from impresso_commons.path import parse_canonical_filename
-from impresso_commons.path.path_s3 import read_s3_issues
-from impresso_commons.text.helpers import (
+from impresso_essentials.io.fs_utils import parse_canonical_filename
+from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
+from impresso_essentials.utils import Timer, timestamp
+
+from impresso_essentials.versioning.data_manifest import DataManifest
+from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
+
+from text_preparation.rebuilders.helpers import (
     read_issue_pages,
     rejoin_articles,
     reconstruct_iiif_link,
     insert_whitespace,
 )
-from impresso_commons.utils import Timer, timestamp
-from impresso_commons.utils.s3 import get_s3_resource
-
-from impresso_commons.versioning.data_manifest import DataManifest
-from impresso_commons.versioning.helpers import compute_stats_in_rebuilt_bag
 
 logger = logging.getLogger(__name__)
 

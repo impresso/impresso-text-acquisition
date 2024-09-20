@@ -6,14 +6,13 @@ import os
 from collections import namedtuple
 from datetime import datetime, timedelta
 from string import ascii_lowercase
-
+from multiprocessing import Pool
+from tqdm import tqdm
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
 from dask import bag as db
-from impresso_commons.path.path_fs import _apply_datefilter
-from tqdm import tqdm
-from multiprocessing import Pool
+from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 
@@ -79,8 +78,8 @@ def get_api_id(journal: str, api_issue: tuple[str, datetime.date], edition: str)
 
 
 def fix_api_year_mismatch(
-    journal: str, year: int, api_issues: list[Tag], last_i: list[Tag] | None
-) -> tuple[list[Tag], list[Tag] | None]:
+    journal: str, year: int, api_issues: list[Tag], last_i: list[Tag | None]
+) -> tuple[list[Tag], list[Tag | None]]:
     """Modify proivded list of issues fetched from the API to fix some issues present.
 
     Indeed, the API currently wronly stores the issues for december 31st of some years,
@@ -92,10 +91,10 @@ def fix_api_year_mismatch(
         journal (str): Alias of the journal currently under processing.
         year (int): Year for which the API was queried.
         api_issues (list[Tag]): List of issues as returned from the API.
-        last_i (Tag): Last december 31st issue entry, returned for the wrong year.
+        last_i (list[Tag | None]): Last december 31st issue entry, returned for the wrong year.
 
     Returns:
-        tuple[list[Tag], list[Tag] | None]: Corrected issue list and next december 31st
+        tuple[list[Tag], list[Tag | None]: Corrected issue list and next december 31st
             issue(s) if the error was present again, None otherwise.
     """
     curr_last_i = last_i
@@ -109,7 +108,7 @@ def fix_api_year_mismatch(
                 year,
                 api_issues[-1],
             )
-            next_last_i = None
+            next_last_i = [None]
         else:
             # it can happen that there are 2 issues on Dec 31st:
             if str(year - 1) in api_issues[-2].getText():
@@ -123,7 +122,7 @@ def fix_api_year_mismatch(
                 num_to_replace = 1
                 next_last_i = [api_issues[-num_to_replace]]
             # sanity check that the previously stored value corresponds to the correct year
-            if curr_last_i is None:
+            if curr_last_i[0] is None:
                 msg = (
                     f"{journal}-{year}: No previously stored Dec 31s value since "
                     f"it's the last available year, removing the {num_to_replace} incorrect issue."
@@ -153,7 +152,7 @@ def fix_api_year_mismatch(
             api_issues.extend(curr_last_i)
             msg = f"{journal}-{year}: Appending {curr_last_i} to api_issues."
             logger.info(msg)
-            next_last_i = None
+            next_last_i = [None]
         # if it's not missing but corresponds to another day, log it
         else:
             msg = f"{journal}-{year}: api_issues[-1] corresponding to another day than the previous one: {api_issues[-1].getText()}"
@@ -199,7 +198,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
     years = [int(x.contents[0]) for x in years]
 
     links = []
-    next_year_last_i = None
+    next_year_last_i = [None]
 
     # start with the last year
     for year in tqdm(years[::-1]):
@@ -210,7 +209,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
 
         # fix the problem stemming from the API with dec. 31st being of following year
         if str(year - 1) in api_issues[-1].getText() or (
-            next_year_last_i is not None
+            next_year_last_i[0] is not None
             and all(str(year) in i.getText() for i in next_year_last_i)
         ):
             logger.debug(
@@ -225,7 +224,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
             )
         else:
             # reset the value since it won't be valid anymore
-            next_year_last_i = None
+            next_year_last_i = [None]
 
         # Parse dates and editions
         api_issues = [

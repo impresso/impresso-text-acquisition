@@ -7,7 +7,7 @@ from collections import namedtuple
 from datetime import date
 
 from dask import bag as db
-from impresso_commons.path.path_fs import _apply_datefilter
+from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 

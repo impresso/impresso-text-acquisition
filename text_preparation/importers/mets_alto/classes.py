@@ -13,7 +13,7 @@ from time import strftime
 from typing import Any
 
 from bs4 import BeautifulSoup
-from impresso_commons.path import IssueDir
+from impresso_essentials.utils import IssueDir
 
 from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
 from text_preparation.importers.mets_alto import alto

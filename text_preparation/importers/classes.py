@@ -15,7 +15,8 @@ import shutil
 from abc import ABC, abstractmethod
 from zipfile import ZipFile
 
-from impresso_commons.path.path_fs import IssueDir, canonical_path
+from impresso_essentials.utils import IssueDir
+from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.utils import get_issue_schema, get_page_schema
 
@@ -46,7 +47,7 @@ class NewspaperIssue(ABC):
     """
 
     def __init__(self, issue_dir: IssueDir) -> None:
-        self.id = canonical_path(issue_dir, path_type="dir").replace("/", "-")
+        self.id = canonical_path(issue_dir)
         self.edition = issue_dir.edition
         self.journal = issue_dir.journal
         self.path = issue_dir.path

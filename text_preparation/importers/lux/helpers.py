@@ -1,6 +1,10 @@
-from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
-from bs4.element import Tag
+"""This module contains helper functions to find BNL OCR data to import.
+"""
+
 from typing import Any
+from bs4.element import Tag
+from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
+
 
 NON_ARTICLE = ["advertisement", "death_notice"]
 

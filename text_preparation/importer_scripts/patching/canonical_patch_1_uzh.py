@@ -27,17 +27,17 @@ import dask.bag as db
 from filelock import FileLock
 from docopt import docopt
 
-from impresso_commons.utils import s3
-from impresso_commons.path.path_s3 import fetch_files
-from impresso_commons.versioning.data_manifest import DataManifest
+from impresso_essentials.io.s3 import get_storage_options, fetch_files
+from impresso_essentials.versioning.data_manifest import DataManifest
+from impresso_essentials.utils import init_logger
 from text_preparation.importers.core import (
     upload_issues,
     upload_pages,
     remove_filelocks,
 )
-from text_preparation.utils import init_logger
 
-IMPRESSO_STORAGEOPT = s3.get_storage_options()
+
+IMPRESSO_STORAGEOPT = get_storage_options()
 IMPRESSO_IIIF_BASE_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 logger = logging.getLogger()
@@ -402,7 +402,7 @@ def main():
     schema_path = f"{canonical_repo_path}/text_importer/impresso-schemas/json/versioning/manifest.schema.json"
     final_patches_output_path = os.path.join(os.path.dirname(log_file), patch_outputs)
 
-    init_logger(logger, logging.INFO, log_file)
+    init_logger(logging.INFO, log_file)
     logger.info(
         "Patching titles %s: adding %s property at page level", UZH_TITLES, PROP_NAME
     )

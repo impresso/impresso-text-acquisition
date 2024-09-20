@@ -3,9 +3,9 @@ import json
 
 from contextlib import ExitStack
 
-from impresso_commons.versioning.data_manifest import DataManifest
+from impresso_essentials.versioning.data_manifest import DataManifest
+from impresso_essentials.utils import get_pkg_resource
 
-from text_preparation.utils import get_pkg_resource
 from text_preparation.importers.bcul.classes import BculNewspaperIssue
 from text_preparation.importers.bcul.detect import detect_issues, select_issues
 from text_preparation.importers.core import import_issues
@@ -19,9 +19,9 @@ def test_import_issues():
     logger.info("Starting test_import_issues in test_bcul_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng, "data/sample_data/BCUL/")
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/")
-    tmp_dir = get_pkg_resource(f_mng, "data/temp/")
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/BCUL/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     test_manifest = DataManifest(
         data_stage="canonical",
@@ -70,10 +70,10 @@ def test_selective_import():
     logger.info("Starting test_selective_import in test_bcul_importer.py.")
 
     f_mng = ExitStack()
-    cfg_file = get_pkg_resource(f_mng, "config/import_BCUL.json")
-    inp_dir = get_pkg_resource(f_mng, "data/sample_data/BCUL/")
-    out_dir = get_pkg_resource(f_mng, "data/out/")
-    tmp_dir = get_pkg_resource(f_mng, "data/temp/")
+    cfg_file = get_pkg_resource(f_mng, "config/import_BCUL.json", "text_preparation")
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/BCUL/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/out/", "text_preparation")
+    tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     with open(cfg_file, "r", encoding="utf-8") as f:
         config = json.load(f)

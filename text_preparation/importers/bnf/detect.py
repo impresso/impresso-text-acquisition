@@ -11,10 +11,9 @@ from typing import List, Optional
 import pandas as pd
 from bs4 import BeautifulSoup
 from dask import bag as db
-from impresso_commons.path.path_fs import _apply_datefilter
 from text_preparation.importers.bnf.helpers import get_journal_name, parse_date
 from text_preparation.importers.mets_alto.mets import get_dmd_sec
-from text_preparation.utils import get_access_right
+from text_preparation.importers.detect import get_access_right, _apply_datefilter
 
 logger = logging.getLogger(__name__)
 

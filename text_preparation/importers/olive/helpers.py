@@ -4,15 +4,20 @@ These functions are mainly used within (i.e. called by) the classes
 ``OliveNewspaperIssue`` and ``OliveNewspaperPage``.
 """
 
+import os
 import copy
 import logging
 import time
 from operator import itemgetter
 from time import strftime
+from enum import Enum
 from typing import Any
 
-from impresso_commons.path import IssueDir
-from impresso_commons.images.olive_boxes import compute_box, get_scale_factor
+import numpy as np
+from bs4 import BeautifulSoup
+import cv2.cv2 as cv
+
+from impresso_essentials.utils import IssueDir
 from text_preparation.importers.classes import NewspaperIssue, ZipArchive
 from text_preparation.tokenization import insert_whitespace
 
@@ -433,6 +438,46 @@ def recompose_page(
     return page
 
 
+def compute_scale_factor(img_source_path: str, img_dest_path: str) -> float:
+    """Computes x scale factor bewteen 2 images.
+
+    Args:
+        img_source_path (str): Full path ot the source image.
+        img_dest_path (str): Full path to the destination image.
+
+    Returns:
+        float: X Scale factor between the two.
+    """
+    img_s = cv.imread(img_source_path, 0)
+    img_d = cv.imread(img_dest_path, 0)
+    x_s = img_s.shape[0]
+    x_d = img_d.shape[0]
+    return x_d / x_s
+
+
+def compute_box(scale_factor: float, input_box: str) -> str | None:
+    """Compute IIIF box coordinates of input_box relative to scale_factor.
+
+    Args:
+        scale_factor (float): Ratio between 2 images with different dimensions.
+        input_box (str): String with 4 values separated by spaces.
+
+    Returns:
+        str | None: New box coordinates or None if the string had the wrong fromat.
+    """
+    try:
+        elems = input_box.split(" ")
+    except ValueError:
+        logger.info("Invalid box format: %s", input_box)
+        return
+
+    x = round(int(elems[0]) * scale_factor)
+    y = round(int(elems[1]) * scale_factor)
+    w = round((int(elems[2]) - int(elems[0])) * scale_factor)
+    h = round((int(elems[3]) - int(elems[1])) * scale_factor)
+    return " ".join([str(x), str(y), str(w), str(h)])
+
+
 def convert_box(coords: list[int], scale_factor: float) -> list[int]:
     """Rescale iiif box coordinates relative to given scale factor.
 
@@ -449,6 +494,130 @@ def convert_box(coords: list[int], scale_factor: float) -> list[int]:
     logger.debug("Converted box coordinates: %s => %s", box, converted_box)
 
     return new_box
+
+
+class BoxStrategy(Enum):
+    tif = "tif"
+    png_highest = "png_highest"
+    png_uniq = "png_uniq"
+    jpg_uniq = "jpg_uniq"
+    jpg_highest = "jpg_highest"
+
+
+def get_scale_factor(issue_dir_path, archive, page_xml, box_strategy, img_source_name):
+    """
+    Returns the scale factor in Olive context, given a strategy to choose the source image.
+
+    :param issue_dir_path: the path of the issue
+    :type  issue_dir_path: str
+    :param archive: the zip archive
+    :type  archive: zipfile.ZipFile
+    :param page_xml: the xml handler of the page
+    :type page_xml: bytes
+    :param box_strategy: the box strategy such as found in the info.txt from jp2 folder
+    :type box_strategy: str
+    :param img_source_name: as found in the info.txt from jp2 folder
+    :return: the hopefully correct scale factor
+    :rtype: float
+
+    Background information
+    ======================
+    Impresso converts library images to JP2, taking the best image available: tif > highest png > jpg.
+    Olive box coordinates were computed according to an image source which we have to identify among several.
+    Image format coverage is different from issue to issue, and we have to devise strategies.
+
+    Case 1: tif
+    -----------
+    The tif is present and is the file from which the jp2 was converted.
+    Dest: Tif dimensions can therefore be used as jp2 dimensions, no need to read the jp2 file.
+    Source: Image source dimension is present in the page.xml (normally).
+
+    Case 2: several png
+    -------------------
+    In this case the jp2 was acquired using the png with the highest dimension.
+    Dest: It looks that in case of several png, Olive also took the highest for the OCR. It is therefore
+    possible to rely on the resolution indicated in the page xml, which should be the same as our jp2.
+    N.B.: the page width and heigth indicated in the xml do not correspond (usually) to the highest
+    resolution png (there is therefore a discrepancy in Olive file between the tag 'images_resolution'
+    on the one hand, and 'page_width|height'on the other). It seems we can ignore this and rely on the
+    resolution only in the current case.
+    Source: the highest png
+    Here source and dest dimension are equals, the function returns 1.
+
+    Case 3: one png only
+    --------------------
+    To be checked if it happens.
+    In this case, there is no choice and Olive OCR and JP2 acquisition should be from the same source
+    => scale factor of 1.
+    Here we do an additional check to see if the page_width|height are the same as the image ones.
+    The only danger is if Olive used another image file and did not provide it.
+
+    Case 4: one jpg only
+    --------------------
+    Same as Case 3, scale factor of 1.
+    Here we do an additional check to see if the page_width|height are the same as the image ones.
+    (there is only one image and things should fit, not like in case 2)
+    """
+    page_soup = BeautifulSoup(page_xml, "lxml")
+    page_root = page_soup.find("xmd-page")
+    page_number = page_root.meta["page_no"]
+    if box_strategy == BoxStrategy.tif.name:
+        for f in page_root.datafiles.find_all("files"):
+            if f["type"] == "PAGE_IMG" and f["present"] == "1":
+                source_res = f["xresolution_dpi"]
+                dest_res = page_root.meta["images_resolution"]
+                break
+        if source_res and dest_res:
+            return int(source_res) / int(dest_res)
+
+        else:
+            logger.info(
+                "Impossible to get resolution in case: tif in %s, page %s",
+                issue_dir_path,
+                page_number,
+            )
+            return None
+
+    elif box_strategy == BoxStrategy.png_highest.name:
+        if "_" not in img_source_name:
+            logger.info("Not valid png filename %s", img_source_name)
+            return None
+
+        png_res = os.path.splitext(img_source_name)[0].split("_", 1)[-1]
+        olive_res = page_root.meta["images_resolution"]
+        if png_res == olive_res:
+            return 1.0
+        else:
+            msg = (
+                "Incompatible resolutions between highest png and olive indications "
+                f"in {issue_dir_path}, page {page_number}"
+            )
+            logger.info(msg)
+            print(msg)
+            return None
+
+    elif box_strategy == BoxStrategy.png_uniq.name:
+        # TODO if needed
+        logger.info(
+            "Finally found a case of %s, " "which is not ready yet",
+            BoxStrategy.png_uniq,
+        )
+
+    elif box_strategy == BoxStrategy.jpg_uniq.name:
+        # get the x dimension of the unique jpg (from which jp2 was acquired)
+        # and compare with olive's one
+        img_data = archive.read(img_source_name)
+        img = cv.imdecode(np.frombuffer(img_data, np.uint8), 1)
+        jpg_x_dim = img.shape[1]
+        olive_x_dim = page_root.meta["page_width"]
+        if jpg_x_dim == int(olive_x_dim):
+            return 1.0
+        else:
+            logger.info(
+                "Incompatible resolutions between uniq jpg and olive indications"
+                " in {issue_dir_path}, page {page_number}."
+            )
+            return None
 
 
 # TODO: move to the OliveNewspaperPage class as a method?

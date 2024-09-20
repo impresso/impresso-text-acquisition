@@ -7,11 +7,10 @@ import dask
 from dask.distributed import Client
 
 # global variables are imported from conftest.py
-from impresso_commons.path.path_s3 import read_s3_issues
-from impresso_commons.utils.utils import get_pkg_resource
+from impresso_essentials.io.s3 import read_s3_issues
+from impresso_essentials.utils import get_pkg_resource
 
 from text_preparation.rebuilders.rebuilder import rebuild_issues, compress
-
 
 DASK_WORKERS_NUMBER = 8
 DASK_MEMORY_LIMIT = "2G"
@@ -95,7 +94,7 @@ def test_rebuild_solr(newspaper_id: str, year: int, limit: int):
         input_bucket=input_bucket_name,
         output_dir=outp_dir,
         dask_client=client,
-        format="solr",
+        _format="solr",
     )
 
     result = compress(issue_key, json_files, outp_dir)
@@ -116,7 +115,7 @@ def test_rebuild_for_passim():
         input_bucket=input_bucket_name,
         output_dir=outp_dir,
         dask_client=client,
-        format="passim",
+        _format="passim",
         filter_language=["fr"],
     )
     logger.info(f"%s: %s", issue_key, json_files)

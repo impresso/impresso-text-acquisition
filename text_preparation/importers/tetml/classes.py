@@ -5,8 +5,8 @@ import logging
 from pathlib import Path
 from time import strftime
 
-from impresso_commons.path import IssueDir
-from impresso_commons.path.path_fs import canonical_path
+from impresso_essentials.utils import IssueDir
+from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
 from text_preparation.importers.tetml.parsers import tetml_parser
@@ -113,9 +113,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
                 data = tetml_parser(fname)
 
                 # canonical identifier
-                data["m"]["id"] = canonical_path(
-                    self.issuedir, name=f"i{i+1:04}", extension=""
-                )
+                data["m"]["id"] = canonical_path(self.issuedir, suffix=f"i{i+1:04}")
 
                 # reference to content item per region
                 for page in data["pages"]:

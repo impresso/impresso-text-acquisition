@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Script to check the segmentation documents.
+
+Show visually the segmentation into regions, paragraphs, lines and tokens
+on the scanned documents given canonical json files from the Impresso project
+"""
 
 import logging
 import argparse
@@ -8,18 +13,9 @@ import sys
 import codecs
 import random
 import json
-import bz2
 import pathlib
 import pandas as pd
-from PIL import Image, ImageFont, ImageDraw
-
-
-"""
-Script to check the segmentation documents.
-
-Show visually the segmentation into regions, paragraphs, lines and tokens
-on the scanned documents given canonical json files from the Impresso project
-"""
+from PIL import Image, ImageDraw
 
 
 sys.stderr = codecs.getwriter("UTF-8")(sys.stderr.buffer)
@@ -34,7 +30,9 @@ def parse_arguments():
         epilog="Contact simon.clematide@uzh.ch",
     )
     parser.add_argument("--version", action="version", version="0.99")
-    parser.add_argument("-l", "--logfile", dest="logfile", help="write log to FILE", metavar="FILE")
+    parser.add_argument(
+        "-l", "--logfile", dest="logfile", help="write log to FILE", metavar="FILE"
+    )
 
     parser.add_argument(
         "-j",
@@ -165,11 +163,12 @@ def read_meta(fname):
             index_col="article_docid",
         )
 
-    except FileNotFoundError:
-        raise FileNotFoundError(
-            f"File with additional metadata needs to be placed in \
-        the top newspaper directory and named {fname}"
+    except FileNotFoundError as e:
+        msg = (
+            "File with additional metadata needs to be placed in "
+            f"the top newspaper directory and named {fname}"
         )
+        raise FileNotFoundError(msg) from e
 
     return df
 
@@ -181,12 +180,16 @@ def article_segmentation_eval(dir_json, options, limit=100):
     print("Start evaluation process...")
     df = read_meta(options.metafile)
 
-    rows = df.shift(-1).loc[df.pruned == True]
+    rows = df.shift(-1).loc[df.pruned]
     rows = rows.sample(limit)
     for _, row in rows.iterrows():
         ftif = pathlib.Path(row["canonical_path_tif"])
         index = ftif.parts.index("data_tif")
-        fjson = pathlib.Path(dir_json).joinpath(*ftif.parts[index + 1 :]).with_suffix(".json")
+        fjson = (
+            pathlib.Path(dir_json)
+            .joinpath(*ftif.parts[index + 1 :])
+            .with_suffix(".json")
+        )
         draw_boxes(fjson, options)
 
 
@@ -196,7 +199,8 @@ def read_json(file):
 
 
 def batch_eval(basedir, options):
-    for (dirpath, dirnames, filenames) in os.walk(basedir, followlinks=True):
+    # dirpath, dirnames, filenames
+    for dirpath, _, filenames in os.walk(basedir, followlinks=True):
         for file in filenames:
             if random.random() < options.page_prob:
                 fjson = pathlib.Path(dirpath, file)
@@ -242,17 +246,23 @@ def draw_boxes(jsonfile, options, imgfile=None):
         [x, y, w, h] = r["c"]
         dr = ImageDraw.Draw(im, "RGBA")
         if random.random() < region_prob:
-            dr.rectangle(((x, y), (x + w, y + h)), outline="black", fill=(244, 3, 3, 30))
+            dr.rectangle(
+                ((x, y), (x + w, y + h)), outline="black", fill=(244, 3, 3, 30)
+            )
 
         for p in r["p"]:
             if "c" in p:
                 [x, y, w, h] = p["c"]
                 if random.random() < para_prob:
-                    dr.rectangle(((x, y), (x + w, y + h)), outline="red", fill=(244, 3, 3, 50))
+                    dr.rectangle(
+                        ((x, y), (x + w, y + h)), outline="red", fill=(244, 3, 3, 50)
+                    )
             for l in p["l"]:
                 [x, y, w, h] = l["c"]
                 if random.random() < line_prob:
-                    dr.rectangle(((x, y), (x + w, y + h)), outline="green", fill=(3, 244, 3, 50))
+                    dr.rectangle(
+                        ((x, y), (x + w, y + h)), outline="green", fill=(3, 244, 3, 50)
+                    )
 
                 for t in l["t"]:
                     tokens.append(t["tx"])
