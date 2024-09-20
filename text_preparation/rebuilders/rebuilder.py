@@ -265,12 +265,10 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     year, month, day, _, ci_num = article_id.split("-")[1:]
     d = datetime.date(int(year), int(month), int(day))
 
-    raw_type = content_item["m"]["tp"]
-
-    if raw_type in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[raw_type]
+    if content_item["m"]["tp"] in TYPE_MAPPINGS:
+        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
     else:
-        mapped_type = raw_type
+        mapped_type = content_item["m"]["tp"]
 
     fulltext = ""
     linebreaks = []
@@ -293,7 +291,6 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         "lg": article_lang,
         "tp": mapped_type,
         "ro": reading_order,
-        "s3v": content_item["m"]["s3v"] if "s3v" in content_item["m"] else None,
         "ppreb": [],
         "lb": [],
         "cc": content_item["m"]["cc"],
@@ -356,11 +353,17 @@ def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
 
     article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
 
+    if content_item["m"]["tp"] in TYPE_MAPPINGS:
+        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
+    else:
+        mapped_type = content_item["m"]["tp"]
+
     passim_document = {
         "series": np,
         "date": f"{date[0]}-{date[1]}-{date[2]}",
         "id": content_item["m"]["id"],
         "cc": content_item["m"]["cc"],
+        "tp": mapped_type,
         "lg": article_lang,
         "pages": [],
     }
