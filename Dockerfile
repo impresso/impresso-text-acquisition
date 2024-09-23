@@ -45,16 +45,12 @@ RUN echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # install desired libraries. 
 # TODO remove boto once it's removed from all functions.
 RUN pip install --upgrade pip setuptools
-RUN pip install numpy scipy pillow beautifulsoup4 pandas PyYAML jsonlines pytest
+RUN pip install numpy pillow beautifulsoup4 pandas PyYAML jsonlines pytest
 RUN pip install \
     boto3 \
     docopt \
-    kubernetes \
-    "urllib3>1.21.1<1.25" \
     opencv-python \
-    smart_open \
-    "s3fs>=2023.3.0" \
-    jupyter \
+    smart-open \
     git-python \
     python-dotenv
 
@@ -64,13 +60,13 @@ EXPOSE 8786
 EXPOSE 8787
 
 # Set the working directory
-WORKDIR /home/$USER_NAME/impresso_text_acquisition
+WORKDIR /home/$USER_NAME/impresso-text-acquisition
 
 # Add local impresso_pycommons
 COPY . .
 
 # Change ownership of the copied files to the new user and group
-RUN chown -R ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/impresso_text_acquisition
+RUN chown -R ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/impresso-text-acquisition
 
 # Switch to the new user
 USER $USER_NAME
@@ -78,7 +74,7 @@ USER $USER_NAME
 RUN pip install -e .
 
 # Make sure the script launching the rebuilt is executable
-RUN chmod -x /home/${USER_NAME}/impresso_text_acquisition/bash_scripts/start_rebuilt_runai.sh
-RUN chmod -x /home/${USER_NAME}/impresso_text_acquisition/bash_scripts/compute_manifest_runai.sh
+RUN chmod -x /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh
+RUN chmod -x /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/compute_manifest_runai.sh
 
 CMD ["sleep", "infinity"]

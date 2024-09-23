@@ -1,4 +1,4 @@
-name="impresso_preparation"
+name="impresso_text_prep"
 image_version="v1"
 image_name=$name:$image_version
 
