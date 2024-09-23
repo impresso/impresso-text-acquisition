@@ -16,7 +16,7 @@ jobs:
     
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/impresso-text-importer
+      url: https://test.pypi.org/p/impresso-text-preparation
       
     # permissions:
     #  id-token: write
