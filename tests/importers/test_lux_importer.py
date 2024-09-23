@@ -79,7 +79,7 @@ def test_selective_import():
     logger.info("Starting test_selective_import in test_lux_importer.py.")
 
     f_mng = ExitStack()
-    cfg_file = get_pkg_resource(f_mng, "config/import_BNL.json", "text_preparation")
+    cfg_file = get_pkg_resource(f_mng, "config/importer_config/import_BNL.json", "text_preparation")
     inp_dir = get_pkg_resource(
         f_mng, "data/sample_data/Luxembourg/", "text_preparation"
     )
