@@ -35,7 +35,7 @@ from typing import Any, Type, Callable
 from dask.distributed import Client
 from docopt import docopt
 import git
-from impresso_essentials.utils import KNOWN_JOURNALS, IssueDir
+from impresso_essentials.utils import IssueDir
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.utils import init_logger
 
