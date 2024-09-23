@@ -29,19 +29,19 @@ def insert_whitespace(
     insert_ws = True
 
     if (
-        token in wsrules["punctuation_nows_beforeafter"]
-        or following_token in wsrules["punctuation_nows_beforeafter"]
+        token in wsrules["pct_no_ws_before_after"]
+        or following_token in wsrules["pct_no_ws_before_after"]
     ):
         insert_ws = False
 
-    elif following_token in wsrules["punctuation_nows_before"]:
+    elif following_token in wsrules["pct_no_ws_before"]:
         insert_ws = False
 
-    elif token in wsrules["punctuation_nows_after"]:
+    elif token in wsrules["pct_no_ws_after"]:
         insert_ws = False
 
     elif (
-        token in wsrules["punctuation_ciffre"]
+        token in wsrules["pct_number"]
         and previous_token is not None
         and following_token is not None
     ):

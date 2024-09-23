@@ -34,7 +34,7 @@ dependencies = [
     "python-jsonschema-objects",
     "regex",
     "filelock",
-    "impresso_commons"
+    "impresso_essentials"
 ]
 
 [project.urls]
