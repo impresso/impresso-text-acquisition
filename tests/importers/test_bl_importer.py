@@ -19,7 +19,7 @@ def test_import_issues():
 
     f_mng = ExitStack()
     inp_dir = get_pkg_resource(f_mng, "data/sample_data/BL/", "text_preparation")
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
     tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     test_manifest = DataManifest(

@@ -38,7 +38,7 @@ def test_import_issues_no_dask():
     ar_file = get_pkg_resource(
         f_mng, "data/sample_data/Tetml/access_rights.json", "text_preparation"
     )
-    out_dir = get_pkg_resource(f_mng, "data/out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
     temp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     failed_log_path = os.path.join(

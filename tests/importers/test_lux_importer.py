@@ -28,7 +28,7 @@ def test_import_issues():
     inp_dir = get_pkg_resource(
         f_mng, "data/sample_data/Luxembourg/", "text_preparation"
     )
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
     tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     output_bucket = None  # this disables the s3 upload
@@ -83,7 +83,7 @@ def test_selective_import():
     inp_dir = get_pkg_resource(
         f_mng, "data/sample_data/Luxembourg/", "text_preparation"
     )
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
     tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     with open(cfg_file, "r", encoding="utf-8") as f:

@@ -410,7 +410,7 @@ def import_issues(
     remove_filelocks(out_dir)
 
     # finalize and compute the manifest
-    if "sandbox" in s3_bucket:
+    if s3_bucket is not None and "sandbox" in s3_bucket or 'sandbox' in manifest.output_bucket_name:
         # don't push to git if output bucket it sandbox
         manifest.compute(export_to_git_and_s3=False)
         manifest.validate_and_export_manifest(push_to_git=False)

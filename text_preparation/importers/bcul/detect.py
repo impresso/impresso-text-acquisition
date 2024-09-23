@@ -153,14 +153,15 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
         if _dir not in ["OLD", "wrong_BCUL", ".DS_Store"] and _dir in ar_and_alias
     ]
 
-    # for the case of 'La_Veveysanne__La_Patrie' add them also
-    vvs_pat_base_dir = os.path.join(dir_path, "La_Veveysanne__La_Patrie")
-    vvs_pat_dirs = [
-        os.path.join(vvs_pat_base_dir, _dir)
-        for _dir in os.listdir(vvs_pat_base_dir)
-        if ".DS_Store" not in _dir and _dir in ar_and_alias
-    ]
-    journal_dirs.extend(vvs_pat_dirs)
+    if "La_Veveysanne__La_Patrie" in os.listdir(dir_path):
+        # for the case of 'La_Veveysanne__La_Patrie' add them also
+        vvs_pat_base_dir = os.path.join(dir_path, "La_Veveysanne__La_Patrie")
+        vvs_pat_dirs = [
+            os.path.join(vvs_pat_base_dir, _dir)
+            for _dir in os.listdir(vvs_pat_base_dir)
+            if ".DS_Store" not in _dir and _dir in ar_and_alias
+        ]
+        journal_dirs.extend(vvs_pat_dirs)
 
     issue_dirs = []
     for journal in journal_dirs:
@@ -191,8 +192,7 @@ def select_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Not used for this imported, but argument is kept
-            for uniformity.
+        access_rights (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
         list[BculIssueDir] | None: List of `BculIssueDir` to import.
