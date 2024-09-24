@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rebuilders &mdash; Impresso Text Preparation  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Utilities" href="utils.html" />
+    <link rel="prev" title="FedGaz TETML importer" href="importers/fedgaz.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Impresso Text Preparation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers.html">Importers</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Rebuilders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#rebuild-functions">Rebuild functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.cleanup"><code class="docutils literal notranslate"><span class="pre">cleanup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.compress"><code class="docutils literal notranslate"><span class="pre">compress()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.init_logging"><code class="docutils literal notranslate"><span class="pre">init_logging()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.rebuild_for_passim"><code class="docutils literal notranslate"><span class="pre">rebuild_for_passim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.rebuild_for_solr"><code class="docutils literal notranslate"><span class="pre">rebuild_for_solr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.rebuild_issues"><code class="docutils literal notranslate"><span class="pre">rebuild_issues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.rebuild_text"><code class="docutils literal notranslate"><span class="pre">rebuild_text()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.rebuild_text_passim"><code class="docutils literal notranslate"><span class="pre">rebuild_text_passim()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.rebuilder.upload"><code class="docutils literal notranslate"><span class="pre">upload()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-text_preparation.rebuilders.helpers">Helpers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.get_iiif_and_coords"><code class="docutils literal notranslate"><span class="pre">get_iiif_and_coords()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.insert_whitespace"><code class="docutils literal notranslate"><span class="pre">insert_whitespace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.pages_to_article"><code class="docutils literal notranslate"><span class="pre">pages_to_article()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.read_issue"><code class="docutils literal notranslate"><span class="pre">read_issue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.read_issue_pages"><code class="docutils literal notranslate"><span class="pre">read_issue_pages()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.read_page"><code class="docutils literal notranslate"><span class="pre">read_page()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.reconstruct_iiif_link"><code class="docutils literal notranslate"><span class="pre">reconstruct_iiif_link()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.rejoin_articles"><code class="docutils literal notranslate"><span class="pre">rejoin_articles()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.rebuilders.helpers.text_apply_breaks"><code class="docutils literal notranslate"><span class="pre">text_apply_breaks()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#config-file-example">Config file example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-using-runai">Running using Runai</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Impresso Text Preparation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Rebuilders</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/rebuilders.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="rebuilders">
+<h1>Rebuilders<a class="headerlink" href="#rebuilders" title="Link to this heading"></a></h1>
+<p>Once the canonical data has been generated, it is rebuilt into two variants of the <cite>rebuilt</cite> format:
+- <code class="docutils literal notranslate"><span class="pre">Solr</span> <span class="pre">Rebuilder</span></code>: Returns the base format for all subsequent text proessing steps, keeping only the text data and important information (line breaks, regions etc).
+- <code class="docutils literal notranslate"><span class="pre">Passim</span> <span class="pre">Rebuilder</span></code>: Returns the base format for the text-reuse processing, which is done with a software called Passim.
+This format is very similar to the solr rebuilt on all counts, but simply has slightly different properties and property names.</p>
+<p>Both of these are generated with the <cite>text_preparation.rebuilders.rebuilder</cite> module, and one can select which format to produce with the <cite>format</cite> parameter.</p>
+<section id="rebuild-functions">
+<h2>Rebuild functions<a class="headerlink" href="#rebuild-functions" title="Link to this heading"></a></h2>
+<p>A set of functions to transform JSON files in <strong>impresso’s canonical format</strong> into a number of JSON-based formats for different purposes.</p>
+<p id="module-text_preparation.rebuilders.rebuilder">Functions and CLI to rebuild text from impresso’s canonical format.
+For EPFL members, this script can be scaled by running it using Runai,
+as documented on <a class="reference external" href="https://github.com/impresso/impresso-infrastructure/blob/main/howtos/runai.md">https://github.com/impresso/impresso-infrastructure/blob/main/howtos/runai.md</a>.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>rebuilder.py rebuild_articles –input-bucket=&lt;b&gt; –log-file=&lt;f&gt; –output-dir=&lt;od&gt; –filter-config=&lt;fc&gt; [–format=&lt;fo&gt; –scheduler=&lt;sch&gt; –output-bucket=&lt;ob&gt; –verbose –clear –languages=&lt;lgs&gt; –nworkers=&lt;nw&gt; –git-repo=&lt;gr&gt; –temp-dir=&lt;tp&gt; –prev-manifest=&lt;pm&gt;]</p>
+</dd>
+</dl>
+<p>Options:</p>
+<dl class="option-list">
+<dt><kbd><span class="option">--input-bucket=<var>&lt;b&gt;</var></span></kbd></dt>
+<dd><p>S3 bucket where canonical JSON data will be read from</p>
+</dd>
+<dt><kbd><span class="option">--output-bucket=<var>&lt;ob&gt;</var></span></kbd></dt>
+<dd><p>Rebuilt data will be uploaded to the specified s3 bucket (otherwise no upload)</p>
+</dd>
+<dt><kbd><span class="option">--log-file=<var>&lt;f&gt;</var></span></kbd></dt>
+<dd><p>Path to log file</p>
+</dd>
+<dt><kbd><span class="option">--scheduler=<var>&lt;sch&gt;</var></span></kbd></dt>
+<dd><p>Tell dask to use an existing scheduler (otherwise it’ll create one)</p>
+</dd>
+<dt><kbd><span class="option">--filter-config=<var>&lt;fc&gt;</var></span></kbd></dt>
+<dd><p>A JSON configuration file specifying which newspaper issues will be rebuilt</p>
+</dd>
+<dt><kbd><span class="option">--verbose</span></kbd></dt>
+<dd><p>Set logging level to DEBUG (by default is INFO)</p>
+</dd>
+<dt><kbd><span class="option">--clear</span></kbd></dt>
+<dd><p>Remove output directory before and after rebuilding</p>
+</dd>
+<dt><kbd><span class="option">--format=<var>&lt;fo&gt;</var></span></kbd></dt>
+<dd><p>Rebuilt format to use (can be “solr” or “passim”)</p>
+</dd>
+<dt><kbd><span class="option">--languages=<var>&lt;lgs&gt;</var></span></kbd></dt>
+<dd><p>Languages to filter the articles to rebuild on.</p>
+</dd>
+<dt><kbd><span class="option">--nworkers=<var>&lt;nw&gt;</var></span></kbd></dt>
+<dd><p>number of workers for (local) Dask client.</p>
+</dd>
+<dt><kbd><span class="option">--git-repo=<var>&lt;gr&gt;</var></span></kbd></dt>
+<dd><p>Local path to the “impresso-text-acquisition” git directory (including it).</p>
+</dd>
+<dt><kbd><span class="option">--temp-dir=<var>&lt;tp&gt;</var></span></kbd></dt>
+<dd><p>Temporary directory in which to clone the impresso-data-release git repository.</p>
+</dd>
+<dt><kbd><span class="option">--prev-manifest=<var>&lt;pm&gt;</var></span></kbd></dt>
+<dd><p>Optional S3 path to the previous manifest to use for the manifest generation.</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.cleanup">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upload_success</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.cleanup" title="Link to this definition"></a></dt>
+<dd><p>Removes a file if it has been successfully uploaded to S3.
+:param upload_success: whether the upload was successful
+:type upload_success: bool
+:param filepath: path to the uploaded file
+:type filepath: str</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.compress">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">compress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.compress" title="Link to this definition"></a></dt>
+<dd><p>Merges a set of JSON line files into a single compressed archive.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – signature of the newspaper issue (e.g. GDL-1900)</p></li>
+<li><p><strong>json_files</strong> (<em>list</em>) – input JSON line files</p></li>
+<li><p><strong>output_dir</strong> – directory where to write the output file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a tuple with: sorting key [0] and path to serialized file [1].</p>
+</dd>
+<dt class="field-odd">Rytpe<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
+(e.g. GDL-1900).</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.init_logging">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">init_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.init_logging" title="Link to this definition"></a></dt>
+<dd><p>Initialises the root logger.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>level</strong> (<em>int</em>) – desired level of logging (default: logging.INFO)</p></li>
+<li><p><strong>file</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the initialised logger</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>logging.RootLogger</cite></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It’s basically a duplicate of <cite>impresso_commons.utils.init_logger</cite> but
+I could not get it to work properly, so keeping this duplicate.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.main">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.main" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.rebuild_for_passim">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">rebuild_for_passim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.rebuild_for_passim" title="Link to this definition"></a></dt>
+<dd><p>Rebuilds the text of an article content-item to be used with passim.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>content_item</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The content-item to rebuilt using its metadata.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The rebuilt content-item built for passim.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.rebuild_for_solr">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">rebuild_for_solr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.rebuild_for_solr" title="Link to this definition"></a></dt>
+<dd><p>Rebuilds the text of an article content-item given its metadata as input.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This rebuild function is thought especially for ingesting the newspaper
+data into our Solr index.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>content_item</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – The content-item to rebuilt using its metadata.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The rebuilt content-item following the Impresso JSON Schema.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.rebuild_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">rebuild_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issues</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_bucket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'solr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.rebuild_issues" title="Link to this definition"></a></dt>
+<dd><p>Rebuild a set of newspaper issues into a given format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>issues</strong> (list of <cite>IssueDir</cite> objects) – issues to rebuild</p></li>
+<li><p><strong>input_bucket</strong> (<em>str</em>) – name of input s3 bucket</p></li>
+<li><p><strong>outp_dir</strong> (<em>str</em>) – local directory where to store the rebuilt files</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a list of tuples (see return type of <cite>upload</cite>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of tuples</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.rebuild_text">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">rebuild_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.rebuild_text" title="Link to this definition"></a></dt>
+<dd><p>Rebuild the text of an article for Solr ingestion.</p>
+<p>If <cite>string</cite> is not <cite>None</cite>, then the rebuilt text is appended to it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – Newspaper page conforming to the impresso JSON pages schema.</p></li>
+<li><p><strong>language</strong> (<em>str</em><em> | </em><em>None</em>) – Language of the article being rebuilt</p></li>
+<li><p><strong>string</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Rebuilt text of previous page. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>[0] Article fulltext, [1] offsets and</dt><dd><p>[2] coordinates of token regions.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str, dict[list], dict[list]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.rebuild_text_passim">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">rebuild_text_passim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.rebuild_text_passim" title="Link to this definition"></a></dt>
+<dd><p>The text rebuilding function from pages for passim.</p>
+<p>If <cite>string</cite> is not <cite>None</cite>, then the rebuilt text is appended to it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page</strong> (<em>list</em><em>[</em><em>dict</em><em>]</em>) – Newspaper page conforming to the impresso JSON pages schema.</p></li>
+<li><p><strong>language</strong> (<em>str</em><em> | </em><em>None</em>) – Language of the article being rebuilt</p></li>
+<li><p><strong>string</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Rebuilt text of previous page. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>[0] article fulltext, [1] coordinates of token regions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str, list[dict]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.rebuilder.upload">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.rebuilder.</span></span><span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.rebuilder.upload" title="Link to this definition"></a></dt>
+<dd><p>Uploads a file to a given S3 bucket.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sort_key</strong> (<em>str</em>) – the key used to group articles (e.g. “GDL-1900”)</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – path of the file to upload to S3</p></li>
+<li><p><strong>bucket_name</strong> (<em>str</em>) – name of S3 bucket where to upload the file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a tuple with [0] whether the upload was successful (boolean) and
+[1] the path of the uploaded file (string)</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year
+(e.g. GDL-1900).</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-text_preparation.rebuilders.helpers">
+<span id="helpers"></span><h2>Helpers<a class="headerlink" href="#module-text_preparation.rebuilders.helpers" title="Link to this heading"></a></h2>
+<p>Helper functions for the text <cite>rebuilder.py</cite> script.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.get_iiif_and_coords">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">get_iiif_and_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ci</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.rebuilders.helpers.get_iiif_and_coords" title="Link to this definition"></a></dt>
+<dd><p>Fetch the iiif link and image coordinates from CI metadata.</p>
+<p>Adapts to the various cases currently present in the canonical data, see
+<a class="reference external" href="https://github.com/impresso/impresso-text-acquisition/issues/117">https://github.com/impresso/impresso-text-acquisition/issues/117</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ci</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Content item to retrieve the information from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>IIIF link and coordinates as string or</dt><dd><p>None if part of the information is missing from the content item</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str | None, str | None]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.insert_whitespace">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">insert_whitespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">next_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev_t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lang</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#text_preparation.rebuilders.helpers.insert_whitespace" title="Link to this definition"></a></dt>
+<dd><p>Determine whether a whitespace should be inserted after a token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token</strong> (<em>str</em>) – Current token.</p></li>
+<li><p><strong>next_t</strong> (<em>str</em>) – Following token.</p></li>
+<li><p><strong>prev_t</strong> (<em>str</em>) – Previous token.</p></li>
+<li><p><strong>lang</strong> (<em>str</em>) – Language of text.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether a whitespace should be inserted after the <cite>token</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.pages_to_article">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">pages_to_article</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">article</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pages</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.helpers.pages_to_article" title="Link to this definition"></a></dt>
+<dd><p>Return all text regions belonging to a given article.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.read_issue">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">read_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3_client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.helpers.read_issue" title="Link to this definition"></a></dt>
+<dd><p>Read the data from S3 for a given newspaper issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>issue</strong> (<cite>IssueDir</cite>) – input issue</p></li>
+<li><p><strong>bucket_name</strong> (<em>str</em>) – bucket’s name</p></li>
+<li><p><strong>s3_client</strong> (<cite>boto3.resources.factory.s3.ServiceResource</cite>) – open connection to S3 storage</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a JSON representation of the issue object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.read_issue_pages">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">read_issue_pages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_json</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.helpers.read_issue_pages" title="Link to this definition"></a></dt>
+<dd><p>Read all pages of a given issue from S3 in parallel.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.read_page">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">read_page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3_client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.helpers.read_page" title="Link to this definition"></a></dt>
+<dd><p>Read the data from S3 for a given newspaper pages.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.reconstruct_iiif_link">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">reconstruct_iiif_link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content_item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.rebuilders.helpers.reconstruct_iiif_link" title="Link to this definition"></a></dt>
+<dd><p>Construct the iiif link to the CI’s image based on its metadata.</p>
+<p>A iiif image API link and the image coordinates are to be fetched
+from the content item first.
+Different importers (and endpoints) have different formats, needing
+different processing.
+In addition, some inconsistencies exist in the canonical data.
+This function adapts to these variations, more details in issue:
+<a class="reference external" href="https://github.com/impresso/impresso-text-acquisition/issues/117">https://github.com/impresso/impresso-text-acquisition/issues/117</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>content_item</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Content item in canonical format.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>iiif link to the image area of the content item if present in the</dt><dd><p>CI metadata, else None.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.rejoin_articles">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">rejoin_articles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_json</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.helpers.rejoin_articles" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.rebuilders.helpers.text_apply_breaks">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.rebuilders.helpers.</span></span><span class="sig-name descname"><span class="pre">text_apply_breaks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fulltext</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">breaks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.rebuilders.helpers.text_apply_breaks" title="Link to this definition"></a></dt>
+<dd><p>Apply breaks to the text returned by <cite>rebuild_for_solr</cite>.</p>
+<p>The purpose of this function is to debug (visually) the <cite>rebuild_for_solr</cite>
+function. It applies to <cite>fulltext</cite> the characte offsets contained in
+<cite>breaks</cite> (e.g. line breaks, paragraph breaks, etc.).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fulltext</strong> (<em>str</em>) – input text</p></li>
+<li><p><strong>breaks</strong> (<em>list</em><em> of </em><em>int</em>) – a list of character offsets</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a list of text chunks</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="config-file-example">
+<h2>Config file example<a class="headerlink" href="#config-file-example" title="Link to this heading"></a></h2>
+<p>(from file: <cite>text_preparation.config.rebuilt_cofig.cluster.json</cite>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[{</span><span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1948</span><span class="p">,</span> <span class="mi">1999</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1900</span><span class="p">,</span> <span class="mi">1948</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1850</span><span class="p">,</span> <span class="mi">1900</span><span class="p">]},</span> <span class="p">{</span><span class="s2">&quot;schmiede&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1916</span><span class="p">,</span> <span class="mi">1920</span><span class="p">]}]</span>
+</pre></div>
+</div>
+<p>Several newspaper titles can be added to the same configuration file.
+If there is a newspaper title that contains a very large number of data (many issues and/or many years),
+it is advised to separate this processing into parts as is shown above with <cite>GDL</cite> to reduce the memory and computing needs,
+as well as ensure minimal outputs are lost if the process stops early due to an error.</p>
+</section>
+<section id="running-using-runai">
+<h2>Running using Runai<a class="headerlink" href="#running-using-runai" title="Link to this heading"></a></h2>
+<p>Members of Impresso and EPFL can use the computing platform Runai to produce the rebuilt data.
+Indications to run data in this way are available [here](<a class="reference external" href="https://github.com/impresso/impresso-infrastructure">https://github.com/impresso/impresso-infrastructure</a>).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="importers/fedgaz.html" class="btn btn-neutral float-left" title="FedGaz TETML importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="Utilities" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -13,7 +13,7 @@ Installing for development:
   # install dependencies into your virtual environment
   pip install -r requirements.txt
 
-  # install the TextImporter
+  # install Text-Preparation
   pip install -e .
 
 
@@ -21,4 +21,4 @@ General installation:
 
 .. code-block:: bash
 
-  pip install impresso-text-importer
+  pip install impresso-text-preparation

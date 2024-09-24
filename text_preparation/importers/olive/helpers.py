@@ -15,7 +15,7 @@ from typing import Any
 
 import numpy as np
 from bs4 import BeautifulSoup
-import cv2.cv2 as cv
+import cv2 as cv
 
 from impresso_essentials.utils import IssueDir
 from text_preparation.importers.classes import NewspaperIssue, ZipArchive

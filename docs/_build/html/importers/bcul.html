@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BCUL ABBYY importer &mdash; Impresso TextImporter  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>BCUL ABBYY importer &mdash; Impresso Text Preparation  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -14,7 +16,7 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -32,7 +34,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            Impresso TextImporter
+            Impresso Text Preparation
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -46,7 +48,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">TextImporter</a><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">Importers</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
@@ -57,9 +59,9 @@
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">BCUL ABBYY importer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.bcul.classes">BCUL Custom classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.bcul.detect">BCUL Detect functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.bcul.helpers">BCUL Helper functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bcul.classes">BCUL Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bcul.detect">BCUL Detect functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bcul.helpers">BCUL Helper functions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
@@ -68,10 +70,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#writing-a-new-importer">Writing a new importer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Writing a new importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rebuilders.html">Rebuilders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities</a></li>
 </ul>
 
         </div>
@@ -80,7 +83,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Impresso TextImporter</a>
+          <a href="../index.html">Impresso Text Preparation</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -88,7 +91,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../importers.html">TextImporter</a></li>
+          <li class="breadcrumb-item"><a href="../importers.html">Importers</a></li>
       <li class="breadcrumb-item active">BCUL ABBYY importer</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/importers/bcul.rst.txt" rel="nofollow"> View page source</a>
@@ -104,15 +107,15 @@
 <p>This importer is written to accomodate the ABBYY OCR format.
 It was developed to handle OCR newspaper data provided by the <a class="reference external" href="https://www.bcu-lausanne.ch/en/">Bibliothèque Cantonale Universitaire de Lausanne
 (BCUL - Lausanne Cantonal University Library)</a>, which are part of the <a class="reference external" href="https://scriptorium.bcu-lausanne.ch/page/home">Scriptorium interface</a> and collection.</p>
-<section id="module-text_importer.importers.bcul.classes">
-<span id="bcul-custom-classes"></span><h2>BCUL Custom classes<a class="headerlink" href="#module-text_importer.importers.bcul.classes" title="Link to this heading"></a></h2>
+<section id="module-text_preparation.importers.bcul.classes">
+<span id="bcul-custom-classes"></span><h2>BCUL Custom classes<a class="headerlink" href="#module-text_preparation.importers.bcul.classes" title="Link to this heading"></a></h2>
 <p>This module contains the definition of the BCUL importer classes.</p>
 <p>The classes define newspaper Issues and Pages objects which convert OCR data in
 the ABBYY format to a unified canoncial format.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.classes.</span></span><span class="sig-name descname"><span class="pre">BculNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">NewspaperIssue</span></code></a></p>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.classes.</span></span><span class="sig-name descname"><span class="pre">BculNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><code class="xref py py-class docutils literal notranslate"><span class="pre">NewspaperIssue</span></code></a></p>
 <p>Newspaper Issue in BCUL (Abby) format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -120,8 +123,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.id" title="Link to this definition"></a></dt>
 <dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -131,8 +134,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.edition">
-<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.edition" title="Link to this definition"></a></dt>
 <dd><p>Lower case letter ordering issues of the same day.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -142,8 +145,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.journal">
-<span class="sig-name descname"><span class="pre">journal</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.journal" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.journal">
+<span class="sig-name descname"><span class="pre">journal</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.journal" title="Link to this definition"></a></dt>
 <dd><p>Newspaper unique identifier or name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -153,8 +156,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.path">
-<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.path" title="Link to this definition"></a></dt>
 <dd><p>Path to directory containing the issue’s OCR data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -164,8 +167,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.date">
-<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.date" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.date" title="Link to this definition"></a></dt>
 <dd><p>Publication date of issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -175,8 +178,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.issue_data">
-<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
 <dd><p>Issue data according to canonical format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -186,8 +189,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.pages">
-<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.pages" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.pages" title="Link to this definition"></a></dt>
 <dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">NewspaperPage</span></code> instances from this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -197,8 +200,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.rights">
-<span class="sig-name descname"><span class="pre">rights</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.rights" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.rights">
+<span class="sig-name descname"><span class="pre">rights</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.rights" title="Link to this definition"></a></dt>
 <dd><p>Access rights applicable to this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -208,8 +211,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.mit_file">
-<span class="sig-name descname"><span class="pre">mit_file</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.mit_file" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.mit_file">
+<span class="sig-name descname"><span class="pre">mit_file</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.mit_file" title="Link to this definition"></a></dt>
 <dd><p>Path to the ABBY ‘mit’ file that contains the OLR.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -219,8 +222,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.is_json">
-<span class="sig-name descname"><span class="pre">is_json</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.is_json" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.is_json">
+<span class="sig-name descname"><span class="pre">is_json</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.is_json" title="Link to this definition"></a></dt>
 <dd><p>Whether the <cite>mit_file</cite> has the <cite>json</cite> file extension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -230,8 +233,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.is_xml">
-<span class="sig-name descname"><span class="pre">is_xml</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.is_xml" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.is_xml">
+<span class="sig-name descname"><span class="pre">is_xml</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.is_xml" title="Link to this definition"></a></dt>
 <dd><p>Whether the <cite>mit_file</cite> has the <cite>xml</cite> file extension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -241,8 +244,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.iiif_manifest">
-<span class="sig-name descname"><span class="pre">iiif_manifest</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.iiif_manifest" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.iiif_manifest">
+<span class="sig-name descname"><span class="pre">iiif_manifest</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.iiif_manifest" title="Link to this definition"></a></dt>
 <dd><p>Presentation iiif manifest for this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -252,8 +255,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.content_items">
-<span class="sig-name descname"><span class="pre">content_items</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.content_items" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.content_items">
+<span class="sig-name descname"><span class="pre">content_items</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.content_items" title="Link to this definition"></a></dt>
 <dd><p>List of content items in this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -263,8 +266,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperIssue.query_iiif_api">
-<span class="sig-name descname"><span class="pre">query_iiif_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_tries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperIssue.query_iiif_api" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperIssue.query_iiif_api">
+<span class="sig-name descname"><span class="pre">query_iiif_api</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_tries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_retries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperIssue.query_iiif_api" title="Link to this definition"></a></dt>
 <dd><p>Query the Scriptorium IIIF API for the issue’s manifest data.</p>
 <p>TODO: implement the retry approach with <cite>celery</cite> package or similar.</p>
 <dl class="field-list simple">
@@ -289,9 +292,9 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.classes.</span></span><span class="sig-name descname"><span class="pre">BculNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iiif_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">NewspaperPage</span></code></a></p>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.classes.</span></span><span class="sig-name descname"><span class="pre">BculNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iiif_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperPage" title="text_preparation.importers.classes.NewspaperPage"><code class="xref py py-class docutils literal notranslate"><span class="pre">NewspaperPage</span></code></a></p>
 <p>Newspaper page in BCUL (Abbyy) format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -304,8 +307,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.id" title="Link to this definition"></a></dt>
 <dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -315,8 +318,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.number">
-<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.number" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.number" title="Link to this definition"></a></dt>
 <dd><p>Page number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -326,8 +329,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.page_data">
-<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.page_data" title="Link to this definition"></a></dt>
 <dd><p>Page data according to canonical format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -337,19 +340,19 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.issue">
-<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.issue" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.issue" title="Link to this definition"></a></dt>
 <dd><p>Issue this page is from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue">NewspaperIssue</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue">NewspaperIssue</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.path">
-<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.path" title="Link to this definition"></a></dt>
 <dd><p>Path to the Abby XML page file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -359,8 +362,8 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.iiif_base_uri">
-<span class="sig-name descname"><span class="pre">iiif_base_uri</span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.iiif_base_uri" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.iiif_base_uri">
+<span class="sig-name descname"><span class="pre">iiif_base_uri</span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.iiif_base_uri" title="Link to this definition"></a></dt>
 <dd><p>URI to image IIIF of this page.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -370,21 +373,21 @@ the ABBYY format to a unified canoncial format.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.add_issue">
-<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.add_issue">
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.add_issue" title="Link to this definition"></a></dt>
 <dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the newspaper issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.ci_id">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ci_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.ci_id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.ci_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ci_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.ci_id" title="Link to this definition"></a></dt>
 <dd><p>Create and return the content item ID of the page.</p>
 <p>Given that BCUL data do not entail article-level segmentation,
 each page is considered as a content item. Thus, to mint the content
@@ -401,8 +404,8 @@ prefix with “i”.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.get_ci_divs">
-<span class="sig-name descname"><span class="pre">get_ci_divs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Tag</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.get_ci_divs" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.get_ci_divs">
+<span class="sig-name descname"><span class="pre">get_ci_divs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Tag</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.get_ci_divs" title="Link to this definition"></a></dt>
 <dd><p>Fetch and return the divs of tables and pictures from this page.</p>
 <p>While BCUL does not entail article-level segmentation, tables and
 pictures are still segmented. They can thus have their own content item
@@ -418,8 +421,8 @@ objects.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.parse" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.parse" title="Link to this definition"></a></dt>
 <dd><p>Process the page XML file and transform into canonical Page format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -430,19 +433,19 @@ method is called.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.classes.BculNewspaperPage.xml">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_importer.importers.bcul.classes.BculNewspaperPage.xml" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.classes.BculNewspaperPage.xml">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_preparation.importers.bcul.classes.BculNewspaperPage.xml" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 </section>
-<section id="module-text_importer.importers.bcul.detect">
-<span id="bcul-detect-functions"></span><h2>BCUL Detect functions<a class="headerlink" href="#module-text_importer.importers.bcul.detect" title="Link to this heading"></a></h2>
+<section id="module-text_preparation.importers.bcul.detect">
+<span id="bcul-detect-functions"></span><h2>BCUL Detect functions<a class="headerlink" href="#module-text_preparation.importers.bcul.detect" title="Link to this heading"></a></h2>
 <p>This module contains helper functions to find BCUL OCR data to import.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.detect.BculIssueDir">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.detect.</span></span><span class="sig-name descname"><span class="pre">BculIssueDir</span></span><a class="headerlink" href="#text_importer.importers.bcul.detect.BculIssueDir" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.detect.BculIssueDir">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.detect.</span></span><span class="sig-name descname"><span class="pre">BculIssueDir</span></span><a class="headerlink" href="#text_preparation.importers.bcul.detect.BculIssueDir" title="Link to this definition"></a></dt>
 <dd><p>A light-weight data structure to represent a newspaper issue.</p>
 <p>This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
@@ -479,8 +482,8 @@ second, etc.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.detect.detect_issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.bcul.detect.detect_issues" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.detect.detect_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.detect.detect_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect BCUL newspaper issues to import within the filesystem.</p>
 <p>This function expects the directory structure that BCUL used to
 organize the dump of Abbyy files.</p>
@@ -501,8 +504,8 @@ organize the dump of Abbyy files.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.detect.dir2issue">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.detect.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">journal_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.detect.dir2issue" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.detect.dir2issue">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.detect.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">journal_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.detect.dir2issue" title="Link to this definition"></a></dt>
 <dd><p>Create a <cite>BculIssueDir</cite> object from a directory.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -525,10 +528,10 @@ organize the dump of Abbyy files.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.detect.select_issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.detect.select_issues" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.detect.select_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.detect.select_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
-<p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.bcul.detect.detect_issues" title="text_importer.importers.bcul.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
+<p>The behavior is very similar to <a class="reference internal" href="#text_preparation.importers.bcul.detect.detect_issues" title="text_preparation.importers.bcul.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
 import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
 further details on how to configure filtering.</p>
@@ -551,12 +554,12 @@ for uniformity.</p></li>
 </dd></dl>
 
 </section>
-<section id="module-text_importer.importers.bcul.helpers">
-<span id="bcul-helper-functions"></span><h2>BCUL Helper functions<a class="headerlink" href="#module-text_importer.importers.bcul.helpers" title="Link to this heading"></a></h2>
+<section id="module-text_preparation.importers.bcul.helpers">
+<span id="bcul-helper-functions"></span><h2>BCUL Helper functions<a class="headerlink" href="#module-text_preparation.importers.bcul.helpers" title="Link to this heading"></a></h2>
 <p>Helper functions to parse BCUL OCR files.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.find_mit_file">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">find_mit_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.find_mit_file" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.find_mit_file">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">find_mit_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.find_mit_file" title="Link to this definition"></a></dt>
 <dd><p>Given a directory, search for a file with a name ending with <cite>mit</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -572,8 +575,8 @@ for uniformity.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.find_page_file_in_dir">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">find_page_file_in_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.find_page_file_in_dir" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.find_page_file_in_dir">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">find_page_file_in_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.find_page_file_in_dir" title="Link to this definition"></a></dt>
 <dd><p>Find the page file in a directory given the name it should have.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -592,8 +595,8 @@ for uniformity.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.get_div_coords">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">get_div_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">div</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.get_div_coords" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.get_div_coords">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">get_div_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">div</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.get_div_coords" title="Link to this definition"></a></dt>
 <dd><p>Extract the coordinates from the given element and format them for iiif.</p>
 <p>In Abbyy format, the coordinates are denoted by the bottom, top (y-axis),
 left and right (x-axis) values.
@@ -613,8 +616,8 @@ But iiif coordinates should be formatted as <cite>[x, y, width, height]</cite>, 
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.get_page_number">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">get_page_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exif_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.get_page_number" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.get_page_number">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">get_page_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exif_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.get_page_number" title="Link to this definition"></a></dt>
 <dd><p>Given an <cite>exif</cite> file, look for the page number inside.</p>
 <p>This is for the JSON ‘flavour’ of BCUL, in which metadata about the pages
 are in JSON files which contain the substring <cite>exif</cite>.</p>
@@ -635,8 +638,8 @@ are in JSON files which contain the substring <cite>exif</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.parse_char_tokens">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_char_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">char_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Tag</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.parse_char_tokens" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.parse_char_tokens">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_char_tokens</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">char_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Tag</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.parse_char_tokens" title="Link to this definition"></a></dt>
 <dd><p>Parse a list of div Tag to extract the tokens and coordinates within a line.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -652,8 +655,8 @@ are in JSON files which contain the substring <cite>exif</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.parse_date">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mit_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.parse_date" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.parse_date">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mit_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">date</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.parse_date" title="Link to this definition"></a></dt>
 <dd><p>Given the Mit filename, parse the date and ensure it is valid.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -669,8 +672,8 @@ are in JSON files which contain the substring <cite>exif</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.parse_textblock">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_textblock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_ci_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.parse_textblock" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.parse_textblock">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_textblock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_ci_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.parse_textblock" title="Link to this definition"></a></dt>
 <dd><p>Parse the given textblock element into a canonical region element.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -689,8 +692,8 @@ are in JSON files which contain the substring <cite>exif</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.parse_textline">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_textline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.parse_textline" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.parse_textline">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">parse_textline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.parse_textline" title="Link to this definition"></a></dt>
 <dd><p>Parse the div element corresponding to a textline.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -706,8 +709,8 @@ are in JSON files which contain the substring <cite>exif</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.bcul.helpers.verify_issue_has_ocr_files">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">verify_issue_has_ocr_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.bcul.helpers.verify_issue_has_ocr_files" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bcul.helpers.verify_issue_has_ocr_files">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bcul.helpers.</span></span><span class="sig-name descname"><span class="pre">verify_issue_has_ocr_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bcul.helpers.verify_issue_has_ocr_files" title="Link to this definition"></a></dt>
 <dd><p>Ensure the path to the issue considered contains xml files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -7,7 +7,7 @@ handle OCR newspaper data provided by the BNF that were part of the Europeana pr
 BNF-EN Custom classes
 ---------------------
 
-.. automodule:: text_importer.importers.bnf_en.classes
+.. automodule:: text_preparation.importers.bnf_en.classes
   :members:
   :undoc-members:
   :show-inheritance:
@@ -15,7 +15,7 @@ BNF-EN Custom classes
 BNF-EN Detect functions
 -----------------------
 
-.. automodule:: text_importer.importers.bnf_en.detect
+.. automodule:: text_preparation.importers.bnf_en.detect
   :members:
   :undoc-members:
   :show-inheritance:

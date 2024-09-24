@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to Impresso TextImporter’s documentation! &mdash; Impresso TextImporter  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <title>Welcome to Impresso Text Preparation’s documentation! &mdash; Impresso Text Preparation  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -14,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -31,7 +33,7 @@
           
           
           <a href="#" class="icon icon-home">
-            Impresso TextImporter
+            Impresso Text Preparation
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -45,8 +47,9 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Writing a new importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers.html">Importers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rebuilders.html">Rebuilders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
 </ul>
 
         </div>
@@ -55,7 +58,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">Impresso TextImporter</a>
+          <a href="#">Impresso Text Preparation</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -63,7 +66,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to Impresso TextImporter’s documentation!</li>
+      <li class="breadcrumb-item active">Welcome to Impresso Text Preparation’s documentation!</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -73,33 +76,46 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="welcome-to-impresso-textimporter-s-documentation">
-<h1>Welcome to Impresso TextImporter’s documentation!<a class="headerlink" href="#welcome-to-impresso-textimporter-s-documentation" title="Link to this heading"></a></h1>
-<p>The Impresso TextImporter is a library and a collection of scripts to import
-newspaper data from a variety of formats (e.g. Olive XML, various flavors of Mets/Alto XML, etc.)
-into <a class="reference external" href="https://github.com/impresso/impresso-schemas">Impresso’s JSON format</a>.</p>
+  <section id="welcome-to-impresso-text-preparation-s-documentation">
+<h1>Welcome to Impresso Text Preparation’s documentation!<a class="headerlink" href="#welcome-to-impresso-text-preparation-s-documentation" title="Link to this heading"></a></h1>
+<p>Impresso Text Preparation is a library resulting from the merge of the previous package “Text-Importer” and the “Text-Rebuilder” from Impresso-pycommons.
+The goal for this merge was to regroup in one place all the code that was used as a first unified preparation for all data sources: creating the Impresso <cite>canonical</cite> and <cite>rebuilt</cite> formats from the data provided by partners.</p>
+<p>This grouping means that there are two main modules to this library:
+- Importers: first step of data processing, they convert OCR and OLR data (coming in a variety of formats - e.g. Olive XML, various flavors of Mets/Alto XML, etc.) into <a class="reference external" href="https://github.com/impresso/impresso-schemas">Impresso’s unified Canonical JSON format</a> , which represents Newspaper issues and pages.
+- Rebuilders: second step of the data processing where the content-items (articles, images, tables, headers etc) from the canonical format are extracted and “rebuilt” in preparation for the semantic augmentation and NLP processings that follow in the pipeline.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#data-architecture">Data architecture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="architecture.html#module-text_importer.importers.core">Processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="architecture.html#module-text_preparation.importers.core">Processing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="importers.html">Importers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="importers.html#available-importers">Available importers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="importers.html#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="importers.html#configuration-file">Configuration file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="importers.html#module-text_importer.utils">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="importers.html#writing-a-new-importer">Writing a new importer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Writing a new importer</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="custom_importer.html#tldr">TLDR;</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom_importer.html#detect-data-to-import">Detect data to import</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom_importer.html#implement-abstract-classes">Implement abstract classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom_importer.html#write-an-importer-cli-script">Write an importer CLI script</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom_importer.html#test">Test</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rebuilders.html">Rebuilders</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rebuilders.html#rebuild-functions">Rebuild functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rebuilders.html#module-text_preparation.rebuilders.helpers">Helpers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rebuilders.html#config-file-example">Config file example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rebuilders.html#running-using-runai">Running using Runai</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.add_property"><code class="docutils literal notranslate"><span class="pre">add_property()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.empty_folder"><code class="docutils literal notranslate"><span class="pre">empty_folder()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.get_issue_schema"><code class="docutils literal notranslate"><span class="pre">get_issue_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.get_page_schema"><code class="docutils literal notranslate"><span class="pre">get_page_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.get_reading_order"><code class="docutils literal notranslate"><span class="pre">get_reading_order()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.verify_imported_issues"><code class="docutils literal notranslate"><span class="pre">verify_imported_issues()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.write_error"><code class="docutils literal notranslate"><span class="pre">write_error()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.write_jsonlines_file"><code class="docutils literal notranslate"><span class="pre">write_jsonlines_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.tokenization.insert_whitespace"><code class="docutils literal notranslate"><span class="pre">insert_whitespace()</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -2,9 +2,9 @@ Overview
 ========
 
 Data architecture
---------------------------
+-----------------
 
-The `Impreso TextImporter` is part of and fits into the data architecture defined in
+`Impreso Text Preparation`, composed of the `Importer` and the `Rebuilder` is the main part of the data architecture defined in
 the framework of the impresso project to store and process a large-scale
 archive of historical newspapers. To understand the importer's logic
 is worth touching upon the key points of the architecure into which it fits.
@@ -48,7 +48,7 @@ Some things to note about these templates:
 Data packaging
 **************
 
-The JSON data produced by ``TextImporter`` are packaged into ``.bz2`` archives for efficient storage. Each archive consists of one JSON-line file, where each line contains a JSON document. The JSON schemas are described `here <https://github.com/impresso/impresso-schemas>`_.
+The JSON data produced by the ``Importer`` and ``Rebuilder`` are packaged into ``.bz2`` archives for efficient storage. Each archive consists of one JSON-line file, where each line contains a JSON document. The JSON schemas are described `here <https://github.com/impresso/impresso-schemas>`_.
 
 In Impresso we use an S3 solution for distributed storage to store newspaper data and accessed them at processing time.
 
@@ -66,6 +66,13 @@ They are packaged **by newspaper issue**. Each archive contains, one document pe
 
 Examples: ``GDL-1900-01-01-a-pages.jsonl.bz2`` contains all issues of the *Gazette de Lausanne* (= ``GDL``) published on January 1, 1900.
 
+Rebuilt data
+############
+
+They are packaged **by newspaper and by year**. Each archive contains, one document per line, all JSON content-items belonging to a given newspaper and year.
+
+Examples: ``GDL-1900.jsonl.bz2`` contains all rebuilt data of the *Gazette de Lausanne* (= ``GDL``) published in 1900.
+
 Image data
 **********
 
@@ -78,5 +85,5 @@ They are expected to be delivered via a dedicated IIIF endpoint, and typically s
 Processing
 ----------
 
-.. automodule:: text_importer.importers.core
+.. automodule:: text_preparation.importers.core
   :members:
