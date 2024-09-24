@@ -142,7 +142,7 @@ def test_image_iiif_links():
     inp_dir = get_pkg_resource(
         f_mng, "data/sample_data/Luxembourg/", "text_preparation"
     )
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/text_out", "text_preparation")
 
     issues = lux_detect_issues(
         base_dir=inp_dir,
