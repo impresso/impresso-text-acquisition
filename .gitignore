@@ -18,3 +18,7 @@ dist/*
 docs/node_modules
 old_text_importer/*
 text_preparation/data/sample_data/BCUL/257179/*
+*.jp2
+*.pdf
+text_preparation/data/sample_data/BCUL/*/*/*/*/*/solr/*
+text_preparation/data/canonical_out/test_out/*

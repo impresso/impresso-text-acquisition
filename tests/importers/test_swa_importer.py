@@ -21,7 +21,7 @@ def test_import_issues():
     ar_file = get_pkg_resource(
         f_mng, "data/sample_data/SWA/access_rights.json", "text_preparation"
     )
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
     tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     test_manifest = DataManifest(

@@ -4,6 +4,7 @@ import dask
 import logging
 from dask.distributed import Client
 from contextlib import ExitStack
+from time import strftime
 from impresso_essentials.utils import get_pkg_resource
 
 DASK_WORKERS_NUMBER = 8
@@ -38,10 +39,10 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 f_mng = ExitStack()
 
-log_dir = get_pkg_resource(f_mng, "data/", "text_preparation")
-out_dir = get_pkg_resource(f_mng, "data/out/", "text_preparation")
+log_dir = get_pkg_resource(f_mng, "data/logs", "text_preparation")
+out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
 temp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
-log_file = get_pkg_resource(f_mng, "data/tests.log", "text_preparation")
+log_file = get_pkg_resource(f_mng, f"data/logs/test_logs/tests_{strftime('%Y-%m-%d_%H:%M')}.log", "text_preparation")
 pathlib.Path(log_dir).mkdir(parents=True, exist_ok=True)
 pathlib.Path(out_dir).mkdir(parents=True, exist_ok=True)
 pathlib.Path(temp_dir).mkdir(parents=True, exist_ok=True)

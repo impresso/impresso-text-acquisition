@@ -28,7 +28,7 @@ def test_import_issues():
     inp_dir = get_pkg_resource(
         f_mng, "data/sample_data/Luxembourg/", "text_preparation"
     )
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
     tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     output_bucket = None  # this disables the s3 upload
@@ -79,11 +79,11 @@ def test_selective_import():
     logger.info("Starting test_selective_import in test_lux_importer.py.")
 
     f_mng = ExitStack()
-    cfg_file = get_pkg_resource(f_mng, "config/import_BNL.json", "text_preparation")
+    cfg_file = get_pkg_resource(f_mng, "config/importer_config/import_BNL.json", "text_preparation")
     inp_dir = get_pkg_resource(
         f_mng, "data/sample_data/Luxembourg/", "text_preparation"
     )
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
     tmp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     with open(cfg_file, "r", encoding="utf-8") as f:
@@ -142,7 +142,7 @@ def test_image_iiif_links():
     inp_dir = get_pkg_resource(
         f_mng, "data/sample_data/Luxembourg/", "text_preparation"
     )
-    out_dir = get_pkg_resource(f_mng, "data/canonical_out/", "text_preparation")
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/text_out", "text_preparation")
 
     issues = lux_detect_issues(
         base_dir=inp_dir,
