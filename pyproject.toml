@@ -33,8 +33,7 @@ dependencies = [
     "lxml",
     "python-jsonschema-objects",
     "regex",
-    "filelock",
-    "impresso_essentials"
+    "filelock"
 ]
 
 [project.urls]

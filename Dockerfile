@@ -75,6 +75,5 @@ RUN pip install -e .
 
 # Make sure the script launching the rebuilt is executable
 RUN chmod -x /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh
-RUN chmod -x /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/compute_manifest_runai.sh
 
 CMD ["sleep", "infinity"]
