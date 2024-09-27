@@ -601,7 +601,7 @@ def rebuild_issues(
 
     if filter_language:
         filtered_articles = articles_bag.filter(has_language).persist()
-        print(filtered_articles.count().compute())
+        print(f"filtered_articles.count().compute(): {filtered_articles.count().compute()}")
         stats_for_issues = compute_stats_in_rebuilt_bag(filtered_articles, key)
         result = filtered_articles.map(json.dumps).to_textfiles(f"{issue_dir}/*.json")
     else:
@@ -794,6 +794,8 @@ def main() -> None:
 
     elif arguments["rebuild_pages"]:
         print("\nFunction not yet implemented (sorry!).\n")
+
+    client.close()
 
 
 if __name__ == "__main__":

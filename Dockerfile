@@ -52,7 +52,8 @@ RUN pip install \
     opencv-python \
     smart-open \
     git-python \
-    python-dotenv
+    python-dotenv \
+    impresso-essentials
 
 EXPOSE 8080
 EXPOSE 8785

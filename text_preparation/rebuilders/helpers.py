@@ -286,12 +286,11 @@ def insert_whitespace(
         insert_ws = False
 
     # the first char of the next token is punctuation.
-    elif next_t is not None and len(next_t) != 0:
-        if (
-            next_t in wsrules["pct_no_ws_before"]
-            or next_t[0] in wsrules["pct_no_ws_before"]
-        ):
-            insert_ws = False
+    elif next_t is not None and len(next_t) != 0 and (
+        next_t in wsrules["pct_no_ws_before"]
+        or next_t[0] in wsrules["pct_no_ws_before"]
+    ):
+        insert_ws = False
 
     # the last char of current token is punctuation.
     elif token in wsrules["pct_no_ws_after"] or token[-1] in wsrules["pct_no_ws_after"]:
