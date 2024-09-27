@@ -23,19 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-dynamic = ["version"]
-
-dependencies = [
-    "beautifulsoup4",
-    "docopt",
-    "pandas",
-    "dask[complete]",
-    "lxml",
-    "python-jsonschema-objects",
-    "regex",
-    "filelock",
-    "impresso-essentials"
-]
+dynamic = ["version","dependencies"]
 
 [project.urls]
 Homepage = "https://github.com/impresso/impresso-text-acquisition"
