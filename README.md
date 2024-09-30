@@ -1,8 +1,8 @@
-# Impresso Text Importer
+# Impresso Text Preparation
 
 [![Documentation Status](https://readthedocs.org/projects/impresso-text-importer/badge/?version=latest)](https://impresso-text-importer.readthedocs.io/en/latest/?badge=latest)
-[![PyPI version](https://badge.fury.io/py/impresso-text-importer.svg)](https://badge.fury.io/py/impresso-text-importer)
-![PyPI - License](https://img.shields.io/pypi/l/impresso-text-importer)
+[![PyPI version](https://badge.fury.io/py/impresso-text-preparation.svg)](https://badge.fury.io/py/impresso-text-preparation)
+![PyPI - License](https://img.shields.io/pypi/l/impresso-text-preparation)
 
 The Impresso TextImporter is a library and a collection of scripts to import newspaper data from a variety of formats (e.g. Olive XML, various flavors of Mets/Alto XML, etc.) into [Impresso’s JSON format](https://github.com/impresso/impresso-schemas).
 
