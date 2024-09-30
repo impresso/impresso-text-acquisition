@@ -8,15 +8,24 @@ from contextlib import ExitStack
 from pathlib import Path
 
 from dask import bag as db
+from impresso_essentials.versioning.data_manifest import DataManifest
+from impresso_essentials.io.fs_utils import canonical_path
+from impresso_essentials.utils import get_pkg_resource
 
-from text_importer.utils import verify_imported_issues, get_pkg_resource
-from text_importer.importers.core import import_issues, compress_issues, dirs2issues, issue2pages, process_pages, serialize_pages, compress_pages
-from text_importer.importers.tetml.detect import tetml_detect_issues
-from text_importer.importers.tetml.classes import TetmlNewspaperIssue
-from impresso_commons.path.path_fs import canonical_path
+from text_preparation.utils import verify_imported_issues
+from text_preparation.importers.core import (
+    import_issues,
+    compress_issues,
+    dirs2issues,
+    issue2pages,
+    process_pages,
+    serialize_pages,
+    compress_pages,
+)
+from text_preparation.importers.tetml.detect import tetml_detect_issues
+from text_preparation.importers.tetml.classes import TetmlNewspaperIssue
 
 logger = logging.getLogger(__name__)
-
 
 
 def test_import_issues_no_dask():
@@ -25,16 +34,16 @@ def test_import_issues_no_dask():
     logger.info("Starting test_import_issues_no_dask in test_tetml_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng,'data/sample_data/Tetml/')
-    ar_file = get_pkg_resource(f_mng,'data/sample_data/Tetml/access_rights.json')
-    out_dir = get_pkg_resource(f_mng,'data/out/')
-    temp_dir = get_pkg_resource(f_mng,'data/temp/')
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/Tetml/", "text_preparation")
+    ar_file = get_pkg_resource(
+        f_mng, "data/sample_data/Tetml/access_rights.json", "text_preparation"
+    )
+    out_dir = get_pkg_resource(f_mng, "data/canonical_out/test_out/", "text_preparation")
+    temp_dir = get_pkg_resource(f_mng, "data/temp/", "text_preparation")
 
     failed_log_path = os.path.join(
-            out_dir,
-            f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
-            )
-
+        out_dir, f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
+    )
 
     dir_issues = tetml_detect_issues(base_dir=inp_dir, access_rights=ar_file)
 
@@ -42,31 +51,24 @@ def test_import_issues_no_dask():
     assert len(dir_issues) > 0
 
     issues = dirs2issues(
-        dir_issues, 
-        issue_class=TetmlNewspaperIssue, 
-        failed_log=failed_log_path, 
-        temp_dir=temp_dir
+        dir_issues,
+        issue_class=TetmlNewspaperIssue,
+        failed_log=failed_log_path,
+        temp_dir=temp_dir,
     )
 
     for issue in issues:
-        compress_issues(
-            (issue.journal, issue.date.year), [issue], output_dir=out_dir
-        )
+        compress_issues((issue.journal, issue.date.year), [issue], output_dir=out_dir)
 
         pages = issue2pages(issue)
         parsed_pages = process_pages(pages, failed_log=failed_log_path)
         serialized_pages = serialize_pages(parsed_pages, output_dir=out_dir)
 
-        pages_out_dir = os.path.join(out_dir, 'pages')
+        pages_out_dir = os.path.join(out_dir, "pages")
         Path(pages_out_dir).mkdir(exist_ok=True)
 
-
-
-
-        key = canonical_path(issue, path_type='dir').replace('/', '-')
-        compress_pages(
-            key, serialized_pages, prefix='pages', output_dir=pages_out_dir
-        )
+        key = canonical_path(issue)
+        compress_pages(key, serialized_pages, suffix="pages", output_dir=pages_out_dir)
 
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
@@ -77,17 +79,33 @@ def test_import_issues_no_dask():
     f_mng.close()
 
 
-
 def test_import_issues():
     """Test the Tetml importer with sample data."""
 
     logger.info("Starting test_import_issues in test_tetml_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng,'data/sample_data/Tetml/')
-    ar_file = get_pkg_resource(f_mng,'data/sample_data/Tetml/access_rights.json')
-    out_dir = get_pkg_resource(f_mng,'data/out/')
-    tmp_dir = get_pkg_resource(f_mng,'data/tmp/')
+    inp_dir = get_pkg_resource(f_mng, "data/sample_data/Tetml/", "text_preparation")
+    ar_file = get_pkg_resource(
+        f_mng, "data/sample_data/Tetml/access_rights.json", "text_preparation"
+    )
+    out_dir = get_pkg_resource(f_mng, "data/out/", "text_preparation")
+    tmp_dir = get_pkg_resource(f_mng, "data/tmp/", "text_preparation")
+
+    test_manifest = DataManifest(
+        data_stage="canonical",
+        s3_output_bucket="10-canonical-sandbox",
+        s3_input_bucket=None,
+        git_repo="../../",
+        temp_dir=tmp_dir,
+        staging=True,
+        is_patch=False,
+        patched_fields=None,
+        previous_mft_path=None,
+        only_counting=False,
+        push_to_git=False,
+        notes="Manifest from TETML test_import_issues().",
+    )
 
     issues = tetml_detect_issues(base_dir=inp_dir, access_rights=ar_file)
     assert issues is not None
@@ -101,6 +119,7 @@ def test_import_issues():
         image_dirs="/mnt/project_impresso/images/",
         temp_dir=tmp_dir,
         chunk_size=None,
+        manifest=test_manifest,
     )
 
     logger.info("Finished test_import_issues, closing file manager.")
@@ -118,8 +137,10 @@ def test_verify_imported_issues():
     logger.info("Starting test_verify_imported_issues in test_tetml_importer.py.")
 
     f_mng = ExitStack()
-    inp_dir = get_pkg_resource(f_mng,'data/out/')
-    expected_data_dir = get_pkg_resource(f_mng,'data/expected/Tetml')
+    inp_dir = get_pkg_resource(f_mng, "data/out/", "text_preparation")
+    expected_data_dir = get_pkg_resource(
+        f_mng, "data/expected/Tetml", "text_preparation"
+    )
 
     # consider only newspapers in Tetml format
     newspapers = ["FedGazDe", "FedGazFr", "FedGazIt"]
@@ -131,11 +152,11 @@ def test_verify_imported_issues():
         if any([np in file for np in newspapers])
         and os.path.isfile(os.path.join(inp_dir, file))
     ]
-    logger.info(f"Found canonical files: {issue_archive_files}")
+    logger.info("Found canonical files: %s", issue_archive_files)
 
     # read issue JSON data from bz2 archives
     ingested_issues = db.read_text(issue_archive_files).map(json.loads).compute()
-    logger.info(f"Issues to verify: {[i['id'] for i in ingested_issues]}")
+    logger.info("Issues to verify: %s", [i["id"] for i in ingested_issues])
 
     for actual_issue_json in ingested_issues:
 
@@ -147,7 +168,7 @@ def test_verify_imported_issues():
             print(expected_output_path)
             continue
 
-        with open(expected_output_path, "r") as infile:
+        with open(expected_output_path, "r", encoding="utf-8") as infile:
             expected_issue_json = json.load(infile)
 
         verify_imported_issues(actual_issue_json, expected_issue_json)

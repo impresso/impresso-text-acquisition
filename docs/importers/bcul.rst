@@ -8,7 +8,7 @@ It was developed to handle OCR newspaper data provided by the `Bibliothèque Can
 BCUL Custom classes
 ---------------------
 
-.. automodule:: text_importer.importers.bcul.classes
+.. automodule:: text_preparation.importers.bcul.classes
   :members:
   :undoc-members:
   :show-inheritance:
@@ -16,7 +16,7 @@ BCUL Custom classes
 BCUL Detect functions
 -----------------------
 
-.. automodule:: text_importer.importers.bcul.detect
+.. automodule:: text_preparation.importers.bcul.detect
   :members:
   :undoc-members:
   :show-inheritance:
@@ -24,7 +24,7 @@ BCUL Detect functions
 BCUL Helper functions
 -----------------------
 
-.. automodule:: text_importer.importers.bcul.helpers
+.. automodule:: text_preparation.importers.bcul.helpers
   :members:
   :undoc-members:
   :show-inheritance:

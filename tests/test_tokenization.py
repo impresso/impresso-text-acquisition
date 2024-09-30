@@ -1,4 +1,4 @@
-from text_importer.tokenization import insert_whitespace
+from text_preparation.tokenization import insert_whitespace
 
 
 def test_insert_whitespace():

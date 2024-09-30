@@ -7,12 +7,12 @@ handle OCR newspaper data provided by the British Library.
 BL Custom classes
 -----------------
 
-.. automodule:: text_importer.importers.bl.classes
+.. automodule:: text_preparation.importers.bl.classes
   :members:
 
 BL Detect functions
 -------------------
 
-.. automodule:: text_importer.importers.bl.detect
+.. automodule:: text_preparation.importers.bl.detect
   :members:
 

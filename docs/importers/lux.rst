@@ -7,17 +7,17 @@ handle OCR newspaper data provided by the BNL.
 BNL Custom classes
 ------------------
 
-.. automodule:: text_importer.importers.lux.classes
+.. automodule:: text_preparation.importers.lux.classes
   :members:
 
 BNL Detect functions
 --------------------
 
-.. automodule:: text_importer.importers.lux.detect
+.. automodule:: text_preparation.importers.lux.detect
   :members:
 
 BNL Helper methods
 ------------------
 
-.. automodule:: text_importer.importers.lux.helpers
+.. automodule:: text_preparation.importers.lux.helpers
   :members:

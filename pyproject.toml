@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "impresso_text_importer"
+name = "impresso_text_preparation"
 authors = [
     {name="Maud Ehrmann", email="maud.ehrmann@epfl.ch"},
     {name="Matteo Romanello", email="matteo.romanello@gmail.com"},
@@ -23,37 +23,26 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-dynamic = ["version"]
-
-dependencies = [
-    "beautifulsoup4",
-    "docopt",
-    "pandas",
-    "dask[complete]",
-    "lxml",
-    "python-jsonschema-objects",
-    "regex",
-    "filelock",
-    "impresso_commons"
-]
+dynamic = ["version","dependencies"]
 
 [project.urls]
 Homepage = "https://github.com/impresso/impresso-text-acquisition"
 Documentaton = "https://impresso-text-importer.readthedocs.io/en/latest/index.html" 
 
 [tool.setuptools.dynamic]
-version = {attr = "text_importer.__version__"}
+version = {attr = "text_preparation.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["text_importer*"]
+include = ["text_preparation*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-text_importer = [
+text_preparation = [
     "impresso-schemas/json/*/*.json",
     "impresso-schemas/docs/*/*.json",
     "impresso-schemas/*",
 ]
 
 [project.scripts]
-impresso-txt-importer = "text_importer.importer.generic_importer:main"
+impresso-txt-importer = "text_preparation.importers.generic_importer:main"
+impresso-rebuilder = "text_preparation.rebuilders.rebuilder:main"
