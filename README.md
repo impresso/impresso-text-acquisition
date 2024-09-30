@@ -13,7 +13,7 @@ Please refer to the [documentation](http://impresso-text-importer.rtfd.io/) for 
 With `pip`:
 
 ```bash
-pip install impresso-text-importer
+pip install impresso-text-preparation
 ```
 
 ## Usage
