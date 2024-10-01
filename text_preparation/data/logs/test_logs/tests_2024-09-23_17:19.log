@@ -1,0 +1,260 @@
+2024-09-23 17:19:40,868 test_bcul_importer INFO     Starting test_import_issues in test_bcul_importer.py.
+2024-09-23 17:19:40,878 impresso_essentials.versioning.data_manifest INFO     DataManifest for canonical stage successfully initialized.
+2024-09-23 17:19:40,879 text_preparation.importers.bcul.detect INFO     Detecting issues for /home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Courrier_du_Léman.
+2024-09-23 17:19:40,881 text_preparation.importers.bcul.detect INFO     Detecting issues for /home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Feuille_d'avis_de_Morges_1.
+2024-09-23 17:19:40,881 text_preparation.importers.bcul.detect INFO     Detecting issues for /home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Almanach_pour_le_commerce.
+2024-09-23 17:19:40,882 text_preparation.importers.core INFO     Issues to import: 3
+2024-09-23 17:19:40,886 text_preparation.importers.core INFO     Start compressing issues for all years
+2024-09-23 17:19:43,731 text_preparation.importers.bcul.classes INFO     Submitting request to iiif API for ACI-1832-01-01-a: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest
+2024-09-23 17:19:43,935 text_preparation.importers.bcul.classes ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Retrying 3 times.
+2024-09-23 17:19:43,935 text_preparation.importers.bcul.classes INFO     Submitting request to iiif API for ACI-1832-01-01-a: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest
+2024-09-23 17:19:44,141 text_preparation.importers.bcul.classes ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Retrying 2 times.
+2024-09-23 17:19:44,141 text_preparation.importers.bcul.classes INFO     Submitting request to iiif API for ACI-1832-01-01-a: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest
+2024-09-23 17:19:44,347 text_preparation.importers.bcul.classes ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Retrying 1 times.
+2024-09-23 17:19:44,347 text_preparation.importers.bcul.classes INFO     Submitting request to iiif API for ACI-1832-01-01-a: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest
+2024-09-23 17:19:44,545 text_preparation.importers.bcul.classes ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Max number of retries reached, ACI-1832-01-01-a will not be processed.
+2024-09-23 17:19:44,545 text_preparation.importers.core ERROR    Error when processing IssueDirectory(journal='ACI', date=datetime.date(1832, 1, 1), edition='a', path='/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Almanach_pour_le_commerce/1832/01/01/171722', rights='open_public', mit_file_type='xml'): Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Max number of retries reached, ACI-1832-01-01-a will not be processed.
+2024-09-23 17:19:44,545 text_preparation.importers.core ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Max number of retries reached, ACI-1832-01-01-a will not be processed.
+Traceback (most recent call last):
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/core.py", line 130, in dir2issue
+    np_issue = issue_class(issue)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 167, in __init__
+    self._find_pages()
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 358, in _find_pages
+    self._find_pages_xml()
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 285, in _find_pages_xml
+    iiif_canvases = self.query_iiif_api()
+                    ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 234, in query_iiif_api
+    return self.query_iiif_api(num_tries + 1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 234, in query_iiif_api
+    return self.query_iiif_api(num_tries + 1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 234, in query_iiif_api
+    return self.query_iiif_api(num_tries + 1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 238, in query_iiif_api
+    raise requests.exceptions.HTTPError(msg)
+requests.exceptions.HTTPError: Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Max number of retries reached, ACI-1832-01-01-a will not be processed.
+2024-09-23 17:19:44,554 text_preparation.importers.core INFO     Compressing 1 JSON files into /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL-1883-issues.jsonl.bz2
+2024-09-23 17:19:44,556 text_preparation.importers.core INFO     Written 1 issues to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL-1883-issues.jsonl.bz2
+2024-09-23 17:19:44,558 text_preparation.importers.core INFO     Compressing 1 JSON files into /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM-1937-issues.jsonl.bz2
+2024-09-23 17:19:44,559 text_preparation.importers.core INFO     Written 1 issues to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM-1937-issues.jsonl.bz2
+2024-09-23 17:19:44,566 text_preparation.importers.core INFO     Done compressing issues for all years, updating the manifest...
+2024-09-23 17:19:44,567 text_preparation.importers.core INFO     Start uploading issues for all years
+2024-09-23 17:19:44,674 text_preparation.importers.core INFO     Bucket name is None, not uploading issue /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL-1883-issues.jsonl.bz2.
+2024-09-23 17:19:44,674 text_preparation.importers.core INFO     Not removing /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL-1883-issues.jsonl.bz2 as upload has failed
+2024-09-23 17:19:44,681 text_preparation.importers.core INFO     Bucket name is None, not uploading issue /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM-1937-issues.jsonl.bz2.
+2024-09-23 17:19:44,681 text_preparation.importers.core INFO     Not removing /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM-1937-issues.jsonl.bz2 as upload has failed
+2024-09-23 17:19:44,696 text_preparation.importers.core INFO     Done uploading issues for all years
+2024-09-23 17:19:44,701 text_preparation.importers.core INFO     Processing chunk 0 of pages for all years
+2024-09-23 17:19:44,704 text_preparation.importers.core INFO     Start compressing and uploading pages of chunk 0 for all years
+2024-09-23 17:19:47,840 text_preparation.importers.core INFO     Written page '3' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0003.json
+2024-09-23 17:19:47,847 text_preparation.importers.core INFO     Written page '2' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0002.json
+2024-09-23 17:19:47,856 text_preparation.importers.core INFO     Written page '4' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0004.json
+2024-09-23 17:19:47,861 text_preparation.importers.core INFO     Written page '1' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0001.json
+2024-09-23 17:19:47,881 text_preparation.importers.core INFO     Written page '2' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0002.json
+2024-09-23 17:19:47,907 text_preparation.importers.core INFO     Written page '4' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0004.json
+2024-09-23 17:19:47,932 text_preparation.importers.core INFO     Written page '3' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0003.json
+2024-09-23 17:19:47,944 text_preparation.importers.core INFO     Written page '1' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0001.json
+2024-09-23 17:19:48,096 text_preparation.importers.core INFO     Compressing 4 JSON files into /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:48,099 text_preparation.importers.core INFO     Written 1 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0003.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:48,102 text_preparation.importers.core INFO     Written 2 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0002.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:48,107 text_preparation.importers.core INFO     Written 3 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0004.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:48,109 text_preparation.importers.core INFO     Written 4 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0001.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:48,128 text_preparation.importers.core INFO     Bucket name is None, not uploading page /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2.
+2024-09-23 17:19:48,128 text_preparation.importers.core INFO     Not removing /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2 as upload has failed
+2024-09-23 17:19:48,129 text_preparation.importers.core INFO     Compressing 4 JSON files into /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:48,134 text_preparation.importers.core INFO     Written 1 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0002.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:48,142 text_preparation.importers.core INFO     Written 2 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0004.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:48,148 text_preparation.importers.core INFO     Written 3 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0003.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:48,152 text_preparation.importers.core INFO     Written 4 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0001.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:48,190 text_preparation.importers.core INFO     Bucket name is None, not uploading page /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2.
+2024-09-23 17:19:48,190 text_preparation.importers.core INFO     Not removing /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2 as upload has failed
+2024-09-23 17:19:48,202 text_preparation.importers.core INFO     Done compressing and uploading pages of chunk 0 for all years
+2024-09-23 17:19:48,203 impresso_essentials.versioning.data_manifest INFO     Starting to compute the manifest...
+2024-09-23 17:19:48,203 impresso_essentials.versioning.data_manifest INFO     Loading the previous version of this manifest if it exists.
+2024-09-23 17:19:48,397 impresso_essentials.io.s3 INFO     reading the text of s3://10-canonical-sandbox/canonical_v5-1-0.json
+2024-09-23 17:19:48,633 impresso_essentials.versioning.data_manifest INFO     Found previous version manifest, loading its contents.
+2024-09-23 17:19:48,694 impresso_essentials.versioning.data_manifest INFO     Updating the media statistics with the new information...
+2024-09-23 17:19:48,694 impresso_essentials.versioning.data_manifest INFO     ---- FINISHED update_media_stats for CL – had modifications:True ----
+2024-09-23 17:19:48,694 impresso_essentials.versioning.data_manifest INFO     Updated media information for CL
+2024-09-23 17:19:48,694 impresso_essentials.versioning.data_manifest INFO     ---- FINISHED update_media_stats for FAM – had modifications:True ----
+2024-09-23 17:19:48,694 impresso_essentials.versioning.data_manifest INFO     Updated media information for FAM
+2024-09-23 17:19:48,694 impresso_essentials.versioning.data_manifest INFO     Computing the title-level statistics...
+2024-09-23 17:19:48,707 impresso_essentials.versioning.data_manifest INFO     Computing the overall statistics...
+2024-09-23 17:19:48,707 impresso_essentials.versioning.data_manifest INFO     No additional keys or patch, but modified info, minor version increase.
+2024-09-23 17:19:48,707 impresso_essentials.versioning.data_manifest INFO     --------------- Manifest successfully generated! ---------------
+2024-09-23 17:19:49,058 impresso_essentials.versioning.data_manifest INFO     Validating and exporting manifest to s3!
+2024-09-23 17:19:49,244 impresso_essentials.io.s3 INFO     Uploaded canonical_v5-2-0.json to s3://10-canonical-sandbox.
+2024-09-23 17:19:49,248 text_preparation.importers.core INFO     ---------- Done ----------
+2024-09-23 17:19:49,248 test_bcul_importer INFO     Finished test_import_issues, closing file manager.
+2024-09-23 17:19:49,255 test_bcul_importer INFO     Starting test_selective_import in test_bcul_importer.py.
+2024-09-23 17:19:49,262 impresso_essentials.versioning.data_manifest INFO     DataManifest for canonical stage successfully initialized.
+2024-09-23 17:19:49,263 text_preparation.importers.bcul.detect INFO     Detecting issues for /home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Courrier_du_Léman.
+2024-09-23 17:19:49,263 text_preparation.importers.bcul.detect INFO     Detecting issues for /home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Feuille_d'avis_de_Morges_1.
+2024-09-23 17:19:49,263 text_preparation.importers.bcul.detect INFO     Detecting issues for /home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Almanach_pour_le_commerce.
+2024-09-23 17:19:49,291 text_preparation.importers.bcul.detect INFO     3 newspaper issues remained after applying filter: [IssueDirectory(journal='ACI', date=datetime.date(1832, 1, 1), edition='a', path='/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Almanach_pour_le_commerce/1832/01/01/171722', rights='open_public', mit_file_type='xml'), IssueDirectory(journal='CL', date=datetime.date(1883, 1, 1), edition='a', path='/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Courrier_du_Léman/1883/01/01/257179', rights='open_public', mit_file_type='json'), IssueDirectory(journal='FAM', date=datetime.date(1937, 1, 30), edition='a', path="/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Feuille_d'avis_de_Morges_1/1937/01/30/388793", rights='open_public', mit_file_type='json')]
+2024-09-23 17:19:49,293 test_bcul_importer INFO     There are 3 to ingest
+2024-09-23 17:19:49,294 text_preparation.importers.core INFO     Issues to import: 3
+2024-09-23 17:19:49,299 text_preparation.importers.core INFO     Start compressing issues for all years
+2024-09-23 17:19:49,330 text_preparation.importers.bcul.classes INFO     Submitting request to iiif API for ACI-1832-01-01-a: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest
+2024-09-23 17:19:49,525 text_preparation.importers.bcul.classes ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Retrying 3 times.
+2024-09-23 17:19:49,525 text_preparation.importers.bcul.classes INFO     Submitting request to iiif API for ACI-1832-01-01-a: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest
+2024-09-23 17:19:49,723 text_preparation.importers.bcul.classes ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Retrying 2 times.
+2024-09-23 17:19:49,723 text_preparation.importers.bcul.classes INFO     Submitting request to iiif API for ACI-1832-01-01-a: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest
+2024-09-23 17:19:49,913 text_preparation.importers.bcul.classes ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Retrying 1 times.
+2024-09-23 17:19:49,913 text_preparation.importers.bcul.classes INFO     Submitting request to iiif API for ACI-1832-01-01-a: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest
+2024-09-23 17:19:50,117 text_preparation.importers.bcul.classes ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Max number of retries reached, ACI-1832-01-01-a will not be processed.
+2024-09-23 17:19:50,118 text_preparation.importers.core ERROR    Error when processing IssueDirectory(journal='ACI', date=datetime.date(1832, 1, 1), edition='a', path='/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/Almanach_pour_le_commerce/1832/01/01/171722', rights='open_public', mit_file_type='xml'): Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Max number of retries reached, ACI-1832-01-01-a will not be processed.
+2024-09-23 17:19:50,118 text_preparation.importers.core ERROR    Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Max number of retries reached, ACI-1832-01-01-a will not be processed.
+Traceback (most recent call last):
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/core.py", line 130, in dir2issue
+    np_issue = issue_class(issue)
+               ^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 167, in __init__
+    self._find_pages()
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 358, in _find_pages
+    self._find_pages_xml()
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 285, in _find_pages_xml
+    iiif_canvases = self.query_iiif_api()
+                    ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 234, in query_iiif_api
+    return self.query_iiif_api(num_tries + 1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 234, in query_iiif_api
+    return self.query_iiif_api(num_tries + 1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 234, in query_iiif_api
+    return self.query_iiif_api(num_tries + 1)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/piconti/impresso-text-acquisition/text_preparation/importers/bcul/classes.py", line 238, in query_iiif_api
+    raise requests.exceptions.HTTPError(msg)
+requests.exceptions.HTTPError: Error while querying IIIF API for ACI-1832-01-01-a (iiif: https://scriptorium.bcu-lausanne.ch/api/iiif/171722/manifest): 'sequences'. Max number of retries reached, ACI-1832-01-01-a will not be processed.
+2024-09-23 17:19:53,411 text_preparation.importers.core INFO     Compressing 1 JSON files into /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL-1883-issues.jsonl.bz2
+2024-09-23 17:19:53,412 text_preparation.importers.core INFO     Written 1 issues to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL-1883-issues.jsonl.bz2
+2024-09-23 17:19:53,413 text_preparation.importers.core INFO     Compressing 1 JSON files into /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM-1937-issues.jsonl.bz2
+2024-09-23 17:19:53,413 text_preparation.importers.core INFO     Written 1 issues to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM-1937-issues.jsonl.bz2
+2024-09-23 17:19:53,419 text_preparation.importers.core INFO     Done compressing issues for all years, updating the manifest...
+2024-09-23 17:19:53,420 text_preparation.importers.core INFO     Start uploading issues for all years
+2024-09-23 17:19:53,444 text_preparation.importers.core INFO     Bucket name is None, not uploading issue /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL-1883-issues.jsonl.bz2.
+2024-09-23 17:19:53,445 text_preparation.importers.core INFO     Not removing /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL-1883-issues.jsonl.bz2 as upload has failed
+2024-09-23 17:19:53,458 text_preparation.importers.core INFO     Bucket name is None, not uploading issue /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM-1937-issues.jsonl.bz2.
+2024-09-23 17:19:53,458 text_preparation.importers.core INFO     Not removing /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM-1937-issues.jsonl.bz2 as upload has failed
+2024-09-23 17:19:53,467 text_preparation.importers.core INFO     Done uploading issues for all years
+2024-09-23 17:19:53,472 text_preparation.importers.core INFO     Processing chunk 0 of pages for all years
+2024-09-23 17:19:53,476 text_preparation.importers.core INFO     Start compressing and uploading pages of chunk 0 for all years
+2024-09-23 17:19:56,450 text_preparation.importers.core INFO     Written page '2' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0002.json
+2024-09-23 17:19:56,475 text_preparation.importers.core INFO     Written page '4' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0004.json
+2024-09-23 17:19:56,503 text_preparation.importers.core INFO     Written page '3' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0003.json
+2024-09-23 17:19:56,514 text_preparation.importers.core INFO     Written page '1' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0001.json
+2024-09-23 17:19:56,519 text_preparation.importers.core INFO     Written page '3' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0003.json
+2024-09-23 17:19:56,525 text_preparation.importers.core INFO     Written page '2' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0002.json
+2024-09-23 17:19:56,535 text_preparation.importers.core INFO     Written page '4' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0004.json
+2024-09-23 17:19:56,541 text_preparation.importers.core INFO     Written page '1' to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0001.json
+2024-09-23 17:19:56,763 text_preparation.importers.core INFO     Compressing 4 JSON files into /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:56,769 text_preparation.importers.core INFO     Written 1 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0002.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:56,776 text_preparation.importers.core INFO     Written 2 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0004.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:56,784 text_preparation.importers.core INFO     Written 3 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0003.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:56,787 text_preparation.importers.core INFO     Written 4 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/FAM/1937/01/30/a/FAM-1937-01-30-a-p0001.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2
+2024-09-23 17:19:56,827 text_preparation.importers.core INFO     Bucket name is None, not uploading page /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2.
+2024-09-23 17:19:56,827 text_preparation.importers.core INFO     Not removing /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/FAM-1937-01-30-a-pages.jsonl.bz2 as upload has failed
+2024-09-23 17:19:56,828 text_preparation.importers.core INFO     Compressing 4 JSON files into /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:56,830 text_preparation.importers.core INFO     Written 1 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0003.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:56,831 text_preparation.importers.core INFO     Written 2 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0002.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:56,835 text_preparation.importers.core INFO     Written 3 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0004.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:56,837 text_preparation.importers.core INFO     Written 4 docs from /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/CL/1883/01/01/a/CL-1883-01-01-a-p0001.json to /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2
+2024-09-23 17:19:56,853 text_preparation.importers.core INFO     Bucket name is None, not uploading page /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2.
+2024-09-23 17:19:56,853 text_preparation.importers.core INFO     Not removing /home/piconti/impresso-text-acquisition/text_preparation/data/canonical_out/test_out/pages/CL-1883-01-01-a-pages.jsonl.bz2 as upload has failed
+2024-09-23 17:19:56,859 text_preparation.importers.core INFO     Done compressing and uploading pages of chunk 0 for all years
+2024-09-23 17:19:56,861 impresso_essentials.versioning.data_manifest INFO     Starting to compute the manifest...
+2024-09-23 17:19:56,861 impresso_essentials.versioning.data_manifest INFO     Loading the previous version of this manifest if it exists.
+2024-09-23 17:19:56,959 impresso_essentials.io.s3 INFO     reading the text of s3://10-canonical-sandbox/canonical_v5-2-0.json
+2024-09-23 17:19:57,198 impresso_essentials.versioning.data_manifest INFO     Found previous version manifest, loading its contents.
+2024-09-23 17:19:57,269 impresso_essentials.versioning.data_manifest INFO     Updating the media statistics with the new information...
+2024-09-23 17:19:57,269 impresso_essentials.versioning.data_manifest INFO     ---- FINISHED update_media_stats for CL – had modifications:True ----
+2024-09-23 17:19:57,270 impresso_essentials.versioning.data_manifest INFO     Updated media information for CL
+2024-09-23 17:19:57,270 impresso_essentials.versioning.data_manifest INFO     ---- FINISHED update_media_stats for FAM – had modifications:True ----
+2024-09-23 17:19:57,270 impresso_essentials.versioning.data_manifest INFO     Updated media information for FAM
+2024-09-23 17:19:57,270 impresso_essentials.versioning.data_manifest INFO     Computing the title-level statistics...
+2024-09-23 17:19:57,285 impresso_essentials.versioning.data_manifest INFO     Computing the overall statistics...
+2024-09-23 17:19:57,285 impresso_essentials.versioning.data_manifest INFO     No additional keys or patch, but modified info, minor version increase.
+2024-09-23 17:19:57,285 impresso_essentials.versioning.data_manifest INFO     --------------- Manifest successfully generated! ---------------
+2024-09-23 17:19:57,666 impresso_essentials.versioning.data_manifest INFO     Validating and exporting manifest to s3!
+2024-09-23 17:19:57,893 impresso_essentials.io.s3 INFO     Uploaded canonical_v5-3-0.json to s3://10-canonical-sandbox.
+2024-09-23 17:19:57,895 text_preparation.importers.core INFO     ---------- Done ----------
+2024-09-23 17:19:57,895 test_bcul_importer INFO     Finished test_selective_import, closing file manager.
+2024-09-23 17:19:57,908 test_bl_importer INFO     Starting test_import_issues in test_bl_importer.py.
+2024-09-23 17:19:57,915 impresso_essentials.versioning.data_manifest INFO     DataManifest for canonical stage successfully initialized.
+2024-09-23 17:19:57,916 text_preparation.importers.bl.detect INFO     Found 2 files to extract
+2024-09-23 17:19:58,168 test_bnf_en_importer INFO     Starting test_import_issues in test_bnf_en_importer.py.
+2024-09-23 17:19:58,174 impresso_essentials.versioning.data_manifest INFO     DataManifest for canonical stage successfully initialized.
+2024-09-23 17:20:00,680 text_preparation.importers.bnf_en.detect INFO     oecaen-1944: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:20:01,332 text_preparation.importers.bnf_en.detect INFO     oerennes-1944: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:20:01,638 text_preparation.importers.bnf_en.detect INFO     lematin-1944: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:20:10,775 text_preparation.importers.bnf_en.detect INFO     lepji-1906: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:20:11,616 text_preparation.importers.bnf_en.detect INFO     lepji-1905: Appending [<issue ark="bpt6k716676v" dayofyear="365">31 décembre 1905</issue>] to api_issues.
+2024-09-23 17:20:15,557 text_preparation.importers.bnf_en.detect INFO     lepji-1900: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:20:16,419 text_preparation.importers.bnf_en.detect INFO     lepji-1899: Appending [<issue ark="bpt6k7163622" dayofyear="365">31 décembre 1899</issue>] to api_issues.
+2024-09-23 17:20:21,349 text_preparation.importers.bnf_en.detect INFO     oecaen-1940: Appending [<issue ark="bpt6k5023464" dayofyear="366">31 décembre 1940</issue>] to api_issues.
+2024-09-23 17:20:21,465 text_preparation.importers.bnf_en.detect INFO     lepji-1893: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:20:22,011 text_preparation.importers.bnf_en.detect INFO     oerennes-1940: Appending [<issue ark="bpt6k662205q" dayofyear="366">31 décembre 1940</issue>] to api_issues.
+2024-09-23 17:20:22,250 text_preparation.importers.bnf_en.detect INFO     lepji-1892: Appending [<issue ark="bpt6k715997k" dayofyear="366">31 décembre 1892</issue>] to api_issues.
+2024-09-23 17:20:22,703 text_preparation.importers.bnf_en.detect INFO     lematin-1940: Appending [<issue ark="bpt6k5869715" dayofyear="366">31 décembre 1940</issue>] to api_issues.
+2024-09-23 17:20:32,890 text_preparation.importers.bnf_en.detect INFO     jdpl-1944: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:21:02,052 text_preparation.importers.bnf_en.detect INFO     jdpl-1941: Appending [<issue ark="bpt6k510219m" dayofyear="365">31 décembre 1941</issue>] to api_issues.
+2024-09-23 17:23:49,896 text_preparation.importers.bnf_en.detect INFO     oerennes-1911: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:23:50,089 text_preparation.importers.bnf_en.detect INFO     lematin-1911: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:24:27,000 text_preparation.importers.bnf_en.detect INFO     lematin-1904: Saving 2 editions for Dec 31st [<issue ark="bpt6k5598387" dayofyear="366">31 décembre 1904</issue>]
+2024-09-23 17:24:27,433 text_preparation.importers.bnf_en.detect INFO     jdpl-1911: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:24:46,703 text_preparation.importers.bnf_en.detect INFO     lematin-1902: Appending [<issue ark="bpt6k5591000" dayofyear="365">31 décembre 1902</issue>] to api_issues.
+2024-09-23 17:24:47,631 text_preparation.importers.bnf_en.detect INFO     oerennes-1902: Appending [<issue ark="bpt6k639838z" dayofyear="365">31 décembre 1902</issue>] to api_issues.
+2024-09-23 17:24:57,011 text_preparation.importers.bnf_en.detect INFO     lematin-1901: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:24:57,092 text_preparation.importers.bnf_en.detect INFO     oerennes-1901: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:25:02,659 text_preparation.importers.bnf_en.detect INFO     lematin-1900: Saving 2 editions for Dec 31st [<issue ark="bpt6k558399v" dayofyear="365">31 décembre 1900</issue>]
+2024-09-23 17:25:05,105 text_preparation.importers.bnf_en.detect INFO     oerennes-1899: Appending [<issue ark="bpt6k6387582" dayofyear="365">31 décembre 1899</issue>] to api_issues.
+2024-09-23 17:25:06,126 text_preparation.importers.bnf_en.detect INFO     jdpl-1907: Saving 2 editions for Dec 31st [<issue ark="bpt6k482919t" dayofyear="365">31 décembre 1907</issue>]
+2024-09-23 17:25:08,573 text_preparation.importers.bnf_en.detect INFO     lepetitparisien-1944: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:25:24,167 text_preparation.importers.bnf_en.detect INFO     lematin-1896: Saving 2 editions for Dec 31st [<issue ark="bpt6k556915w" dayofyear="366">31 décembre 1896</issue>]
+2024-09-23 17:25:29,023 text_preparation.importers.bnf_en.detect INFO     lepetitparisien-1940: Appending [<issue ark="bpt6k6842365" dayofyear="366">31 décembre 1940</issue>] to api_issues.
+2024-09-23 17:25:58,533 text_preparation.importers.bnf_en.detect INFO     lematin-1893: Saving 2 editions for Dec 31st [<issue ark="bpt6k5557404" dayofyear="365">31 décembre 1893</issue>]
+2024-09-23 17:26:01,453 text_preparation.importers.bnf_en.detect INFO     legaulois-1911: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:26:12,616 text_preparation.importers.bnf_en.detect INFO     jdpl-1898: Saving 2 editions for Dec 31st [<issue ark="bpt6k469358d" dayofyear="365">31 décembre 1898</issue>]
+2024-09-23 17:26:18,159 text_preparation.importers.bnf_en.detect INFO     jdpl-1897: Saving 2 editions for Dec 31st [<issue ark="bpt6k4689868" dayofyear="365">31 décembre 1897</issue>, <issue ark="bpt6k468987n" dayofyear="365">31 décembre 1897</issue>]
+2024-09-23 17:26:32,324 text_preparation.importers.bnf_en.detect INFO     jdpl-1895: Saving 2 editions for Dec 31st [<issue ark="bpt6k468241t" dayofyear="365">31 décembre 1895</issue>]
+2024-09-23 17:26:56,940 text_preparation.importers.bnf_en.detect INFO     jdpl-1894: Saving 2 editions for Dec 31st [<issue ark="bpt6k4675013" dayofyear="365">31 décembre 1894</issue>, <issue ark="bpt6k467502g" dayofyear="365">31 décembre 1894</issue>]
+2024-09-23 17:27:01,118 text_preparation.importers.bnf_en.detect INFO     lematin-1884: Appending [<issue ark="bpt6k552132v" dayofyear="366">31 décembre 1884</issue>] to api_issues.
+2024-09-23 17:27:11,133 text_preparation.importers.bnf_en.detect INFO     jdpl-1892: Saving 2 editions for Dec 31st [<issue ark="bpt6k4660332" dayofyear="366">31 décembre 1892</issue>]
+2024-09-23 17:29:04,595 text_preparation.importers.bnf_en.detect INFO     lepetitparisien-1911: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:31:15,235 text_preparation.importers.bnf_en.detect INFO     lepetitparisien-1892: Saving 2 editions for Dec 31st [<issue ark="bpt6k516589m" dayofyear="366">31 décembre 1892</issue>]
+2024-09-23 17:31:20,659 text_preparation.importers.bnf_en.detect INFO     legaulois-1868: Appending [<issue ark="bpt6k5193168" dayofyear="366">31 décembre 1868</issue>] to api_issues.
+2024-09-23 17:33:09,686 text_preparation.importers.bnf_en.detect INFO     lepetitparisien-1876: Appending [<issue ark="bpt6k470176g" dayofyear="366">31 décembre 1876</issue>] to api_issues.
+2024-09-23 17:35:20,917 text_preparation.importers.bnf_en.detect INFO     jdpl-1831: Appending [<issue ark="bpt6k437544w" dayofyear="365">31 décembre 1831</issue>] to api_issues.
+2024-09-23 17:35:26,942 text_preparation.importers.bnf_en.detect INFO     jdpl-1830: No previously stored Dec 31s value since it's the last available year, removing the 1 incorrect issue.
+2024-09-23 17:37:44,630 text_preparation.importers.bnf_en.detect INFO     jdpl-1814: Appending [<issue ark="bpt6k421137j" dayofyear="365">31 décembre 1814</issue>] to api_issues.
+2024-09-23 17:37:44,799 text_preparation.importers.bnf_en.detect INFO     Removed 1 problematic issues
+2024-09-23 17:37:44,804 text_preparation.importers.core INFO     Issues to import: 6
+2024-09-23 17:37:44,810 text_preparation.importers.core INFO     Start compressing issues for all years
+2024-09-23 17:37:47,438 text_preparation.importers.bnf_en.classes INFO     Decomposing section type
+2024-09-23 17:37:49,532 text_preparation.importers.bnf_en.classes INFO     Decomposing section type
+2024-09-23 17:37:54,124 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image oecaen-1924-12-18-a-i0087, selecting largest one
+2024-09-23 17:37:54,663 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image oecaen-1924-12-18-a-i0088, selecting largest one
+2024-09-23 17:37:55,068 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image oecaen-1924-12-18-a-i0089, selecting largest one
+2024-09-23 17:37:56,983 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image oecaen-1924-12-18-a-i0093, selecting largest one
+2024-09-23 17:37:57,571 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image oecaen-1924-12-18-a-i0095, selecting largest one
+2024-09-23 17:37:59,060 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image oecaen-1924-12-18-a-i0098, selecting largest one
+2024-09-23 17:38:00,332 text_preparation.importers.bnf_en.classes INFO     Decomposing section type
+2024-09-23 17:38:01,527 text_preparation.importers.bnf_en.classes INFO     Decomposing section type
+2024-09-23 17:38:06,369 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image lematin-1893-04-02-b-i0078, selecting largest one
+2024-09-23 17:38:06,899 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image lematin-1893-04-02-b-i0079, selecting largest one
+2024-09-23 17:38:07,705 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image lematin-1893-04-02-b-i0080, selecting largest one
+2024-09-23 17:38:08,209 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image lematin-1893-04-02-b-i0081, selecting largest one
+2024-09-23 17:38:08,960 text_preparation.importers.bnf_en.classes INFO     Found multiple parts for image lematin-1893-04-02-b-i0082, selecting largest one
+2024-09-23 17:38:09,508 asyncio      ERROR    Task exception was never retrieved
+future: <Task finished name='Task-1532243' coro=<Client._gather.<locals>.wait() done, defined at /scratch/piconti/.conda/envs/text_prep/lib/python3.11/site-packages/distributed/client.py:2385> exception=AllExit()>
+Traceback (most recent call last):
+  File "/scratch/piconti/.conda/envs/text_prep/lib/python3.11/site-packages/distributed/client.py", line 2394, in wait
+    raise AllExit()
+distributed.client.AllExit

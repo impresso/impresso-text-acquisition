@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath("../"))
 
 # -- Project information -----------------------------------------------------
 
-project = "Impresso TextImporter"
+project = "Impresso Text Preparation"
 copyright = "2024, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History."
 author = "Matteo Romanello & Impresso team"
 

@@ -8,11 +8,11 @@ the data is in Olive format).
 RERO Custom classes
 -------------------
 
-.. automodule:: text_importer.importers.rero.classes
+.. automodule:: text_preparation.importers.rero.classes
   :members:
 
 RERO Detect functions
 ---------------------
 
-.. automodule:: text_importer.importers.rero.detect
+.. automodule:: text_preparation.importers.rero.detect
   :members:

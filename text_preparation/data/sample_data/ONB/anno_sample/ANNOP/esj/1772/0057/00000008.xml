@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alto xmlns="http://www.loc.gov/standards/alto/ns-v2#"
+      xmlns:h="http://www.w3.org/1999/xhtml"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.loc.gov/standards/alto/ns-v2# http://www.loc.gov/standards/alto/v2/alto-2-0.xsd">
+   <Description>
+      <MeasurementUnit>pixel</MeasurementUnit>
+   </Description>
+   <Layout>
+      <Page HEIGHT="2007" WIDTH="1131" PHYSICAL_IMG_NR="8" ID="PageImg_8">
+         <PrintSpace WIDTH="270" HEIGHT="1229" HPOS="810" VPOS="57">
+            <ComposedBlock WIDTH="10"
+                           HEIGHT="14"
+                           VPOS="1272"
+                           HPOS="842"
+                           ID="block_d2e25">
+               <TextBlock WIDTH="10"
+                          HEIGHT="14"
+                          VPOS="1272"
+                          HPOS="842"
+                          ID="block_d2e27">
+                  <TextLine WIDTH="10" HEIGHT="14" VPOS="1272" HPOS="842">
+                     <String WIDTH="10"
+                             HEIGHT="14"
+                             VPOS="1272"
+                             HPOS="842"
+                             CONTENT="&#34;ï"
+                             WC="0"/>
+                  </TextLine>
+               </TextBlock>
+            </ComposedBlock>
+            <ComposedBlock WIDTH="270"
+                           HEIGHT="37"
+                           VPOS="57"
+                           HPOS="810"
+                           ID="block_d2e33">
+               <GraphicalElement WIDTH="270"
+                                 HEIGHT="37"
+                                 VPOS="57"
+                                 HPOS="810"
+                                 ID="block_d2e35"/>
+               <GraphicalElement WIDTH="270"
+                                 HEIGHT="37"
+                                 VPOS="57"
+                                 HPOS="810"
+                                 ID="block_d2e40"/>
+            </ComposedBlock>
+         </PrintSpace>
+      </Page>
+   </Layout>
+</alto>
