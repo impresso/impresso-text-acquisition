@@ -1,3 +1,16 @@
+"""
+This script processes PDF files by converting them to JPEG2000 images (JP2) and extracting OCR data.
+
+The main functionalities include:
+- Rescaling the bounding box coordinates.
+- Processing documents to define their canonical path and id.
+- Converting PDF images to JP2 format.
+- Extracting OCR text and saving it as a JSON file.
+
+Usage:
+    python script.py --log_file log.txt --input_base_dir /path/to/pdf --out_base_dir /path/to/output
+"""
+
 import os
 import json
 import fire
@@ -86,6 +99,14 @@ def rescale_coords(
     
 
 def remove_key_from_block(block:dict, key:str, page_num:int, block_idx: int) -> dict:
+    """Removes a specified key from a block if it's present.
+
+    Args:
+        block (dict): The block dictionary from which the key should be removed.
+        key (str): The key to remove from the block.
+        page_num (int): The page number where the block is located.
+        block_idx (int): The index of the block on the page.
+    """
     if key in block:
         msg = f"page {page_num}, removing '{key}' from block {block_idx+1}"
         #print(msg)
@@ -94,6 +115,20 @@ def remove_key_from_block(block:dict, key:str, page_num:int, block_idx: int) -> 
 
 
 def rescale_block_coords(block: dict, curr_img_size:tuple[float], dest_img_size:tuple[float]) -> dict:
+    """Rescales the bounding box coordinates of a block, including its lines and spans.
+
+    This function adjusts the bounding box coordinates of a given `block` based on 
+    the scaling factors derived from `curr_img_size` and `dest_img_size`, storing the 
+    rescaled version as `rescaled_bbox`.
+
+    Args:
+        block (dict): The block dictionary containing text, lines, and spans, each potentially having a `bbox` key.
+        curr_img_size (tuple[float]): The current image size (width, height).
+        dest_img_size (tuple[float]): The target image size (width, height).
+
+    Returns:
+        dict: The modified block dictionary with rescaled bounding boxes added as `rescaled_bbox`.
+    """
     if 'bbox' in block:
         block['rescaled_bbox'] = rescale_coords(block['bbox'], curr_img_size, dest_img_size)
         msg = f" - rescaling block bbox."
@@ -116,8 +151,27 @@ def rescale_block_coords(block: dict, curr_img_size:tuple[float], dest_img_size:
     return block
 
 def process_blocks_of_page(page_num: int, page_text_dict: dict, page_image_size:tuple[float]) -> dict:
-    # create a dict mapping each page number to its blocks, with and without lines
+    """Processes text blocks from an OCR-extracted page and rescales their coordinates.
 
+    This function processes the blocks of text extracted from a page using OCR. It:
+    - Extracts the image size that the coordinates correspond to.
+    - Iterates over the blocks and removes unnecessary keys (`image` and `mask`).
+    - Rescales all bounding boxes to match the target image size (`page_image_size`).
+    - Separates blocks into two categories: those with lines and those without.
+
+    Args:
+        page_num (int): The number of the page being processed.
+        page_text_dict (dict): Dictionary containing OCR-extracted text, including `blocks`, `width`, and `height`.
+        page_image_size (tuple[float]): The target image size (width, height) to which bounding boxes should be rescaled.
+
+    Returns:
+        dict: A dictionary for the given page containing:
+            - `"page_num"` (int): The processed page number.
+            - `"ocr_page_size"` (tuple[float]): The original OCR image size.
+            - `"jp2_img_size"` (tuple[float]): The target image size for rescaling.
+            - `"blocks_with_lines"` (list[dict]): Blocks that contain lines.
+            - `"blocks_without_lines"` (list[dict]): Blocks without lines.
+    """
     # first extract the image size that the coordinates correspond to
     curr_ocr_coords_img_size = (page_text_dict['width'], page_text_dict['height'])
     lineless_blocks, blocks_w_lines = [], []
@@ -148,9 +202,27 @@ def process_blocks_of_page(page_num: int, page_text_dict: dict, page_image_size:
 
 
 def get_canonical_path(full_img_path: str, all_filenames: list[str]) -> str:
-    # create the canonical path for a given radio bulletin based on its orginal path
-    # The canonical path is program/year/month/day/edition/files    
+    """Generates a canonical path for a radio bulletin based on its original filename.
 
+    The canonical path follows the structure:  
+    `program/year/month/day/edition/`  
+
+    The function extracts relevant information from the filename, including:
+    - Program identifier
+    - Date of the bulletin
+    - Language
+    - Edition letter (determined based on its order among bulletins from the same day)
+
+    Args:
+        full_img_path (str): The full file path of the image.
+        all_filenames (list[str]): List of all filenames available, used to determine the correct edition letter.
+
+    Returns:
+        tuple[str, str]: The canonical path and language code in lowercase.
+
+    Raises:
+        ValueError: If the filename format does not match the expected structure.
+    """
     filename = os.path.basename(full_img_path)
     # all the relevant information is separated by underscores, excluding the extension
     elements = filename.split('.')[0].split('_')
@@ -175,6 +247,24 @@ def get_canonical_path(full_img_path: str, all_filenames: list[str]) -> str:
     return can_path, lang.lower()
 
 def save_as_jp2(pil_imgs:Image, canonical_path:str, out_base_dir: str) -> str:
+    """Saves a list of PIL images as JPEG 2000 (`.jp2`) files in a structured directory.
+
+    The function constructs output file paths using a canonical issue ID, derived from
+    the given `canonical_path`. Each image is saved with a sequential page number in the
+    format: `"{canonical_issue_id}-pXXXX.jp2"`
+
+    Args:
+        pil_imgs (list[Image.Image]): A list of PIL images to be saved.
+        canonical_path (str): The structured canonical path for the images.
+        out_base_dir (str): The base output directory where the images should be saved.
+
+    Returns:
+        tuple[list[str], bool]: List of file paths where the images were saved and whether
+            all images were successfully saved (`True`) or if an error occurred (`False`).
+
+    Raises:
+        OSError: If there is an issue creating directories or saving images.
+    """
     canonical_issue_id = canonical_path.replace('/', '-')
     # define the full image out paths with their canonical page IDs from the current canonical issue ID for a given bulletin
     full_out_paths = [os.path.join(out_base_dir, "images", canonical_path, f"{canonical_issue_id}-p{str(i+1).zfill(4)}.jp2") for i in range(len(pil_imgs))]
@@ -197,12 +287,31 @@ def save_as_jp2(pil_imgs:Image, canonical_path:str, out_base_dir: str) -> str:
 
 
 def pdf_to_jp2_and_ocr_json(img_path: str, out_base_dir: str, all_filenames: list[str]) -> tuple[str, bool]:
-    # From the original image path:
-    # 1. define the canonical path and id
-    # 2. convert the pdf image to jp2
-    # 3. process pages to extract the OCR and write them to a JSON
-    # 4. return the ID and whether the conversion was successful
+    """Converts a PDF to JPEG 2000 images and extracts OCR data into a JSON file.
 
+    This function processes a given PDF file by:
+    1. Determining its canonical path and ID.
+    2. Converting its pages to JP2 (JPEG 2000) format.
+    3. Extracting OCR text and bounding box data from each page.
+    4. Saving the extracted OCR data into a JSON file.
+    5. Returning the canonical ID and the success status of the operation.
+
+    If the OCR JSON file already exists, the function skips processing and returns early.
+
+    Args:
+        img_path (str): The file path of the input PDF document.
+        out_base_dir (str): The base directory where the processed images and JSON should be saved.
+        all_filenames (list[str]): A list of all filenames in the dataset to determine the edition letter.
+
+    Returns:
+        tuple[str, bool]: A tuple containing:
+            - The canonical issue ID of the processed document.
+            - A boolean indicating whether processing was successful (`True`) or if an error occurred (`False`).
+
+    Raises:
+        OSError: If there is an issue with file I/O operations (e.g., saving JP2 images or writing the JSON).
+        Exception: If any other unexpected error occurs.
+    """
     canonical_path, lang = get_canonical_path(img_path, all_filenames)
     canonical_issue_id = canonical_path.replace("/", '-')
     
