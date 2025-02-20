@@ -146,7 +146,8 @@ def process_blocks_of_page(page_num: int, page_text_dict: dict, page_image_size:
         "blocks_without_lines": lineless_blocks
     }
 
-def get_canonical_path(full_img_path: str) -> str:
+
+def get_canonical_path(full_img_path: str, all_filenames: list[str]) -> str:
     # create the canonical path for a given radio bulletin based on its orginal path
     # The canonical path is program/year/month/day/edition/files    
 
@@ -157,8 +158,16 @@ def get_canonical_path(full_img_path: str) -> str:
     program = elements[2]
     date = datetime.strptime(elements[3], "%Y%m%d").date()
     lang = elements[4]
-    # if the there are more than 5 underscore separated elements, there are multiple editions for this day
-    edition = chr (elements[5] + 96) if len(elements) > 5 else "a"
+
+    # find the correct edition letter: the index+1 in the list of all bulletins from the same day
+    same_day_bulletins = [x for x in all_filenames if '_'.join(elements[:4]) in x]
+    if len(same_day_bulletins)<26:
+        edition = chr (same_day_bulletins.index(filename)+1 + 96)
+    else:
+        edition = 'a' + chr (same_day_bulletins.index(filename)-26+1 + 96)
+        msg = f"{filename} - There are more than 26 bulletins on {str(date)}, setting the edition to {edition}"
+        print(msg)
+        logger.info(msg)
     
     # reconstruct the canonical path
     can_path = os.path.join(f"SOC_{program}", str(date.year), str(date.month).zfill(2), str(date.day).zfill(2), edition)
@@ -187,14 +196,14 @@ def save_as_jp2(pil_imgs:Image, canonical_path:str, out_base_dir: str) -> str:
     return full_out_paths, success
 
 
-def pdf_to_jp2_and_ocr_json(img_path: str, out_base_dir: str) -> tuple[str, bool]:
+def pdf_to_jp2_and_ocr_json(img_path: str, out_base_dir: str, all_filenames: list[str]) -> tuple[str, bool]:
     # From the original image path:
     # 1. define the canonical path and id
     # 2. convert the pdf image to jp2
     # 3. process pages to extract the OCR and write them to a JSON
     # 4. return the ID and whether the conversion was successful
 
-    canonical_path, lang = get_canonical_path(img_path)
+    canonical_path, lang = get_canonical_path(img_path, all_filenames)
     canonical_issue_id = canonical_path.replace("/", '-')
     
     full_json_out_path = os.path.join(out_base_dir, canonical_path, f"{canonical_issue_id}.json")
@@ -267,11 +276,18 @@ def main(
     filenames = os.listdir(input_base_dir)
     for file_num, filename in tqdm(enumerate(filenames)):
 
-        msg = f"\n{15*'-'} Processing file {file_num+1}/{len(filenames)} {15*'-'}\n"
+        msg = f"{15*'-'} Processing file {file_num+1}/{len(filenames)}: {filename} {15*'-'}\n"
         print(msg)
         logger.info(msg)
-        can_id, success = pdf_to_jp2_and_ocr_json(os.path.join(input_base_dir, filename), out_base_dir)
-        
+        try:
+            can_id, success = pdf_to_jp2_and_ocr_json(os.path.join(input_base_dir, filename), out_base_dir, filenames)
+        except Exception as e:
+            msg = f"{filename}: There was an exception when processing this file!! Exception: {e}"
+            print(msg)
+            logger.warning(msg)
+            success = False
+            can_id = "placeholder"
+
         if success:
             processed_ids.append(can_id)
             msg = f"{15*'-'} Done processing file {file_num+1}/{len(filenames)}, successfully processed {len(processed_ids)} files, failed processsing {len(failed_ids)} files {15*'-'}\n"
