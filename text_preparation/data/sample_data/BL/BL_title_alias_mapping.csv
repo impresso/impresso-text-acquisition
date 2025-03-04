@@ -1,11 +1,9 @@
 ,Normalized Working Title,Alias,Start Year,End Year,NLPs,BL Working Titles,Variant Titles
-0,Aberdeen Press and Journal,ANJO,1789,1900,['0000031' '0000032'],['Aberdeen Press and Journal'],"['Aberdeen Journal and General Advertiser'
- 'Aberdeen Weekly Journal and General Advertiser']"
-1,Alston Herald and East Cumberland Advertiser,AHEC,1875,1880,['0003043'],['Alston Herald and East Cumberland Advertiser'],"['Alston Herald, and East Cumberland Advertiser.'
- 'Alston Herald, and East Cumberland Advertiser']"
+0,Aberdeen Press and Journal,ANJO,1789,1900,"['0000031', '0000032']",['Aberdeen Press and Journal'],"['Aberdeen Journal and General Advertiser', 'Aberdeen Weekly Journal and General Advertiser']"
+1,Alston Herald and East Cumberland Advertiser,AHEC,1875,1880,['0003043'],['Alston Herald and East Cumberland Advertiser'],"['Alston Herald, and East Cumberland Advertiser.', 'Alston Herald, and East Cumberland Advertiser']"
 2,Baldwin's London Weekly Journal,BLWJ,1803,1836,['0002243'],"[""Baldwin's London Weekly Journal""]","[""Baldwin's London Weekly Journal, etc""]"
-3,Baner ac Amserau Cymru,BNER,1857,1900,['0000036' '0000037'],['Baner ac Amserau Cymru'],['Baner Cymru' 'Baner ac Amserau Cymru']
-4,Bargoed Journal,BGJO,1904,1912,['0003104' '0003548'],['Bargoed Journal'],"['Bargoed Journal' 'New Tredegar, Bargoed & Caerphilly Journal']"
+3,Baner ac Amserau Cymru,BNER,1857,1900,"['0000036', '0000037']",['Baner ac Amserau Cymru'],"['Baner Cymru', 'Baner ac Amserau Cymru']"
+4,Bargoed Journal,BGJO,1904,1912,"['0003104', '0003548']",['Bargoed Journal'],"['Bargoed Journal', 'New Tredegar, Bargoed & Caerphilly Journal']"
 5,Barnsley Telephone,BTEP,1918,1920,['0003041'],['Barnsley Telephone'],['Barnsley Telephone']
 6,Bell's Family Newspaper,BFNP,1858,1858,['0002986'],"[""Bell's Family Newspaper""]","[""Bell's Family Newspaper.""]"
 7,Bell's News,BELL,1855,1857,['0002789'],"[""Bell's News""]","[""Bell's News.""]"
@@ -13,81 +11,46 @@
 9,Berrow's Worcester Journal,WOJL,1822,1896,['0000150'],"[""Berrow's Worcester Journal""]","[""Berrow's Worcester Journal""]"
 10,Berthold's Political Handkerchief,BPHF,1831,1831,['0002778'],"[""Berthold's Political Handkerchief""]","[""Berthold's Political Handkerchief""]"
 11,Birmingham Daily Post,BDPO,1857,1900,['0000033'],['Birmingham Daily Post'],['Birmingham Daily Post']
-12,Blandford Weekly News,BWNW,1885,1892,['0003052' '0003053'],['Blandford Weekly News'],['Blandford Weekly News' 'Weekly News']
+12,Blandford Weekly News,BWNW,1885,1892,"['0003052', '0003053']",['Blandford Weekly News'],"['Blandford Weekly News', 'Weekly News']"
 13,Bradford Observer,BROR,1834,1875,['0000155'],['Bradford Observer'],['The Bradford Observer']
-14,Bridgend Chronicle,BGCH,1880,1894,['0003056' '0003057'],['Bridgend Chronicle'],"['Bridgend Chronicle, Cowbridge, Llantrisant, and Maesteg Advertiser.'
- 'Bridgend & Neath Chronicle, and County of Glamorgan Advertiser.']"
-15,Bridlington and Quay Gazette,BQGA,1877,1914,['0003059'],['Bridlington and Quay Gazette'],['Bridlington and Quay Gazette.' 'Bridlington and Quay Gazette']
-16,"Bridport, Beaminster, and Lyme Regis Telegram",BBLT,1865,1886,['0003060'],"['Bridport, Beaminster, and Lyme Regis Telegram']","['Bridport, Beaminster, and Lyme Regis Telegram and Dorset, Somerset, and Devon Advertiser.'
- 'Bridport, Beaminster, and Lyme Regis Telegram and Dorset, Somerset, and Devon Advertiser']"
-17,Brief,BRIF,1877,1882,['0002769' '0002770' '0002771'],['Brief'],"['Brief' 'Brief News & Opinion' ""The Week's News""]"
-18,Brighouse & Rastrick Gazette,BRGA,1879,1899,['0003062' '0003061'],['Brighouse & Rastrick Gazette'],"['Brighouse Gazette and Local Railway Guide.'
- 'Brighouse & Rastrick Gazette.' 'Brighouse & Rastrick Gazette']"
+14,Bridgend Chronicle,BGCH,1880,1894,"['0003056', '0003057']",['Bridgend Chronicle'],"['Bridgend Chronicle, Cowbridge, Llantrisant, and Maesteg Advertiser.', 'Bridgend & Neath Chronicle, and County of Glamorgan Advertiser.']"
+15,Bridlington and Quay Gazette,BQGA,1877,1914,['0003059'],['Bridlington and Quay Gazette'],"['Bridlington and Quay Gazette.', 'Bridlington and Quay Gazette']"
+16,"Bridport, Beaminster, and Lyme Regis Telegram",BBLT,1865,1886,['0003060'],"['Bridport, Beaminster, and Lyme Regis Telegram']","['Bridport, Beaminster, and Lyme Regis Telegram and Dorset, Somerset, and Devon Advertiser.', 'Bridport, Beaminster, and Lyme Regis Telegram and Dorset, Somerset, and Devon Advertiser']"
+17,Brief,BRIF,1877,1882,"['0002769', '0002770', '0002771']",['Brief'],"['Brief', 'Brief News & Opinion', ""The Week's News""]"
+18,Brighouse & Rastrick Gazette,BRGA,1879,1899,"['0003062', '0003061']",['Brighouse & Rastrick Gazette'],"['Brighouse Gazette and Local Railway Guide.', 'Brighouse & Rastrick Gazette.', 'Brighouse & Rastrick Gazette']"
 19,Brighton Patriot,BRPT,1835,1839,['0000040'],['Brighton Patriot '],['Brighton Patriot and South of England Free Press']
-20,British Army Despatch,BRAD,1848,1856,['0002811' '0002812' '0002813'],['British Army Despatch'],"['British Army Despatch, etc.'
- 'British Army Despatch and Royal Naval Record.'
- 'British Army Despatch and Nautical Standard.']"
-21,British Mercury or Wednesday Evening Post,BRMW,1806,1825,['0002772' '0002773'],['British Mercury or Wednesday Evening Post'],"['British Mercury; or, Wednesday Evening Post'
- ""British Mercury, and Wednesday's Evening Post""]"
-22,British Miner and General Newsman,BRMG,1862,1867,['0003537' '0003538' '0003539' '0003540' '0003541'],['British Miner and General Newsman'],"['British Miner and General Newsman (London, England : 1862)'
- 'The Miner (London, England : 1863)'
- ""The Miner and Workman's Advocate (London, England : 1863)""
- ""The Workman's Advocate (London, England : 1865)""
- 'The Commonwealth (London, England : 1866)']"
-23,Caledonian Mercury,CNMR,1720,1867,['0000045' '0000046' '0000047'],['Caledonian Mercury'],"['Caledonian Mercury' 'Caledonian Mercury and Daily Express, The'
- 'Caledonian Mercury, The']"
-24,Charles Knight's Town & Country Newspaper,CKTC,1855,1856,['0002984' '0002985'],"[""Charles Knight's Town & Country Newspaper""]","[""Charles Knight's Town & Country Newspaper.""
- 'The Town and Country Newspaper.']"
-25,Chelsea & Pimlico Advertiser,CPAD,1860,1866,['0003244' '0003245'],['Chelsea & Pimlico Advertiser'],"['Chelsea, Pimlico and Brompton Advertiser.'
- 'Chelsea & Pimlico Advertiser.']"
-26,Cheshire Observer,CHOR,1854,1900,['0000157' '0000158' '0000485'],['Cheshire Observer'],"['Cheshire Observer'
- 'Cheshire Observer and General Advertiser for Cheshire and North Wales']"
-27,Christian Times,CHTI,1863,1871,['0002765' '0002766' '0002767'],['Christian Times '],"['The London Christian Times.' 'Illustrated Christian Times.'
- 'Christian Times.']"
+20,British Army Despatch,BRAD,1848,1856,"['0002811', '0002812', '0002813']",['British Army Despatch'],"['British Army Despatch, etc.', 'British Army Despatch and Royal Naval Record.', 'British Army Despatch and Nautical Standard.']"
+21,British Mercury or Wednesday Evening Post,BRMW,1806,1825,"['0002772', '0002773']",['British Mercury or Wednesday Evening Post'],"['British Mercury; or, Wednesday Evening Post', ""British Mercury, and Wednesday's Evening Post""]"
+22,British Miner and General Newsman,BRMG,1862,1867,"['0003537', '0003538', '0003539', '0003540', '0003541']",['British Miner and General Newsman'],"['British Miner and General Newsman (London, England : 1862)', 'The Miner (London, England : 1863)', ""The Miner and Workman's Advocate (London, England : 1863)"", ""The Workman's Advocate (London, England : 1865)"", 'The Commonwealth (London, England : 1866)']"
+23,Caledonian Mercury,CNMR,1720,1867,"['0000045', '0000046', '0000047']",['Caledonian Mercury'],"['Caledonian Mercury', 'Caledonian Mercury and Daily Express, The', 'Caledonian Mercury, The']"
+24,Charles Knight's Town & Country Newspaper,CKTC,1855,1856,"['0002984', '0002985']","[""Charles Knight's Town & Country Newspaper""]","[""Charles Knight's Town & Country Newspaper."", 'The Town and Country Newspaper.']"
+25,Chelsea & Pimlico Advertiser,CPAD,1860,1866,"['0003244', '0003245']",['Chelsea & Pimlico Advertiser'],"['Chelsea, Pimlico and Brompton Advertiser.', 'Chelsea & Pimlico Advertiser.']"
+26,Cheshire Observer,CHOR,1854,1900,"['0000157', '0000158', '0000485']",['Cheshire Observer'],"['Cheshire Observer', 'Cheshire Observer and General Advertiser for Cheshire and North Wales']"
+27,Christian Times,CHTI,1863,1871,"['0002765', '0002766', '0002767']",['Christian Times '],"['The London Christian Times.', 'Illustrated Christian Times.', 'Christian Times.']"
 28,City of London Trade Protection Circular,CLTP,1848,1849,['0002418'],['City of London Trade Protection Circular'],['City of London Trade Protection Circular.']
-29,Cleave's Weekly Police Gazette,CWPG,1835,1836,['0000356' '0002270'],"[""Cleave's Weekly Police Gazette""]","[""Cleave's Weekly Police Gazette. (26 Dec. 1835 - 3 Sept. 1836)""
- ""Cleave's Weekly Police Gazette and Journal of News, Politics, and Literature.  (17 Sept. - 1 Oct. 1836)""]"
+29,Cleave's Weekly Police Gazette,CWPG,1835,1836,"['0000356', '0002270']","[""Cleave's Weekly Police Gazette""]","[""Cleave's Weekly Police Gazette. (26 Dec. 1835 - 3 Sept. 1836)"", ""Cleave's Weekly Police Gazette and Journal of News, Politics, and Literature.  (17 Sept. - 1 Oct. 1836)""]"
 30,Cobbett's Evening Post,CBEP,1820,1820,['0002348'],"[""Cobbett's Evening Post""]","[""Cobbett's Evening Post""]"
 31,Cobbett's Weekly Political Register,CWPR,1802,1836,['0000050'],"[""Cobbett's Weekly Political Register ""]","[""Cobbett's Weekly Political Register""]"
 32,Colored News,CLNW,1855,1855,['0002244'],['Colored News'],['Colored News']
 33,Common Sense,CMSN,1824,1826,['0002992'],['Common Sense'],"['Common Sense (London, England : 1824)']"
-34,Cradley Heath & Stourbridge Observer,CHSO,1864,1888,['0002972' '0002973' '0002974'],['Cradley Heath & Stourbridge Observer'],"['Cradley Heath & Stourbridge Observer.'
- 'The Observer, Cradley Heath, Halesowen & District Chronicle.'
- 'The Stourbridge Observer, Cradley Heath, Halesowen & District Chronicle.'
- 'The Stourbridge Observer, Cradley Heath, Halesowen & District Chronicle']"
-35,Daily Gazette For Middlesbrough,DGMH,1870,1900,['0000159' '0000486' '0000487'],['Daily Gazette For Middlesbrough'],['Daily Gazette For Middlesbrough']
+34,Cradley Heath & Stourbridge Observer,CHSO,1864,1888,"['0002972', '0002973', '0002974']",['Cradley Heath & Stourbridge Observer'],"['Cradley Heath & Stourbridge Observer.', 'The Observer, Cradley Heath, Halesowen & District Chronicle.', 'The Stourbridge Observer, Cradley Heath, Halesowen & District Chronicle.', 'The Stourbridge Observer, Cradley Heath, Halesowen & District Chronicle']"
+35,Daily Gazette For Middlesbrough,DGMH,1870,1900,"['0000159', '0000486', '0000487']",['Daily Gazette For Middlesbrough'],['Daily Gazette For Middlesbrough']
 36,Daily News,DNLN,1846,1900,['0000051'],['Daily News'],['Daily News']
-37,Daily Politician,DPLT,1836,1836,['0002349' '0002350' '0002351'],['Daily Politician'],['Daily Politician' 'The Daily Politician' 'The Politician']
-38,Darlington & Richmond Herald,DRHE,1867,1880,['0003400' '0003401'],['Darlington & Richmond Herald'],"['The Darlington & Stockton Telegraph, Richmond Herald, South Durham and North York Review.'
- 'Darlington & Richmond Herald']"
-39,Denton and Haughton Examiner,DHEX,1873,1892,['0002617' '0002618' '0002619' '0002620'],['Denton and Haughton Examiner'],"['The Denton, Haughton, & District Weekly News.'
- 'Denton & Haughton Weekly News, and Audenshaw, Hooley Hill, and Dukinfield Advertiser.'
- 'Denton Examiner, Audenshaw, Hooley Hill and Dukinfield Advertiser.'
- 'Denton and Haughton Examiner, etc.'
- 'Denton, Haughton, & District Weekly News'
- 'Denton and Haughton Examiner, etc']"
-40,Derby Mercury,DYMR,1727,1900,['0000052' '0000189'],['Derby Mercury'],['Derby Mercury']
+37,Daily Politician,DPLT,1836,1836,"['0002349', '0002350', '0002351']",['Daily Politician'],"['Daily Politician', 'The Daily Politician', 'The Politician']"
+38,Darlington & Richmond Herald,DRHE,1867,1880,"['0003400', '0003401']",['Darlington & Richmond Herald'],"['The Darlington & Stockton Telegraph, Richmond Herald, South Durham and North York Review.', 'Darlington & Richmond Herald']"
+39,Denton and Haughton Examiner,DHEX,1873,1892,"['0002617', '0002618', '0002619', '0002620']",['Denton and Haughton Examiner'],"['The Denton, Haughton, & District Weekly News.', 'Denton & Haughton Weekly News, and Audenshaw, Hooley Hill, and Dukinfield Advertiser.', 'Denton Examiner, Audenshaw, Hooley Hill and Dukinfield Advertiser.', 'Denton and Haughton Examiner, etc.', 'Denton, Haughton, & District Weekly News', 'Denton and Haughton Examiner, etc']"
+40,Derby Mercury,DYMR,1727,1900,"['0000052', '0000189']",['Derby Mercury'],['Derby Mercury']
 41,Dewsbury Chronicle and West Riding Advertiser,DCWA,1869,1895,['0003408'],['Dewsbury Chronicle and West Riding Advertiser '],['Dewsbury Chronicle and West Riding Advertiser ']
-42,Dorset County Express and Agricultural Gazette,DCEA,1858,1886,['0003091'],['Dorset County Express and Agricultural Gazette'],"['The Dorset County Express and Agricultural Gazette.'
- 'Dorset County Express and Agricultural Gazette']"
-43,Douglas Jerrold's Weekly Newspaper,DJWN,1846,1851,['0002409' '0002410' '0002411'],"[""Douglas Jerrold's Weekly Newspaper""]","[""Douglas Jerrold's Weekly Newspaper.""
- ""Jerrolds' Weekly News and Financial Economist.""
- 'The Weekly News and Financial Economist.']"
-44,Duckett's Dispatch,DDIS,1818,1818,['0003106' '0003107'],"[""Duckett's Dispatch""]","[""Duckett's Dispatch."" ""Duckett's Paper.""]"
-45,Dundee Courier,DUCR,1844,1900,['0000164' '0000160' '0000161' '0000162' '0000269'],['Dundee Courier'],"['The Courier and Argus' 'Dundee Courier' 'Dundee Courier and Daily Argus'
- 'Dundee Courier & Argus']"
+42,Dorset County Express and Agricultural Gazette,DCEA,1858,1886,['0003091'],['Dorset County Express and Agricultural Gazette'],"['The Dorset County Express and Agricultural Gazette.', 'Dorset County Express and Agricultural Gazette']"
+43,Douglas Jerrold's Weekly Newspaper,DJWN,1846,1851,"['0002409', '0002410', '0002411']","[""Douglas Jerrold's Weekly Newspaper""]","[""Douglas Jerrold's Weekly Newspaper."", ""Jerrolds' Weekly News and Financial Economist."", 'The Weekly News and Financial Economist.']"
+44,Duckett's Dispatch,DDIS,1818,1818,"['0003106', '0003107']","[""Duckett's Dispatch""]","[""Duckett's Dispatch."", ""Duckett's Paper.""]"
+45,Dundee Courier,DUCR,1844,1900,"['0000164', '0000160', '0000161', '0000162', '0000269']",['Dundee Courier'],"['The Courier and Argus', 'Dundee Courier', 'Dundee Courier and Daily Argus', 'Dundee Courier & Argus']"
 46,East London Advertiser,ELAD,1862,1866,['0003248'],['East London Advertiser'],['East London Advertiser.']
 47,East Wind,EAWN,1875,1876,['0004214'],['East Wind'],['East Wind']
 48,Exeter Flying Post,TEFP,1800,1900,['0000103'],['Exeter Flying Post'],"[""Trewman's Exeter Flying Post, or, Plymouth and Cornish Advertiser""]"
-49,Finsbury Free Press,FFPR,1868,1869,['0004140' '0004142' '0004143' '0004141'],['Finsbury Free Press'],"['Finsbury free press and general advertiser.'
- 'Finsbury free press and Hackney herald.'
- 'Finsbury free press and Islington advertiser.'
- 'Finsbury free press, and Tower Hamlets and Hackney herald.']"
-50,Fleming's British Farmers' Chronicle,FBFC,1823,1829,['0002804' '0002805' '0002806' '0002807'],"[""Fleming's British Farmers' Chronicle""]","[""Fleming's Weekly Express.""
- ""Fleming's Weekly Express and British Farmers' Chronicle.""
- ""Fleming's British Farmers' Chronicle.""
- ""The British Farmers' Chronicle, and Commercial Gazette.""]"
-51,Fleming's Weekly Express,FWEX,1823,1826,['0002802' '0002803'],"[""Fleming's Weekly Express""]","[""Fleming's Weekly Express."" ""The Times' Express.""]"
+49,Finsbury Free Press,FFPR,1868,1869,"['0004140', '0004142', '0004143', '0004141']",['Finsbury Free Press'],"['Finsbury free press and general advertiser.', 'Finsbury free press and Hackney herald.', 'Finsbury free press and Islington advertiser.', 'Finsbury free press, and Tower Hamlets and Hackney herald.']"
+50,Fleming's British Farmers' Chronicle,FBFC,1823,1829,"['0002804', '0002805', '0002806', '0002807']","[""Fleming's British Farmers' Chronicle""]","[""Fleming's Weekly Express."", ""Fleming's Weekly Express and British Farmers' Chronicle."", ""Fleming's British Farmers' Chronicle."", ""The British Farmers' Chronicle, and Commercial Gazette.""]"
+51,Fleming's Weekly Express,FWEX,1823,1826,"['0002802', '0002803']","[""Fleming's Weekly Express""]","[""Fleming's Weekly Express."", ""The Times' Express.""]"
 52,Fonetic Nuz,FONU,1849,1849,['0002760'],['Fonetic Nuz'],['Fonetic Nuz']
 53,Francis's Metropolitan News,FMNW,1859,1859,['0003003'],"[""Francis's Metropolitan News""]","[""Francis's Metropolitan News.""]"
 54,Freeman's Journal,FRJO,1820,1900,['0000056'],"[""Freeman's Journal""]","[""Freeman's Journal and Daily Commercial Advertiser""]"
@@ -95,50 +58,35 @@
 56,Glasgow Herald,GWHD,1820,1900,['0000060'],['Glasgow Herald'],['Glasgow Herald']
 57,Glasgow Sentinel,GLSE,1821,1823,['0002371'],['Glasgow Sentinel'],['Glasgow Sentinel.']
 58,Golden Times,GOTM,1852,1852,['0003001'],['Golden Times'],['Golden Times :']
-59,Halifax Comet,HLCM,1892,1904,['0003063' '0003064'],['Halifax Comet'],['Halifax Local Opinion.' 'Halifax Comet']
-60,Hampshire Telegraph,HPTE,1799,1900,['0000068' '0000070' '0000069' '0000066'],['Hampshire Telegraph'],"['Hampshire Telegraph & Portsmouth Gazette'
- 'Hampshire Telegraph and Naval Chronicle'
- 'Hampshire Telegraph and Sussex Chronicle, etc'
- 'Hampshire/Portsmouth Telegraph']"
+59,Halifax Comet,HLCM,1892,1904,"['0003063', '0003064']",['Halifax Comet'],"['Halifax Local Opinion.', 'Halifax Comet']"
+60,Hampshire Telegraph,HPTE,1799,1900,"['0000068', '0000070', '0000069', '0000066']",['Hampshire Telegraph'],"['Hampshire Telegraph & Portsmouth Gazette', 'Hampshire Telegraph and Naval Chronicle', 'Hampshire Telegraph and Sussex Chronicle, etc', 'Hampshire/Portsmouth Telegraph']"
 61,Haslingden Gazette,HAGZ,1901,1926,['0003065'],['Haslingden Gazette'],['Haslingden Gazette']
 62,Hetherington's Twopenny Dispatch,HTWD,1836,1836,['0002777'],"[""Hetherington's Twopenny Dispatch""]","[""Hetherington's Twopenny Dispatch, and People's Police Register ""]"
-63,High Life in London,HLLN,1827,1828,['0002416' '0002417'],['High Life in London'],['High Life in London :' 'High Life: and Sunday Fashionable Post.']
+63,High Life in London,HLLN,1827,1828,"['0002416', '0002417']",['High Life in London'],"['High Life in London :', 'High Life: and Sunday Fashionable Post.']"
 64,Holt's Weekly Chronicle,HWCH,1837,1855,['0004688'],"[""Holt's Weekly Chronicle""]","[""Holt's Weekly Chronicle""]"
 65,Hour,HOUR,1873,1876,['0002814'],['Hour'],['Hour.']
 66,Huddersfield Chronicle,HUCE,1850,1900,['0000167'],['Huddersfield Chronicle'],['The Huddersfield Chronicle and West Yorkshire Advertiser']
-67,Hull Packet,HLPA,1800,1886,['0000061' '0000062' '0000063' '0000064' '0000065'],['Hull Packet'],"['The Hull Packet'
- 'The Hull Packet and Original Weekly Commercial, Literary and General Advertiser'
- 'The Hull Packet and Humber Mercury'
- 'The Hull Packet and East Riding Times']"
+67,Hull Packet,HLPA,1800,1886,"['0000061', '0000062', '0000063', '0000064', '0000065']",['Hull Packet'],"['The Hull Packet', 'The Hull Packet and Original Weekly Commercial, Literary and General Advertiser', 'The Hull Packet and Humber Mercury', 'The Hull Packet and East Riding Times']"
 68,Illustrated Crystal Palace Gazette,ICPG,1853,1854,['0004186'],['Illustrated Crystal Palace Gazette'],['The Illustrated Crystal Palace Gazette']
 69,Illustrated London Life,ILOL,1843,1843,['0003005'],['Illustrated London Life'],['Illustrated London Life.']
 70,Illustrated Midland News,IMNW,1869,1871,['0004187'],['Illustrated Midland News'],['Illustrated Midland News']
-71,Illustrated Sporting News and Theatrical and Musical Review,ISNT,1864,1869,['0002245' '0002246'],['Illustrated Sporting News and Theatrical and Musical Review'],"['Illustrated Sporting News and Theatrical and Musical Review (Illustrated Sporting News, Theatrical Review.) (15 March 1862 - 29 Oct.1864; 10 June - 18 Nov.1865)'
- 'Illustrated Sporting and Theatrical News. (25 Nov.1865 - 19 March 1870)']"
+71,Illustrated Sporting News and Theatrical and Musical Review,ISNT,1864,1869,"['0002245', '0002246']",['Illustrated Sporting News and Theatrical and Musical Review'],"['Illustrated Sporting News and Theatrical and Musical Review (Illustrated Sporting News, Theatrical Review.) (15 March 1862 - 29 Oct.1864; 10 June - 18 Nov.1865)', 'Illustrated Sporting and Theatrical News. (25 Nov.1865 - 19 March 1870)']"
 72,Illustrated Times 1853,ILT53,1853,1854,['0004133'],['Illustrated Times 1853'],['Illustrated Times: A family newspaper for town and country.']
 73,Illustrated Weekly Times,ILWT,1843,1843,['0003004'],['Illustrated Weekly Times'],['Illustrated Weekly Times.']
-74,Irvine Express,IREX,1882,1886,['0003086' '0003087'],['Irvine Express'],['Irvine Express.' 'Irvine Express and North Ayrshire Post.']
+74,Irvine Express,IREX,1882,1886,"['0003086', '0003087']",['Irvine Express'],"['Irvine Express.', 'Irvine Express and North Ayrshire Post.']"
 75,Isle of Wight Observer,IWOR,1853,1900,['0000170'],['Isle of Wight Observer'],['Isle of Wight Observer']
-76,Islington Times,ISTM,1857,1874,['0003251' '0003252' '0003253'],['Islington Times'],"['Islington Times.'
- 'Islington Times and Finchley, Highgate, Hornsey and Holloway Herald.'
- 'Islington Times and Finsbury Advertiser.']"
+76,Islington Times,ISTM,1857,1874,"['0003251', '0003252', '0003253']",['Islington Times'],"['Islington Times.', 'Islington Times and Finchley, Highgate, Hornsey and Holloway Herald.', 'Islington Times and Finsbury Advertiser.']"
 77,Jewish Record,JWRC,1868,1871,['0002573'],['Jewish Record'],['Jewish Record']
-78,Johnson's Sunday Monitor,JSMN,1804,1829,['0002794' '0002795' '0002796' '0002797' '0002798'],"[""Johnson's Sunday Monitor""]","[""Johnson's British gazette and Sunday monitor.""
- ""Johnson's Sunday monitor, and British gazette.""
- ""Johnson's Sunday monitor and London recorder.""
- 'Sunday monitor and London recorder.' 'Sunday monitor.']"
-79,Kenilworth Advertiser,KEAD,1869,1923,['0003066'],['Kenilworth Advertiser'],['The Kenilworth Advertiser.' 'Kenilworth Advertiser']
+78,Johnson's Sunday Monitor,JSMN,1804,1829,"['0002794', '0002795', '0002796', '0002797', '0002798']","[""Johnson's Sunday Monitor""]","[""Johnson's British gazette and Sunday monitor."", ""Johnson's Sunday monitor, and British gazette."", ""Johnson's Sunday monitor and London recorder."", 'Sunday monitor and London recorder.', 'Sunday monitor.']"
+79,Kenilworth Advertiser,KEAD,1869,1923,['0003066'],['Kenilworth Advertiser'],"['The Kenilworth Advertiser.', 'Kenilworth Advertiser']"
 80,Lancaster Standard and County Advertiser,LSCA,1893,1909,['0003047'],['Lancaster Standard and County Advertiser'],['Lancaster Standard and County Advertiser']
-81,Leeds Intelligencer,LSIR,1754,1866,['0000193' '0000236' '0000268'],['Leeds Intelligencer'],"['Leeds Intelligencer' ""Wright's Leeds Intelligencer""]"
-82,Leicester Chronicle,LECH,1827,1900,['0000172' '0000173'],['Leicester Chronicle'],['Leicester Chronicle']
+81,Leeds Intelligencer,LSIR,1754,1866,"['0000193', '0000236', '0000268']",['Leeds Intelligencer'],"['Leeds Intelligencer', ""Wright's Leeds Intelligencer""]"
+82,Leicester Chronicle,LECH,1827,1900,"['0000172', '0000173']",['Leicester Chronicle'],['Leicester Chronicle']
 83,Liverpool Mercury,LVMR,1811,1900,['0000081'],['Liverpool Mercury'],['Liverpool Mercury etc']
-84,Liverpool Standard and General Commercial Advertiser,LSGA,1832,1856,['0002088' '0002089' '0002090'],['Liverpool Standard and General Commercial Advertiser'],"['The Liverpool Standard and General Commercial Advertiser'
- 'Liverpool Standard and General Advertiser'
- 'Liverpool Standard and General Commercial Advertiser']"
-85,Liverpool Weekly Courier,LWC,1867,1903,['0003067'],['Liverpool Weekly Courier'],['Liverpool Weekly Courier.' 'Liverpool Weekly Courier']
+84,Liverpool Standard and General Commercial Advertiser,LSGA,1832,1856,"['0002088', '0002089', '0002090']",['Liverpool Standard and General Commercial Advertiser'],"['The Liverpool Standard and General Commercial Advertiser', 'Liverpool Standard and General Advertiser', 'Liverpool Standard and General Commercial Advertiser']"
+85,Liverpool Weekly Courier,LWC,1867,1903,['0003067'],['Liverpool Weekly Courier'],"['Liverpool Weekly Courier.', 'Liverpool Weekly Courier']"
 86,Lloyd's Companion to the Penny Sunday Times and Peoples' Police Gazette,LCPP,1841,1847,['0002355'],"[""Lloyd's Companion to the Penny Sunday Times and Peoples' Police Gazette""]","['Lloyd\'s Companion to the ""Penny Sunday Times and Peoples\' Police Gazette"".  (19 Sept. 1841 - 3 Jan 1847)']"
-87,Lloyd's Weekly Newspaper,LINP,1842,1900,['0000077' '0000078' '0000079'],"[""Lloyd's Weekly Newspaper""]","[""Lloyd's Illustrated Newspaper"" ""Lloyd's Weekly London Newspaper""
- ""Lloyd's Weekly Newspaper""]"
+87,Lloyd's Weekly Newspaper,LINP,1842,1900,"['0000077', '0000078', '0000079']","[""Lloyd's Weekly Newspaper""]","[""Lloyd's Illustrated Newspaper"", ""Lloyd's Weekly London Newspaper"", ""Lloyd's Weekly Newspaper""]"
 88,London & Provincial News and General Advertiser,LPNGA,1861,1867,['0004310'],['London & Provincial News and General Advertiser'],['The London & Provincial News and General Advertiser.']
 89,London Dispatch,LNDH,1836,1839,['0000080'],['London Dispatch'],['London Dispatch']
 90,London Halfpenny Newspaper,LHPN,1861,1861,['0002801'],['London Halfpenny Newspaper'],['London Halfpenny Newspaper.']
@@ -147,128 +95,84 @@
 93,London Moderator and National Adviser,LMNA,1813,1823,['0002761'],['London Moderator and National Adviser'],['London Moderator and National Adviser']
 94,London Railway Newspaper,LRNW,1845,1845,['0003000'],['London Railway Newspaper'],['London Railway Newspaper.']
 95,Manchester Examiner,MEXM,1846,1848,['0003398'],['Manchester Examiner'],['Manchester Examiner']
-96,Manchester Times,MRTM,1828,1900,['0000502' '0000503' '0000504' '0000083' '0000501'],['Manchester Times'],"['Manchester Examiner and Times' 'Manchester Weekly Examiner & Times'
- 'Manchester Weekly Times and Examiner'
- 'Manchester Times and Gazette, The' 'Manchester Times']"
+96,Manchester Times,MRTM,1828,1900,"['0000502', '0000503', '0000504', '0000083', '0000501']",['Manchester Times'],"['Manchester Examiner and Times', 'Manchester Weekly Examiner & Times', 'Manchester Weekly Times and Examiner', 'Manchester Times and Gazette, The', 'Manchester Times']"
 97,Mirror of the Times,MRTT,1801,1823,['0002356'],['Mirror of the Times'],['Mirror of the Times.  Various dates: (1800-1823)']
 98,Morning Chronicle,MCLN,1801,1865,['0000082'],['Morning Chronicle'],['Morning Chronicle']
 99,Morning Herald,MRHD,1801,1869,['0002408'],['Morning Herald (London)'],['Morning Herald. (1801-1869)']
-100,Morning Post,MOPT,1801,1900,['0000174' '0000175'],['Morning Post'],['Morning Post']
+100,Morning Post,MOPT,1801,1900,"['0000174', '0000175']",['Morning Post'],['Morning Post']
 101,"Nantwich, Sandbach & Crewe Star",NSCS,1888,1892,['0003406'],"['Nantwich, Sandbach & Crewe Star']","['Nantwich, Sandbach & Crewe Star.']"
 102,National Register,NTRG,1810,1810,['0002644'],['National Register (London)'],['National Register']
 103,"Nelson Chronicle, Colne Observer and Clitheroe Division News",NCCO,1890,1904,['0003077'],"['Nelson Chronicle, Colne Observer and Clitheroe Division News']","['Nelson Chronicle, Colne Observer and Clitheroe Division News']"
-104,New Court Gazette,NCGA,1840,1846,['0002426' '0002427'],['New Court Gazette'],"['New Court Gazette :' 'The Court Gazette, and Fashionable Guide.']"
-105,New Times,NWTM,1818,1830,['0002357' '0002358'],['New Times (London)'],['New Times.' 'The Morning Journal.']
+104,New Court Gazette,NCGA,1840,1846,"['0002426', '0002427']",['New Court Gazette'],"['New Court Gazette :', 'The Court Gazette, and Fashionable Guide.']"
+105,New Times,NWTM,1818,1830,"['0002357', '0002358']",['New Times (London)'],"['New Times.', 'The Morning Journal.']"
 106,Nonconformist Elector,NCEF,1847,1847,['0002359'],['Nonconformist Elector'],['Nonconformist Elector.']
-107,North London Record,NLRD,1858,1869,['0003109' '0003110' '0003111' '0003112'],['North London Record'],"['North London Record.' 'The North London Record and General Advertiser.'
- 'The Clerkenwell Journal and North London Record.']"
+107,North London Record,NLRD,1858,1869,"['0003109', '0003110', '0003111', '0003112']",['North London Record'],"['North London Record.', 'The North London Record and General Advertiser.', 'The Clerkenwell Journal and North London Record.']"
 108,North Wales Chronicle,NRWC,1827,1900,['0000094'],['North Wales Chronicle'],['North Wales Chronicle']
 109,Northern Echo,NREC,1870,1900,['0000087'],['Northern Echo'],['Northern Echo']
 110,Northern Liberator,NRLR,1837,1840,['0000088'],['Northern Liberator'],['Northern Liberator']
-111,Northern Star and Leeds General Advertiser,NRSR,1838,1852,['0000090' '0000091'],['Northern Star and Leeds General Advertiser'],"['Northern Star and Leeds General Advertiser'
- ""Northern Star and National Trades' Journal, The""]"
-112,Northern Weekly Gazette,NWGZ,1860,1932,['0003069' '0003070' '0003071' '0003072' '0003073' '0003074' '0003075'],['Northern Weekly Gazette'],"['Stockton Gazette and Middlesbrough Times.'
- ""Middlesbro' & Stockton Gazette and General Advertiser.""
- 'The Middlesbrough Gazette and General Advertiser.'
- 'Middlesbrough & Stockton Gazette and General Advertiser.'
- 'The Middlesbrough Gazette and General Advertiser'
- 'The Weekly Gazette for Middlesbrough, Stockton, Hartlepool and Cleveland District'
- 'The North-Eastern Weekly Gazette.' 'Northern Weekly Gazette']"
+111,Northern Star and Leeds General Advertiser,NRSR,1838,1852,"['0000090', '0000091']",['Northern Star and Leeds General Advertiser'],"['Northern Star and Leeds General Advertiser', ""Northern Star and National Trades' Journal, The""]"
+112,Northern Weekly Gazette,NWGZ,1860,1932,"['0003069', '0003070', '0003071', '0003072', '0003073', '0003074', '0003075']",['Northern Weekly Gazette'],"['Stockton Gazette and Middlesbrough Times.', ""Middlesbro' & Stockton Gazette and General Advertiser."", 'The Middlesbrough Gazette and General Advertiser.', 'Middlesbrough & Stockton Gazette and General Advertiser.', 'The Middlesbrough Gazette and General Advertiser', 'The Weekly Gazette for Middlesbrough, Stockton, Hartlepool and Cleveland District', 'The North-Eastern Weekly Gazette.', 'Northern Weekly Gazette']"
 113,Old England,OLEN,1832,1842,['0002782'],['Old England'],['Old England']
 114,Orr's Kentish Journal,OKJL,1860,1866,['0004137'],"[""Orr's Kentish Journal""]","[""Orr's Kentish Journal""]"
-115,Oxford Journal,JOJL,1753,1900,['0000073' '0000075'],['Oxford Journal'],"[""Jackson's Oxford Journal""]"
+115,Oxford Journal,JOJL,1753,1900,"['0000073', '0000075']",['Oxford Journal'],"[""Jackson's Oxford Journal""]"
 116,Passing Events,PSEV,1873,1873,['0004212'],['Passing Events'],['Passing Events']
 117,Pen and Pencil,PNPC,1855,1855,['0003033'],['Pen and Pencil'],['Pen and Pencil :']
-118,"Penistone, Stocksbridge and Hoyland Express",PSHE,1898,1940,['0003079' '0003080' '0003081'],"['Penistone, Stocksbridge and Hoyland Express']","['Penistone, Stocksbridge, Hoyland and Ecclesfield & Chapeltown express'
- 'Penistone, Stocksbridge, Hoyland & Chapeltown express'
- 'Penistone, Stocksbridge and Hoyland express']"
+118,"Penistone, Stocksbridge and Hoyland Express",PSHE,1898,1940,"['0003079', '0003080', '0003081']","['Penistone, Stocksbridge and Hoyland Express']","['Penistone, Stocksbridge, Hoyland and Ecclesfield & Chapeltown express', 'Penistone, Stocksbridge, Hoyland & Chapeltown express', 'Penistone, Stocksbridge and Hoyland express']"
 119,Pictorial Times,PICT,1843,1848,['0002361'],['Pictorial Times'],['Pictorial Times.  (18 March 1843 - 8 Jan.1848)']
 120,Picture Times,PITM,1855,1856,['0003006'],['Picture Times'],['Picture Times.']
 121,"Pierce Egan's Life in London, and Sporting Guide",PELL,1824,1827,['0002385'],"[""Pierce Egan's Life in London, and Sporting Guide""]","[""Pierce Egan's Life in London.  (1 Feb. 1824 - 28 Oct. 1827)""]"
-122,Poole Telegram,POTG,1879,1886,['0003083'],['Poole Telegram'],['The Poole Telegram.' 'Poole Telegram']
-123,Preston Pilot,PRPL,1842,1879,['0003084' '0003085'],['Preston Pilot'],"['The Preston Pilot and County Advertiser.'
- 'Preston Pilot and Lancashire Advertiser.']"
-124,Reynold's Newspaper,RDNP,1850,1900,['0000100' '0000101'],"[""Reynold's Newspaper""]","[""Reynold's Weekly Newspaper"" ""Reynolds's Newspaper""]"
+122,Poole Telegram,POTG,1879,1886,['0003083'],['Poole Telegram'],"['The Poole Telegram.', 'Poole Telegram']"
+123,Preston Pilot,PRPL,1842,1879,"['0003084', '0003085']",['Preston Pilot'],"['The Preston Pilot and County Advertiser.', 'Preston Pilot and Lancashire Advertiser.']"
+124,Reynold's Newspaper,RDNP,1850,1900,"['0000100', '0000101']","[""Reynold's Newspaper""]","[""Reynold's Weekly Newspaper"", ""Reynolds's Newspaper""]"
 125,Ripon Observer,RIOB,1889,1922,['0003092'],['Ripon Observer'],['Ripon Observer']
-126,Royal Cornwall Gazette,COGE,1811,1900,['0000177' '0000178' '0000180'],['Royal Cornwall Gazette'],"['Royal Cornwall Gazette, Falmouth Packet & Plymouth Journal'
- 'Royal Cornwall Gazette'
- 'Royal Cornwall Gazette, Falmouth Packet, and General Advertized']"
+126,Royal Cornwall Gazette,COGE,1811,1900,"['0000177', '0000178', '0000180']",['Royal Cornwall Gazette'],"['Royal Cornwall Gazette, Falmouth Packet & Plymouth Journal', 'Royal Cornwall Gazette', 'Royal Cornwall Gazette, Falmouth Packet, and General Advertized']"
 127,Royal York,RYRK,1827,1827,['0002423'],['Royal York'],"['Royal York (London, England : 1827)']"
-128,Runcorn Examiner,RUEX,1870,1920,['0002608' '0002609'],['Runcorn Examiner'],['Runcorn and Widnes Examiner.' 'Runcorn Examiner.' 'Runcorn Examiner']
+128,Runcorn Examiner,RUEX,1870,1920,"['0002608', '0002609']",['Runcorn Examiner'],"['Runcorn and Widnes Examiner.', 'Runcorn Examiner.', 'Runcorn Examiner']"
 129,Sainsbury's Weekly Register and Advertising Journal,SWRJ,1859,1864,['0002810'],"[""Sainsbury's Weekly Register and Advertising Journal""]","[""Sainsbury's Weekly Register and Advertising Journal :""]"
-130,Sheffield Public Advertiser,SHPA,1760,1793,['0003101' '0003102' '0003103'],['Sheffield Public Advertiser'],"['Public Advertiser.' 'Sheffield Public Advertiser.'
- 'Sheffield Advertiser.']"
+130,Sheffield Public Advertiser,SHPA,1760,1793,"['0003101', '0003102', '0003103']",['Sheffield Public Advertiser'],"['Public Advertiser.', 'Sheffield Public Advertiser.', 'Sheffield Advertiser.']"
 131,South London Advertiser,SLAD,1863,1866,['0004191'],['South London Advertiser'],['South London Advertiser']
-132,South London Times and Lambeth Observer,SLTL,1856,1865,['0003255' '0003256' '0003257'],['South London Times and Lambeth Observer'],"['The South London Times and County Advertiser.'
- 'Lambeth Observer, The South London Times, etc.'
- 'South London Times and Lambeth Observer.']"
+132,South London Times and Lambeth Observer,SLTL,1856,1865,"['0003255', '0003256', '0003257']",['South London Times and Lambeth Observer'],"['The South London Times and County Advertiser.', 'Lambeth Observer, The South London Times, etc.', 'South London Times and Lambeth Observer.']"
 133,Southern Star,SNSR,1840,1840,['0000102'],['Southern Star'],['Southern Star']
-134,Southwark Mercury,SWME,1879,1881,['0003262' '0003263'],['Southwark Mercury'],['Southwark Mercury.' 'Southwark Mercury and South London News.']
+134,Southwark Mercury,SWME,1879,1881,"['0003262', '0003263']",['Southwark Mercury'],"['Southwark Mercury.', 'Southwark Mercury and South London News.']"
 135,Sport,SPRT,1880,1880,['0004134'],['Sport'],['Sport']
 136,Stalybridge Examiner,STEX,1876,1876,['0002611'],['Stalybridge Examiner'],"['Stalybridge Examiner, and Ashton, Dukinfield and Mossley Advertiser.']"
-137,"Stockton Herald, South Durham and Cleveland Advertiser",SHSD,1858,1918,['0002975' '0002976'],"['Stockton Herald, South Durham and Cleveland Advertiser']","['Stockton Herald, South Durham and Cleveland Advertiser.'
- 'Stockton Herald, South Durham and Cleveland Advertiser'
- 'The Stockton & Thornaby Herald and South Durham Advertiser']"
-138,Stretford and Urmston Examiner,STUE,1879,1880,['0002614'],['Stretford and Urmston Examiner'],['Stretford and Urmston Examiner.' 'Stretford and Urmston Examiner']
+137,"Stockton Herald, South Durham and Cleveland Advertiser",SHSD,1858,1918,"['0002975', '0002976']","['Stockton Herald, South Durham and Cleveland Advertiser']","['Stockton Herald, South Durham and Cleveland Advertiser.', 'Stockton Herald, South Durham and Cleveland Advertiser', 'The Stockton & Thornaby Herald and South Durham Advertiser']"
+138,Stretford and Urmston Examiner,STUE,1879,1880,['0002614'],['Stretford and Urmston Examiner'],"['Stretford and Urmston Examiner.', 'Stretford and Urmston Examiner']"
 139,Sunday Gazette,SUGA,1866,1867,['0004210'],['Sunday Gazette'],"['Sunday Gazette, London']"
 140,Sunday News,SUNW,1823,1823,['0003113'],['Sunday News'],['Sunday News.']
-141,Surrey & Middlesex Standard,SMSD,1835,1840,['0003266' '0003267' '0003268'],['Surrey & Middlesex Standard'],"['The Surrey Standard, and Surrey, Middlesex, Sussex, Kent, Hants & Berks Advertiser.'
- 'Surrey & Middlesex Standard, and Agricultural, Commercial, and General Advertiser.'
- 'Surrey Standard, Windsor and Eton Journal and Middlesex Herald, etc']"
+141,Surrey & Middlesex Standard,SMSD,1835,1840,"['0003266', '0003267', '0003268']",['Surrey & Middlesex Standard'],"['The Surrey Standard, and Surrey, Middlesex, Sussex, Kent, Hants & Berks Advertiser.', 'Surrey & Middlesex Standard, and Agricultural, Commercial, and General Advertiser.', 'Surrey Standard, Windsor and Eton Journal and Middlesex Herald, etc']"
 142,Surrey Herald and County Advertiser,SHCA,1826,1826,['0004192'],['Surrey Herald and County Advertiser'],['Surrey Herald and County Advertiser']
 143,Surrey Mercury,SURY,1845,1847,['0004135'],['Surrey Mercury'],"['Surrey Mercury; Guildford, Kingston, Epsom, Dorking, Croydon, Reigate, Farnham & Chertsey Agricultural Journal']"
-144,Swansea Journal and South Wales Liberal,SJWL,1893,1902,['0003097' '0003098'],['Swansea Journal and South Wales Liberal'],"['The South Wales Liberal and Swansea Journal'
- 'Swansea Journal and South Wales Liberal']"
-145,Swansea and Glamorgan Herald,SGHL,1847,1890,['0002977'],['Swansea and Glamorgan Herald'],"['Swansea and Glamorgan Herald, and South Wales Free Press.'
- 'Swansea and Glamorgan Herald, and South Wales Free Press']"
-146,Thacker's Overland News for India and the Colonies,TONI,1857,1864,['0002808' '0002809'],"[""Thacker's Overland News for India and the Colonies""]","[""Thacker's Overland News for India, and the Colonies.""
- ""Thacker's Overland News for India, China, and the East.""]"
-147,The Age (London),TALN,1825,1845,['0002413' '0002414'],['Age (London)'],['The Age :' 'The Age and Argus :']
+144,Swansea Journal and South Wales Liberal,SJWL,1893,1902,"['0003097', '0003098']",['Swansea Journal and South Wales Liberal'],"['The South Wales Liberal and Swansea Journal', 'Swansea Journal and South Wales Liberal']"
+145,Swansea and Glamorgan Herald,SGHL,1847,1890,['0002977'],['Swansea and Glamorgan Herald'],"['Swansea and Glamorgan Herald, and South Wales Free Press.', 'Swansea and Glamorgan Herald, and South Wales Free Press']"
+146,Thacker's Overland News for India and the Colonies,TONI,1857,1864,"['0002808', '0002809']","[""Thacker's Overland News for India and the Colonies""]","[""Thacker's Overland News for India, and the Colonies."", ""Thacker's Overland News for India, China, and the East.""]"
+147,The Age (London),TALN,1825,1845,"['0002413', '0002414']",['Age (London)'],"['The Age :', 'The Age and Argus :']"
 148,The Age 1852,AGE52,1852,1853,['0003023'],['Age 1852'],['The Age.']
 149,The Agricultural Advertiser and Tenant-Farmers' Advocate,AATA,1846,1846,['0003031'],"[""Agricultural Advertiser and Tenant-Farmers' Advocate""]","[""The Agricultural Advertiser and Tenant-Farmers' Advocate.""]"
 150,The Albion,ALBN,1852,1853,['0003027'],['Albion'],['The Albion :']
-151,The Albion and the Star,ALST,1830,1835,['0002362' '0002363'],['Albion and the Star '],['The Albion.' 'The Albion and the Star.']
-152,The Anti-Gallican Monitor,AGMO,1811,1825,['0002364' '0002365' '0002366' '0002367'],['Anti-Gallican Monitor'],"['The Anti-Gallican Monitor.'
- 'The Anti-Gallican Monitor, and Anti-Corsican Chronicle.'
- 'The British Monitor.']"
+151,The Albion and the Star,ALST,1830,1835,"['0002362', '0002363']",['Albion and the Star '],"['The Albion.', 'The Albion and the Star.']"
+152,The Anti-Gallican Monitor,AGMO,1811,1825,"['0002364', '0002365', '0002366', '0002367']",['Anti-Gallican Monitor'],"['The Anti-Gallican Monitor.', 'The Anti-Gallican Monitor, and Anti-Corsican Chronicle.', 'The British Monitor.']"
 153,"The Argus, or, Broad-sheet of the Empire",ARGB,1839,1843,['0002368'],"['Argus, or, Broad-sheet of the Empire']","['The Argus, or, Broad-sheet of the Empire.   (3 Feb.1839-30 Sept.1843)']"
-154,"The Atherstone, Nuneaton, and Warwickshire Times",ANWT,1879,1891,['0003044' '0003045'],"['Atherstone, Nuneaton, and Warwickshire Times']","['The Atherstone Times.'
- 'The Atherstone, Nuneaton, and Warwickshire Times.'
- 'The Atherstone, Nuneaton, and Warwickshire Times']"
+154,"The Atherstone, Nuneaton, and Warwickshire Times",ANWT,1879,1891,"['0003044', '0003045']","['Atherstone, Nuneaton, and Warwickshire Times']","['The Atherstone Times.', 'The Atherstone, Nuneaton, and Warwickshire Times.', 'The Atherstone, Nuneaton, and Warwickshire Times']"
 155,The Aurora Borealis,AUBO,1821,1821,['0002638'],['Aurora Borealis'],['The Aurora Borealis']
 156,The Ballot,BLOT,1831,1832,['0002585'],['Ballot'],['The Ballot.']
-157,The Barrow Herald and Furness Advertiser,BHFA,1862,1914,['0003042'],['Barrow Herald and Furness Advertiser'],"['The Barrow Herald and Furness Advertiser.'
- 'The Barrow Herald and Furness Advertiser']"
-158,The Bath Chronicle,BHCH,1760,1800,['0000211' '0000219' '0000220' '0000221'],['Bath Chronicle'],"[""Pope's Bath Chronicle"" 'The Bath and Bristol Chronicle' 'Bath Chronicle']"
+157,The Barrow Herald and Furness Advertiser,BHFA,1862,1914,['0003042'],['Barrow Herald and Furness Advertiser'],"['The Barrow Herald and Furness Advertiser.', 'The Barrow Herald and Furness Advertiser']"
+158,The Bath Chronicle,BHCH,1760,1800,"['0000211', '0000219', '0000220', '0000221']",['Bath Chronicle'],"[""Pope's Bath Chronicle"", 'The Bath and Bristol Chronicle', 'Bath Chronicle']"
 159,The Beacon (Edinburgh),BCE1,1821,1821,['0002370'],['Beacon (Edinburgh)'],['The Beacon (Edinburgh)  6 Jan-22 Sept   1821']
 160,The Beacon (London),BCL2,1822,1822,['0002369'],['Beacon (London)'],['The Beacon.  (London): 21 April-2 June 1822']
-161,The Bee-Hive,BEHI,1862,1876,['0002247' '0002249'],['Bee-Hive'],"['The Bee-Hive. (4 Oct.1862 - 12 Feb. 1870)'
- 'The Bee-Hive. (11 June 1870 - 30 Dec. 1876)']"
+161,The Bee-Hive,BEHI,1862,1876,"['0002247', '0002249']",['Bee-Hive'],"['The Bee-Hive. (4 Oct.1862 - 12 Feb. 1870)', 'The Bee-Hive. (11 June 1870 - 30 Dec. 1876)']"
 162,The Belfast News-Letter,BNWL,1828,1900,['0000038'],['Belfast News-Letter'],['The Belfast News-Letter']
 163,The Birkenhead News,BKNW,1878,1920,['0003040'],['Birkenhead News'],['The Birkenhead News and Wirral General Advertiser.']
-164,The Blackburn Standard,BLSD,1835,1900,['0000151' '0000152' '0000153' '0000154'],['Blackburn Standard'],"['The Blackburn Standard'
- 'The Blackburn Standard, Darwen Observer, and North-East Lancashire Advertiser'
- 'The Blackburn Standard and Weekly Express'
- 'The Weekly Standard and Express']"
-165,The Blackpool Herald,BLHD,1874,1919,['0003037' '0003038'],['Blackpool Herald'],['The Blackpool Herald' 'Blackpool Herald and Fylde Advertiser.']
-166,The Blandford and Wimborne Telegram,BWTE,1874,1886,['0003054' '0003055'],['Blandford and Wimborne Telegram'],"['Blandford, Wimborne and Poole Telegram.'
- 'The Blandford and Wimbourne Telegram.'
- 'The Blandford and Wimbourne Telegram']"
-167,The Borough of Greenwich Free Press,BGFP,1855,1865,['0003258' '0003259'],['Borough of Greenwich Free Press'],"['The Borough of Greenwich Free Press and Kent and Surrey Commercial Advertiser. etc.'
- 'The Borough of Greenwich Free Press, and Blackheath Times.']"
-168,The Bristol Mercury,BLMY,1716,1900,['0000034' '0000035'],['Bristol Mercury'],"['The Bristol Mercury'
- 'The Bristol Mercury and Daily Post, Western Counties and South Wales Advertiser']"
-169,The British Banner,BRBN,1848,1858,['0003028' '0003029'],['British Banner 1848' 'British Banner 1856'],['The British Banner.']
+164,The Blackburn Standard,BLSD,1835,1900,"['0000151', '0000152', '0000153', '0000154']",['Blackburn Standard'],"['The Blackburn Standard', 'The Blackburn Standard, Darwen Observer, and North-East Lancashire Advertiser', 'The Blackburn Standard and Weekly Express', 'The Weekly Standard and Express']"
+165,The Blackpool Herald,BLHD,1874,1919,"['0003037', '0003038']",['Blackpool Herald'],"['The Blackpool Herald', 'Blackpool Herald and Fylde Advertiser.']"
+166,The Blandford and Wimborne Telegram,BWTE,1874,1886,"['0003054', '0003055']",['Blandford and Wimborne Telegram'],"['Blandford, Wimborne and Poole Telegram.', 'The Blandford and Wimbourne Telegram.', 'The Blandford and Wimbourne Telegram']"
+167,The Borough of Greenwich Free Press,BGFP,1855,1865,"['0003258', '0003259']",['Borough of Greenwich Free Press'],"['The Borough of Greenwich Free Press and Kent and Surrey Commercial Advertiser. etc.', 'The Borough of Greenwich Free Press, and Blackheath Times.']"
+168,The Bristol Mercury,BLMY,1716,1900,"['0000034', '0000035']",['Bristol Mercury'],"['The Bristol Mercury', 'The Bristol Mercury and Daily Post, Western Counties and South Wales Advertiser']"
+169,The British Banner,BRBN,1848,1858,"['0003028', '0003029']","['British Banner 1848', 'British Banner 1856']",['The British Banner.']
 170,The British Emancipator,BREM,1837,1840,['0002372'],['British Emancipator'],['The British Emancipator.  (27 Dec.1837-10 Jan.1840)']
 171,The British Ensign,BREN,1859,1864,['0002786'],['British Ensign'],['The British Ensign']
 172,The British Liberator,BRLB,1833,1833,['0002373'],['British Liberator'],['The British Liberator.  (13 Jan.-3 Nov.1833)']
-173,The British Luminary,BRLU,1818,1823,['0002378' '0002374' '0002375' '0002376' '0002377' '0002379'],['British Luminary'],"['The Weekly Intelligencer, and British Luminary.'
- 'The British Luminary; or, Weekly News and General Advertiser. (25 Jan.-27 June 1818)'
- 'The British Luminary and National Intelligencer. (4 July-26 Sept.1818)'
- 'The British Luminary and Weekly Intelligence. (3 Oct.1818-21 May 1820)'
- 'The British Luminary, or Weekly Intelligencer. (27 May-23 July 1820)'
- 'The Weekly Intelligencer, and British Luminary. (30 July 1820-27 May 1821)'
- 'The British Luminary and Weekly Intelligencer. (3 June 1821-8 June 1823)']"
+173,The British Luminary,BRLU,1818,1823,"['0002378', '0002374', '0002375', '0002376', '0002377', '0002379']",['British Luminary'],"['The Weekly Intelligencer, and British Luminary.', 'The British Luminary; or, Weekly News and General Advertiser. (25 Jan.-27 June 1818)', 'The British Luminary and National Intelligencer. (4 July-26 Sept.1818)', 'The British Luminary and Weekly Intelligence. (3 Oct.1818-21 May 1820)', 'The British Luminary, or Weekly Intelligencer. (27 May-23 July 1820)', 'The Weekly Intelligencer, and British Luminary. (30 July 1820-27 May 1821)', 'The British Luminary and Weekly Intelligencer. (3 June 1821-8 June 1823)']"
 174,The British Neptune,BRNP,1803,1823,['0002787'],['British Neptune'],"['The British Neptune, or, Naval, military, and commercial intelligencer, etc.']"
 175,The British Press,BRPR,1823,1823,['0002643'],['British Press'],"['The British Press; or, Morning Literary Advertiser (Very incomplete)']"
 176,The British Standard,BRST,1857,1866,['0002383'],['British Standard'],['The British Standard.']
@@ -278,40 +182,34 @@
 180,The Cannock Chase Examiner,CCEX,1874,1877,['0002606'],['Cannock Chase Examiner'],['The Cannock Chase Examiner.']
 181,The Censor or Satirical Times,CSTT,1846,1846,['0002574'],['Censor or Satirical Times'],['The Censor; or Satirical Times.']
 182,The Central Glamorgan Gazette,CGGA,1867,1894,['0003058'],['Central Glamorgan Gazette'],"['The Central Glamorgan Gazette, and General, Commercial, and Agricultural Advertiser.']"
-183,The Champion,CHPN,1836,1840,['0000041' '0000042'],['The Champion '],['The Champion' 'The Champion and Weekly Herald']
-184,The Champion (London),CHPL,1813,1822,['0002352' '0002353' '0002354'],['Champion (London)'],"[""Drakard's Paper."" 'The Champion.' 'The Investigator.']"
+183,The Champion,CHPN,1836,1840,"['0000041', '0000042']",['The Champion '],"['The Champion', 'The Champion and Weekly Herald']"
+184,The Champion (London),CHPL,1813,1822,"['0002352', '0002353', '0002354']",['Champion (London)'],"[""Drakard's Paper."", 'The Champion.', 'The Investigator.']"
 185,The Charter,CHTR,1839,1840,['0000043'],['The Charter'],"['Charter, The']"
 186,The Chartist,CHTT,1839,1841,['0000044'],['The Chartist'],['Chartist']
 187,The City Chronicle,CICN,1840,1845,['0002817'],['City Chronicle'],['The City Chronicle :']
 188,The Civil & Military Gazette,CMGA,1945,1945,['0003221'],['Civil & Military Gazette'],['The Civil & Military Gazette']
 189,The Clerkenwell Dial and Finsbury Advertiser,CLDF,1862,1865,['0003254'],['Clerkenwell Dial and Finsbury Advertiser'],"['The Clerkenwell Dial, and Finsbury Advertiser.']"
-190,The Colonist and Commercial Weekly Advertiser,CCWA,1824,1825,['0002988' '0002989' '0002990'],['Colonist and Commercial Weekly Advertiser'],"['The Colonist and Commercial Weekly Advertiser.'
- 'The Colonist and Weekly Courier.' 'The Sunday Herald.']"
+190,The Colonist and Commercial Weekly Advertiser,CCWA,1824,1825,"['0002988', '0002989', '0002990']",['Colonist and Commercial Weekly Advertiser'],"['The Colonist and Commercial Weekly Advertiser.', 'The Colonist and Weekly Courier.', 'The Sunday Herald.']"
 191,The Commercial Chronicle,CMCH,1804,1823,['0002785'],['Commercial Chronicle (London) '],['The Commercial Chronicle']
-192,The Constitution,CNSN,1818,1832,['0003020' '0004694' '0002757' '0002758'],['Constitution' 'Constitution (1827)' 'Constitution (London) '],"['The Constitution.' 'The Constitution'
- 'Observer of the Times and Constitution']"
+192,The Constitution,CNSN,1818,1832,"['0003020', '0004694', '0002757', '0002758']","['Constitution', 'Constitution (1827)', 'Constitution (London) ']","['The Constitution.', 'The Constitution', 'Observer of the Times and Constitution']"
 193,The Cosmopolitan,CSMP,1865,1876,['0004190'],['Cosmopolitan'],"['The Cosmopolitan : An international newspaper of news, politics, literature, art, society']"
 194,The Cotton Factory Times,CFTM,1885,1920,['0002596'],['Cotton Factory Times'],['The Cotton Factory Times']
-195,The Courier,COUR,1869,1880,['0004200' '0004201' '0004202' '0004203'],['Courier and West-End Advertiser'],"['The Courier, and West-End Advertiser' 'The Courier'
- 'The Courier, and West End Observer']"
-196,The Court Gazette and Fashionable Guide,CGFG,1838,1841,['0002424' '0002425'],['Court Gazette and Fashionable Guide'],"['The Court Gazette, and Fashionable Guide.'
- ""The Court Gazette and Fashionable Guide : Glenny's Gardeners' Gazette edition (London, England : 1841)""]"
-197,The Crim. Con. Gazette,CCGZ,1838,1840,['0004682' '0004683'],['Crim. Con. Gazette'],['The Crim. Con. Gazette.' 'The Bon Ton Gazette']
+195,The Courier,COUR,1869,1880,"['0004200', '0004201', '0004202', '0004203']",['Courier and West-End Advertiser'],"['The Courier, and West-End Advertiser', 'The Courier', 'The Courier, and West End Observer']"
+196,The Court Gazette and Fashionable Guide,CGFG,1838,1841,"['0002424', '0002425']",['Court Gazette and Fashionable Guide'],"['The Court Gazette, and Fashionable Guide.', ""The Court Gazette and Fashionable Guide : Glenny's Gardeners' Gazette edition (London, England : 1841)""]"
+197,The Crim. Con. Gazette,CCGZ,1838,1840,"['0004682', '0004683']",['Crim. Con. Gazette'],"['The Crim. Con. Gazette.', 'The Bon Ton Gazette']"
 198,The Crown,CRWN,1838,1839,['0002987'],['Crown'],['The Crown.']
-199,The Daily Director and Entr'acte,DDEN,1859,1860,['0003024' '0003025'],"[""Daily Director and Entr'acte""]","[""L'Entr'acte :"" ""The Daily Director and Entr'acte.""]"
+199,The Daily Director and Entr'acte,DDEN,1859,1860,"['0003024', '0003025']","[""Daily Director and Entr'acte""]","[""L'Entr'acte :"", ""The Daily Director and Entr'acte.""]"
 200,The Day,TDAY,1809,1816,['0002433'],['The Day'],['The Day.']
 201,The Dewsbury Chronicle and West Riding Advertiser,DCWR,1869,1895,['0003408'],['The Dewsbury Chronicle and West Riding Advertiser'],"['The Dewsbury Chronicle, and West Riding Advertiser.']"
 202,The Dial,TDIA,1860,1864,['0004136'],['Dial'],['The Dial']
-203,The Dissenter,DSNR,1812,1812,['0002431' '0002432'],['Dissenter'],['The Dissenter.' 'The Correspondent.']
-204,The East Riding Telegraph,ERTG,1895,1903,['0003048' '0003049'],['East Riding Telegraph'],['Beverley and East Riding Telegraph.' 'The East Riding Telegraph.']
+203,The Dissenter,DSNR,1812,1812,"['0002431', '0002432']",['Dissenter'],"['The Dissenter.', 'The Correspondent.']"
+204,The East Riding Telegraph,ERTG,1895,1903,"['0003048', '0003049']",['East Riding Telegraph'],"['Beverley and East Riding Telegraph.', 'The East Riding Telegraph.']"
 205,The Eastern Star,EAST,1853,1853,['0004691'],['Eastern Star'],['The Eastern Star']
-206,The Emigrant and the Colonial Advocate,ECLA,1848,1849,['0002434' '0002435'],['Emigrant and the Colonial Advocate'],"['The Emigrant and the Colonial Advocate.'
- 'The Emigrant and Colonial Gazette.']"
-207,The English Chronicle and Whitehall Evening Post,ECWP,1801,1843,['0002630' '0002631'],['English Chronicle and Whitehall Evening Post'],"['The English Chronicle and Universal Evening Post.'
- 'The English Chronicle and Whitehall Evening Post.']"
-208,The Englishman,ENGL,1803,1834,['0002632' '0002633'],['Englishman'],"['The Englishman; or, Sunday Express.' 'The Englishman.']"
+206,The Emigrant and the Colonial Advocate,ECLA,1848,1849,"['0002434', '0002435']",['Emigrant and the Colonial Advocate'],"['The Emigrant and the Colonial Advocate.', 'The Emigrant and Colonial Gazette.']"
+207,The English Chronicle and Whitehall Evening Post,ECWP,1801,1843,"['0002630', '0002631']",['English Chronicle and Whitehall Evening Post'],"['The English Chronicle and Universal Evening Post.', 'The English Chronicle and Whitehall Evening Post.']"
+208,The Englishman,ENGL,1803,1834,"['0002632', '0002633']",['Englishman'],"['The Englishman; or, Sunday Express.', 'The Englishman.']"
 209,The Era,ERLN,1838,1900,['0000053'],['The Era'],['The Era']
-210,The Essex Standard,ESSD,1831,1900,['0000165' '0000166'],['Essex Standard'],['The Essex Standard' 'The Essex County Standard']
+210,The Essex Standard,ESSD,1831,1900,"['0000165', '0000166']",['Essex Standard'],"['The Essex Standard', 'The Essex County Standard']"
 211,The Evening Star,EVST,1842,1843,['0002575'],['Evening Star (London)'],['The Evening Star.']
 212,The Evening Times (London),EVTL,1852,1852,['0004686'],['Evening Times (London)'],['The Evening Times']
 213,The Evening Times 1825,EVT25,1825,1826,['0004738'],['Evening Times 1825'],['The Evening Times']
@@ -321,31 +219,24 @@
 217,The General Evening Post,GEVP,1801,1822,['0002593'],['General Evening Post'],['The General Evening Post.']
 218,The Glasgow Chronicle,GLCH,1844,1857,['0003088'],['Glasgow Chronicle'],['The Glasgow Chronicle.']
 219,The Graphic,GCLN,1870,1900,['0000057'],['Graphic'],['The Graphic']
-220,The Hammersmith Advertiser,HMSA,1861,1866,['0003261' '0003260'],['Hammersmith Advertiser'],['The Hammersmith Advertiser.' 'Hammersmith & Brentford Advertiser']
-221,The Hampshire Advertiser,SOHD,1830,1900,['0000494' '0000493' '0000495'],['Hampshire Advertiser'],"['Hampshire Advertiser & Salisbury Guardian'
- 'Hampshire Advertiser & Salisbury Guardian Royal Yacht Club Gazette, Southampton Town and County Herald, Isle of Wight Journal, Winchester Chronicle, and General Reporter'
- 'The Hampshire Advertiser']"
+220,The Hammersmith Advertiser,HMSA,1861,1866,"['0003261', '0003260']",['Hammersmith Advertiser'],"['The Hammersmith Advertiser.', 'Hammersmith & Brentford Advertiser']"
+221,The Hampshire Advertiser,SOHD,1830,1900,"['0000494', '0000493', '0000495']",['Hampshire Advertiser'],"['Hampshire Advertiser & Salisbury Guardian', 'Hampshire Advertiser & Salisbury Guardian Royal Yacht Club Gazette, Southampton Town and County Herald, Isle of Wight Journal, Winchester Chronicle, and General Reporter', 'The Hampshire Advertiser']"
 222,The Hebrew Observer,HBOV,1853,1854,['0004684'],['Hebrew Observer'],['The Hebrew Observer']
-223,The Herald of Wales,HOWL,1882,1890,['0003034' '0003035'],['Herald of Wales'],['The Herald of Wales and Monmouthshire Recorder.' 'The Herald of Wales.']
+223,The Herald of Wales,HOWL,1882,1890,"['0003034', '0003035']",['Herald of Wales'],"['The Herald of Wales and Monmouthshire Recorder.', 'The Herald of Wales.']"
 224,The Illustrated Newspaper,ILNP,1871,1871,['0004188'],['Illustrated Newspaper'],['The Illustrated Newspaper']
 225,The Illustrated Police News,HPNW,1867,1900,['0000072'],['Illustrated Police News'],['The Illustrated Police News etc']
-226,The Imperial Weekly Gazette,IWGZ,1808,1825,['0002251' '0002252' '0002253'],['Imperial Weekly Gazette'],"['The imperial weekly gazette. (20 Feb.-30 April 1808;  6 Jan.-2 June 1810)'
- 'The Imperial weekly gazette and Westminster journal. (3 Jan 1818-8 Feb. 1823)'
- 'Imperial Gazette. (15 Feb. 1823-22 Jan.1825)']"
-227,The Instructor and Select Weekly Advertiser,ISWA,1809,1815,['0002763' '0002764'],['Instructor and Select Weekly Advertiser'],"['The Instructor, and Select Weekly Advertiser.'
- 'The Instructor, and British and Foreign Monitor.']"
-228,The Ipswich Journal,IPJO,1720,1900,['0000071' '0000191'],['Ipswich Journal'],['The Ipswich Journal']
+226,The Imperial Weekly Gazette,IWGZ,1808,1825,"['0002251', '0002252', '0002253']",['Imperial Weekly Gazette'],"['The imperial weekly gazette. (20 Feb.-30 April 1808;  6 Jan.-2 June 1810)', 'The Imperial weekly gazette and Westminster journal. (3 Jan 1818-8 Feb. 1823)', 'Imperial Gazette. (15 Feb. 1823-22 Jan.1825)']"
+227,The Instructor and Select Weekly Advertiser,ISWA,1809,1815,"['0002763', '0002764']",['Instructor and Select Weekly Advertiser'],"['The Instructor, and Select Weekly Advertiser.', 'The Instructor, and British and Foreign Monitor.']"
+228,The Ipswich Journal,IPJO,1720,1900,"['0000071', '0000191']",['Ipswich Journal'],['The Ipswich Journal']
 229,The Isle of Man Times,IMTS,1869,1900,['0000168'],['Isle of Man Times'],['The Isle of Man Times and General Advertiser']
-230,The Kingsland Times and General Advertiser,KTGA,1860,1863,['0003246' '0003247'],['Kingsland Times and General Advertiser'],"['The Kingsland Times and General Advertiser.'
- 'The Hackney and Kingsland Times and North- East London Telegraph.']"
+230,The Kingsland Times and General Advertiser,KTGA,1860,1863,"['0003246', '0003247']",['Kingsland Times and General Advertiser'],"['The Kingsland Times and General Advertiser.', 'The Hackney and Kingsland Times and North- East London Telegraph.']"
 231,The Lady's Newspaper and Pictorial Times,LNPT,1847,1863,['0002254'],"[""Lady's Newspaper and Pictorial Times""]","[""The Lady's Newspaper and Pictorial Times. (1847-1863)""]"
 232,The Lady's Own Paper,LOPA,1866,1872,['0002255'],"[""Lady's Own Paper""]","[""The Lady's Own Paper. (1866-1872)""]"
-233,The Lancaster Gazette,LAGER,1801,1894,['0000171' '0000488'],['Lancaster Gazette'],"['The Lancaster Gazetteer, and General Advertiser for Lancashire, Westmorland'
- 'The Lancaster Gazette']"
+233,The Lancaster Gazette,LAGER,1801,1894,"['0000171', '0000488']",['Lancaster Gazette'],"['The Lancaster Gazetteer, and General Advertiser for Lancashire, Westmorland', 'The Lancaster Gazette']"
 234,The Lancaster Herald and Town and County Advertiser,LHTC,1831,1832,['0003046'],['Lancaster Herald and Town and County Advertiser '],"['The Lancaster Herald, and Town and County Advertiser.']"
 235,The Leeds Mercury,LEMR,1807,1900,['0000076'],['Leeds Mercury'],['The Leeds Mercury']
 236,The Little Times,LTIM,1867,1867,['0004689'],['Little Times'],['The Little Times.']
-237,The Liverpool Albion,LIAL,1827,1882,['0003114' '0003115'],['Liverpool Albion'],['The Albion.' 'The Liverpool Weekly Albion.']
+237,The Liverpool Albion,LIAL,1827,1882,"['0003114', '0003115']",['Liverpool Albion'],"['The Albion.', 'The Liverpool Weekly Albion.']"
 238,The Liverpool Chronicle,LIVC,1767,1767,['0004127'],['Liverpool Chronicle 1767'],['The Liverpool Chronicle.']
 239,The Liverpool Telegraph,LITG,1836,1838,['0003030'],['Liverpool Telegraph'],['The Liverpool Telegraph.']
 240,The London & China Herald,LCHH,1867,1870,['0004311'],['London & China Herald'],['The London & China Herald.']
@@ -356,7 +247,7 @@
 245,The London Free Press,LFPR,1827,1827,['0002439'],['London Free Press'],['The London Free Press.']
 246,The London Illustrated Weekly,LIWL,1874,1874,['0004189'],['London Illustrated Weekly'],"['The London Illustrated Weekly : A family journal, etc']"
 247,The London Journal and Pioneer Newspaper,LJPN,1845,1846,['0002636'],['London Journal and Pioneer Newspaper'],['The London Journal and Pioneer Newspaper']
-248,The London Mercury,LNM1,1826,1828,['0002788' '0002815'],['London Mercury' 'London Mercury 1828'],['London Mercury.' 'The London Mercury.']
+248,The London Mercury,LNM1,1826,1828,"['0002788', '0002815']","['London Mercury', 'London Mercury 1828']","['London Mercury.', 'The London Mercury.']"
 249,The London Mercury 1836,LNM2,1836,1837,['0002576'],['London Mercury 1836'],['The London Mercury.']
 250,The London Mercury 1847,LNM3,1847,1848,['0002816'],['London Mercury 1847'],['The London Mercury.']
 251,The London Mirror,LONM,1871,1876,['0004308'],['London Mirror'],['The London Mirror']
@@ -365,49 +256,38 @@
 254,The London Phalanx,LOPH,1841,1843,['0002637'],['London Phalanx'],['The London Phalanx']
 255,The London Scotsman,LSCT,1867,1871,['0004222'],['London Scotsman'],['The London Scotsman : A weekly journal of Anglo-Scottish news']
 256,The London Telegraph,LTLG,1824,1825,['0002594'],['London Telegraph'],['The London Telegraph.']
-257,The London Weekly Investigator,LWI,1855,1857,['0004198' '0004197'],['London Weekly Investigator'],"['The London Weekly Investigator'
- 'The War Investigator and Record of Current Events']"
-258,The London and Liverpool Advertiser,LLAD,1847,1847,['0004195' '0004196'],['London and Liverpool Advertiser'],['The Daily Advertiser.' 'The London and Liverpool Advertiser.']
+257,The London Weekly Investigator,LWI,1855,1857,"['0004198', '0004197']",['London Weekly Investigator'],"['The London Weekly Investigator', 'The War Investigator and Record of Current Events']"
+258,The London and Liverpool Advertiser,LLAD,1847,1847,"['0004195', '0004196']",['London and Liverpool Advertiser'],"['The Daily Advertiser.', 'The London and Liverpool Advertiser.']"
 259,The London and Scottish Review,LSCR,1875,1875,['0004309'],['London and Scottish Review'],['The London and Scottish Review.']
 260,The Man about Town,MATN,1869,1870,['0004217'],['Man about Town'],"['The Man about Town : A chronicle and review of the doings Or the day, at home and abroad.']"
 261,The Manchester Examiner,MEXA,1846,1848,['0003398'],['The Manchester Examiner'],['The Manchester Examiner.']
 262,The Metropolitan,MTPN,1856,1857,['0003013'],['Metropolitan'],['The Metropolitan.']
-263,The Midland Examiner and Wolverhampton Times,MEWT,1874,1878,['0002602' '0002603' '0002604' '0002605'],['Midland Examiner and Wolverhampton Times'],"['The Wolverhampton Times and Bilston, Willenhall, Wednesfield, and Sedgley Journal.'
- 'The Wolverhampton and Midland Counties Advertiser.'
- 'The Midland Examiner and Wolverhampton Times.'
- 'The Midland Examiner and Times']"
-264,The Monthly Times,MNTM,1842,1849,['0002436' '0002437'],['Monthly Times'],['The Monthly Times.' 'The English Mail.']
+263,The Midland Examiner and Wolverhampton Times,MEWT,1874,1878,"['0002602', '0002603', '0002604', '0002605']",['Midland Examiner and Wolverhampton Times'],"['The Wolverhampton Times and Bilston, Willenhall, Wednesfield, and Sedgley Journal.', 'The Wolverhampton and Midland Counties Advertiser.', 'The Midland Examiner and Wolverhampton Times.', 'The Midland Examiner and Times']"
+264,The Monthly Times,MNTM,1842,1849,"['0002436', '0002437']",['Monthly Times'],"['The Monthly Times.', 'The English Mail.']"
 265,The Morning Gazette,MOGA,1837,1837,['0003016'],['Morning Gazette'],['The Morning Gazette.']
-266,The Morning Mail,MOMA,1864,1866,['0004215' '0004216'],['Morning Mail'],['The Morning Mail' 'The London General Advertiser']
+266,The Morning Mail,MOMA,1864,1866,"['0004215', '0004216']",['Morning Mail'],"['The Morning Mail', 'The London General Advertiser']"
 267,The Nation,NATN,1824,1824,['0004209'],['Nation'],['The Nation']
 268,The National,NTNL,1835,1835,['0003014'],['National'],['The National.']
 269,The National Protector,NTPR,1847,1847,['0003017'],['National Protector'],['The National Protector.']
 270,The National Standard,NTSD,1858,1860,['0002579'],['National Standard'],['The National Standard.']
 271,The New Globe,NGLB,1823,1823,['0003018'],['New Globe'],['The New Globe.']
 272,The New Weekly True Sun,NWTS,1836,1836,['0002256'],['New Weekly True Sun'],['The New Weekly True Sun. (2 April 1836)']
-273,The Newcastle Courant,NECT,1710,1900,['0000085' '0000086' '0000489'],['Newcastle Courant '],"['The Newcastle Courant etc' 'The Newcastle Weekly Courant'
- 'The Newcastle Gazette, or, Northern Courant']"
-274,The News,TNEW,1805,1839,['0002257' '0002258' '0002259'],['The News (London)'],"['The News. (19 May-22 Dec.1805:  4 Jan.1807-29 June 1835)'
- 'News and Sunday Herald. (5 July 1835-1 May 1837)'
- 'The News and Sunday Globe. (7 May 1837-26 Aug.1839)']"
-275,The North Cumberland Reformer,NCRF,1890,1898,['0002978' '0002979'],['North Cumberland Reformer'],['The North Cumberland Reformer' 'The Northern News']
-276,The North Londoner,NLON,1869,1875,['0001797' '0003269' '0003270'],['North Londoner'],"['The North Londoner and St.Pancras and Holborn Guardian.'
- 'The North Londoner.'
- 'The North Londoner and Holborn & St.Pancras Guardian.']"
+273,The Newcastle Courant,NECT,1710,1900,"['0000085', '0000086', '0000489']",['Newcastle Courant '],"['The Newcastle Courant etc', 'The Newcastle Weekly Courant', 'The Newcastle Gazette, or, Northern Courant']"
+274,The News,TNEW,1805,1839,"['0002257', '0002258', '0002259']",['The News (London)'],"['The News. (19 May-22 Dec.1805:  4 Jan.1807-29 June 1835)', 'News and Sunday Herald. (5 July 1835-1 May 1837)', 'The News and Sunday Globe. (7 May 1837-26 Aug.1839)']"
+275,The North Cumberland Reformer,NCRF,1890,1898,"['0002978', '0002979']",['North Cumberland Reformer'],"['The North Cumberland Reformer', 'The Northern News']"
+276,The North Londoner,NLON,1869,1875,"['0001797', '0003269', '0003270']",['North Londoner'],"['The North Londoner and St.Pancras and Holborn Guardian.', 'The North Londoner.', 'The North Londoner and Holborn & St.Pancras Guardian.']"
 277,The North-West London Times,NWLT,1861,1866,['0003264'],['North-West London Times'],['The North-West London Times.']
-278,The Northern Daily Times,NDTM,1853,1861,['0002083' '0002084' '0002085'],['Northern Daily Times'],['The Northern Daily Times' 'Northern Times' 'The Daily Times ']
+278,The Northern Daily Times,NDTM,1853,1861,"['0002083', '0002084', '0002085']",['Northern Daily Times'],"['The Northern Daily Times', 'Northern Times', 'The Daily Times ']"
 279,The Northern Guardian,NOGU,1891,1902,['0003039'],['Northern Guardian (Hartlepool)'],['The Northern Guardian']
 280,The Nottinghamshire Guardian,NOGN,1849,1900,['0000176'],['Nottinghamshire Guardian'],['The Nottinghamshire Guardian and Midland Advertiser']
 281,The Nuneaton Times,NUNT,1875,1875,['0003078'],['Nuneaton Times'],['The Nuneaton Times.']
-282,The Observer of the Times,OBTM,1821,1822,['0002639' '0002640' '0002641'],['Observer of the Times'],"['The Observer of the Times.'
- 'The Observer of the Times and Aurora Borealis.']"
+282,The Observer of the Times,OBTM,1821,1822,"['0002639', '0002640', '0002641']",['Observer of the Times'],"['The Observer of the Times.', 'The Observer of the Times and Aurora Borealis.']"
 283,The Odd Fellow,ODFW,1839,1842,['0000095'],['The Odd Fellow'],"['Odd Fellow, The']"
 284,The Operative,OPTE,1838,1839,['0000096'],['The Operative'],"['Operative, The']"
-285,The Oracle and the Daily Advertiser,ORDA,1801,1809,['0002428' '0002429' '0002430'],['Oracle and the Daily Advertiser'],"['The Oracle and the Daily Advertiser.' 'The Daily Advertiser and Oracle.'
- 'The Daily Advertiser, Oracle, and True Briton.']"
+285,The Oracle and the Daily Advertiser,ORDA,1801,1809,"['0002428', '0002429', '0002430']",['Oracle and the Daily Advertiser'],"['The Oracle and the Daily Advertiser.', 'The Daily Advertiser and Oracle.', 'The Daily Advertiser, Oracle, and True Briton.']"
 286,The Paddington Advertiser,PADV,1861,1866,['0003265'],['Paddington Advertiser'],['The Paddington Advertiser.']
 287,The Pall Mall Gazette,PMGZ,1865,1900,['0000098'],['Pall Mall Gazette'],['The Pall Mall Gazette']
-288,The Palladium,PLDM,1825,1829,['0003011' '0003012'],['Palladium 1825' 'Palladium 1829'],['The Palladium.']
+288,The Palladium,PLDM,1825,1829,"['0003011', '0003012']","['Palladium 1825', 'Palladium 1829']",['The Palladium.']
 289,The Patriot,PATR,1832,1866,['0002580'],['Patriot'],['The Patriot.']
 290,The People's Hue and Cry or Weekly Police Register,PHCW,1834,1834,['0002581'],"[""People's Hue and Cry or Weekly Police Register""]","[""The People's Hue and Cry, or Weekly Police Register.""]"
 291,The People's Paper,PPLP,1852,1858,['0002582'],"[""People's Paper""]","[""The People's Paper.""]"
@@ -416,105 +296,80 @@
 294,The Planet,PLNT,1837,1844,['0002583'],['Planet'],['The Planet.']
 295,The Political Letter,POLL,1831,1831,['0002584'],['Political Letter'],['The Political Letter.']
 296,The Political Observer,PLOB,1819,1819,['0003008'],['Political Observer'],['The Political Observer.']
-297,The Pontypridd District Herald,PDHD,1878,1894,['0003082'],['Pontypridd District Herald' 'Pontypridd District Herald '],"['The Pontypridd District Herald and Rhondda Valley, Llantrisant, Caerphilly, and Mountain Ash News.'
- 'The Pontypridd District Herald and Rhondda Valley, Llantrisant, Caerphilly, and Mountain Ash News']"
+297,The Pontypridd District Herald,PDHD,1878,1894,['0003082'],"['Pontypridd District Herald', 'Pontypridd District Herald ']","['The Pontypridd District Herald and Rhondda Valley, Llantrisant, Caerphilly, and Mountain Ash News.', 'The Pontypridd District Herald and Rhondda Valley, Llantrisant, Caerphilly, and Mountain Ash News']"
 298,The Poor Man's Guardian,PMGU,1831,1835,['0000097'],"[""Poor Man's Guardian""]","[""Poor Man's Guardian, The""]"
 299,The Porcupine,PORC,1800,1801,['0002586'],['Porcupine'],['The Porcupine.']
-300,The Potteries Examiner,POEX,1871,1881,['0002612' '0002613'],['Potteries Examiner'],"['The Potteries Examiner :' 'The Staffordshire and Potteries Examiner.'
- 'The Staffordshire and Potteries Examiner']"
+300,The Potteries Examiner,POEX,1871,1881,"['0002612', '0002613']",['Potteries Examiner'],"['The Potteries Examiner :', 'The Staffordshire and Potteries Examiner.', 'The Staffordshire and Potteries Examiner']"
 301,The Press,TPRS,1859,1866,['0002645'],['Press (London)'],['The Press']
 302,The Preston Chronicle and Lancashire Advertiser,PNCH,1831,1893,['0000099'],['Preston Chronicle'],['The Preston Chronicle and Lancashire Advertiser']
-303,The Public Cause,PUCA,1811,1816,['0002753' '0002754' '0002755' '0002756'],['Public Cause'],"['The Public Cause.' 'The Correspondent and Public Cause.'
- 'The Public Cause, or Westminster Reformer.'
- 'The Public Cause and General Correspondent']"
-304,The Radical,RADL,1831,1836,['0002587' '0002589'],['Radical 1831' 'Radical 1836'],['The radical.' 'The Radical.']
-305,The Railway Bell and London Advertiser,RBLD,1844,1846,['0002996' '0002997' '0002998' '0002999'],['Railway Bell and London Advertiser'],"['Railway bell & advertiser.'
- 'Railway bell and illustrated London advertiser.'
- 'The railway bell and London advertiser.'
- 'The railway bell and London family newspaper.']"
+303,The Public Cause,PUCA,1811,1816,"['0002753', '0002754', '0002755', '0002756']",['Public Cause'],"['The Public Cause.', 'The Correspondent and Public Cause.', 'The Public Cause, or Westminster Reformer.', 'The Public Cause and General Correspondent']"
+304,The Radical,RADL,1831,1836,"['0002587', '0002589']","['Radical 1831', 'Radical 1836']","['The radical.', 'The Radical.']"
+305,The Railway Bell and London Advertiser,RBLD,1844,1846,"['0002996', '0002997', '0002998', '0002999']",['Railway Bell and London Advertiser'],"['Railway bell & advertiser.', 'Railway bell and illustrated London advertiser.', 'The railway bell and London advertiser.', 'The railway bell and London family newspaper.']"
 306,The Reformer,REFM,1831,1831,['0002588'],['Reformer'],['The reformer.']
-307,The Representative,REPR,1822,1826,['0003022' '0002759'],['Representative 1822' 'Representative 1826'],['The Representative.' 'The Representative']
+307,The Representative,REPR,1822,1826,"['0003022', '0002759']","['Representative 1822', 'Representative 1826']","['The Representative.', 'The Representative']"
 308,The Saint James's Chronicle,SJCH,1801,1866,['0002193'],"[""Saint James's Chronicle""]","[""The Saint James's Chronicle""]"
 309,"The Satirist; or, the Censor of the Times",SATR,1831,1849,['0002415'],"['Satirist; or, the Censor of the Times']","['The Satirist; or, the Censor of the Times.']"
-310,The Sheffield Independent,SHIN,1819,1900,['0000181' '0000490' '0000491'],['Sheffield Independent'],"['Sheffield and Rotherham Independent'
- 'The Sheffield Independent, and Commercial Register'
- 'The Sheffield Independent, and Yorkshire & Derbyshire Advertiser']"
+310,The Sheffield Independent,SHIN,1819,1900,"['0000181', '0000490', '0000491']",['Sheffield Independent'],"['Sheffield and Rotherham Independent', 'The Sheffield Independent, and Commercial Register', 'The Sheffield Independent, and Yorkshire & Derbyshire Advertiser']"
 311,The Shropshire Examiner,SHRE,1874,1877,['0002600'],['Shropshire Examiner'],['The Shropshire Examiner and all round the Wrekin advertiser.']
 312,The Slaithwaite Guardian and Colne Valley News,SGCV,1896,1906,['0003094'],['Colne Valley Guardian'],['The Slaithwaite Guardian and Colne Valley News']
 313,The South Staffordshire Examiner,SSEX,1874,1874,['0002599'],['South Staffordshire Examiner'],['The South Staffordshire Examiner.']
-314,"The St. Helens Examiner, and Prescot Weekly News",SHEP,1879,1920,['0002610'],['St. Helens Examiner'],"['The St. Helens Examiner, and Prescot Weekly News.'
- 'The St. Helens Examiner, and Prescot Weekly News']"
+314,"The St. Helens Examiner, and Prescot Weekly News",SHEP,1879,1920,['0002610'],['St. Helens Examiner'],"['The St. Helens Examiner, and Prescot Weekly News.', 'The St. Helens Examiner, and Prescot Weekly News']"
 315,The Standard,SDLN,1827,1900,['0000183'],['The Standard'],['The Standard']
 316,The Standard of Freedom,SOFR,1848,1851,['0002752'],['Standard of Freedom '],['The Standard of Freedom']
 317,The Star,STGY,1869,1900,['0000184'],['The Star'],['The Star']
 318,The Stockton Examiner and South Durham and North Yorkshire Herald,SESD,1878,1879,['0002607'],['Stockton Examiner and South Durham and North Yorkshire Herald'],"['The Stockton Examiner, and South Durham and North Yorkshire Herald']"
 319,The Sun,TSUN,1801,1871,['0002194'],['Sun (London)'],['The Sun']
-320,The Sun & Central Press,SCPR,1871,1874,['0002261' '0002262'],['Sun & Central Press'],['The Sun & Central Press :' 'The Central Press.']
+320,The Sun & Central Press,SCPR,1871,1874,"['0002261', '0002262']",['Sun & Central Press'],"['The Sun & Central Press :', 'The Central Press.']"
 321,The Sunday Evening Globe,SEGL,1836,1837,['0003015'],['Sunday Evening Globe'],['The Sunday Evening Globe.']
 322,The Sunday Morning Herald,SMHE,1824,1824,['0002993'],['Sunday Morning Herald'],['The Sunday Morning Herald.']
 323,The Sussex & Surrey Chronicle,SSCH,1823,1823,['0004211'],['Sussex & Surrey Chronicle'],"['The Sussex & Surrey Chronicle, or, Brighton, Lewes, Chichester, and Guildford Express']"
-324,The Tamworth Miners' Examiner and Working Men's Journal,TMEW,1873,1876,['0002615' '0002616'],"[""Tamworth Miners' Examiner and Working Men's Journal""]","[""The Tamworth Miners' Examiner and Working Men's Journal.""
- ""The Tamworth Examiner and Working Men's Journal.""]"
+324,The Tamworth Miners' Examiner and Working Men's Journal,TMEW,1873,1876,"['0002615', '0002616']","[""Tamworth Miners' Examiner and Working Men's Journal""]","[""The Tamworth Miners' Examiner and Working Men's Journal."", ""The Tamworth Examiner and Working Men's Journal.""]"
 325,The Tichborne Gazette,TIGA,1872,1875,['0004193'],['Tichborne Gazette'],['The Tichborne Gazette']
 326,The Tichborne News and Anti-Oppression Journal,TNAJ,1872,1872,['0004194'],['Tichborne News and Anti-Oppression Journal'],['The Tichborne News and Anti-Oppression Journal : A weekly newspaper advocating fair play for everyman']
 327,The Tower Hamlets Mail,THML,1857,1858,['0003108'],['Tower Hamlets Mail'],['The Tower Hamlets Mail.']
-328,The Trades' Free Press,TFPR,1825,1831,['0002420' '0002421' '0002422'],"[""Trades' Free Press""]","[""The Trades' Newspaper and Mechanics' Weekly Journal.""
- ""The Trades' Free Press.""
- 'The Weekly Free Press of Trade, Manufactures, and Commerce.']"
+328,The Trades' Free Press,TFPR,1825,1831,"['0002420', '0002421', '0002422']","[""Trades' Free Press""]","[""The Trades' Newspaper and Mechanics' Weekly Journal."", ""The Trades' Free Press."", 'The Weekly Free Press of Trade, Manufactures, and Commerce.']"
 329,The True Briton,TRBT,1801,1804,['0003026'],['True Briton'],['The True Briton.']
 330,The True Sun,TRSN,1832,1837,['0002590'],['True Sun'],['The True Sun.']
 331,The Union,TUNI,1857,1862,['0002994'],['Union'],['The Union.']
 332,The Universe,UNIV,1846,1848,['0002591'],['Universe'],['The Universe.']
 333,The Verulam,VERL,1828,1828,['0004687'],['Verulam'],"['The Verulam : A scientific, literary, and political newspaper']"
 334,The Vindicator,VIND,1859,1859,['0003019'],['Vindicator (London)'],['The Vindicator.']
-335,The Warrington Examiner,WAEX,1869,1909,['0002597' '0002598'],['Warrington Examiner'],"['The Warrington Examiner.' 'The Warrington & Mid-Cheshire Examiner.'
- 'The Warrington & Mid-Cheshire Examiner']"
+335,The Warrington Examiner,WAEX,1869,1909,"['0002597', '0002598']",['Warrington Examiner'],"['The Warrington Examiner.', 'The Warrington & Mid-Cheshire Examiner.', 'The Warrington & Mid-Cheshire Examiner']"
 336,The Warwickshire Herald,WAHD,1884,1899,['0003051'],['Warwickshire Herald'],['The Warwickshire Herald.']
 337,The Watchman,WTCH,1827,1828,['0003002'],['Watchman'],['The Watchman.']
 338,The Week's News,WKNW,1872,1879,['0002774'],"[""Week's News (London)""]","[""The Week's News""]"
 339,The Weekly Advertiser,WKAD,1865,1866,['0004221'],['Weekly Advertiser'],['The Weekly Advertiser']
-340,The Weekly Chronicle,WKCH,1836,1867,['0002264' '0002265' '0002266' '0002267' '0002268'],['Weekly Chronicle (London)'],"['The Weekly Chronicle.' 'The Weekly News and Chronicle.'
- 'The weekly chronicle and register.'
- 'The Weekly Chronicle and Register of Banking, Insurance, Railway and Mining Companies, Trade and Commerce.']"
+340,The Weekly Chronicle,WKCH,1836,1867,"['0002264', '0002265', '0002266', '0002267', '0002268']",['Weekly Chronicle (London)'],"['The Weekly Chronicle.', 'The Weekly News and Chronicle.', 'The weekly chronicle and register.', 'The Weekly Chronicle and Register of Banking, Insurance, Railway and Mining Companies, Trade and Commerce.']"
 341,The Weekly Echo,WKEC,1873,1874,['0004220'],['Weekly Echo'],['The Weekly Echo : An epitome of all the news of the week']
 342,The Weekly Globe,WKGB,1824,1825,['0002991'],['Weekly Globe'],['The Weekly Globe.']
 343,The Weekly Independent,WKIN,1875,1876,['0004218'],['Weekly Independent'],['The Weekly Independent']
 344,The Weekly Intelligence,WKIT,1818,1818,['0002412'],['Weekly Intelligence'],['The Weekly Intelligence.']
 345,The Weekly Journal,WKJL,1901,1909,['0002980'],['Weekly Journal (Hartlepool)'],['The Weekly Journal']
 346,The Weekly Mail,WKML,1858,1860,['0002800'],['Weekly Mail (London)'],['The Weekly Mail.']
-347,The Weekly Review,WKRV,1862,1881,['0004305' '0004306' '0004307'],['Weekly Review'],"['The Weekly Review' 'The London and Edinburgh Weekly Review'
- 'The Weekly Review : (The Weekly Review and Presbyterian Record.)']"
-348,The Weekly Star and Bell's News,WSBN,1857,1857,['0002790' '0002792' '0002793' '0002791'],"[""Weekly Star and Bell's News"" ""Weekly Star and Bell's News ""]","['The Star.' ""The Weekly Star and Bell's News.""
- 'The Weekly Star and Universal Messenger.' 'The Weekly Star.']"
+347,The Weekly Review,WKRV,1862,1881,"['0004305', '0004306', '0004307']",['Weekly Review'],"['The Weekly Review', 'The London and Edinburgh Weekly Review', 'The Weekly Review : (The Weekly Review and Presbyterian Record.)']"
+348,The Weekly Star and Bell's News,WSBN,1857,1857,"['0002790', '0002792', '0002793', '0002791']","[""Weekly Star and Bell's News"", ""Weekly Star and Bell's News ""]","['The Star.', ""The Weekly Star and Bell's News."", 'The Weekly Star and Universal Messenger.', 'The Weekly Star.']"
 349,The Wellington Gazette and Military Chronicle,WGMC,1869,1880,['0004138'],['Wellington Gazette and Military Chronicle'],['The Wellington Gazette and Military Chronicle']
 350,The West End News,WENW,1859,1860,['0003009'],['West End News'],['The West End News :']
 351,The West London Times,WLTM,1860,1867,['0003249'],['West London Times'],['The West London Times.']
 352,The Westminster Times,WMTM,1863,1866,['0003250'],['Westminster Times'],['The Westminster Times.']
-353,The Weymouth Telegram,WMTG,1860,1901,['0002981' '0002982'],['Weymouth Telegram'],"['The Weymouth, Portland and Dorchester Telegram.'
- 'The Weymouth, Portland and Dorchester Telegram' 'The Telegram']"
+353,The Weymouth Telegram,WMTG,1860,1901,"['0002981', '0002982']",['Weymouth Telegram'],"['The Weymouth, Portland and Dorchester Telegram.', 'The Weymouth, Portland and Dorchester Telegram', 'The Telegram']"
 354,The World,WRLD,1859,1859,['0004685'],['World'],['The World']
 355,The World and Fashionable Sunday Chronicle,WFSC,1818,1818,['0003021'],['World and Fashionable Sunday Chronicle'],['The World and Fashionable Sunday Chronicle.']
-356,The York Herald,YOHD,1801,1900,['0000186' '0000497' '0000498' '0000499' '0000500'],['York Herald'],"['The York Herald' 'The York Herald, County and General Advertiser'
- 'The York Herald and General Advertiser'
- 'The Yorkshire Herald and the York Herald']"
+356,The York Herald,YOHD,1801,1900,"['0000186', '0000497', '0000498', '0000499', '0000500']",['York Herald'],"['The York Herald', 'The York Herald, County and General Advertiser', 'The York Herald and General Advertiser', 'The Yorkshire Herald and the York Herald']"
 357,Town & Country Daily Newspaper,TCDN,1873,1873,['0002386'],['Town & Country Daily Newspaper'],['Town & Country Daily Newspaper.']
 358,Town Talk,TTLK,1858,1859,['0002592'],['Town Talk'],['Town Talk.']
-359,Town Talk 1822,TTK22,1822,1822,['0004692' '0004693'],['Town Talk (1822)'],['Town Talk' 'Town Talk & Observer of the Times']
-360,Town and Country Advertiser,TCAA,1834,1836,['0004204' '0004205' '0004206' '0004207' '0004208'],['Town and Country Advertiser'],"['Town and Country Advertiser'
- 'The General Advertiser and Town and Country Price Current'
- 'The General Advertiser for Town and Country'
- 'The General Advertiser and Literary Varieties for Town & Country'
- 'The General Advertiser and London Journal']"
+359,Town Talk 1822,TTK22,1822,1822,"['0004692', '0004693']",['Town Talk (1822)'],"['Town Talk', 'Town Talk & Observer of the Times']"
+360,Town and Country Advertiser,TCAA,1834,1836,"['0004204', '0004205', '0004206', '0004207', '0004208']",['Town and Country Advertiser'],"['Town and Country Advertiser', 'The General Advertiser and Town and Country Price Current', 'The General Advertiser for Town and Country', 'The General Advertiser and Literary Varieties for Town & Country', 'The General Advertiser and London Journal']"
 361,Trade Protection Record,TPRD,1849,1850,['0002419'],['Trade Protection Record'],"['Trade Protection Record (London, England : 1849)']"
-362,Weekly Times,WKTN,1826,1832,['0002779' '0002780' '0002781'],['Weekly Times (London)'],['Weekly Times.' 'The Liberal.']
-363,Weekly True Sun,WKTS,1833,1843,['0002380' '0002381' '0002382'],['Weekly True Sun'],['Weekly True Sun.' 'The Statesman :' 'The British Queen and Statesman.']
+362,Weekly Times,WKTN,1826,1832,"['0002779', '0002780', '0002781']",['Weekly Times (London)'],"['Weekly Times.', 'The Liberal.']"
+363,Weekly True Sun,WKTS,1833,1843,"['0002380', '0002381', '0002382']",['Weekly True Sun'],"['Weekly True Sun.', 'The Statesman :', 'The British Queen and Statesman.']"
 364,West Londoner and Select Advertiser for the Borough of Marylebone,WLSA,1870,1872,['0004132'],['West Londoner'],['West Londoner and Select Advertiser for the Borough of Marylebone :']
 365,Western Mail,WMCF,1869,1900,['0000104'],['Western Mail'],['Western Mail']
 366,Westminster Journal and Old British Spy,WJBS,1805,1810,['0002269'],['Westminster Journal and Old British Spy'],['Westminster Journal and Old British Spy. (31 Aug./7 Sept.1805 - 22/29 Dec.1810)']
 367,Whitehall Evening Post,WHEP,1801,1801,['0002776'],['Whitehall Evening Post'],['Whitehall Evening Post']
-368,Widnes Examiner,WDEX,1876,1920,['0002601'],['Widnes Examiner'],['Widnes Examiner.' 'Widnes Examiner']
+368,Widnes Examiner,WDEX,1876,1920,['0002601'],['Widnes Examiner'],"['Widnes Examiner.', 'Widnes Examiner']"
 369,Wooler's British Gazette,WBGZ,1819,1823,['0002762'],"[""Wooler's British Gazette""]","[""Wooler's British Gazette""]"
-370,Wrexham Advertiser,WRWA,1854,1900,['0000185' '0000496'],['Wrexham Advertiser'],['Wrexham Weekly Advertiser' 'Wrexham Advertiser']
+370,Wrexham Advertiser,WRWA,1854,1900,"['0000185', '0000496']",['Wrexham Advertiser'],"['Wrexham Weekly Advertiser', 'Wrexham Advertiser']"
 371,Y Genedl Gymreig,GNDL,1877,1900,['0000059'],['Y Genedl Gymreig'],['Y Genedl Gymreig']
 372,Y Goleuad,GLAD,1869,1900,['0000058'],['Y Goleuad'],['Y Goleuad']
 373,York House Papers,YOHP,1879,1881,['0004139'],['York House Papers'],"['York House Papers: A weekly journal for the families of the Army, Navy, and auxiliary forces']"
