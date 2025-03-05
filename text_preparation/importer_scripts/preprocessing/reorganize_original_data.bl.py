@@ -1,6 +1,7 @@
-from impresso_essentials.utils import KNOWN_JOURNALS
-
+"""Script copying BL's original OCR data into Impresso's internal filestructure, according to the devised Alias-to-NLP mapping.
+"""
 import json
+import re
 import pandas as pd
 import os
 import shutil
@@ -148,7 +149,7 @@ def main(
     dest_base_dir: str = "/mnt/impresso_ocr_BL",
     sample_data_dir: str = "/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BL",
     title_alias_mapping_file: str = "BL_title_alias_mapping.csv",
-    chunk_size: int = 101,
+    chunk_size: int = 100,
     chunk_idx: int = 0,
     verbose: bool = False,
 ) -> None:
@@ -168,7 +169,9 @@ def main(
     failed_copies_json = os.path.join(sample_data_dir, f"failed_copied_chunk_{chunk_idx}.json")
 
     # list all NLPs and identify the ones that will be processed now
-    all_nlps = sorted(os.listdir(source_base_dir))
+    all_dirs = sorted(os.listdir(source_base_dir))
+    # ignore the non-NLP dirs: 'BLIP_20190920_01.zip', 'BLIP_20190929_04.zip', 'final_nas_manifest.out', 'test', 'test-dir1'
+    all_nlps = [d for d in all_dirs if re.fullmatch(r"\d{7}", d)]
     nlps_chunk = list(chunk(all_nlps, chunk_size))[chunk_idx]
 
     msg = (
