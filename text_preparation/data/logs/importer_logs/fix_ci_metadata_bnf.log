@@ -1,0 +1,206 @@
+2023-10-24 09:57:38,066 root         INFO     Logger successfully initialised
+2023-10-24 09:57:38,066 root         INFO     CLI arguments received: {'--access-rights': '/home/piconti/impresso-text-acquisition/text_importer/data/sample_data/BNF/access_rights.json',
+ '--chunk-size': '3',
+ '--clear': False,
+ '--config-file': '../config/import_nps.json',
+ '--image-dirs': None,
+ '--incremental': True,
+ '--input-dir': '../data/sample_data/BNF',
+ '--log-file': '../data/fix_ci_metadata_bnf.log',
+ '--output-dir': '../data/out_pauline',
+ '--s3-bucket': 'playground-pauline',
+ '--scheduler': None,
+ '--temp-dir': '../data/temp',
+ '--verbose': False,
+ '--version': False}
+2023-10-24 09:57:38,819 root         INFO     Dask cluster: <Client: 'inproc://10.90.38.16/256516/1' processes=8 threads=16, memory=251.80 GiB>
+2023-10-24 09:57:38,819 root         INFO     No config file found.
+2023-10-24 09:57:39,313 text_importer.importers.bnf.detect INFO     Removed 0 problematic issues
+2023-10-24 09:57:39,313 root         INFO     4 newspaper issues detected
+2023-10-24 09:57:39,314 root         INFO     0 issues to skip
+2023-10-24 09:57:39,314 root         INFO     4 remaining issues
+2023-10-24 09:57:39,315 text_importer.importers.core INFO     Issues to import: 4
+2023-10-24 09:57:39,315 text_importer.importers.core INFO     Dividing issues into chunks of 3 years (4 chunks in total)
+2023-10-24 09:57:39,315 text_importer.importers.core INFO     Chunk of period 1896 - 1898 covers 1 issues
+2023-10-24 09:57:39,315 text_importer.importers.core INFO     Chunk of period 1908 - 1910 covers 1 issues
+2023-10-24 09:57:39,315 text_importer.importers.core INFO     Chunk of period 1914 - 1916 covers 1 issues
+2023-10-24 09:57:39,315 text_importer.importers.core INFO     Chunk of period 1938 - 1940 covers 1 issues
+2023-10-24 09:57:39,319 text_importer.importers.core INFO     Start compressing issues for 1896 - 1898
+2023-10-24 09:57:51,039 text_importer.importers.core INFO     Compressing 1 JSON files into ../data/out_pauline/lafronde-1898-issues.jsonl.bz2
+2023-10-24 09:57:51,046 text_importer.importers.core INFO     Written 1 issues to ../data/out_pauline/lafronde-1898-issues.jsonl.bz2
+2023-10-24 09:57:51,069 text_importer.importers.core INFO     Done compressing issues for 1896 - 1898
+2023-10-24 09:57:51,069 text_importer.importers.core INFO     Start uploading issues for 1896 - 1898
+2023-10-24 09:57:51,664 text_importer.importers.core INFO     Uploaded ../data/out_pauline/lafronde-1898-issues.jsonl.bz2 to lafronde/issues/lafronde-1898-issues.jsonl.bz2
+2023-10-24 09:57:51,666 impresso_commons.text.rebuilder INFO     Removed temporary file ../data/out_pauline/lafronde-1898-issues.jsonl.bz2
+2023-10-24 09:57:51,678 text_importer.importers.core INFO     Done uploading issues for 1896 - 1898
+2023-10-24 09:57:51,682 text_importer.importers.core INFO     Processing chunk 0 of pages for 1896 - 1898
+2023-10-24 09:57:51,683 text_importer.importers.core INFO     Start compressing and uploading pages of chunk 0 for 1896 - 1898
+2023-10-24 09:57:57,573 text_importer.importers.core INFO     Written page '2' to ../data/out_pauline/lafronde/1898/02/14/a/lafronde-1898-02-14-a-p0002.json
+2023-10-24 09:57:57,696 text_importer.importers.core INFO     Written page '1' to ../data/out_pauline/lafronde/1898/02/14/a/lafronde-1898-02-14-a-p0001.json
+2023-10-24 09:57:57,816 text_importer.importers.core INFO     Written page '4' to ../data/out_pauline/lafronde/1898/02/14/a/lafronde-1898-02-14-a-p0004.json
+2023-10-24 09:57:57,955 text_importer.importers.core INFO     Written page '3' to ../data/out_pauline/lafronde/1898/02/14/a/lafronde-1898-02-14-a-p0003.json
+2023-10-24 09:57:58,208 text_importer.importers.core INFO     Compressing 4 JSON files into ../data/out_pauline/pages/lafronde-1898-02-14-a-pages.jsonl.bz2
+2023-10-24 09:57:58,233 text_importer.importers.core INFO     Written 1 docs from ../data/out_pauline/lafronde/1898/02/14/a/lafronde-1898-02-14-a-p0002.json to ../data/out_pauline/pages/lafronde-1898-02-14-a-pages.jsonl.bz2
+2023-10-24 09:57:58,258 text_importer.importers.core INFO     Written 2 docs from ../data/out_pauline/lafronde/1898/02/14/a/lafronde-1898-02-14-a-p0001.json to ../data/out_pauline/pages/lafronde-1898-02-14-a-pages.jsonl.bz2
+2023-10-24 09:57:58,386 text_importer.importers.core INFO     Written 3 docs from ../data/out_pauline/lafronde/1898/02/14/a/lafronde-1898-02-14-a-p0004.json to ../data/out_pauline/pages/lafronde-1898-02-14-a-pages.jsonl.bz2
+2023-10-24 09:57:58,415 text_importer.importers.core INFO     Written 4 docs from ../data/out_pauline/lafronde/1898/02/14/a/lafronde-1898-02-14-a-p0003.json to ../data/out_pauline/pages/lafronde-1898-02-14-a-pages.jsonl.bz2
+2023-10-24 09:57:58,710 text_importer.importers.core INFO     Uploaded ../data/out_pauline/pages/lafronde-1898-02-14-a-pages.jsonl.bz2 to lafronde/pages/lafronde-1898/lafronde-1898-02-14-a-pages.jsonl.bz2
+2023-10-24 09:57:58,712 impresso_commons.text.rebuilder INFO     Removed temporary file ../data/out_pauline/pages/lafronde-1898-02-14-a-pages.jsonl.bz2
+2023-10-24 09:57:58,724 text_importer.importers.core INFO     Done compressing and uploading pages of chunk 0 for 1896 - 1898
+2023-10-24 09:57:58,729 text_importer.importers.core INFO     Start compressing issues for 1908 - 1910
+2023-10-24 09:58:57,526 text_importer.importers.core INFO     Compressing 1 JSON files into ../data/out_pauline/excelsior-1910-issues.jsonl.bz2
+2023-10-24 09:58:57,533 text_importer.importers.core INFO     Written 1 issues to ../data/out_pauline/excelsior-1910-issues.jsonl.bz2
+2023-10-24 09:58:57,557 text_importer.importers.core INFO     Done compressing issues for 1908 - 1910
+2023-10-24 09:58:57,557 text_importer.importers.core INFO     Start uploading issues for 1908 - 1910
+2023-10-24 09:58:57,887 text_importer.importers.core INFO     Uploaded ../data/out_pauline/excelsior-1910-issues.jsonl.bz2 to excelsior/issues/excelsior-1910-issues.jsonl.bz2
+2023-10-24 09:58:57,889 impresso_commons.text.rebuilder INFO     Removed temporary file ../data/out_pauline/excelsior-1910-issues.jsonl.bz2
+2023-10-24 09:58:57,897 text_importer.importers.core INFO     Done uploading issues for 1908 - 1910
+2023-10-24 09:58:57,901 text_importer.importers.core INFO     Processing chunk 0 of pages for 1908 - 1910
+2023-10-24 09:58:57,902 text_importer.importers.core INFO     Start compressing and uploading pages of chunk 0 for 1908 - 1910
+2023-10-24 09:59:06,553 text_importer.importers.core INFO     Written page '5' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0005.json
+2023-10-24 09:59:06,655 text_importer.importers.core INFO     Written page '4' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0004.json
+2023-10-24 09:59:06,680 text_importer.importers.core INFO     Written page '12' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0012.json
+2023-10-24 09:59:06,738 text_importer.importers.core INFO     Written page '10' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0010.json
+2023-10-24 09:59:06,832 text_importer.importers.core INFO     Written page '2' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0002.json
+2023-10-24 09:59:06,902 text_importer.importers.core INFO     Written page '3' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0003.json
+2023-10-24 09:59:06,907 text_importer.importers.core INFO     Written page '1' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0001.json
+2023-10-24 09:59:07,003 text_importer.importers.core INFO     Written page '8' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0008.json
+2023-10-24 09:59:07,008 text_importer.importers.core INFO     Written page '9' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0009.json
+2023-10-24 09:59:07,126 text_importer.importers.core INFO     Written page '11' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0011.json
+2023-10-24 09:59:07,189 text_importer.importers.core INFO     Written page '7' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0007.json
+2023-10-24 09:59:07,302 text_importer.importers.core INFO     Written page '6' to ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0006.json
+2023-10-24 09:59:07,567 text_importer.importers.core INFO     Compressing 12 JSON files into ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,568 text_importer.importers.core INFO     Written 1 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0005.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,589 text_importer.importers.core INFO     Written 2 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0004.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,596 text_importer.importers.core INFO     Written 3 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0012.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,608 text_importer.importers.core INFO     Written 4 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0010.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,628 text_importer.importers.core INFO     Written 5 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0002.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,644 text_importer.importers.core INFO     Written 6 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0003.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,646 text_importer.importers.core INFO     Written 7 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0001.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,773 text_importer.importers.core INFO     Written 8 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0008.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,775 text_importer.importers.core INFO     Written 9 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0009.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,802 text_importer.importers.core INFO     Written 10 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0011.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,819 text_importer.importers.core INFO     Written 11 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0007.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:07,947 text_importer.importers.core INFO     Written 12 docs from ../data/out_pauline/excelsior/1910/11/16/a/excelsior-1910-11-16-a-p0006.json to ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:08,114 text_importer.importers.core INFO     Uploaded ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2 to excelsior/pages/excelsior-1910/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:08,117 impresso_commons.text.rebuilder INFO     Removed temporary file ../data/out_pauline/pages/excelsior-1910-11-16-a-pages.jsonl.bz2
+2023-10-24 09:59:08,127 text_importer.importers.core INFO     Done compressing and uploading pages of chunk 0 for 1908 - 1910
+2023-10-24 09:59:08,130 text_importer.importers.core INFO     Start compressing issues for 1914 - 1916
+2023-10-24 09:59:17,379 text_importer.importers.core INFO     Compressing 1 JSON files into ../data/out_pauline/oeuvre-1915-issues.jsonl.bz2
+2023-10-24 09:59:17,383 text_importer.importers.core INFO     Written 1 issues to ../data/out_pauline/oeuvre-1915-issues.jsonl.bz2
+2023-10-24 09:59:17,400 text_importer.importers.core INFO     Done compressing issues for 1914 - 1916
+2023-10-24 09:59:17,401 text_importer.importers.core INFO     Start uploading issues for 1914 - 1916
+2023-10-24 09:59:17,596 text_importer.importers.core INFO     Uploaded ../data/out_pauline/oeuvre-1915-issues.jsonl.bz2 to oeuvre/issues/oeuvre-1915-issues.jsonl.bz2
+2023-10-24 09:59:17,598 impresso_commons.text.rebuilder INFO     Removed temporary file ../data/out_pauline/oeuvre-1915-issues.jsonl.bz2
+2023-10-24 09:59:17,606 text_importer.importers.core INFO     Done uploading issues for 1914 - 1916
+2023-10-24 09:59:17,611 text_importer.importers.core INFO     Processing chunk 0 of pages for 1914 - 1916
+2023-10-24 09:59:17,611 text_importer.importers.core INFO     Start compressing and uploading pages of chunk 0 for 1914 - 1916
+2023-10-24 09:59:20,900 text_importer.importers.core INFO     Written page '2' to ../data/out_pauline/oeuvre/1915/12/01/a/oeuvre-1915-12-01-a-p0002.json
+2023-10-24 09:59:20,976 text_importer.importers.core INFO     Written page '1' to ../data/out_pauline/oeuvre/1915/12/01/a/oeuvre-1915-12-01-a-p0001.json
+2023-10-24 09:59:21,066 text_importer.importers.core INFO     Written page '4' to ../data/out_pauline/oeuvre/1915/12/01/a/oeuvre-1915-12-01-a-p0004.json
+2023-10-24 09:59:21,153 text_importer.importers.core INFO     Written page '3' to ../data/out_pauline/oeuvre/1915/12/01/a/oeuvre-1915-12-01-a-p0003.json
+2023-10-24 09:59:21,498 text_importer.importers.core INFO     Compressing 4 JSON files into ../data/out_pauline/pages/oeuvre-1915-12-01-a-pages.jsonl.bz2
+2023-10-24 09:59:21,515 text_importer.importers.core INFO     Written 1 docs from ../data/out_pauline/oeuvre/1915/12/01/a/oeuvre-1915-12-01-a-p0002.json to ../data/out_pauline/pages/oeuvre-1915-12-01-a-pages.jsonl.bz2
+2023-10-24 09:59:21,531 text_importer.importers.core INFO     Written 2 docs from ../data/out_pauline/oeuvre/1915/12/01/a/oeuvre-1915-12-01-a-p0001.json to ../data/out_pauline/pages/oeuvre-1915-12-01-a-pages.jsonl.bz2
+2023-10-24 09:59:21,549 text_importer.importers.core INFO     Written 3 docs from ../data/out_pauline/oeuvre/1915/12/01/a/oeuvre-1915-12-01-a-p0004.json to ../data/out_pauline/pages/oeuvre-1915-12-01-a-pages.jsonl.bz2
+2023-10-24 09:59:21,567 text_importer.importers.core INFO     Written 4 docs from ../data/out_pauline/oeuvre/1915/12/01/a/oeuvre-1915-12-01-a-p0003.json to ../data/out_pauline/pages/oeuvre-1915-12-01-a-pages.jsonl.bz2
+2023-10-24 09:59:21,782 text_importer.importers.core INFO     Uploaded ../data/out_pauline/pages/oeuvre-1915-12-01-a-pages.jsonl.bz2 to oeuvre/pages/oeuvre-1915/oeuvre-1915-12-01-a-pages.jsonl.bz2
+2023-10-24 09:59:21,784 impresso_commons.text.rebuilder INFO     Removed temporary file ../data/out_pauline/pages/oeuvre-1915-12-01-a-pages.jsonl.bz2
+2023-10-24 09:59:21,792 text_importer.importers.core INFO     Done compressing and uploading pages of chunk 0 for 1914 - 1916
+2023-10-24 09:59:21,795 text_importer.importers.core INFO     Start compressing issues for 1938 - 1940
+2023-10-24 10:00:16,457 text_importer.importers.core INFO     Compressing 1 JSON files into ../data/out_pauline/marieclaire-1939-issues.jsonl.bz2
+2023-10-24 10:00:16,467 text_importer.importers.core INFO     Written 1 issues to ../data/out_pauline/marieclaire-1939-issues.jsonl.bz2
+2023-10-24 10:00:16,498 text_importer.importers.core INFO     Done compressing issues for 1938 - 1940
+2023-10-24 10:00:16,498 text_importer.importers.core INFO     Start uploading issues for 1938 - 1940
+2023-10-24 10:00:16,633 text_importer.importers.core INFO     Uploaded ../data/out_pauline/marieclaire-1939-issues.jsonl.bz2 to marieclaire/issues/marieclaire-1939-issues.jsonl.bz2
+2023-10-24 10:00:16,636 impresso_commons.text.rebuilder INFO     Removed temporary file ../data/out_pauline/marieclaire-1939-issues.jsonl.bz2
+2023-10-24 10:00:16,642 text_importer.importers.core INFO     Done uploading issues for 1938 - 1940
+2023-10-24 10:00:16,647 text_importer.importers.core INFO     Processing chunk 0 of pages for 1938 - 1940
+2023-10-24 10:00:16,647 text_importer.importers.core INFO     Start compressing and uploading pages of chunk 0 for 1938 - 1940
+2023-10-24 10:00:24,756 text_importer.importers.core INFO     Written page '14' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0014.json
+2023-10-24 10:00:24,776 text_importer.importers.core INFO     Written page '11' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0011.json
+2023-10-24 10:00:24,788 text_importer.importers.core INFO     Written page '7' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0007.json
+2023-10-24 10:00:24,790 text_importer.importers.core INFO     Written page '2' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0002.json
+2023-10-24 10:00:24,831 text_importer.importers.core INFO     Written page '13' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0013.json
+2023-10-24 10:00:24,868 text_importer.importers.core INFO     Written page '37' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0037.json
+2023-10-24 10:00:24,899 text_importer.importers.core INFO     Written page '15' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0015.json
+2023-10-24 10:00:24,942 text_importer.importers.core INFO     Written page '29' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0029.json
+2023-10-24 10:00:24,972 text_importer.importers.core INFO     Written page '20' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0020.json
+2023-10-24 10:00:24,973 text_importer.importers.core INFO     Written page '17' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0017.json
+2023-10-24 10:00:24,995 text_importer.importers.core INFO     Written page '40' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0040.json
+2023-10-24 10:00:25,006 text_importer.importers.core INFO     Written page '12' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0012.json
+2023-10-24 10:00:25,008 text_importer.importers.core INFO     Written page '1' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0001.json
+2023-10-24 10:00:25,036 text_importer.importers.core INFO     Written page '32' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0032.json
+2023-10-24 10:00:25,042 text_importer.importers.core INFO     Written page '16' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0016.json
+2023-10-24 10:00:25,043 text_importer.importers.core INFO     Written page '10' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0010.json
+2023-10-24 10:00:25,070 text_importer.importers.core INFO     Written page '39' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0039.json
+2023-10-24 10:00:25,085 text_importer.importers.core INFO     Written page '28' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0028.json
+2023-10-24 10:00:25,099 text_importer.importers.core INFO     Written page '31' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0031.json
+2023-10-24 10:00:25,099 text_importer.importers.core INFO     Written page '41' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0041.json
+2023-10-24 10:00:25,133 text_importer.importers.core INFO     Written page '36' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0036.json
+2023-10-24 10:00:25,171 text_importer.importers.core INFO     Written page '22' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0022.json
+2023-10-24 10:00:25,181 text_importer.importers.core INFO     Written page '4' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0004.json
+2023-10-24 10:00:25,194 text_importer.importers.core INFO     Written page '8' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0008.json
+2023-10-24 10:00:25,231 text_importer.importers.core INFO     Written page '27' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0027.json
+2023-10-24 10:00:25,259 text_importer.importers.core INFO     Written page '23' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0023.json
+2023-10-24 10:00:25,274 text_importer.importers.core INFO     Written page '6' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0006.json
+2023-10-24 10:00:25,283 text_importer.importers.core INFO     Written page '18' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0018.json
+2023-10-24 10:00:25,294 text_importer.importers.core INFO     Written page '9' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0009.json
+2023-10-24 10:00:25,317 text_importer.importers.core INFO     Written page '38' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0038.json
+2023-10-24 10:00:25,324 text_importer.importers.core INFO     Written page '3' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0003.json
+2023-10-24 10:00:25,383 text_importer.importers.core INFO     Written page '34' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0034.json
+2023-10-24 10:00:25,393 text_importer.importers.core INFO     Written page '5' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0005.json
+2023-10-24 10:00:25,397 text_importer.importers.core INFO     Written page '24' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0024.json
+2023-10-24 10:00:25,420 text_importer.importers.core INFO     Written page '33' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0033.json
+2023-10-24 10:00:25,451 text_importer.importers.core INFO     Written page '30' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0030.json
+2023-10-24 10:00:25,455 text_importer.importers.core INFO     Written page '21' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0021.json
+2023-10-24 10:00:25,478 text_importer.importers.core INFO     Written page '35' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0035.json
+2023-10-24 10:00:25,480 text_importer.importers.core INFO     Written page '19' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0019.json
+2023-10-24 10:00:25,492 text_importer.importers.core INFO     Written page '25' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0025.json
+2023-10-24 10:00:25,499 text_importer.importers.core INFO     Written page '26' to ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0026.json
+2023-10-24 10:00:25,869 text_importer.importers.core INFO     Compressing 41 JSON files into ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,870 text_importer.importers.core INFO     Written 1 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0014.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,874 text_importer.importers.core INFO     Written 2 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0011.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,876 text_importer.importers.core INFO     Written 3 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0007.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,877 text_importer.importers.core INFO     Written 4 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0002.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,885 text_importer.importers.core INFO     Written 5 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0013.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,892 text_importer.importers.core INFO     Written 6 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0037.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,899 text_importer.importers.core INFO     Written 7 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0015.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,907 text_importer.importers.core INFO     Written 8 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0029.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,913 text_importer.importers.core INFO     Written 9 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0020.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,914 text_importer.importers.core INFO     Written 10 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0017.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,923 text_importer.importers.core INFO     Written 11 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0040.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,926 text_importer.importers.core INFO     Written 12 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0012.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,927 text_importer.importers.core INFO     Written 13 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0001.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,931 text_importer.importers.core INFO     Written 14 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0032.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,933 text_importer.importers.core INFO     Written 15 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0016.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,934 text_importer.importers.core INFO     Written 16 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0010.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,939 text_importer.importers.core INFO     Written 17 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0039.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,942 text_importer.importers.core INFO     Written 18 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0028.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,945 text_importer.importers.core INFO     Written 19 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0031.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:25,945 text_importer.importers.core INFO     Written 20 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0041.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,055 text_importer.importers.core INFO     Written 21 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0036.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,064 text_importer.importers.core INFO     Written 22 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0022.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,067 text_importer.importers.core INFO     Written 23 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0004.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,070 text_importer.importers.core INFO     Written 24 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0008.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,077 text_importer.importers.core INFO     Written 25 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0027.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,083 text_importer.importers.core INFO     Written 26 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0023.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,086 text_importer.importers.core INFO     Written 27 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0006.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,088 text_importer.importers.core INFO     Written 28 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0018.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,090 text_importer.importers.core INFO     Written 29 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0009.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,094 text_importer.importers.core INFO     Written 30 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0038.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,097 text_importer.importers.core INFO     Written 31 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0003.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,111 text_importer.importers.core INFO     Written 32 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0034.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,113 text_importer.importers.core INFO     Written 33 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0005.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,114 text_importer.importers.core INFO     Written 34 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0024.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,119 text_importer.importers.core INFO     Written 35 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0033.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,125 text_importer.importers.core INFO     Written 36 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0030.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,127 text_importer.importers.core INFO     Written 37 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0021.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,234 text_importer.importers.core INFO     Written 38 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0035.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,235 text_importer.importers.core INFO     Written 39 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0019.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,238 text_importer.importers.core INFO     Written 40 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0025.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,240 text_importer.importers.core INFO     Written 41 docs from ../data/out_pauline/marieclaire/1939/01/27/a/marieclaire-1939-01-27-a-p0026.json to ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,394 text_importer.importers.core INFO     Uploaded ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2 to marieclaire/pages/marieclaire-1939/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,397 impresso_commons.text.rebuilder INFO     Removed temporary file ../data/out_pauline/pages/marieclaire-1939-01-27-a-pages.jsonl.bz2
+2023-10-24 10:00:26,408 text_importer.importers.core INFO     Done compressing and uploading pages of chunk 0 for 1938 - 1940
+2023-10-24 10:00:26,409 text_importer.importers.core INFO     ---------- Done ----------

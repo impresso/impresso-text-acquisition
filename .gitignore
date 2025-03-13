@@ -5,7 +5,10 @@ text_preparation/data/tmp/
 text_preparation/data/temp/
 text_preparation/data/out_pauline/
 text_preparation/data/canonical_out/*/*/*/*/*/*.json
-text_preparation/data/run_logs/
+text_preparation/data/logs/importer_logs/debug_*
+text_preparation/data/logs/importer_logs/playground_*
+text_preparation/data/logs/rebuilt_logs/debug_*
+text_preparation/data/logs/test_logs/*
 text_preparation/data/sample_data/BCUL/171722
 .pytest_cache
 *.egg-info
@@ -35,3 +38,6 @@ text_preparation/data/out/pages/FedGazDe-1857-01-24*-pages.jsonl.bz2
 text_preparation/data/out/pages/FedGazDe-1857-01-31*-pages.jsonl.bz2
 text_preparation/data/out/FedGazDe-2013-issues.jsonl.bz2
 text_preparation/data/canonical_out/test_out/*
+text_preparation/config/importer_config/import_*debug*.json
+text_preparation/config/importer_config/import_*_*.json
+text_preparation/config/rebuilt_config/debug*
