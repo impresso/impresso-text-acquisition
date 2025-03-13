@@ -15,6 +15,9 @@ from impresso_essentials.utils import init_logger, chunk
 
 logger = logging.getLogger(__name__)
 
+# this script can either copy OCR files (.xml) or images (.jp2)
+POSSIBLE_EXTENTIONS = ['.xml', '.jp2']
+
 def extract_date(root_path:str)-> tuple[bool, str, str, str]:
     # extract the year, month and day for a root path which has been format-checked
 
@@ -49,33 +52,36 @@ def extract_date(root_path:str)-> tuple[bool, str, str, str]:
         return False, y, m, d
     
 
-def check_if_to_be_copied(source_dir_files: str, dest_issue_dir: str, possible_date_formats, xml_ext = '.xml') -> tuple[bool, list[str]]:
+def check_if_to_be_copied(source_dir_files: str, dest_issue_dir: str, possible_date_formats, file_ext = '.xml') -> tuple[bool, list[str]]:
     # check if the copy needs to be done when within an issue dir.
     # should not be done if:
-    # - it was already done (dest issue dir exists and has exactly the same xml files)
+    # - it was already done (dest issue dir exists and has exactly the same xml/jp2 files)
+    # - there are no files to copy in the source (error in the file structure for instance)
+
+    assert file_ext in POSSIBLE_EXTENTIONS, f"The file extension provided was {file_ext}. It should be in {POSSIBLE_EXTENTIONS}."
 
     # list all the files to copy from the source dir: xml files which have the correct date
-    src_xml_files_to_copy = [f for f in source_dir_files for d in possible_date_formats if f.endswith(xml_ext) and d in f]
+    src_files_to_copy = [f for f in source_dir_files for d in possible_date_formats if f.endswith(file_ext) and d in f]
 
-    if len(src_xml_files_to_copy) == 0:
+    if len(src_files_to_copy) == 0:
         # if there are no files to copy at all, log it (might be an error)
-        msg = f"{dest_issue_dir} - No files to copy in source dir: source_dir_files={source_dir_files}, src_xml_files_to_copy={src_xml_files_to_copy}!"
+        msg = f"{dest_issue_dir} - No files to copy in source dir: source_dir_files={source_dir_files}, src_files_to_copy={src_files_to_copy}!"
         print(msg)
         logger.warning(msg)
-        return False, src_xml_files_to_copy
+        return False, src_files_to_copy
     
-    # check if dir exists and all xml files from source are there
+    # check if dir exists and all xml or jp2 files from source are there
     if os.path.exists(dest_issue_dir):
         existing_dest_files = os.listdir(dest_issue_dir)
-        if all(f in existing_dest_files for f in src_xml_files_to_copy):
+        if all(f in existing_dest_files for f in src_files_to_copy):
             # the copy wss already done correctly; to be copied = False
-            return False, src_xml_files_to_copy
+            return False, src_files_to_copy
         
-    # if dest_issue_dir doesn't exist or not all xml files from source dir are there, the copy needs to be redone
-    return True, src_xml_files_to_copy
+    # if dest_issue_dir doesn't exist or not all xml or jp2 files from source dir are there, the copy needs to be redone
+    return True, src_files_to_copy
     
 
-def copy_files_for_NLP(nlp, alias, source_dir, dest_dir, date_fmt_chars = ['-', '', '_']) -> tuple[list[str], list[str]]:
+def copy_files_for_NLP(nlp: str, alias: str, source_dir: str, dest_dir: str, file_ext: str, date_fmt_chars: list[str] = ['-', '', '_']) -> tuple[list[str], list[str]]:
     # given an NLP, copy all the files within it in the new desired structure
     problem_input_dirs = []
     failed_copies = []
@@ -103,12 +109,12 @@ def copy_files_for_NLP(nlp, alias, source_dir, dest_dir, date_fmt_chars = ['-', 
                     # list the possible dates to find in the files to copy
                     date_formats = [c.join([y, m, d]) for c in date_fmt_chars]
                     # identify the list of files to copy and if there are files left to copy
-                    copy_to_do, src_xml_files_to_copy = check_if_to_be_copied(files, issue_out_dir, date_formats)
+                    copy_to_do, src_files_to_copy = check_if_to_be_copied(files, issue_out_dir, date_formats, file_ext)
 
                     if copy_to_do:
                         # ensure dest issue dir exists
                         os.makedirs(issue_out_dir, exist_ok=True)
-                        for f in src_xml_files_to_copy:
+                        for f in src_files_to_copy:
                             try:
                                 shutil.copy(os.path.join(root, f), issue_out_dir)
                             except IOError as e:
@@ -149,12 +155,15 @@ def main(
     dest_base_dir: str = "/mnt/impresso_ocr_BL",
     sample_data_dir: str = "/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BL",
     title_alias_mapping_file: str = "BL_title_alias_mapping.csv",
+    file_type_ext: str = ".xml",
     chunk_size: int = 100,
     chunk_idx: int = 0,
     verbose: bool = False,
 ) -> None:
     
     init_logger(logger, logging.INFO if not verbose else logging.DEBUG, log_file)
+
+    assert file_type_ext in POSSIBLE_EXTENTIONS, f"The file extension provided was {file_type_ext}. It should be in {POSSIBLE_EXTENTIONS}."
 
     # read the csv containing the mapping from alias-NLP mapping
     nlp_alias_df = pd.read_csv(os.path.join(sample_data_dir, title_alias_mapping_file), index_col=0)
@@ -189,7 +198,7 @@ def main(
         logger.info(msg)
 
         try:
-            problem_input_dirs, failed_copies = copy_files_for_NLP(nlp, alias, source_base_dir, dest_base_dir)
+            problem_input_dirs, failed_copies = copy_files_for_NLP(nlp, alias, source_base_dir, dest_base_dir, file_type_ext)
             all_problem_input_dirs[nlp] = problem_input_dirs
             all_failed_copies[nlp] = failed_copies
         except Exception as e:
