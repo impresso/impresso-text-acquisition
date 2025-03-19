@@ -220,12 +220,17 @@ def copy_files_for_NLP(
                         msg = f"{alias}-{nlp}-{date_formats[0]} — Skipping: no files to copy issue contents of {root} already exist in {issue_out_dir}:\n"
                         print(msg)
                         logger.info(msg)
+                        if os.path.exists(issue_out_dir):
+                            out_list = os.listdir(issue_out_dir)
+                        else:
+                            out_list = os.listdir(os.path.split(issue_out_dir)[0])
                         msg = (
                             f"   - source dir (contents: {os.listdir(root)}\n"
-                            f"   - dest dir contents: {os.listdir(issue_out_dir)}."
+                            f"   - dest dir contents: {out_list}."
                         )
                         print(msg)
                         logger.debug(msg)
+
                 else:
                     msg = f"{alias}-{nlp} — Invalid date!! {root}"
                     print(msg)
