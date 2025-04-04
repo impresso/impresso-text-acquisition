@@ -320,6 +320,7 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
                 "id": page_file_names[page_no].replace(".json", ""),
                 "n": page_no,
                 "t": coords["tokens"],
+                # todo add paragraphs?
                 "r": coords["regions"],
             }
             article["ppreb"].append(page_doc)
