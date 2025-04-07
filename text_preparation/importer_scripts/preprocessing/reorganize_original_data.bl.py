@@ -177,7 +177,7 @@ def copy_files_for_NLP(
     """
     problem_input_dirs = []
     failed_copies = []
-    nlp_dest_dir_path = os.path.join(dest_dir, alias, nlp)
+    nlp_dest_dir_path = os.path.join(dest_dir, alias, nlp) if file_ext == '.xml' else os.path.join(dest_dir, alias)
 
     # Create the NLP subdirectory inside the alias directory if it does not exist
     os.makedirs(nlp_dest_dir_path, exist_ok=True)
@@ -197,7 +197,7 @@ def copy_files_for_NLP(
 
                 if valid_date:
                     # Define output directory for the issue
-                    issue_out_dir = os.path.join(nlp_dest_dir_path, y, m, d)
+                    issue_out_dir = os.path.join(nlp_dest_dir_path, y, m, d) if file_ext == '.xml' else os.path.join(nlp_dest_dir_path, y, m, d, 'a') 
                     # Generate possible date formats for file matching
                     date_formats = [c.join([y, m, d]) for c in date_fmt_chars]
                     # Determine files to copy and whether a copy is needed
