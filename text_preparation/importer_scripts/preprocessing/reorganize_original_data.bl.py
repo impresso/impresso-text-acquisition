@@ -204,6 +204,19 @@ def copy_files_for_NLP(
                     copy_to_do, src_files_to_copy = check_if_to_be_copied(
                         files, issue_out_dir, date_formats, file_ext
                     )
+                    
+                    # Handle special cases for specific NLPs
+                    if file_ext == '.jp2' and nlp == "0002425" and copy_to_do:
+                        # For "0002424" and "0002425", we have a special case with sometimes two editions
+                        issue_out_dir_ed_b = os.path.join(nlp_dest_dir_path, y, m, d, 'b') 
+                        copy_to_do_2, _ = check_if_to_be_copied(
+                            files, issue_out_dir_ed_b, date_formats, file_ext
+                        )
+                        msg = f"{alias}-{nlp}-{date_formats[0]} — Special case of {nlp}: copy_to_do={copy_to_do}, copy_to_do_2={copy_to_do_2}:\n"
+                        print(msg)
+                        logger.info(msg)
+                        copy_to_do = copy_to_do and copy_to_do_2
+
 
                     if copy_to_do:
                         # Ensure dest issue dir exists
@@ -330,6 +343,10 @@ def main(
     logger.info(msg)
 
     for nlp_idx, nlp in tqdm(enumerate(nlps_chunk)):
+        
+        if nlp in ['0003056', '0003057', '0004683', '0000071', '0000191']:
+            print(f"Skipping {nlp} as it is still under work.")
+            continue
 
         alias = nlp_to_alias[nlp]
         msg = f"{10*'-'} Processing {alias} - NLP {nlp} ({nlp_idx+1}/{len(nlps_chunk)}) {10*'-'}"
