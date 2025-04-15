@@ -10,7 +10,8 @@ from typing import Any, Callable
 from contextlib import ExitStack
 from filelock import FileLock
 import jsonlines
-
+from bs4 import BeautifulSoup
+from PIL import Image, ImageDraw
 from smart_open import open as smart_open_function
 import python_jsonschema_objects as pjs
 
@@ -231,3 +232,90 @@ def write_jsonlines_file(
             write_error(
                 os.path.basename(filepath), "write_jsonlines_file()", e, failed_log
             )
+
+def coords_to_xy(coords):
+    return [coords[0], coords[1], coords[0]+coords[2], coords[1]+coords[3]]
+
+def draw_box_on_img(base_img_path, coords_xy, img = None, width=10):
+    if not img:
+        img = Image.open(base_img_path)  
+    ImageDraw.Draw(img).rectangle(coords_xy, outline ="red", width=width)
+    return img
+
+def read_xml(file_path):
+    with open(file_path, 'rb') as f:
+        raw_xml = f.read()
+
+    return BeautifulSoup(raw_xml, 'xml')
+
+def rescale_coords(
+    coords: list[float], 
+    curr_size: tuple[float, float] = None, 
+    dest_size: tuple[float, float] = None, 
+    curr_res: float = None, 
+    dest_res: float = None,
+    xy_format: bool = True, 
+    int_sc_factor: bool = False
+) -> list[float]:
+    """Scales image or bounding box coordinates based on image size or resolution.
+
+    This function rescales a set of coordinates (`coords`) based on either:
+    - The current and target image sizes (`curr_size` and `dest_size`).
+    - The current and target resolutions (`curr_res` and `dest_res`).
+    
+    If `xy_format` is False and `curr_res`/`dest_res` are not provided, the function 
+    estimates a resolution-based scaling factor using image sizes (`width * height`).
+
+    When `xy_format` is True, the function assumes coordinates are in "x1, y1, x2, y2" format.
+    Otherwise, it assumes "x, y, width, height" format.
+
+    Args:
+        coords (list[float]): List of coordinates to be scaled.
+        curr_size (tuple[float, float], optional): Current image size (width, height).
+            Required if `xy_format=True`. Defaults to None.
+        dest_size (tuple[float, float], optional): Target image size (width, height).
+            Required if `xy_format=True`. Defaults to None.
+        curr_res (float, optional): Current image resolution (optional for `xy_format=False`).
+        dest_res (float, optional): Target image resolution (optional for `xy_format=False`).
+        xy_format (bool, optional): If True, treats coordinates as "x1, y1, x2, y2".
+            If False, treats coordinates as "x, y, width, height". Defaults to True.
+        int_sc_factor (bool, optional): If True, scales using integer division for factor calculation. 
+            Defaults to False.
+
+    Returns:
+        list[float]: Scaled coordinates.
+
+    Raises:
+        ValueError: If required parameters (size or resolution) are missing.
+        ValueError: If `curr_size` or `curr_res` contain zero.
+
+    Example:
+        >>> scale_coords([10, 20, 30, 40], (100, 200), (200, 400))
+        [20.0, 40.0, 60.0, 80.0]
+    """  
+    # Validate input parameters
+    if xy_format:
+        if curr_size is None or dest_size is None:
+            raise ValueError("When `xy_format` is True, `curr_size` and `dest_size` must be provided.")
+        if 0 in curr_size:
+            raise ValueError("Current image size must be non-zero values.")
+    else:
+        if curr_res is None or dest_res is None:
+            if curr_size is None or dest_size is None:
+                raise ValueError("When `xy_format` is False, either (`curr_res` and `dest_res`) or (`curr_size` and `dest_size`) must be provided.")
+            # Estimate resolution from image size
+            curr_res = curr_size[0] * curr_size[1]
+            dest_res = dest_size[0] * dest_size[1]
+        if curr_res == 0:
+            raise ValueError("Current image resolution or size must be non-zero values.")
+
+    # Compute scaling factors
+    if xy_format:
+        x_scale = int(dest_size[0]) / int(curr_size[0]) if int_sc_factor else dest_size[0] / curr_size[0]
+        y_scale = int(dest_size[1]) / int(curr_size[1]) if int_sc_factor else dest_size[1] / curr_size[1]
+
+        return [c * (x_scale if i % 2 == 0 else y_scale) for i, c in enumerate(coords)]
+    else:
+        scale_factor = int(dest_res) / int(curr_res) if int_sc_factor else dest_res / curr_res
+
+        return [c * scale_factor for c in coords]
