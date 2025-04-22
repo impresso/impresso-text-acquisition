@@ -11,7 +11,7 @@ from text_preparation.importers.detect import (
 )
 
 TetmlIssueDir = namedtuple(
-    "TetmlIssueDirectory", ["journal", "date", "edition", "path", "rights"]
+    "TetmlIssueDirectory", ["alias", "date", "edition", "path", "rights"]
 )
 
 """A light-weight data structure to represent a newspaper issue.
@@ -26,7 +26,7 @@ canonical identifiers for the issue and its pages.
     is used to indicate the edition number: 'a' for the first, 'b' for the
     second, etc.
 
-:param str journal: Newspaper ID
+:param str alias: Newspaper alias
 :param datetime.date date: Publication date
 :param str edition: Edition of the newspaper issue ('a', 'b', 'c', etc.)
 :param str path: Path to the directory containing OCR data
@@ -47,10 +47,10 @@ def dir2tetmldir(issue_dir: IssueDir, access_rights: dict) -> TetmlIssueDir:
     :param dict access_rights: Access rights information.
     :return: New ``TetmlIssueDir`` object.
     """
-    ar = get_access_right(issue_dir.journal, issue_dir.date, access_rights)
+    ar = get_access_right(issue_dir.alias, issue_dir.date, access_rights)
 
     return TetmlIssueDir(
-        issue_dir.journal, issue_dir.date, issue_dir.edition, issue_dir.path, rights=ar
+        issue_dir.alias, issue_dir.date, issue_dir.edition, issue_dir.path, rights=ar
     )
 
 

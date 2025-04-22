@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
 LuxIssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights"]
+    "IssueDirectory", ["alias", "date", "edition", "path", "rights"]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -28,7 +28,7 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
@@ -112,13 +112,13 @@ def select_issues(
         list[LuxIssueDir] | None: List of `LuxIssueDir` instances to import.
     """
     try:
-        filter_dict = config["newspapers"]
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
+            "The key [titles|exclude_titles|year_only] "
             "is missing in the config file."
         )
         return
@@ -126,8 +126,8 @@ def select_issues(
     issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     exclude_flag = False if not exclude_list else True

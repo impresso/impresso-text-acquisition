@@ -6,7 +6,7 @@ Usage:
     <importer-name>importer.py --version
 
 Options:
-    --input-dir=<id>    Base directory containing one sub-directory for each journal
+    --input-dir=<id>    Base directory containing one sub-directory for each media alias
     --image-dirs=<imd>  Directory containing (canonical) images and their metadata (use `,` to separate multiple dirs)
     --output-dir=<od>   Base directory where to write the output files
     --temp-dir=<td>     Temporary directory to extract .zip archives
@@ -41,7 +41,7 @@ from impresso_essentials.utils import init_logger
 
 from text_preparation import __version__
 
-from text_preparation.importers.classes import NewspaperIssue
+from text_preparation.importers.classes import CanonicalIssue
 from text_preparation.importers.bl.classes import BlNewspaperIssue
 from text_preparation.importers.core import import_issues
 from text_preparation.importers.detect import detect_issues
@@ -109,7 +109,7 @@ def get_dask_client(
 
 
 def apply_detect_func(
-    issue_class: Type[NewspaperIssue],
+    issue_class: Type[CanonicalIssue],
     input_dir: str,
     access_rights: str,
     detect_func: Callable[[str, str], list[IssueDir]],
@@ -118,8 +118,8 @@ def apply_detect_func(
     """Apply the given `detect_func` function of the importer in use.
 
     Args:
-        issue_class (Type[NewspaperIssue]): Type of issue importer in use.
-        input_dir (str): Directory containing this importer's newspaper data.
+        issue_class (Type[CanonicalIssue]): Type of issue importer in use.
+        input_dir (str): Directory containing this importer's original data.
         access_rights (str): Path to the access rights file for this importer.
         detect_func (Callable[[str, str], list[IssueDir]]): Function detecting
             the issues present in `input_dir` to import.
@@ -135,7 +135,7 @@ def apply_detect_func(
 
 
 def apply_select_func(
-    issue_class: Type[NewspaperIssue],
+    issue_class: Type[CanonicalIssue],
     config: dict[str, Any],
     input_dir: str,
     access_rights: str,
@@ -145,9 +145,9 @@ def apply_select_func(
     """Apply the given `select_func` function of the importer in use.
 
     Args:
-        issue_class (Type[NewspaperIssue]): Type of issue importer in use.
+        issue_class (Type[CanonicalIssue]): Type of issue importer in use.
         config (dict[str, Any]): Configuration to filter issues to import.
-        input_dir (str): Directory containing this importer's newspaper data.
+        input_dir (str): Directory containing this importer's original data.
         access_rights (str): Path to the access rights file for this importer.
         select_func (Callable[[str, str, str], list[IssueDir]]): Function
             detecting and selecting the issues to import using `config`.
@@ -165,7 +165,7 @@ def apply_select_func(
 
 
 def main(
-    issue_class: NewspaperIssue,
+    issue_class: CanonicalIssue,
     detect_func: Callable[[str, str], list[IssueDir]],
     select_func: Callable[[str, str, str], list[IssueDir]],
 ) -> None:
@@ -176,7 +176,7 @@ def main(
     serialized to json and uploaded to an S3 bucket, grouped by title and year.
 
     Args:
-        issue_class (NewspaperIssue): Importer to use for the conversion
+        issue_class (CanonicalIssue): Importer to use for the conversion
         detect_func (Callable[[str, str], list[IssueDir]]): `detect` function
             of the used importer.
         select_func (Callable[[str, str, str], list[IssueDir]]): `select`
@@ -231,7 +231,7 @@ def main(
             tmp_dir=temp_dir,
         )
         logger.info(
-            "%s newspaper remained after applying filter: %s", len(issues), issues
+            "%s issues remained to import after applying filter: %s", len(issues), issues
         )
     else:
         logger.info("No config file found.")
@@ -242,18 +242,18 @@ def main(
             detect_func=detect_func,
             tmp_dir=temp_dir,
         )
-        logger.info("%s newspaper issues detected", len(issues))
+        logger.info("%s  issues to import detected", len(issues))
 
     if outp_dir is not None and os.path.exists(outp_dir) and incremental_output:
         issues_to_skip = [
-            (issue.journal, issue.date, issue.edition)
+            (issue.alias, issue.date, issue.edition)
             for issue in detect_issues(outp_dir, w_edition=True)
         ]
         logger.debug("Issues to skip: %s", issues_to_skip)
         logger.info("%s issues to skip", len(issues_to_skip))
         issues = list(
             filter(
-                lambda x: (x.journal, x.date, x.edition) not in issues_to_skip, issues
+                lambda x: (x.alias, x.date, x.edition) not in issues_to_skip, issues
             )
         )
         logger.debug("Remaining issues: %s", issues)
@@ -265,10 +265,10 @@ def main(
 
     # ititialize manifest
     if config_file:
-        newspapers = f" for titles {list(config['newspapers'].keys())}"
+        titles = f" for media aliases {list(config['titles'].keys())}"
     else:
-        newspapers = ""
-    manifest_note = f"Ingestion of {len(issues)} Newspaper issues into canonical format{newspapers}."
+        titles = ""
+    manifest_note = f"Ingestion of {len(issues)} issues into canonical format{titles}."
 
     manifest = DataManifest(
         data_stage="canonical",

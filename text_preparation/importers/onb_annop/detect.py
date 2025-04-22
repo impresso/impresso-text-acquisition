@@ -13,7 +13,7 @@ from text_preparation.importers.detect import _apply_datefilter
 logger = logging.getLogger(__name__)
 
 OnbIssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights", "pages"]
+    "IssueDirectory", ["alias", "date", "edition", "path", "rights", "pages"]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -27,7 +27,7 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper ID.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
@@ -35,7 +35,7 @@ Args:
 
 >>> from datetime import date
 >>> i = OnbIssueDir(
-        journal='nwb', 
+        alias='nwb', 
         date=date(1874,01,06), 
         edition='a', path='./ANNO/nwb/1874/01/06',
         rights='open_public', 
@@ -60,7 +60,7 @@ def dir2issue(path: str, access_rights: dict) -> OnbIssueDir:
         OnbIssueDir: New `OnbIssueDir` object matching the path and rights.
     """
     split_path = path.split("/")
-    journal = split_path[-4]
+    alias = split_path[-4]
     issue_date = date.fromisoformat("-".join(split_path[-3:]))
     edition = "a"
     issue_id = "-".join(split_path[-4:] + [edition])
@@ -76,11 +76,10 @@ def dir2issue(path: str, access_rights: dict) -> OnbIssueDir:
     pages.sort(key=lambda x: int(x[1].replace(".xml", "")))
 
     return OnbIssueDir(
-        journal=journal,
+        alias=alias,
         date=issue_date,
         edition=edition,
         path=path,
-        rights=access_rights,
         pages=pages,
     )
 
@@ -110,11 +109,11 @@ def detect_issues(base_dir: str, access_rights: str) -> list[OnbIssueDir]:
     journal_dirs = [os.path.join(dir_path, j_dir) for j_dir in dirs]
     # iteratively
     issues_dirs = [
-        os.path.join(journal, year, month, day)
-        for journal in journal_dirs
-        for year in os.listdir(journal)
-        for month in os.listdir(os.path.join(journal, year))
-        for day in os.listdir(os.path.join(journal, year, month))
+        os.path.join(alias, year, month, day)
+        for alias in journal_dirs
+        for year in os.listdir(alias)
+        for month in os.listdir(os.path.join(alias, year))
+        for day in os.listdir(os.path.join(alias, year, month))
     ]
 
     # with open(access_rights, 'r') as f:
@@ -148,12 +147,12 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[OnbIs
         list[OnbIssueDir]: list of ``OnbIssueDir`` instances, to be imported.
     """
     try:
-        filter_dict = config.get("newspapers")
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config.get("titles")
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
     except KeyError:
         logger.critical(
-            f"The key [newspapers|exclude_newspapers|year_only] "
+            f"The key [titles|exclude_titles|year_only] "
             "is missing in the config file."
         )
         return []
@@ -166,11 +165,11 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[OnbIs
         f"\nexclude_flag: {exclude_flag}"
     )
 
-    filter_newspapers = (
+    filter_titles = (
         set(filter_dict.keys()) if not exclude_flag else set(exclude_list)
     )
     logger.debug(
-        f"got filter_newspapers: {filter_newspapers}, "
+        f"got filter_titles: {filter_titles}, "
         f"with exclude flag: {exclude_flag}"
     )
 
@@ -178,8 +177,8 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[OnbIs
 
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     exclude_flag = False if not exclude_list else True

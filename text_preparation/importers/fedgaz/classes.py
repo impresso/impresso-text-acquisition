@@ -12,7 +12,7 @@ import regex
 from impresso_essentials.utils import IssueDir
 from impresso_essentials.io.fs_utils import canonical_path
 
-from text_preparation.importers.classes import NewspaperIssue
+from text_preparation.importers.classes import CanonicalIssue
 from text_preparation.importers.tetml import TetmlNewspaperIssue, TetmlNewspaperPage
 from text_preparation.importers.tetml.parsers import tetml_parser
 from text_preparation.importers.tetml.helpers import compute_bb
@@ -75,7 +75,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
     """
 
     def __init__(self, issue_dir: IssueDir):
-        NewspaperIssue.__init__(self, issue_dir)
+        CanonicalIssue.__init__(self, issue_dir)
 
         logger.info("Starting to parse %s", self.id)
 
@@ -105,7 +105,6 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
-            "ar": self.rights,
         }
 
         logger.info("Finished parsing %s", self.id)
@@ -174,7 +173,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         Parse file with additional metadata
         """
 
-        level_journal = self.path.split("/").index(self.journal)
+        level_journal = self.path.split("/").index(self.alias)
         basedir = "/".join(self.path.split("/")[0 : level_journal + 1])
         fpath = os.path.join(basedir, fname)
 
@@ -206,7 +205,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
 
         docid = data["meta"]["id"]
         data["m"]["t"] = self._lookup_article_title(docid)
-        data["m"]["l"] = self._lookup_article_language(docid)
+        data["m"]["lg"] = self._lookup_article_language(docid)
         data["m"]["pp"] = self._lookup_article_pages(docid)
 
         return data

@@ -26,10 +26,10 @@ Pageschema = get_page_schema()
 logger = logging.getLogger(__name__)
 
 
-class NewspaperIssue(ABC):
-    """Abstract class representing a newspaper issue.
+class CanonicalIssue(ABC):
+    """Abstract class representing a canonical issue.
 
-    Each text importer needs to define a subclass of `NewspaperIssue` which
+    Each text importer needs to define a subclass of `CanonicalIssue` which
     specifies the logic to handle OCR data in a given format (e.g. Olive).
 
     Args:
@@ -38,23 +38,26 @@ class NewspaperIssue(ABC):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Media unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
         pages (list): List of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
     """
 
     def __init__(self, issue_dir: IssueDir) -> None:
         self.id = canonical_path(issue_dir)
         self.edition = issue_dir.edition
-        self.journal = issue_dir.journal
+        self.alias = issue_dir.alias
         self.path = issue_dir.path
         self.date = issue_dir.date
+        # TODO to add later! 
+        #self.src_type = issue_dir.src_type
+        #self.src_medium = issue_dir.src_medium
         self.issue_data = {}
         self._notes = []
         self.pages = []
+        ## TODO remove!!
         self.rights = issue_dir.rights
 
     @abstractmethod
@@ -67,7 +70,8 @@ class NewspaperIssue(ABC):
     @property
     def issuedir(self) -> IssueDir:
         """`IssueDir`: IssueDirectory corresponding to this issue."""
-        return IssueDir(self.journal, self.date, self.edition, self.path)
+        return IssueDir(self.alias, self.date, self.edition, self.path)
+        #return IssueDir(self.alias, self.date, self.edition, self.src_type, self.src_medium, self.path)
 
     def to_json(self) -> str:
         """Validate ``self.issue_data`` & serialize it to string.
@@ -81,10 +85,10 @@ class NewspaperIssue(ABC):
         return issue.serialize()
 
 
-class NewspaperPage(ABC):
+class CanonicalPage(ABC):
     """Abstract class representing a newspaper page.
 
-    Each text importer needs to define a subclass of ``NewspaperPage`` which
+    Each text importer needs to define a subclass of ``CanonicalPage`` which
     specifies the logic to handle OCR data in a given format (e.g. Alto).
 
     Args:
@@ -95,7 +99,7 @@ class NewspaperPage(ABC):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue | None): Issue this page is from.
+        issue (CanonicalIssue | None): Issue this page is from.
     """
 
     def __init__(self, _id: str, number: int) -> None:
@@ -116,11 +120,11 @@ class NewspaperPage(ABC):
         return page.serialize()
 
     @abstractmethod
-    def add_issue(self, issue: NewspaperIssue) -> None:
-        """Add to a page object its parent, i.e. the newspaper issue.
+    def add_issue(self, issue: CanonicalIssue) -> None:
+        """Add to a page object its parent, i.e. the canonical issue.
 
         This allows each page to preserve contextual information coming from
-        the newspaper issue.
+        the canonical issue.
 
         Args:
             issue (NewspaperIssue): Newspaper issue containing this page.

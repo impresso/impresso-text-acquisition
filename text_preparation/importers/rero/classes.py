@@ -15,8 +15,8 @@ from bs4.element import NavigableString, Tag
 
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPES
 from text_preparation.importers.mets_alto import (
-    MetsAltoNewspaperIssue,
-    MetsAltoNewspaperPage,
+    MetsAltoCanonicalIssue,
+    MetsAltoCanonicalPage,
     parse_mets_amdsec,
 )
 from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
@@ -61,7 +61,7 @@ def convert_coordinates(
     return [int(c / factor) for c in coords]
 
 
-class ReroNewspaperPage(MetsAltoNewspaperPage):
+class ReroNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in RERO (Mets/Alto) format.
 
     Args:
@@ -74,7 +74,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
@@ -87,7 +87,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         page_tag = self.xml.find("Page")
         self.page_width = float(page_tag.get("WIDTH"))
 
-    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+    def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
         self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.id)
 
@@ -145,7 +145,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         return success, page_regions
 
 
-class ReroNewspaperIssue(MetsAltoNewspaperIssue):
+class ReroNewspaperIssue(MetsAltoCanonicalIssue):
     """Newspaper Issue in RERO (Mets/Alto) format.
 
     All functions defined in this child class are specific to parsing RERO
@@ -157,12 +157,11 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict[str, Any]): metadata allowing to convert region
             OCR/OLR coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
@@ -343,7 +342,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         # Get CI language
         language = self._get_ci_language(item_div.get("DMDID"), mets_doc)
         if language is not None:
-            metadata["l"] = language
+            metadata["lg"] = language
 
         content_item = {
             "m": metadata,
@@ -456,7 +455,6 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "i": content_items,
             "id": self.id,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
         }
 

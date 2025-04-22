@@ -18,7 +18,7 @@ from text_preparation.importers.detect import get_access_right, _apply_datefilte
 logger = logging.getLogger(__name__)
 
 BnfIssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights", "secondary_date"]
+    "IssueDirectory", ["alias", "date", "edition", "path", "rights", "secondary_date"]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -37,7 +37,7 @@ Note:
     either `-` or `/`.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
@@ -46,7 +46,7 @@ Args:
 
 >>> from datetime import date
 >>> i = BnfIssueDir(
-    journal='Marie-Claire', 
+    alias='Marie-Claire', 
     date=datetime.date(1938, 3, 11), 
     edition='a', 
     path='./BNF/files/4701034.zip', 
@@ -69,7 +69,7 @@ def get_id(issue: BnfIssueDir) -> str:
         str: Canonical ID of issue.
     """
     return "{}-{}-{:02}-{:02}-{}".format(
-        issue.journal, issue.date.year, issue.date.month, issue.date.day, issue.edition
+        issue.alias, issue.date.year, issue.date.month, issue.date.day, issue.edition
     )
 
 
@@ -102,7 +102,7 @@ def assign_editions(issues: list[BnfIssueDir]) -> list[BnfIssueDir]:
     new_issues = []
     for index, (i, n) in enumerate(issues):
         i = BnfIssueDir(
-            journal=i.journal,
+            alias=i.alias,
             date=i.date,
             edition=string.ascii_lowercase[index],
             path=i.path,
@@ -136,14 +136,14 @@ def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
         try:
             # Issue info is in dmdSec of id "DMD.2"
             issue_info = get_dmd_sec(manifest, "DMD.2")
-            journal = get_journal_name(issue_path)
+            alias = get_journal_name(issue_path)
             np_date, secondary_date = parse_date(
                 issue_info.find("date").contents[0], DATE_FORMATS, DATE_SEPARATORS
             )
             edition = "a"
-            rights = get_access_right(journal, np_date, access_rights_dict)
+            rights = get_access_right(alias, np_date, access_rights_dict)
             issue = BnfIssueDir(
-                journal=journal,
+                alias=alias,
                 date=np_date,
                 edition=edition,
                 path=issue_path,
@@ -223,13 +223,13 @@ def select_issues(
 
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["newspapers"]
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
+            "The key [titles|exclude_titles|year_only] "
             "is missing in the config file."
         )
         return
@@ -237,8 +237,8 @@ def select_issues(
     issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
     exclude_flag = False if not exclude_list else True
     filtered_issues = (

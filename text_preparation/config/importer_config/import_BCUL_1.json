@@ -1,5 +1,5 @@
 {
-    "newspapers": {
+    "titles": {
         "ACI": [],
         "Castigat": [],
         "CL": [],
@@ -44,6 +44,6 @@
         "NV1": [],
         "NV2": []
     },
-    "exclude_newspapers": [],
+    "exclude_titles": [],
     "year_only": false
 }

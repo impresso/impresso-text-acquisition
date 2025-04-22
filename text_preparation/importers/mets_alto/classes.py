@@ -1,6 +1,6 @@
 """This module contains the definition of generic Mets/Alto importer classes.
 
-The classes define newspaper Issues and Pages objects which convert OCR data in
+The classes define Issues and Pages objects which convert OCR data in
 Mets/Alto format to a unified canoncial format.
 The classes in this module are meant to be subclassed to handle independently
 the parsing for each version of the Mets/Atlo format and their specificities.
@@ -15,7 +15,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from impresso_essentials.utils import IssueDir
 
-from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.mets_alto import alto
 from text_preparation.utils import get_issue_schema, get_page_schema
 
@@ -25,12 +25,12 @@ Pageschema = get_page_schema()
 logger = logging.getLogger(__name__)
 
 
-class MetsAltoNewspaperPage(NewspaperPage):
-    """Newspaper page in generic Alto format.
+class MetsAltoCanonicalPage(CanonicalPage):
+    """Canonical page in generic Alto format.
 
     Note:
         New Mets/Alto importers should sub-classes this class and implement
-        its abstract methods (i.e. :meth:`~MetsAltoNewspaperPage.add_issue()`).
+        its abstract methods (i.e. :meth:`~MetsAltoCanonicalPage.add_issue()`).
 
     Args:
         _id (str): Canonical page ID.
@@ -43,7 +43,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file.
@@ -113,7 +113,7 @@ class MetsAltoNewspaperPage(NewspaperPage):
         return True, page_regions
 
     @abstractmethod
-    def add_issue(self, issue: NewspaperIssue) -> None:
+    def add_issue(self, issue: CanonicalIssue) -> None:
         pass
 
     def parse(self) -> None:
@@ -136,8 +136,8 @@ class MetsAltoNewspaperPage(NewspaperPage):
             self.page_data["n"] = notes
 
 
-class MetsAltoNewspaperIssue(NewspaperIssue):
-    """Newspaper issue in generic Mets/Alto format.
+class MetsAltoCanonicalIssue(CanonicalIssue):
+    """Canonical issue in generic Mets/Alto format.
 
     Note:
         New Mets/Alto importers should sub-class this class and implement
@@ -149,12 +149,11 @@ class MetsAltoNewspaperIssue(NewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Media unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj: `CanonicalPage` instances from this issue.
         image_properties (dict[str, Any]): metadata allowing to convert region
             OCR/OLR coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.

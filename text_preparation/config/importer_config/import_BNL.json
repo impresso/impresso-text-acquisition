@@ -1,7 +1,7 @@
 {
-  "newspapers": {
-      "armeteufel": []
+    "titles": {
+        "armeteufel": []
     },
-  "exclude_newspapers": [],
-  "year_only": false
+    "exclude_titles": [],
+    "year_only": false
 }

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
 Rero2IssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights"]
+    "IssueDirectory", ["alias", "date", "edition", "path", "rights"]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -30,7 +30,7 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
@@ -51,18 +51,18 @@ def dir2issue(path: str, access_rights: dict) -> Rero2IssueDir:
     Returns:
         Rero2IssueDir: New `Rero2IssueDir` object matching the path and rights.
     """
-    journal, issue = path.split("/")[-2:]
+    alias, issue = path.split("/")[-2:]
     date, edition = issue.split("_")[:2]
     date = datetime.strptime(date, "%Y%m%d").date()
 
     edition = EDITIONS_MAPPINGS[int(edition)]
 
     return Rero2IssueDir(
-        journal=journal,
+        alias=alias,
         date=date,
         edition=edition,
         path=path,
-        rights=get_access_right(journal, date, access_rights),
+        rights=get_access_right(alias, date, access_rights),
     )
 
 
@@ -88,11 +88,11 @@ def detect_issues(
     dir_path, dirs, _ = next(os.walk(base_dir))
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
     journal_dirs = [
-        os.path.join(journal, _dir, _dir2)
-        for journal in journal_dirs
-        for _dir in os.listdir(journal)
+        os.path.join(alias, _dir, _dir2)
+        for alias in journal_dirs
+        for _dir in os.listdir(alias)
         if _dir == data_dir
-        for _dir2 in os.listdir(os.path.join(journal, _dir))
+        for _dir2 in os.listdir(os.path.join(alias, _dir))
     ]
 
     issues_dirs = [
@@ -128,13 +128,13 @@ def select_issues(
     """
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["newspapers"]
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
+            "The key [titles|exclude_titles|year_only] "
             "is missing in the config file."
         )
         return
@@ -142,8 +142,8 @@ def select_issues(
     issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     exclude_flag = False if not exclude_list else True

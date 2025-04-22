@@ -18,7 +18,7 @@ from bs4 import BeautifulSoup
 import cv2 as cv
 
 from impresso_essentials.utils import IssueDir
-from text_preparation.importers.classes import NewspaperIssue, ZipArchive
+from text_preparation.importers.classes import CanonicalIssue, ZipArchive
 from text_preparation.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
@@ -295,7 +295,7 @@ def recompose_ToC(
 
             item["m"]["id"] = item["id"]
             item["m"]["pp"] = article["meta"]["page_no"]
-            item["m"]["l"] = article["meta"]["language"]
+            item["m"]["lg"] = article["meta"]["language"]
             item["m"]["tp"] = article["meta"]["type"]["raw"].lower()
 
             if keep_title(article["meta"]["title"]):
@@ -629,7 +629,7 @@ def convert_page_coordinates(
     page_image_name: str,
     zip_archive: ZipArchive,
     box_strategy: str,
-    issue: NewspaperIssue,
+    issue: CanonicalIssue,
 ) -> bool:
     """Convert coordinates of all elements in a page that have coordinates.
 
@@ -644,7 +644,7 @@ def convert_page_coordinates(
         page_image_name (str): Name of page image file.
         zip_archive (ZipArchive): Olive Zip archive.
         box_strategy (str): Conversion strategy to apply.
-        issue (NewspaperIssue): Newspaper issue the page belongs to.
+        issue (CanonicalIssue): Newspaper issue the page belongs to.
 
     Returns:
         bool: Whether the coordinate conversion was successful or not.

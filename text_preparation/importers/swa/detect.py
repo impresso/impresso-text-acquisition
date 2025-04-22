@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 SwaIssueDir = namedtuple(
     "IssueDirectory",
     [
-        "journal",
+        "alias",
         "date",
         "edition",
         "path",
@@ -38,7 +38,7 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
@@ -48,9 +48,10 @@ Args:
 
 >>> from datetime import date
 >>> i = IssueDirectory(
-        journal='arbeitgeber', 
+        alias='arbeitgeber', 
         date=datetime.date(1908, 7, 4), 
-        edition='a', path='./SWA/impresso_ocr/schwar_000059110_DSV01_1908.zip',
+        edition='a', 
+        path='./SWA/impresso_ocr/schwar_000059110_DSV01_1908.zip',
         rights='open_public', 
         pages=[(
             'arbeitgeber-1908-07-04-a-p0001', 
@@ -139,11 +140,11 @@ def _get_issuedir(
         split = row.manifest_id.split("-")[:-1]
         if len(split) == 5:
             try:
-                journal, year, mo, day, edition = split
+                alias, year, mo, day, edition = split
                 pub_date = date(int(year), int(mo), int(day))
-                rights = get_access_right(journal, pub_date, access_rights)
+                rights = get_access_right(alias, pub_date, access_rights)
                 return SwaIssueDir(
-                    journal,
+                    alias,
                     pub_date,
                     edition,
                     path=archive,
@@ -224,12 +225,12 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[SwaIs
         list[SwaIssueDir]: list of ``SwaIssueDir`` instances, to be imported.
     """
     try:
-        filter_dict = config.get("newspapers")
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config.get("titles")
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
+            "The key [titles|exclude_titles|year_only] "
             "is missing in the config file."
         )
         return []
@@ -243,12 +244,12 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[SwaIs
     )
     logger.debug(msg)
 
-    filter_newspapers = (
+    filter_titles = (
         set(filter_dict.keys()) if not exclude_list else set(exclude_list)
     )
     logger.debug(
-        "got filter_newspapers: %s, with exclude flag: %s",
-        filter_newspapers,
+        "got filter_titles: %s, with exclude flag: %s",
+        filter_titles,
         exclude_flag,
     )
 
@@ -256,8 +257,8 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[SwaIs
 
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     logger.info(

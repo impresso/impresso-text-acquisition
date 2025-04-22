@@ -33,8 +33,8 @@ from text_preparation.importers.lux.helpers import (
 )
 from text_preparation.importers.mets_alto.alto import parse_style
 from text_preparation.importers.mets_alto import (
-    MetsAltoNewspaperIssue,
-    MetsAltoNewspaperPage,
+    MetsAltoCanonicalIssue,
+    MetsAltoCanonicalPage,
     parse_mets_amdsec,
 )
 from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
@@ -47,7 +47,7 @@ IIIF_ENDPOINT_URI = "https://iiif.eluxemburgensia.lu/image/iiif/2"
 IIIF_SUFFIX = "info.json"
 
 
-class LuxNewspaperPage(MetsAltoNewspaperPage):
+class LuxNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in BNL (Mets/Alto) format.
 
     Args:
@@ -61,7 +61,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file.
@@ -77,7 +77,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
 
         self.page_data["s"] = styles
 
-    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+    def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
         iiif_base_link = f"{IIIF_ENDPOINT_URI}/{encoded_ark_id}"
@@ -131,7 +131,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
         return success, page_regions
 
 
-class LuxNewspaperIssue(MetsAltoNewspaperIssue):
+class LuxNewspaperIssue(MetsAltoCanonicalIssue):
     """Class representing an issue in BNL data.
 
     All functions defined in this child class are specific to parsing BNL
@@ -143,12 +143,11 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict): Issue data according to canonical Issue format.
-        pages (list): List of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): List of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict): metadata allowing to convert region OCR/OLR
             coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
@@ -304,7 +303,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 # TODO: how to get language information for these CIs ?
                 if item["m"]["tp"] == CONTENTITEM_TYPE_ARTICLE:
                     lang = section.find_all("languageTerm")[0].getText()
-                    item["m"]["l"] = lang
+                    item["m"]["lg"] = lang
 
                 # This has been added to not consider ads as pictures
                 if not (
@@ -617,7 +616,6 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
             "i": content_items,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
         }
 

@@ -34,7 +34,7 @@ from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import counts_for_canonical_issue
 from smart_open import open as smart_open_function
 
-from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.olive.classes import OliveNewspaperIssue
 from text_preparation.importers.swa.classes import SWANewspaperIssue
 
@@ -42,14 +42,14 @@ logger = logging.getLogger(__name__)
 
 
 def write_error(
-    thing: NewspaperIssue | NewspaperPage | IssueDir | str,
+    thing: CanonicalIssue | CanonicalPage | IssueDir | str,
     error: Exception | str,
     failed_log: str | None,
 ) -> None:
     """Write the given error of a failed import to the `failed_log` file.
 
     Args:
-        thing (NewspaperIssue | NewspaperPage | IssueDir | str): Object for which
+        thing (CanonicalIssue | CanonicalPage | IssueDir | str): Object for which
             the error occurred, or corresponding canonical ID.
         error (Exception): Error that occurred and should be logged.
         failed_log (str): Path to log file for failed imports.
@@ -61,9 +61,9 @@ def write_error(
         # if thing is a string, it's the canonical id of the object
         note = f"{thing}: {error}"
     else:
-        if isinstance(thing, NewspaperPage):
+        if isinstance(thing, CanonicalPage):
             issuedir = thing.issue.issuedir
-        elif isinstance(thing, NewspaperIssue):
+        elif isinstance(thing, CanonicalIssue):
             issuedir = thing.issuedir
         else:
             # if it's neither an issue nor a page it must be an issuedir
@@ -97,19 +97,19 @@ def cleanup(upload_success: bool, filepath: str) -> None:
 
 def dir2issue(
     issue: IssueDir,
-    issue_class: Type[NewspaperIssue],
+    issue_class: Type[CanonicalIssue],
     failed_log: str | None = None,
     image_dirs: str | None = None,
     temp_dir: str | None = None,
-) -> NewspaperIssue | None:
-    """Instantiate a `NewspaperIssue` object from an `IssueDir`.
+) -> CanonicalIssue | None:
+    """Instantiate a `CanonicalIssue` object from an `IssueDir`.
 
     Any instantiation leading to an exception is logged to a specific file
     only containing issues which could not be imported.
 
     Args:
         issue (IssueDir): `IssueDir` representing the issue to instantiate.
-        issue_class (Type[NewspaperIssue]): Type of `NewspaperIssue` to use.
+        issue_class (Type[CanonicalIssue]): Type of `CanonicalIssue` to use.
         failed_log (str | None, optional): Path to the log file used if the
             instantiation was not successful. Defaults to None.
         image_dirs (str | None, optional): Path to the directory containing the
@@ -118,7 +118,7 @@ def dir2issue(
             issue's zip archive into. Defaults to None.
 
     Returns:
-        NewspaperIssue | None: A new `NewspaperIssue` instance, or `None` if
+        CanonicalIssue | None: A new `CanonicalIssue` instance, or `None` if
             the instantiation triggered an exception.
     """
     try:
@@ -136,19 +136,19 @@ def dir2issue(
 
 def dirs2issues(
     issues: list[IssueDir],
-    issue_class: Type[NewspaperIssue],
+    issue_class: Type[CanonicalIssue],
     failed_log: str | None = None,
     image_dirs: str | None = None,
     temp_dir: str | None = None,
-) -> list[NewspaperIssue]:
-    """Instantiate the `NewspaperIssue` objects to import to Impresso's format.
+) -> list[CanonicalIssue]:
+    """Instantiate the `CanonicalIssue` objects to import to Impresso's format.
 
-    Any `NewspaperIssue` for which the instantiation is unsuccessful
+    Any `CanonicalIssue` for which the instantiation is unsuccessful
     will be logged, along with the triggered error.
 
     Args:
         issues (list[IssueDir]): List of issues to instantiate and import.
-        issue_class (Type[NewspaperIssue]): Type of `NewspaperIssue` to use.
+        issue_class (Type[CanonicalIssue]): Type of `CanonicalIssue` to use.
         failed_log (str | None, optional): Path to the log file used when an
             instantiation was not successful. Defaults to None.
         image_dirs (str | None, optional): Path to the directory containing the
@@ -157,7 +157,7 @@ def dirs2issues(
             archives of issues into. Defaults to None.
 
     Returns:
-        list[NewspaperIssue]: List of `NewspaperIssue` instances to import.
+        list[CanonicalIssue]: List of `CanonicalIssue` instances to import.
     """
     ret = []
     for issue in issues:
@@ -167,17 +167,17 @@ def dirs2issues(
     return ret
 
 
-def issue2pages(issue: NewspaperIssue) -> list[NewspaperPage]:
+def issue2pages(issue: CanonicalIssue) -> list[CanonicalPage]:
     """Flatten an issue into a list of their pages.
 
     As an issue consists of several pages, this function is useful
     in order to process each page in a truly parallel fashion.
 
     Args:
-        issue (NewspaperIssue): Issue to collect the pages of.
+        issue (CanonicalIssue): Issue to collect the pages of.
 
     Returns:
-        list[NewspaperPage]: List of pages of the given issue.
+        list[CanonicalPage]: List of pages of the given issue.
     """
     pages = []
     for page in issue.pages:
@@ -187,12 +187,12 @@ def issue2pages(issue: NewspaperIssue) -> list[NewspaperPage]:
 
 
 def serialize_pages(
-    pages: list[NewspaperPage], output_dir: str | None = None
+    pages: list[CanonicalPage], output_dir: str | None = None
 ) -> list[Tuple[IssueDir, str]]:
     """Serialize a list of pages to an output directory.
 
     Args:
-        pages (list[NewspaperPage]): Input newspaper pages.
+        pages (list[CanonicalPage]): Input canonical pages.
         output_dir (str | None, optional): Path to the output directory.
             Defaults to None.
 
@@ -228,15 +228,15 @@ def serialize_pages(
     return result
 
 
-def process_pages(pages: list[NewspaperPage], failed_log: str) -> list[NewspaperPage]:
+def process_pages(pages: list[CanonicalPage], failed_log: str) -> list[CanonicalPage]:
     """Given a list of pages, trigger the ``.parse()`` method of each page.
 
     Args:
-        pages (list[NewspaperPage]): Input newspaper pages.
+        pages (list[CanonicalPage]): Input canonical pages.
         failed_log (str): File path of failed log.
 
     Returns:
-        list[NewspaperPage]: A list of processed pages.
+        list[CanonicalPage]: A list of processed pages.
     """
     result = []
     for page in pages:
@@ -252,21 +252,21 @@ def import_issues(
     issues: list[IssueDir],
     out_dir: str,
     s3_bucket: str | None,
-    issue_class: Type[NewspaperIssue],
+    issue_class: Type[CanonicalIssue],
     image_dirs: str | None,
     temp_dir: str | None,
     chunk_size: int | None,
     manifest: DataManifest,
     client: Client | None = None,
 ) -> None:
-    """Import a bunch of newspaper issues.
+    """Import a bunch of canonical issues (newspaper or radio-bulletin).
 
     Args:
         issues (list[IssueDir]): Issues to import.
         out_dir (str): Output directory for the json files.
         s3_bucket (str | None): Output s3 bucket for the json files.
-        issue_class (Type[NewspaperIssue]): Newspaper issue class to import,
-            (Child of ``NewspaperIssue``).
+        issue_class (Type[CanonicalIssue]): Canonical issue class to import,
+            (Child of ``CanonicalIssue``).
         image_dirs (str | None): Directory of images for Olive format,
             (can be multiple).
         temp_dir (str | None): Temporary directory for extracting archives
@@ -319,7 +319,7 @@ def import_issues(
         logger.info("Start compressing issues for %s", period)
 
         compressed_issue_files = (
-            issue_bag.groupby(lambda i: (i.journal, i.date.year))
+            issue_bag.groupby(lambda i: (i.alias, i.date.year))
             .starmap(compress_issues, output_dir=out_dir, failed_log=failed_log_path)
             .compute()
         )
@@ -437,7 +437,7 @@ def compress_pages(
     """Merge a set of JSON line files into a single compressed archive.
 
     Args:
-        key (str): Canonical ID of the newspaper issue (e.g. GDL-1900-01-02-a).
+        key (str): Canonical ID of the issue (e.g. GDL-1900-01-02-a).
         json_files (list[str]): Paths of input JSON line files.
         output_dir (str): Directory where to write the output file.
         suffix (str, optional): Suffix to add to the filename. Defaults to "".
@@ -445,9 +445,9 @@ def compress_pages(
     Returns:
         Tuple[str, str]: Sorting key [0] and path to serialized file [1].
     """
-    newspaper, year, month, day, edition = key.split("-")
+    alias, year, month, day, edition = key.split("-")
     suffix_string = "" if suffix == "" else f"-{suffix}"
-    filename = f"{newspaper}-{year}-{month}-{day}-{edition}{suffix_string}.jsonl.bz2"
+    filename = f"{alias}-{year}-{month}-{day}-{edition}{suffix_string}.jsonl.bz2"
     filepath = os.path.join(output_dir, filename)
     logger.info("Compressing %s JSON files into %s", len(json_files), filepath)
 
@@ -477,11 +477,11 @@ def compress_pages(
 
 def compress_issues(
     key: Tuple[str, int],
-    issues: list[NewspaperIssue],
+    issues: list[CanonicalIssue],
     output_dir: str | None = None,
     failed_log: str | None = None,
 ) -> Tuple[str, str, list[dict[str, int]]]:
-    """Compress issues of the same Journal-year and save them in a json file.
+    """Compress issues of the same alias-year and save them in a json file.
 
     First check if the file exists, load it and then over-write/add the newly
     generated issues.
@@ -491,19 +491,19 @@ def compress_issues(
     returned values.
 
     Args:
-        key (Tuple[str, int]): Newspaper ID and year of input issues
+        key (Tuple[str, int]): Newspaper or media alias and year of input issues
             (e.g. `(GDL, 1900)`).
-        issues (list[NewspaperIssue]): A list of `NewspaperIssue` instances.
+        issues (list[CanonicalIssue]): A list of `CanonicalIssue` instances.
         output_dir (str | None, optional): Output directory. Defaults to None.
         failed_log (str | None, optional): Path to the log file used when an
             instantiation was not successful. Defaults to None.
 
     Returns:
-        Tuple[str, str]: Label following the template `<NEWSPAPER>-<YEAR>`, the path to
+        Tuple[str, str]: Label following the template `<ALIAS>-<YEAR>`, the path to
             the the compressed `.bz2` file, and the statistics computed on the issues.
     """
-    newspaper, year = key
-    filename = f"{newspaper}-{year}-issues.jsonl.bz2"
+    alias, year = key
+    filename = f"{alias}-{year}-issues.jsonl.bz2"
     filepath = os.path.join(output_dir, filename)
     logger.info("Compressing %s JSON files into %s", len(issues), filepath)
 
@@ -529,7 +529,7 @@ def compress_issues(
         for i in items:
             yearly_stats.append(counts_for_canonical_issue(i))
 
-    return f"{newspaper}-{year}", filepath, yearly_stats
+    return f"{alias}-{year}", filepath, yearly_stats
 
 
 def upload_issues(
@@ -540,7 +540,7 @@ def upload_issues(
 ) -> Tuple[bool, str]:
     """Upload an issues JSON-line file to a given S3 bucket.
 
-    `sort_key` is expected to be the concatenation of newspaper ID and year.
+    `sort_key` is expected to be the concatenation of title alias and year.
 
     Args:
         sort_key (str): Key used to group articles (e.g. "GDL-1900").
@@ -555,9 +555,9 @@ def upload_issues(
     """
     # create connection with bucket
     # copy contents to s3 key
-    newspaper, _ = sort_key.split("-")
-    key_name = os.path.join(newspaper, "issues", os.path.basename(filepath))
-    # key_name = "{}/{}/{}".format(newspaper, "issues", os.path.basename(filepath))
+    alias, _ = sort_key.split("-")
+    key_name = os.path.join(alias, "issues", os.path.basename(filepath))
+    # key_name = "{}/{}/{}".format(alias, "issues", os.path.basename(filepath))
     s3 = get_s3_resource()
     if bucket_name is not None:
         try:
@@ -594,11 +594,11 @@ def upload_pages(
     """
     # create connection with bucket
     # copy contents to s3 key
-    newspaper, year, _, _, _ = sort_key.split("-")
+    alias, year, _, _, _ = sort_key.split("-")
     key_name = os.path.join(
-        newspaper, "pages", f"{newspaper}-{year}", os.path.basename(filepath)
+        alias, "pages", f"{alias}-{year}", os.path.basename(filepath)
     )
-    # key_name = "{}/pages/{}/{}".format(newspaper, f"{newspaper}-{year}", os.path.basename(filepath))
+    # key_name = "{}/pages/{}/{}".format(alias, f"{alias}-{year}", os.path.basename(filepath))
     s3 = get_s3_resource()
     if bucket_name is not None:
         try:

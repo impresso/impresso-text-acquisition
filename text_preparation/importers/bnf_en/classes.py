@@ -22,8 +22,8 @@ from text_preparation.importers import (
 )
 from text_preparation.importers.bnf.helpers import BNF_CONTENT_TYPES
 from text_preparation.importers.mets_alto import (
-    MetsAltoNewspaperIssue,
-    MetsAltoNewspaperPage,
+    MetsAltoCanonicalIssue,
+    MetsAltoCanonicalPage,
 )
 from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
 
@@ -43,7 +43,7 @@ type_translation = {
 }
 
 
-class BnfEnNewspaperPage(MetsAltoNewspaperPage):
+class BnfEnNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in BNF-EN (Mets/Alto) format.
 
     Args:
@@ -56,7 +56,7 @@ class BnfEnNewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
@@ -70,7 +70,7 @@ class BnfEnNewspaperPage(MetsAltoNewspaperPage):
         page_tag = self.xml.find("Page")
         self.page_width = float(page_tag.get("WIDTH"))
 
-    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+    def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
         ark = issue.ark_link
         self.page_data["iiif_img_base_uri"] = os.path.join(
@@ -78,7 +78,7 @@ class BnfEnNewspaperPage(MetsAltoNewspaperPage):
         )
 
 
-class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
+class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
     """Newspaper Issue in BNF-EN (Mets/Alto) format.
 
     All functions defined in this child class are specific to parsing
@@ -90,12 +90,11 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict[str, Any]): metadata allowing to convert region
             OCR/OLR coordinates to iiif format compliant ones.
         ark_link (str): IIIF Ark Id for this issue fetched on the Gallica API.
@@ -108,7 +107,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
-        Created NewspaperPage instances are added to pages.
+        Created CanonicalPage instances are added to pages.
 
         Raises:
             e: Creating a BnfEnlNewspaperPage` raised an exception.
@@ -238,7 +237,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         # Get CI language
         language = self._get_ci_language(item_div.get("DMDID"), mets_doc)
         if language is not None:
-            metadata["l"] = language
+            metadata["lg"] = language
 
         content_item = {
             "m": metadata,
@@ -410,7 +409,6 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
             "i": content_items,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,
         }

@@ -18,9 +18,11 @@ logger = logging.getLogger(__name__)
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
 BlIssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights"]
+    "IssueDirectory", ["alias", "date", "edition", "path", "rights"]
 )
 """A light-weight data structure to represent a newspaper issue.
+
+# TODO add NLP?
 
 This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
@@ -32,7 +34,7 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
@@ -40,7 +42,7 @@ Args:
 
 >>> from datetime import date
 >>> i = BlIssueDir(
-    journal='0002088', 
+    alias='0002088', 
     date=datetime.date(1832, 11, 23), 
     edition='a', 
     path='./BL/BLIP_20190920_01.zip', 
@@ -147,11 +149,11 @@ def dir2issue(path: str) -> BlIssueDir | None:
         Optional[BlIssueDir]: The corresponding Issue
     """
     split = path.split("/")
-    journal, year, month_day = split[-3], int(split[-2]), split[-1]
+    alias, year, month_day = split[-3], int(split[-2]), split[-1]
     month, day = int(month_day[:2]), int(month_day[2:])
 
     return BlIssueDir(
-        journal=journal,
+        alias=alias,
         date=date(year, month, day),
         edition="a",
         path=path,
@@ -230,13 +232,13 @@ def select_issues(
 
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["newspapers"]
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
+            "The key [titles|exclude_titles|year_only] "
             "is missing in the config file."
         )
         return None
@@ -244,8 +246,8 @@ def select_issues(
     issues = detect_issues(base_dir, access_rights, tmp_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     exclude_flag = False if not exclude_list else True

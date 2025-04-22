@@ -21,7 +21,7 @@ from text_preparation.importers.bcul.helpers import (
     verify_issue_has_ocr_files,
     find_page_file_in_dir,
 )
-from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
 from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
 
@@ -43,7 +43,7 @@ IIIF_SUFFIX = "info.json"
 IIIF_MANIFEST_SUFFIX = "manifest"
 
 
-class BculNewspaperPage(NewspaperPage):
+class BculNewspaperPage(CanonicalPage):
     """Newspaper page in BCUL (Abbyy) format.
 
     Args:
@@ -56,7 +56,7 @@ class BculNewspaperPage(NewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         path (str): Path to the Abby XML page file.
         iiif_base_uri (str): URI to image IIIF of this page.
     """
@@ -98,7 +98,7 @@ class BculNewspaperPage(NewspaperPage):
         split[-1] = split[-1].replace("p", "i")
         return "-".join(split)
 
-    def add_issue(self, issue: NewspaperIssue) -> None:
+    def add_issue(self, issue: CanonicalIssue) -> None:
         self.issue = issue
 
     def get_ci_divs(self) -> list[Tag]:
@@ -121,7 +121,7 @@ class BculNewspaperPage(NewspaperPage):
         self.page_data["r"] = page_data
 
 
-class BculNewspaperIssue(NewspaperIssue):
+class BculNewspaperIssue(CanonicalIssue):
     """Newspaper Issue in BCUL (Abby) format.
 
     Args:
@@ -130,12 +130,11 @@ class BculNewspaperIssue(NewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj: `CanonicalPage` instances from this issue.
         mit_file (str): Path to the ABBY 'mit' file that contains the OLR.
         is_json (bool): Whether the `mit_file` has the `json` file extension.
         is_xml (bool): Whether the `mit_file` has the `xml` file extension.
@@ -171,7 +170,6 @@ class BculNewspaperIssue(NewspaperIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "i": self.content_items,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": self.iiif_manifest,
             "n": self._notes,
@@ -349,7 +347,7 @@ class BculNewspaperIssue(NewspaperIssue):
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
-        Created NewspaperPage instances are added to pages. Since BCUL has two
+        Created CanonicalPage instances are added to pages. Since BCUL has two
         different formats for the issue level, both need to be handled.
         """
         if self.is_json:
@@ -375,6 +373,8 @@ class BculNewspaperIssue(NewspaperIssue):
                 }
             }
             self.content_items.append(ci)
+
+        # TODO - Add legacy!!
 
         n = len(self.content_items) + 1
         # Get all images and tables

@@ -15,7 +15,7 @@ from zipfile import ZipFile
 from impresso_essentials.utils import IssueDir
 from impresso_essentials.io.fs_utils import canonical_path
 
-from text_preparation.importers.classes import NewspaperIssue, NewspaperPage, ZipArchive
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage, ZipArchive
 from text_preparation.importers.olive.helpers import (
     combine_article_parts,
     convert_image_coordinates,
@@ -38,7 +38,7 @@ Pageschema = get_page_schema()
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
-class OliveNewspaperPage(NewspaperPage):
+class OliveNewspaperPage(CanonicalPage):
     """Newspaper page in Olive format.
 
     Args:
@@ -52,7 +52,7 @@ class OliveNewspaperPage(NewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue | None): Issue this page is from.
+        issue (CanonicalIssue | None): Issue this page is from.
         toc_data (dict): Metadata about content items in the newspaper issue.
         image_info (dict): Metadata about the page image.
         page_xml (str): Path to the Olive XML file of the page.
@@ -81,7 +81,7 @@ class OliveNewspaperPage(NewspaperPage):
             ValueError: No Newspaper issue has been added to this page.
         """
         if self.issue is None:
-            raise ValueError(f"No NewspaperIssue for {self.id}")
+            raise ValueError(f"No CanonicalIssue for {self.id}")
 
         element_ids = self.toc_data.keys()
         elements = {
@@ -133,12 +133,12 @@ class OliveNewspaperPage(NewspaperPage):
         else:
             logger.debug("Image %s does not have image info", self.id)
 
-    def add_issue(self, issue: NewspaperIssue) -> None:
+    def add_issue(self, issue: CanonicalIssue) -> None:
         self.issue = issue
         self.archive = issue.archive
 
 
-class OliveNewspaperIssue(NewspaperIssue):
+class OliveNewspaperIssue(CanonicalIssue):
     """Newspaper Issue in Olive format.
 
     Upon object initialization the following things happen:
@@ -155,12 +155,11 @@ class OliveNewspaperIssue(NewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
         pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
         image_dirs (str): Path to the directory with the page images.
             Multiple paths should be separated by comma (",").
         archive (ZipArchive): ZipArchive for this issue.
@@ -203,7 +202,6 @@ class OliveNewspaperIssue(NewspaperIssue):
             "s": styles,
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
-            "ar": self.rights,
         }
         logger.info("Finished parsing %s", self.id)
 
@@ -417,11 +415,11 @@ class OliveNewspaperIssue(NewspaperIssue):
         json_data = []
         for im_dir in self.image_dirs.split(","):
             issue_dir = os.path.join(
-                im_dir, self.journal, str(self.date).replace("-", "/"), self.edition
+                im_dir, self.alias, str(self.date).replace("-", "/"), self.edition
             )
 
             issue_w_images = IssueDir(
-                journal=self.journal,
+                alias=self.alias,
                 date=self.date,
                 edition=self.edition,
                 path=issue_dir,

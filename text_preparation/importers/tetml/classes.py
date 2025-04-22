@@ -8,7 +8,7 @@ from time import strftime
 from impresso_essentials.utils import IssueDir
 from impresso_essentials.io.fs_utils import canonical_path
 
-from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.tetml.parsers import tetml_parser
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
-class TetmlNewspaperPage(NewspaperPage):
+class TetmlNewspaperPage(CanonicalPage):
     """Generic class representing a page in Tetml format.
 
     :param int number: Page number.
@@ -44,14 +44,14 @@ class TetmlNewspaperPage(NewspaperPage):
         if not self.page_data["r"]:
             logger.warning("Page %s has no OCR text", self.id)
 
-    def add_issue(self, issue: NewspaperIssue):
+    def add_issue(self, issue: CanonicalIssue):
         if issue is None:
-            raise ValueError(f"No NewspaperIssue for {self.id}")
+            raise ValueError(f"No CanonicalIssue for {self.id}")
 
         self.issue = issue
 
 
-class TetmlNewspaperIssue(NewspaperIssue):
+class TetmlNewspaperIssue(CanonicalIssue):
     """Class representing a newspaper issue in TETML format.
 
     Upon object initialization the following things happen:
@@ -89,7 +89,6 @@ class TetmlNewspaperIssue(NewspaperIssue):
             "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
-            "ar": self.rights,
         }
 
         logger.info("Finished parsing %s", self.id)

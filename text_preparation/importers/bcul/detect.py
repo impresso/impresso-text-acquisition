@@ -15,7 +15,7 @@ from text_preparation.importers.bcul.helpers import parse_date, find_mit_file
 logger = logging.getLogger(__name__)
 
 BculIssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights", "mit_file_type"]
+    "IssueDirectory", ["alias", "date", "edition", "path", "rights", "mit_file_type"]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -29,7 +29,7 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
@@ -38,7 +38,7 @@ Args:
 
 >>> from datetime import date
 >>> i = BculIssueDir(
-    journal='FAL', 
+    alias='FAL', 
     date=datetime.date(1762, 12, 07), 
     edition='a', 
     path='./BCUL/46165', 
@@ -120,7 +120,7 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
         edition = "a"
 
     return BculIssueDir(
-        journal=journal_info["alias"],
+        alias=journal_info["alias"],
         date=date,
         edition=edition,
         path=path,
@@ -200,13 +200,13 @@ def select_issues(
 
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["newspapers"]
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
+            "The key [titles|exclude_titles|year_only] "
             "is missing in the config file."
         )
         return
@@ -214,8 +214,8 @@ def select_issues(
     issues = detect_issues(base_dir, access_rights)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     exclude_flag = False if not exclude_list else True
