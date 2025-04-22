@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_page_schema(
-    schema_folder: str = "impresso-schemas/json/newspaper/page.schema.json",
+    schema_folder: str = "impresso-schemas/json/canonical/page.schema.json",
 ) -> pjs.util.Namespace:
     """Generate a list of python classes starting from a JSON schema.
 
     Args:
         schema_folder (str, optional): Path to the schema folder. Defaults to
-            "impresso-schemas/json/newspaper/page.schema.json".
+            "impresso-schemas/json/canonical/page.schema.json".
 
     Returns:
         pjs.util.Namespace: Newspaper page schema based on canonical format.
@@ -43,13 +43,13 @@ def get_page_schema(
 
 
 def get_issue_schema(
-    schema_folder: str = "impresso-schemas/json/newspaper/issue.schema.json",
+    schema_folder: str = "impresso-schemas/json/canonical/issue.schema.json",
 ) -> pjs.util.Namespace:
     """Generate a list of python classes starting from a JSON schema.
 
     Args:
         schema_folder (str, optional): Path to the schema folder. Defaults to
-            "impresso-schemas/json/newspaper/issue.schema.json".
+            "impresso-schemas/json/canonical/issue.schema.json".
 
     Returns:
         pjs.util.Namespace: Newspaper issue schema based on canonical format.
