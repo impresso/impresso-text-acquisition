@@ -64,7 +64,7 @@ class CanonicalIssue(ABC):
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
-        Created :obj:`NewspaperPage` instances are added to :attr:`pages`.
+        Created :obj:`CanonicalPage` instances are added to :attr:`pages`.
         """
 
     @property
