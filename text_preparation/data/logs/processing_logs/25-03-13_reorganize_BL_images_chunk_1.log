@@ -1,0 +1,879 @@
+2025-03-13 17:24:39,195 __main__     INFO     Logger successfully initialised
+2025-03-13 17:24:39,291 __main__     INFO     Separated the list of NLPs into 6 chunks of 100 NLPs,  will process chunk n°1 now: 
+['0000211', '0000219', '0000220', '0000221', '0000236', '0000268', '0000269', '0000356', '0000485', '0000486', '0000487', '0000488', '0000489', '0000490', '0000491', '0000493', '0000494', '0000495', '0000496', '0000497', '0000498', '0000499', '0000500', '0000501', '0000502', '0000503', '0000504', '0001797', '0002083', '0002084', '0002085', '0002088', '0002089', '0002090', '0002193', '0002194', '0002243', '0002244', '0002245', '0002246', '0002247', '0002249', '0002251', '0002252', '0002253', '0002254', '0002255', '0002256', '0002257', '0002258', '0002259', '0002261', '0002262', '0002264', '0002265', '0002266', '0002267', '0002268', '0002269', '0002270', '0002347', '0002348', '0002349', '0002350', '0002351', '0002352', '0002353', '0002354', '0002355', '0002356', '0002357', '0002358', '0002359', '0002361', '0002362', '0002363', '0002364', '0002365', '0002366', '0002367', '0002368', '0002369', '0002370', '0002371', '0002372', '0002373', '0002374', '0002375', '0002376', '0002377', '0002378', '0002379', '0002380', '0002381', '0002382', '0002383', '0002384', '0002385', '0002386', '0002408']
+2025-03-13 17:24:39,294 __main__     INFO     ---------- Processing BHCH - NLP 0000211 (1/100) ----------
+2025-03-13 17:24:39,726 __main__     INFO     BHCH-0000211 — Processing year 1767.
+2025-03-13 17:26:38,933 __main__     INFO     BHCH-0000211 — Processing year 1766.
+2025-03-13 17:30:18,260 __main__     INFO     BHCH-0000211 — Processing year 1765.
+2025-03-13 17:36:38,836 __main__     INFO     BHCH-0000211 — Processing year 1768.
+2025-03-13 17:38:06,125 __main__     INFO     BHCH-0000211 — Processing year 1764.
+2025-03-13 17:44:27,059 __main__     INFO     BHCH-0000211 — Processing year 1763.
+2025-03-13 17:49:52,423 __main__     INFO     BHCH-0000211 — Processing year 1762.
+2025-03-13 17:55:32,021 __main__     INFO     ✅ BHCH-0000211 (1/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-13 17:55:32,022 __main__     INFO     ---------- Processing BHCH - NLP 0000219 (2/100) ----------
+2025-03-13 17:55:32,516 __main__     INFO     BHCH-0000219 — Processing year 1769.
+2025-03-13 17:59:35,545 __main__     INFO     BHCH-0000219 — Processing year 1770.
+2025-03-13 18:02:41,538 __main__     INFO     ✅ BHCH-0000219 (2/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-13 18:02:41,539 __main__     INFO     ---------- Processing BHCH - NLP 0000220 (3/100) ----------
+2025-03-13 18:02:42,006 __main__     INFO     BHCH-0000220 — Processing year 1761.
+2025-03-13 18:05:54,349 __main__     INFO     BHCH-0000220 — Processing year 1760.
+2025-03-13 18:05:58,112 __main__     INFO     ✅ BHCH-0000220 (3/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-13 18:05:58,113 __main__     INFO     ---------- Processing BHCH - NLP 0000221 (4/100) ----------
+2025-03-13 18:05:58,325 __main__     INFO     BHCH-0000221 — Processing year 1778.
+2025-03-13 18:09:08,020 __main__     INFO     BHCH-0000221 — Processing year 1784.
+2025-03-13 18:11:49,427 __main__     INFO     BHCH-0000221 — Processing year 1780.
+2025-03-13 18:14:57,393 __main__     INFO     BHCH-0000221 — Processing year 1793.
+2025-03-13 18:18:38,396 __main__     INFO     BHCH-0000221 — Processing year 1797.
+2025-03-13 18:22:27,295 __main__     INFO     BHCH-0000221 — Processing year 1792.
+2025-03-13 18:27:08,301 __main__     INFO     BHCH-0000221 — Processing year 1786.
+2025-03-13 18:30:41,443 __main__     INFO     BHCH-0000221 — Processing year 1788.
+2025-03-13 18:34:25,541 __main__     INFO     BHCH-0000221 — Processing year 1800.
+2025-03-13 18:38:02,480 __main__     INFO     BHCH-0000221 — Processing year 1798.
+2025-03-13 18:40:49,937 __main__     INFO     BHCH-0000221 — Processing year 1779.
+2025-03-13 18:43:51,347 __main__     INFO     BHCH-0000221 — Processing year 1781.
+2025-03-13 18:47:22,368 __main__     INFO     BHCH-0000221 — Processing year 1795.
+2025-03-13 18:50:56,293 __main__     INFO     BHCH-0000221 — Processing year 1785.
+2025-03-13 18:54:07,462 __main__     INFO     BHCH-0000221 — Processing year 1772.
+2025-03-13 18:57:43,578 __main__     INFO     BHCH-0000221 — Processing year 1794.
+2025-03-13 19:01:03,021 __main__     INFO     BHCH-0000221 — Processing year 1791.
+2025-03-13 19:04:43,895 __main__     INFO     BHCH-0000221 — Processing year 1783.
+2025-03-13 19:07:40,491 __main__     INFO     BHCH-0000221 — Processing year 1771.
+2025-03-13 19:11:04,879 __main__     INFO     BHCH-0000221 — Processing year 1782.
+2025-03-13 19:14:25,626 __main__     INFO     BHCH-0000221 — Processing year 1796.
+2025-03-13 19:17:47,706 __main__     INFO     BHCH-0000221 — Processing year 1787.
+2025-03-13 19:21:04,178 __main__     INFO     BHCH-0000221 — Processing year 1774.
+2025-03-13 19:24:32,830 __main__     INFO     BHCH-0000221 — Processing year 1775.
+2025-03-13 19:27:59,748 __main__     INFO     BHCH-0000221 — Processing year 1790.
+2025-03-13 19:31:25,957 __main__     INFO     BHCH-0000221 — Processing year 1773.
+2025-03-13 19:35:18,613 __main__     INFO     BHCH-0000221 — Processing year 1776.
+2025-03-13 19:38:38,060 __main__     INFO     BHCH-0000221 — Processing year 1777.
+2025-03-13 19:41:40,877 __main__     INFO     BHCH-0000221 — Processing year 1789.
+2025-03-13 19:45:15,404 __main__     INFO     BHCH-0000221 — Processing year 1799.
+2025-03-13 19:48:42,372 __main__     INFO     ✅ BHCH-0000221 (4/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-13 19:48:42,372 __main__     INFO     ---------- Processing LSIR - NLP 0000236 (5/100) ----------
+2025-03-13 19:48:43,440 __main__     INFO     LSIR-0000236 — Processing year 1778.
+2025-03-13 19:52:19,254 __main__     INFO     LSIR-0000236 — Processing year 1767.
+2025-03-13 19:55:21,382 __main__     INFO     LSIR-0000236 — Processing year 1784.
+2025-03-13 19:58:18,488 __main__     INFO     LSIR-0000236 — Processing year 1780.
+2025-03-13 20:00:59,718 __main__     INFO     LSIR-0000236 — Processing year 1806.
+2025-03-13 20:04:11,496 __main__     INFO     LSIR-0000236 — Processing year 1808.
+2025-03-13 20:07:55,710 __main__     INFO     LSIR-0000236 — Processing year 1793.
+2025-03-13 20:11:16,681 __main__     INFO     LSIR-0000236 — Processing year 1797.
+2025-03-13 20:14:44,718 __main__     INFO     LSIR-0000236 — Processing year 1792.
+2025-03-13 20:17:56,221 __main__     INFO     LSIR-0000236 — Processing year 1755.
+2025-03-13 20:20:41,918 __main__     INFO     LSIR-0000236 — Processing year 1766.
+2025-03-13 20:24:15,535 __main__     INFO     LSIR-0000236 — Processing year 1786.
+2025-03-13 20:27:52,749 __main__     INFO     LSIR-0000236 — Processing year 1788.
+2025-03-13 20:31:15,840 __main__     INFO     LSIR-0000236 — Processing year 1807.
+2025-03-13 20:35:50,595 __main__     INFO     LSIR-0000236 — Processing year 1800.
+2025-03-13 20:38:51,493 __main__     INFO     LSIR-0000236 — Processing year 1769.
+2025-03-13 20:42:01,987 __main__     INFO     LSIR-0000236 — Processing year 1754.
+2025-03-13 20:43:21,759 __main__     INFO     LSIR-0000236 — Processing year 1761.
+2025-03-13 20:46:25,199 __main__     INFO     LSIR-0000236 — Processing year 1798.
+2025-03-13 20:49:38,651 __main__     INFO     LSIR-0000236 — Processing year 1809.
+2025-03-13 20:53:33,347 __main__     INFO     LSIR-0000236 — Processing year 1779.
+2025-03-13 20:56:44,084 __main__     INFO     LSIR-0000236 — Processing year 1760.
+2025-03-13 21:00:17,842 __main__     INFO     LSIR-0000236 — Processing year 1781.
+2025-03-13 21:04:24,730 __main__     INFO     LSIR-0000236 — Processing year 1795.
+2025-03-13 21:07:53,614 __main__     INFO     LSIR-0000236 — Processing year 1758.
+2025-03-13 21:11:10,338 __main__     INFO     LSIR-0000236 — Processing year 1785.
+2025-03-13 21:14:48,538 __main__     INFO     LSIR-0000236 — Processing year 1772.
+2025-03-13 21:17:52,889 __main__     INFO     LSIR-0000236 — Processing year 1794.
+2025-03-13 21:21:21,446 __main__     INFO     LSIR-0000236 — Processing year 1791.
+2025-03-13 21:24:36,344 __main__     INFO     LSIR-0000236 — Processing year 1783.
+2025-03-13 21:27:51,612 __main__     INFO     LSIR-0000236 — Processing year 1771.
+2025-03-13 21:31:02,798 __main__     INFO     LSIR-0000236 — Processing year 1765.
+2025-03-13 21:34:30,396 __main__     INFO     LSIR-0000236 — Processing year 1782.
+2025-03-13 21:38:17,793 __main__     INFO     LSIR-0000236 — Processing year 1805.
+2025-03-13 21:41:39,187 __main__     INFO     LSIR-0000236 — Processing year 1768.
+2025-03-13 21:45:05,730 __main__     INFO     LSIR-0000236 — Processing year 1804.
+2025-03-13 21:48:55,963 __main__     INFO     LSIR-0000236 — Processing year 1759.
+2025-03-13 21:52:23,106 __main__     INFO     LSIR-0000236 — Processing year 1770.
+2025-03-13 21:56:07,737 __main__     INFO     LSIR-0000236 — Processing year 1796.
+2025-03-13 21:59:25,566 __main__     INFO     LSIR-0000236 — Processing year 1787.
+2025-03-13 22:02:52,756 __main__     INFO     LSIR-0000236 — Processing year 1801.
+2025-03-13 22:06:19,952 __main__     INFO     LSIR-0000236 — Processing year 1774.
+2025-03-13 22:09:58,326 __main__     INFO     LSIR-0000236 — Processing year 1764.
+2025-03-13 22:12:39,694 __main__     INFO     LSIR-0000236 — Processing year 1763.
+2025-03-13 22:15:47,022 __main__     INFO     LSIR-0000236 — Processing year 1775.
+2025-03-13 22:18:58,732 __main__     INFO     LSIR-0000236 — Processing year 1790.
+2025-03-13 22:21:52,323 __main__     INFO     LSIR-0000236 — Processing year 1803.
+2025-03-13 22:25:01,988 __main__     INFO     LSIR-0000236 — Processing year 1757.
+2025-03-13 22:27:55,314 __main__     INFO     LSIR-0000236 — Processing year 1773.
+2025-03-13 22:31:46,433 __main__     INFO     LSIR-0000236 — Processing year 1762.
+2025-03-13 22:35:23,826 __main__     INFO     LSIR-0000236 — Processing year 1756.
+2025-03-13 22:38:40,856 __main__     INFO     LSIR-0000236 — Processing year 1802.
+2025-03-13 22:43:03,409 __main__     INFO     LSIR-0000236 — Processing year 1776.
+2025-03-13 22:46:02,239 __main__     INFO     LSIR-0000236 — Processing year 1777.
+2025-03-13 22:49:43,024 __main__     INFO     LSIR-0000236 — Processing year 1789.
+2025-03-13 22:52:48,204 __main__     INFO     LSIR-0000236 — Processing year 1799.
+2025-03-13 22:56:06,235 __main__     INFO     ✅ LSIR-0000236 (5/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-13 22:56:06,236 __main__     INFO     ---------- Processing LSIR - NLP 0000268 (6/100) ----------
+2025-03-13 22:56:06,653 __main__     INFO     LSIR-0000268 — Processing year 1814.
+2025-03-13 23:02:45,309 __main__     INFO     LSIR-0000268 — Processing year 1811.
+2025-03-13 23:08:50,764 __main__     INFO     LSIR-0000268 — Processing year 1813.
+2025-03-13 23:15:24,109 __main__     INFO     LSIR-0000268 — Processing year 1810.
+2025-03-13 23:22:45,399 __main__     INFO     LSIR-0000268 — Processing year 1817.
+2025-03-13 23:29:47,401 __main__     INFO     LSIR-0000268 — Processing year 1815.
+2025-03-13 23:36:07,032 __main__     INFO     LSIR-0000268 — Processing year 1812.
+2025-03-13 23:42:50,988 __main__     INFO     LSIR-0000268 — Processing year 1818.
+2025-03-13 23:50:09,951 __main__     INFO     LSIR-0000268 — Processing year 1816.
+2025-03-13 23:58:23,267 __main__     INFO     ✅ LSIR-0000268 (6/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-13 23:58:23,267 __main__     INFO     ---------- Processing DUCR - NLP 0000269 (7/100) ----------
+2025-03-13 23:58:24,168 __main__     INFO     DUCR-0000269 — Processing year 1898.
+2025-03-14 00:58:49,427 __main__     INFO     DUCR-0000269 — Processing year 1885.
+2025-03-14 01:45:25,321 __main__     INFO     DUCR-0000269 — Processing year 1899.
+2025-03-14 02:43:41,190 __main__     INFO     DUCR-0000269 — Processing year 1874.
+2025-03-14 03:17:45,875 __main__     INFO     DUCR-0000269 — Processing year 1878.
+2025-03-14 03:53:44,866 __main__     INFO     DUCR-0000269 — Processing year 1880.
+2025-03-14 04:37:26,049 __main__     INFO     DUCR-0000269 — Processing year 1892.
+2025-03-14 05:15:53,006 __main__     INFO     DUCR-0000269 — Processing year 1895.
+2025-03-14 05:58:30,797 __main__     INFO     DUCR-0000269 — Processing year 1882.
+2025-03-14 06:25:20,635 __main__     INFO     DUCR-0000269 — Processing year 1877.
+2025-03-14 07:01:44,104 __main__     INFO     DUCR-0000269 — Processing year 1887.
+2025-03-14 07:35:31,551 __main__     INFO     DUCR-0000269 — Processing year 1889.
+2025-03-14 08:13:08,546 __main__     INFO     DUCR-0000269 — Processing year 1893.
+2025-03-14 08:54:20,551 __main__     INFO     DUCR-0000269 — Processing year 1888.
+2025-03-14 09:30:28,140 __main__     INFO     DUCR-0000269 — Processing year 1883.
+2025-03-14 10:01:21,425 __main__     INFO     DUCR-0000269 — Processing year 1884.
+2025-03-14 10:50:53,910 __main__     INFO     DUCR-0000269 — Processing year 1896.
+2025-03-14 11:56:51,349 __main__     INFO     DUCR-0000269 — Processing year 1890.
+2025-03-14 12:23:25,583 __main__     INFO     DUCR-0000269 — Processing year 1891.
+2025-03-14 13:03:40,631 __main__     INFO     DUCR-0000269 — Processing year 1894.
+2025-03-14 13:48:35,531 __main__     INFO     DUCR-0000269 — Processing year 1879.
+2025-03-14 14:23:54,918 __main__     INFO     DUCR-0000269 — Processing year 1876.
+2025-03-14 14:47:46,395 __main__     INFO     DUCR-0000269 — Processing year 1875.
+2025-03-14 15:23:31,231 __main__     INFO     DUCR-0000269 — Processing year 1886.
+2025-03-14 15:48:13,188 __main__     INFO     DUCR-0000269 — Processing year 1897.
+2025-03-14 16:50:17,856 __main__     INFO     DUCR-0000269 — Processing year 1881.
+2025-03-14 17:36:20,138 __main__     INFO     ✅ DUCR-0000269 (7/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-14 17:36:20,139 __main__     INFO     ---------- Processing CWPG - NLP 0000356 (8/100) ----------
+2025-03-14 17:36:20,870 __main__     INFO     CWPG-0000356 — Processing year 1835.
+2025-03-14 17:36:33,062 __main__     INFO     CWPG-0000356 — Processing year 1836.
+2025-03-14 17:39:25,642 __main__     INFO     ✅ CWPG-0000356 (8/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-14 17:39:25,643 __main__     INFO     ---------- Processing CHOR - NLP 0000485 (9/100) ----------
+2025-03-14 17:39:26,354 __main__     INFO     CHOR-0000485 — Processing year 1867.
+2025-03-14 17:49:07,966 __main__     INFO     CHOR-0000485 — Processing year 1870.
+2025-03-14 17:59:36,404 __main__     INFO     CHOR-0000485 — Processing year 1869.
+2025-03-14 18:08:46,014 __main__     INFO     CHOR-0000485 — Processing year 1865.
+2025-03-14 18:19:41,328 __main__     INFO     CHOR-0000485 — Processing year 1866.
+2025-03-14 18:28:51,650 __main__     INFO     CHOR-0000485 — Processing year 1868.
+2025-03-14 18:37:40,383 __main__     INFO     CHOR-0000485 — Processing year 1864.
+2025-03-14 18:48:14,243 __main__     INFO     CHOR-0000485 — Processing year 1871.
+2025-03-14 18:56:24,976 __main__     INFO     ✅ CHOR-0000485 (9/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-14 18:56:24,977 __main__     INFO     ---------- Processing DGMH - NLP 0000486 (10/100) ----------
+2025-03-14 18:56:25,976 __main__     INFO     DGMH-0000486 — Processing year 1870.
+2025-03-14 19:04:54,670 __main__     INFO     DGMH-0000486 — Processing year 1872.
+2025-03-14 19:22:25,428 __main__     INFO     DGMH-0000486 — Processing year 1871.
+2025-03-14 19:36:21,190 __main__     INFO     ✅ DGMH-0000486 (10/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-14 19:36:21,191 __main__     INFO     ---------- Processing DGMH - NLP 0000487 (11/100) ----------
+2025-03-14 19:36:22,234 __main__     INFO     DGMH-0000487 — Processing year 1874.
+2025-03-14 19:57:24,786 __main__     INFO     DGMH-0000487 — Processing year 1878.
+2025-03-14 20:21:49,546 __main__     INFO     DGMH-0000487 — Processing year 1880.
+2025-03-14 20:35:16,183 __main__     INFO     DGMH-0000487 — Processing year 1877.
+2025-03-14 21:02:15,533 __main__     INFO     DGMH-0000487 — Processing year 1873.
+2025-03-14 21:12:57,954 __main__     INFO     DGMH-0000487 — Processing year 1879.
+2025-03-14 21:39:08,915 __main__     INFO     DGMH-0000487 — Processing year 1876.
+2025-03-14 22:04:42,341 __main__     INFO     DGMH-0000487 — Processing year 1875.
+2025-03-14 22:28:11,741 __main__     INFO     DGMH-0000487 — Processing year 1881.
+2025-03-14 22:54:47,015 __main__     INFO     ✅ DGMH-0000487 (11/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-14 22:54:47,016 __main__     INFO     ---------- Processing LAGER - NLP 0000488 (12/100) ----------
+2025-03-14 22:54:47,814 __main__     INFO     LAGER-0000488 — Processing year 1860.
+2025-03-14 23:04:53,732 __main__     INFO     LAGER-0000488 — Processing year 1814.
+2025-03-14 23:08:40,813 __main__     INFO     LAGER-0000488 — Processing year 1811.
+2025-03-14 23:12:33,996 __main__     INFO     LAGER-0000488 — Processing year 1813.
+2025-03-14 23:16:20,107 __main__     INFO     LAGER-0000488 — Processing year 1885.
+2025-03-14 23:29:31,242 __main__     INFO     LAGER-0000488 — Processing year 1810.
+2025-03-14 23:33:21,145 __main__     INFO     LAGER-0000488 — Processing year 1806.
+2025-03-14 23:37:39,305 __main__     INFO     LAGER-0000488 — Processing year 1867.
+2025-03-14 23:48:38,087 __main__     INFO     LAGER-0000488 — Processing year 1808.
+2025-03-14 23:52:16,006 __main__     INFO     LAGER-0000488 — Processing year 1824.
+2025-03-14 23:56:00,069 __main__     INFO     LAGER-0000488 — Processing year 1870.
+2025-03-15 00:07:35,125 __main__     INFO     LAGER-0000488 — Processing year 1807.
+2025-03-15 00:11:11,210 __main__     INFO     LAGER-0000488 — Processing year 1842.
+2025-03-15 00:12:36,932 __main__     INFO     LAGER-0000488 — Processing year 1874.
+2025-03-15 00:23:16,400 __main__     INFO     LAGER-0000488 — Processing year 1878.
+2025-03-15 00:36:26,513 __main__     INFO     LAGER-0000488 — Processing year 1823.
+2025-03-15 00:39:20,462 __main__     INFO     LAGER-0000488 — Processing year 1844.
+2025-03-15 00:43:56,208 __main__     INFO     LAGER-0000488 — Processing year 1880.
+2025-03-15 00:56:15,450 __main__     INFO     LAGER-0000488 — Processing year 1892.
+2025-03-15 01:10:20,760 __main__     INFO     LAGER-0000488 — Processing year 1856.
+2025-03-15 01:19:51,086 __main__     INFO     LAGER-0000488 — Processing year 1882.
+2025-03-15 01:32:06,831 __main__     INFO     LAGER-0000488 — Processing year 1832.
+2025-03-15 01:35:49,480 __main__     INFO     LAGER-0000488 — Processing year 1846.
+2025-03-15 01:41:34,354 __main__     INFO     LAGER-0000488 — Processing year 1850.
+2025-03-15 01:47:12,957 __main__     INFO     LAGER-0000488 — Processing year 1833.
+2025-03-15 01:51:17,572 __main__     INFO     LAGER-0000488 — Processing year 1877.
+2025-03-15 02:03:04,200 __main__     INFO     LAGER-0000488 — Processing year 1869.
+2025-03-15 02:14:38,041 __main__     INFO     LAGER-0000488 — Processing year 1821.
+2025-03-15 02:18:02,866 __main__     INFO     LAGER-0000488 — Processing year 1809.
+2025-03-15 02:21:16,840 __main__     INFO     LAGER-0000488 — Processing year 1887.
+2025-03-15 02:34:04,729 __main__     INFO     LAGER-0000488 — Processing year 1817.
+2025-03-15 02:37:18,980 __main__     INFO     LAGER-0000488 — Processing year 1859.
+2025-03-15 02:49:37,536 __main__     INFO     LAGER-0000488 — Processing year 1835.
+2025-03-15 02:53:21,023 __main__     INFO     LAGER-0000488 — Processing year 1873.
+2025-03-15 03:03:42,327 __main__     INFO     LAGER-0000488 — Processing year 1865.
+2025-03-15 03:14:44,769 __main__     INFO     LAGER-0000488 — Processing year 1858.
+2025-03-15 03:23:41,171 __main__     INFO     LAGER-0000488 — Processing year 1862.
+2025-03-15 03:31:16,920 __main__     INFO     LAGER-0000488 — Processing year 1819.
+2025-03-15 03:34:34,228 __main__     INFO     LAGER-0000488 — Processing year 1843.
+2025-03-15 03:39:16,386 __main__     INFO     LAGER-0000488 — Processing year 1889.
+2025-03-15 03:51:39,751 __main__     INFO     LAGER-0000488 — Processing year 1805.
+2025-03-15 03:55:02,416 __main__     INFO     LAGER-0000488 — Processing year 1853.
+2025-03-15 04:02:13,196 __main__     INFO     LAGER-0000488 — Processing year 1804.
+2025-03-15 04:05:19,291 __main__     INFO     LAGER-0000488 — Processing year 1866.
+2025-03-15 04:15:46,404 __main__     INFO     LAGER-0000488 — Processing year 1893.
+2025-03-15 04:26:53,832 __main__     INFO     LAGER-0000488 — Processing year 1888.
+2025-03-15 04:39:20,854 __main__     INFO     LAGER-0000488 — Processing year 1826.
+2025-03-15 04:42:34,188 __main__     INFO     LAGER-0000488 — Processing year 1847.
+2025-03-15 04:48:23,707 __main__     INFO     LAGER-0000488 — Processing year 1841.
+2025-03-15 04:53:33,987 __main__     INFO     LAGER-0000488 — Processing year 1883.
+2025-03-15 05:08:07,882 __main__     INFO     LAGER-0000488 — Processing year 1884.
+2025-03-15 05:20:21,414 __main__     INFO     LAGER-0000488 — Processing year 1831.
+2025-03-15 05:24:07,103 __main__     INFO     LAGER-0000488 — Processing year 1827.
+2025-03-15 05:27:50,775 __main__     INFO     LAGER-0000488 — Processing year 1890.
+2025-03-15 05:42:00,601 __main__     INFO     LAGER-0000488 — Processing year 1872.
+2025-03-15 05:53:25,253 __main__     INFO     LAGER-0000488 — Processing year 1815.
+2025-03-15 05:56:30,855 __main__     INFO     LAGER-0000488 — Processing year 1861.
+2025-03-15 06:09:07,536 __main__     INFO     LAGER-0000488 — Processing year 1828.
+2025-03-15 06:12:27,098 __main__     INFO     LAGER-0000488 — Processing year 1868.
+2025-03-15 06:24:56,388 __main__     INFO     LAGER-0000488 — Processing year 1864.
+2025-03-15 06:36:34,963 __main__     INFO     LAGER-0000488 — Processing year 1891.
+2025-03-15 06:48:05,550 __main__     INFO     LAGER-0000488 — Processing year 1830.
+2025-03-15 06:51:28,594 __main__     INFO     LAGER-0000488 — Processing year 1851.
+2025-03-15 06:58:50,542 __main__     INFO     LAGER-0000488 — Processing year 1845.
+2025-03-15 07:04:02,741 __main__     INFO     LAGER-0000488 — Processing year 1854.
+2025-03-15 07:11:18,495 __main__     INFO     LAGER-0000488 — Processing year 1825.
+2025-03-15 07:14:25,163 __main__     INFO     LAGER-0000488 — Processing year 1871.
+2025-03-15 07:25:21,532 __main__     INFO     LAGER-0000488 — Processing year 1894.
+2025-03-15 07:33:51,438 __main__     INFO     LAGER-0000488 — Processing year 1855.
+2025-03-15 07:41:03,433 __main__     INFO     LAGER-0000488 — Processing year 1820.
+2025-03-15 07:43:57,100 __main__     INFO     LAGER-0000488 — Processing year 1812.
+2025-03-15 07:46:50,889 __main__     INFO     LAGER-0000488 — Processing year 1879.
+2025-03-15 07:59:28,939 __main__     INFO     LAGER-0000488 — Processing year 1822.
+2025-03-15 08:02:46,696 __main__     INFO     LAGER-0000488 — Processing year 1834.
+2025-03-15 08:06:11,786 __main__     INFO     LAGER-0000488 — Processing year 1836.
+2025-03-15 08:09:52,212 __main__     INFO     LAGER-0000488 — Processing year 1818.
+2025-03-15 08:13:11,138 __main__     INFO     LAGER-0000488 — Processing year 1876.
+2025-03-15 08:25:22,140 __main__     INFO     LAGER-0000488 — Processing year 1875.
+2025-03-15 08:37:54,314 __main__     INFO     LAGER-0000488 — Processing year 1852.
+2025-03-15 08:45:11,137 __main__     INFO     LAGER-0000488 — Processing year 1863.
+2025-03-15 08:56:17,137 __main__     INFO     LAGER-0000488 — Processing year 1848.
+2025-03-15 09:01:57,939 __main__     INFO     LAGER-0000488 — Processing year 1829.
+2025-03-15 09:05:34,706 __main__     INFO     LAGER-0000488 — Processing year 1838.
+2025-03-15 09:10:18,191 __main__     INFO     LAGER-0000488 — Processing year 1816.
+2025-03-15 09:13:30,567 __main__     INFO     LAGER-0000488 — Processing year 1857.
+2025-03-15 09:22:06,274 __main__     INFO     LAGER-0000488 — Processing year 1881.
+2025-03-15 09:36:48,613 __main__     INFO     ✅ LAGER-0000488 (12/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-15 09:36:48,614 __main__     INFO     ---------- Processing NECT - NLP 0000489 (13/100) ----------
+2025-03-15 09:36:49,235 __main__     INFO     NECT-0000489 — Processing year 1711.
+2025-03-15 09:40:30,895 __main__     INFO     NECT-0000489 — Processing year 1710.
+2025-03-15 09:40:33,101 __main__     INFO     NECT-0000489 — Processing year 1712.
+2025-03-15 09:54:03,852 __main__     INFO     ✅ NECT-0000489 (13/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-15 09:54:03,853 __main__     INFO     ---------- Processing SHIN - NLP 0000490 (14/100) ----------
+2025-03-15 09:54:04,584 __main__     INFO     SHIN-0000490 — Processing year 1819.
+2025-03-15 09:54:11,969 __main__     INFO     ✅ SHIN-0000490 (14/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-15 09:54:11,969 __main__     INFO     ---------- Processing SHIN - NLP 0000491 (15/100) ----------
+2025-03-15 09:54:12,493 __main__     INFO     SHIN-0000491 — Processing year 1824.
+2025-03-15 10:00:09,633 __main__     INFO     SHIN-0000491 — Processing year 1837.
+2025-03-15 10:06:44,368 __main__     INFO     SHIN-0000491 — Processing year 1823.
+2025-03-15 10:13:23,598 __main__     INFO     SHIN-0000491 — Processing year 1832.
+2025-03-15 10:19:41,793 __main__     INFO     SHIN-0000491 — Processing year 1833.
+2025-03-15 10:25:56,874 __main__     INFO     SHIN-0000491 — Processing year 1821.
+2025-03-15 10:30:41,900 __main__     INFO     SHIN-0000491 — Processing year 1835.
+2025-03-15 10:37:03,234 __main__     INFO     SHIN-0000491 — Processing year 1839.
+2025-03-15 10:46:25,257 __main__     INFO     SHIN-0000491 — Processing year 1826.
+2025-03-15 10:52:24,859 __main__     INFO     SHIN-0000491 — Processing year 1831.
+2025-03-15 10:58:50,536 __main__     INFO     SHIN-0000491 — Processing year 1828.
+2025-03-15 11:04:33,409 __main__     INFO     SHIN-0000491 — Processing year 1830.
+2025-03-15 11:10:29,671 __main__     INFO     SHIN-0000491 — Processing year 1825.
+2025-03-15 11:17:02,312 __main__     INFO     SHIN-0000491 — Processing year 1834.
+2025-03-15 11:23:33,159 __main__     INFO     SHIN-0000491 — Processing year 1836.
+2025-03-15 11:30:28,828 __main__     INFO     SHIN-0000491 — Processing year 1829.
+2025-03-15 11:36:53,145 __main__     INFO     SHIN-0000491 — Processing year 1838.
+2025-03-15 11:46:51,130 __main__     INFO     ✅ SHIN-0000491 (15/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-15 11:46:51,131 __main__     INFO     ---------- Processing SOHD - NLP 0000493 (16/100) ----------
+2025-03-15 11:46:51,817 __main__     INFO     SOHD-0000493 — Processing year 1831.
+2025-03-15 11:52:30,680 __main__     INFO     SOHD-0000493 — Processing year 1830.
+2025-03-15 11:56:19,144 __main__     INFO     ✅ SOHD-0000493 (16/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-15 11:56:19,145 __main__     INFO     ---------- Processing SOHD - NLP 0000494 (17/100) ----------
+2025-03-15 11:56:19,913 __main__     INFO     SOHD-0000494 — Processing year 1860.
+2025-03-15 12:15:35,061 __main__     INFO     SOHD-0000494 — Processing year 1837.
+2025-03-15 12:21:06,648 __main__     INFO     SOHD-0000494 — Processing year 1842.
+2025-03-15 12:26:45,959 __main__     INFO     SOHD-0000494 — Processing year 1844.
+2025-03-15 12:35:39,946 __main__     INFO     SOHD-0000494 — Processing year 1856.
+2025-03-15 12:45:49,084 __main__     INFO     SOHD-0000494 — Processing year 1832.
+2025-03-15 12:51:20,321 __main__     INFO     SOHD-0000494 — Processing year 1846.
+2025-03-15 13:00:10,488 __main__     INFO     SOHD-0000494 — Processing year 1849.
+2025-03-15 13:08:50,202 __main__     INFO     SOHD-0000494 — Processing year 1840.
+2025-03-15 13:13:55,740 __main__     INFO     SOHD-0000494 — Processing year 1859.
+2025-03-15 13:28:14,645 __main__     INFO     SOHD-0000494 — Processing year 1835.
+2025-03-15 13:33:54,049 __main__     INFO     SOHD-0000494 — Processing year 1858.
+2025-03-15 13:48:04,683 __main__     INFO     SOHD-0000494 — Processing year 1843.
+2025-03-15 13:53:39,153 __main__     INFO     SOHD-0000494 — Processing year 1839.
+2025-03-15 13:59:17,545 __main__     INFO     SOHD-0000494 — Processing year 1847.
+2025-03-15 14:08:18,707 __main__     INFO     SOHD-0000494 — Processing year 1841.
+2025-03-15 14:14:35,997 __main__     INFO     SOHD-0000494 — Processing year 1851.
+2025-03-15 14:23:38,852 __main__     INFO     SOHD-0000494 — Processing year 1845.
+2025-03-15 14:32:44,934 __main__     INFO     SOHD-0000494 — Processing year 1854.
+2025-03-15 14:42:04,902 __main__     INFO     SOHD-0000494 — Processing year 1855.
+2025-03-15 14:51:56,681 __main__     INFO     SOHD-0000494 — Processing year 1834.
+2025-03-15 14:57:09,749 __main__     INFO     SOHD-0000494 — Processing year 1836.
+2025-03-15 15:03:27,491 __main__     INFO     SOHD-0000494 — Processing year 1852.
+2025-03-15 15:13:40,923 __main__     INFO     SOHD-0000494 — Processing year 1848.
+2025-03-15 15:23:39,752 __main__     INFO     SOHD-0000494 — Processing year 1838.
+2025-03-15 15:29:39,915 __main__     INFO     SOHD-0000494 — Processing year 1857.
+2025-03-15 15:40:14,441 __main__     INFO     ✅ SOHD-0000494 (17/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-15 15:40:14,442 __main__     INFO     ---------- Processing SOHD - NLP 0000495 (18/100) ----------
+2025-03-15 15:40:14,698 __main__     INFO     SOHD-0000495 — Processing year 1885.
+2025-03-15 15:55:38,901 __main__     INFO     SOHD-0000495 — Processing year 1899.
+2025-03-15 16:12:44,182 __main__     INFO     SOHD-0000495 — Processing year 1867.
+2025-03-15 16:26:40,923 __main__     INFO     SOHD-0000495 — Processing year 1870.
+2025-03-15 16:41:51,930 __main__     INFO     SOHD-0000495 — Processing year 1874.
+2025-03-15 16:55:14,900 __main__     INFO     SOHD-0000495 — Processing year 1878.
+2025-03-15 17:09:41,923 __main__     INFO     SOHD-0000495 — Processing year 1880.
+2025-03-15 17:24:44,532 __main__     INFO     SOHD-0000495 — Processing year 1892.
+2025-03-15 17:42:45,142 __main__     INFO     SOHD-0000495 — Processing year 1895.
+2025-03-15 18:00:35,171 __main__     INFO     SOHD-0000495 — Processing year 1882.
+2025-03-15 18:13:49,863 __main__     INFO     SOHD-0000495 — Processing year 1900.
+2025-03-15 18:28:57,921 __main__     INFO     SOHD-0000495 — Processing year 1877.
+2025-03-15 18:42:24,537 __main__     INFO     SOHD-0000495 — Processing year 1869.
+2025-03-15 18:55:47,741 __main__     INFO     SOHD-0000495 — Processing year 1887.
+2025-03-15 19:10:36,641 __main__     INFO     SOHD-0000495 — Processing year 1873.
+2025-03-15 19:23:44,824 __main__     INFO     SOHD-0000495 — Processing year 1865.
+2025-03-15 19:36:28,332 __main__     INFO     SOHD-0000495 — Processing year 1862.
+2025-03-15 19:49:33,264 __main__     INFO     SOHD-0000495 — Processing year 1889.
+2025-03-15 20:05:49,842 __main__     INFO     SOHD-0000495 — Processing year 1893.
+2025-03-15 20:22:42,725 __main__     INFO     SOHD-0000495 — Processing year 1883.
+2025-03-15 20:36:18,277 __main__     INFO     SOHD-0000495 — Processing year 1884.
+2025-03-15 20:49:51,809 __main__     INFO     SOHD-0000495 — Processing year 1890.
+2025-03-15 21:06:08,977 __main__     INFO     SOHD-0000495 — Processing year 1872.
+2025-03-15 21:19:36,268 __main__     INFO     SOHD-0000495 — Processing year 1861.
+2025-03-15 21:33:06,158 __main__     INFO     SOHD-0000495 — Processing year 1868.
+2025-03-15 21:47:02,521 __main__     INFO     SOHD-0000495 — Processing year 1891.
+2025-03-15 22:04:07,080 __main__     INFO     SOHD-0000495 — Processing year 1871.
+2025-03-15 22:17:20,228 __main__     INFO     SOHD-0000495 — Processing year 1894.
+2025-03-15 22:33:52,984 __main__     INFO     SOHD-0000495 — Processing year 1879.
+2025-03-15 22:46:27,205 __main__     INFO     SOHD-0000495 — Processing year 1876.
+2025-03-15 23:00:11,858 __main__     INFO     SOHD-0000495 — Processing year 1875.
+2025-03-15 23:14:10,505 __main__     INFO     SOHD-0000495 — Processing year 1863.
+2025-03-15 23:28:17,398 __main__     INFO     SOHD-0000495 — Processing year 1886.
+2025-03-15 23:43:19,614 __main__     INFO     SOHD-0000495 — Processing year 1897.
+2025-03-15 23:59:07,516 __main__     INFO     SOHD-0000495 — Processing year 1881.
+2025-03-16 00:12:44,477 __main__     INFO     ✅ SOHD-0000495 (18/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-16 00:12:44,478 __main__     INFO     ---------- Processing WRWA - NLP 0000496 (19/100) ----------
+2025-03-16 00:12:45,201 __main__     INFO     WRWA-0000496 — Processing year 1860.
+2025-03-16 00:18:33,191 __main__     INFO     WRWA-0000496 — Processing year 1885.
+2025-03-16 00:28:27,452 __main__     INFO     WRWA-0000496 — Processing year 1899.
+2025-03-16 00:38:47,788 __main__     INFO     WRWA-0000496 — Processing year 1867.
+2025-03-16 00:44:17,870 __main__     INFO     WRWA-0000496 — Processing year 1870.
+2025-03-16 00:54:14,628 __main__     INFO     WRWA-0000496 — Processing year 1874.
+2025-03-16 01:04:01,270 __main__     INFO     WRWA-0000496 — Processing year 1878.
+2025-03-16 01:15:27,755 __main__     INFO     WRWA-0000496 — Processing year 1880.
+2025-03-16 01:24:49,760 __main__     INFO     WRWA-0000496 — Processing year 1892.
+2025-03-16 01:33:51,823 __main__     INFO     WRWA-0000496 — Processing year 1895.
+2025-03-16 01:42:42,996 __main__     INFO     WRWA-0000496 — Processing year 1882.
+2025-03-16 01:50:54,317 __main__     INFO     WRWA-0000496 — Processing year 1900.
+2025-03-16 01:58:41,527 __main__     INFO     WRWA-0000496 — Processing year 1877.
+2025-03-16 02:06:54,156 __main__     INFO     WRWA-0000496 — Processing year 1869.
+2025-03-16 02:15:09,582 __main__     INFO     WRWA-0000496 — Processing year 1887.
+2025-03-16 02:24:49,027 __main__     INFO     WRWA-0000496 — Processing year 1859.
+2025-03-16 02:30:15,014 __main__     INFO     WRWA-0000496 — Processing year 1873.
+2025-03-16 02:36:50,187 __main__     INFO     WRWA-0000496 — Processing year 1858.
+2025-03-16 02:40:10,745 __main__     INFO     WRWA-0000496 — Processing year 1866.
+2025-03-16 02:48:53,636 __main__     INFO     WRWA-0000496 — Processing year 1893.
+2025-03-16 02:57:22,600 __main__     INFO     WRWA-0000496 — Processing year 1888.
+2025-03-16 03:05:08,997 __main__     INFO     WRWA-0000496 — Processing year 1883.
+2025-03-16 03:12:41,297 __main__     INFO     WRWA-0000496 — Processing year 1884.
+2025-03-16 03:20:57,390 __main__     INFO     WRWA-0000496 — Processing year 1896.
+2025-03-16 03:28:52,391 __main__     INFO     WRWA-0000496 — Processing year 1890.
+2025-03-16 03:38:03,553 __main__     INFO     WRWA-0000496 — Processing year 1861.
+2025-03-16 03:41:32,750 __main__     INFO     WRWA-0000496 — Processing year 1868.
+2025-03-16 03:48:59,507 __main__     INFO     WRWA-0000496 — Processing year 1864.
+2025-03-16 03:58:18,684 __main__     INFO     WRWA-0000496 — Processing year 1891.
+2025-03-16 04:08:34,325 __main__     INFO     WRWA-0000496 — Processing year 1871.
+2025-03-16 04:17:11,335 __main__     INFO     WRWA-0000496 — Processing year 1894.
+2025-03-16 04:28:04,089 __main__     INFO     WRWA-0000496 — Processing year 1876.
+2025-03-16 04:37:08,933 __main__     INFO     WRWA-0000496 — Processing year 1875.
+2025-03-16 04:46:47,542 __main__     INFO     WRWA-0000496 — Processing year 1863.
+2025-03-16 04:51:48,205 __main__     INFO     WRWA-0000496 — Processing year 1881.
+2025-03-16 05:00:02,479 __main__     INFO     ✅ WRWA-0000496 (19/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-16 05:00:02,480 __main__     INFO     ---------- Processing YOHD - NLP 0000497 (20/100) ----------
+2025-03-16 05:00:02,746 __main__     INFO     YOHD-0000497 — Processing year 1813.
+2025-03-16 05:02:10,388 __main__     INFO     YOHD-0000497 — Processing year 1812.
+2025-03-16 05:04:28,153 __main__     INFO     ✅ YOHD-0000497 (20/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-16 05:04:28,154 __main__     INFO     ---------- Processing YOHD - NLP 0000498 (21/100) ----------
+2025-03-16 05:04:28,313 __main__     INFO     YOHD-0000498 — Processing year 1814.
+2025-03-16 05:06:35,115 __main__     INFO     YOHD-0000498 — Processing year 1824.
+2025-03-16 05:09:26,040 __main__     INFO     YOHD-0000498 — Processing year 1837.
+2025-03-16 05:14:34,169 __main__     INFO     YOHD-0000498 — Processing year 1842.
+2025-03-16 05:19:25,349 __main__     INFO     YOHD-0000498 — Processing year 1823.
+2025-03-16 05:22:22,624 __main__     INFO     YOHD-0000498 — Processing year 1844.
+2025-03-16 05:31:49,559 __main__     INFO     YOHD-0000498 — Processing year 1832.
+2025-03-16 05:37:26,173 __main__     INFO     YOHD-0000498 — Processing year 1846.
+2025-03-16 05:47:28,584 __main__     INFO     YOHD-0000498 — Processing year 1850.
+2025-03-16 05:56:38,268 __main__     INFO     YOHD-0000498 — Processing year 1833.
+2025-03-16 06:01:49,388 __main__     INFO     YOHD-0000498 — Processing year 1849.
+2025-03-16 06:11:03,742 __main__     INFO     YOHD-0000498 — Processing year 1840.
+2025-03-16 06:16:29,989 __main__     INFO     YOHD-0000498 — Processing year 1817.
+2025-03-16 06:19:05,837 __main__     INFO     YOHD-0000498 — Processing year 1835.
+2025-03-16 06:24:43,657 __main__     INFO     YOHD-0000498 — Processing year 1819.
+2025-03-16 06:27:49,873 __main__     INFO     YOHD-0000498 — Processing year 1843.
+2025-03-16 06:36:26,023 __main__     INFO     YOHD-0000498 — Processing year 1853.
+2025-03-16 06:46:16,981 __main__     INFO     YOHD-0000498 — Processing year 1839.
+2025-03-16 06:51:38,774 __main__     INFO     YOHD-0000498 — Processing year 1826.
+2025-03-16 06:55:34,500 __main__     INFO     YOHD-0000498 — Processing year 1847.
+2025-03-16 07:04:51,755 __main__     INFO     YOHD-0000498 — Processing year 1841.
+2025-03-16 07:09:39,039 __main__     INFO     YOHD-0000498 — Processing year 1831.
+2025-03-16 07:13:15,079 __main__     INFO     YOHD-0000498 — Processing year 1827.
+2025-03-16 07:16:14,447 __main__     INFO     YOHD-0000498 — Processing year 1815.
+2025-03-16 07:18:46,042 __main__     INFO     YOHD-0000498 — Processing year 1828.
+2025-03-16 07:20:44,896 __main__     INFO     YOHD-0000498 — Processing year 1830.
+2025-03-16 07:25:36,416 __main__     INFO     YOHD-0000498 — Processing year 1851.
+2025-03-16 07:34:48,086 __main__     INFO     YOHD-0000498 — Processing year 1845.
+2025-03-16 07:44:28,400 __main__     INFO     YOHD-0000498 — Processing year 1854.
+2025-03-16 07:54:18,346 __main__     INFO     YOHD-0000498 — Processing year 1825.
+2025-03-16 07:57:28,733 __main__     INFO     YOHD-0000498 — Processing year 1820.
+2025-03-16 07:59:48,800 __main__     INFO     YOHD-0000498 — Processing year 1834.
+2025-03-16 08:04:19,806 __main__     INFO     YOHD-0000498 — Processing year 1836.
+2025-03-16 08:09:19,296 __main__     INFO     YOHD-0000498 — Processing year 1818.
+2025-03-16 08:11:42,692 __main__     INFO     YOHD-0000498 — Processing year 1852.
+2025-03-16 08:18:33,224 __main__     INFO     YOHD-0000498 — Processing year 1848.
+2025-03-16 08:25:45,689 __main__     INFO     YOHD-0000498 — Processing year 1829.
+2025-03-16 08:29:42,999 __main__     INFO     YOHD-0000498 — Processing year 1838.
+2025-03-16 08:34:27,432 __main__     INFO     YOHD-0000498 — Processing year 1816.
+2025-03-16 08:36:43,879 __main__     INFO     ✅ YOHD-0000498 (21/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-16 08:36:43,879 __main__     INFO     ---------- Processing YOHD - NLP 0000499 (22/100) ----------
+2025-03-16 08:36:44,275 __main__     INFO     YOHD-0000499 — Processing year 1860.
+2025-03-16 08:45:36,782 __main__     INFO     YOHD-0000499 — Processing year 1885.
+2025-03-16 09:22:49,548 __main__     INFO     YOHD-0000499 — Processing year 1867.
+2025-03-16 09:32:42,392 __main__     INFO     YOHD-0000499 — Processing year 1870.
+2025-03-16 09:44:06,503 __main__     INFO     YOHD-0000499 — Processing year 1874.
+2025-03-16 10:36:43,988 __main__     INFO     YOHD-0000499 — Processing year 1878.
+2025-03-16 11:24:27,291 __main__     INFO     YOHD-0000499 — Processing year 1880.
+2025-03-16 12:35:43,427 __main__     INFO     YOHD-0000499 — Processing year 1856.
+2025-03-16 12:45:49,438 __main__     INFO     YOHD-0000499 — Processing year 1882.
+2025-03-16 13:51:50,726 __main__     INFO     YOHD-0000499 — Processing year 1877.
+2025-03-16 14:42:41,276 __main__     INFO     YOHD-0000499 — Processing year 1869.
+2025-03-16 14:52:28,053 __main__     INFO     YOHD-0000499 — Processing year 1887.
+2025-03-16 15:37:54,205 __main__     INFO     YOHD-0000499 — Processing year 1859.
+2025-03-16 15:46:09,867 __main__     INFO     YOHD-0000499 — Processing year 1873.
+2025-03-16 15:55:28,806 __main__     INFO     YOHD-0000499 — Processing year 1865.
+2025-03-16 16:05:17,466 __main__     INFO     YOHD-0000499 — Processing year 1858.
+2025-03-16 16:17:10,370 __main__     INFO     YOHD-0000499 — Processing year 1862.
+2025-03-16 16:24:03,734 __main__     INFO     YOHD-0000499 — Processing year 1889.
+2025-03-16 17:10:36,708 __main__     INFO     YOHD-0000499 — Processing year 1866.
+2025-03-16 17:20:08,696 __main__     INFO     YOHD-0000499 — Processing year 1888.
+2025-03-16 18:12:00,280 __main__     INFO     YOHD-0000499 — Processing year 1883.
+2025-03-16 18:47:42,572 __main__     INFO     YOHD-0000499 — Processing year 1884.
+2025-03-16 19:24:25,885 __main__     INFO     YOHD-0000499 — Processing year 1872.
+2025-03-16 19:33:57,999 __main__     INFO     YOHD-0000499 — Processing year 1861.
+2025-03-16 19:44:11,257 __main__     INFO     YOHD-0000499 — Processing year 1868.
+2025-03-16 19:56:34,289 __main__     INFO     YOHD-0000499 — Processing year 1864.
+2025-03-16 20:05:48,253 __main__     INFO     YOHD-0000499 — Processing year 1871.
+2025-03-16 20:15:23,573 __main__     INFO     YOHD-0000499 — Processing year 1855.
+2025-03-16 20:24:21,914 __main__     INFO     YOHD-0000499 — Processing year 1879.
+2025-03-16 20:50:00,407 __main__     INFO     YOHD-0000499 — Processing year 1876.
+2025-03-16 21:43:49,148 __main__     INFO     YOHD-0000499 — Processing year 1875.
+2025-03-16 22:31:49,333 __main__     INFO     YOHD-0000499 — Processing year 1863.
+2025-03-16 22:40:07,673 __main__     INFO     YOHD-0000499 — Processing year 1886.
+2025-03-16 23:09:39,119 __main__     INFO     YOHD-0000499 — Processing year 1857.
+2025-03-16 23:18:02,832 __main__     INFO     YOHD-0000499 — Processing year 1881.
+2025-03-17 00:18:43,668 __main__     INFO     ✅ YOHD-0000499 (22/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 00:18:43,669 __main__     INFO     ---------- Processing YOHD - NLP 0000500 (23/100) ----------
+2025-03-17 00:18:44,239 __main__     INFO     YOHD-0000500 — Processing year 1899.
+2025-03-17 01:07:29,013 __main__     INFO     YOHD-0000500 — Processing year 1892.
+2025-03-17 02:00:16,970 __main__     INFO     YOHD-0000500 — Processing year 1895.
+2025-03-17 03:00:52,604 __main__     INFO     YOHD-0000500 — Processing year 1900.
+2025-03-17 03:30:52,031 __main__     INFO     YOHD-0000500 — Processing year 1893.
+2025-03-17 04:29:14,431 __main__     INFO     YOHD-0000500 — Processing year 1896.
+2025-03-17 05:18:22,581 __main__     INFO     YOHD-0000500 — Processing year 1890.
+2025-03-17 06:13:44,381 __main__     INFO     YOHD-0000500 — Processing year 1891.
+2025-03-17 07:11:24,389 __main__     INFO     YOHD-0000500 — Processing year 1894.
+2025-03-17 08:11:25,395 __main__     INFO     ✅ YOHD-0000500 (23/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 08:11:25,396 __main__     INFO     ---------- Processing MRTM - NLP 0000501 (24/100) ----------
+2025-03-17 08:11:26,149 __main__     INFO     MRTM-0000501 — Processing year 1828.
+2025-03-17 08:12:27,737 __main__     INFO     MRTM-0000501 — Processing year 1829.
+2025-03-17 08:16:33,016 __main__     INFO     ✅ MRTM-0000501 (24/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 08:16:33,016 __main__     INFO     ---------- Processing MRTM - NLP 0000502 (25/100) ----------
+2025-03-17 08:16:33,314 __main__     INFO     MRTM-0000502 — Processing year 1850.
+2025-03-17 08:26:43,886 __main__     INFO     MRTM-0000502 — Processing year 1849.
+2025-03-17 08:37:16,130 __main__     INFO     MRTM-0000502 — Processing year 1853.
+2025-03-17 08:48:21,006 __main__     INFO     MRTM-0000502 — Processing year 1851.
+2025-03-17 08:59:02,866 __main__     INFO     MRTM-0000502 — Processing year 1854.
+2025-03-17 09:14:14,736 __main__     INFO     MRTM-0000502 — Processing year 1855.
+2025-03-17 09:23:54,672 __main__     INFO     MRTM-0000502 — Processing year 1852.
+2025-03-17 09:34:05,876 __main__     INFO     ✅ MRTM-0000502 (25/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 09:34:05,877 __main__     INFO     ---------- Processing MRTM - NLP 0000503 (26/100) ----------
+2025-03-17 09:34:06,475 __main__     INFO     MRTM-0000503 — Processing year 1856.
+2025-03-17 09:42:10,923 __main__     INFO     MRTM-0000503 — Processing year 1857.
+2025-03-17 09:50:26,202 __main__     INFO     ✅ MRTM-0000503 (26/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 09:50:26,203 __main__     INFO     ---------- Processing MRTM - NLP 0000504 (27/100) ----------
+2025-03-17 09:50:26,765 __main__     INFO     MRTM-0000504 — Processing year 1860.
+2025-03-17 09:55:58,298 __main__     INFO     MRTM-0000504 — Processing year 1898.
+2025-03-17 10:06:19,080 __main__     INFO     MRTM-0000504 — Processing year 1885.
+2025-03-17 10:11:35,749 __main__     INFO     MRTM-0000504 — Processing year 1899.
+2025-03-17 10:21:25,384 __main__     INFO     MRTM-0000504 — Processing year 1867.
+2025-03-17 10:26:44,155 __main__     INFO     MRTM-0000504 — Processing year 1870.
+2025-03-17 10:31:58,297 __main__     INFO     MRTM-0000504 — Processing year 1874.
+2025-03-17 10:37:34,877 __main__     INFO     MRTM-0000504 — Processing year 1878.
+2025-03-17 10:42:54,964 __main__     INFO     MRTM-0000504 — Processing year 1880.
+2025-03-17 10:48:16,425 __main__     INFO     MRTM-0000504 — Processing year 1892.
+2025-03-17 10:54:16,314 __main__     INFO     MRTM-0000504 — Processing year 1895.
+2025-03-17 11:00:10,689 __main__     INFO     MRTM-0000504 — Processing year 1882.
+2025-03-17 11:06:00,836 __main__     INFO     MRTM-0000504 — Processing year 1900.
+2025-03-17 11:16:02,443 __main__     INFO     MRTM-0000504 — Processing year 1877.
+2025-03-17 11:22:19,894 __main__     INFO     MRTM-0000504 — Processing year 1869.
+2025-03-17 11:28:11,085 __main__     INFO     MRTM-0000504 — Processing year 1887.
+2025-03-17 11:34:40,327 __main__     INFO     MRTM-0000504 — Processing year 1859.
+2025-03-17 11:40:38,897 __main__     INFO     MRTM-0000504 — Processing year 1865.
+2025-03-17 11:46:42,126 __main__     INFO     MRTM-0000504 — Processing year 1858.
+2025-03-17 11:53:11,426 __main__     INFO     MRTM-0000504 — Processing year 1862.
+2025-03-17 11:58:06,885 __main__     INFO     MRTM-0000504 — Processing year 1889.
+2025-03-17 12:03:38,875 __main__     INFO     MRTM-0000504 — Processing year 1866.
+2025-03-17 12:09:03,291 __main__     INFO     MRTM-0000504 — Processing year 1893.
+2025-03-17 12:14:50,660 __main__     INFO     MRTM-0000504 — Processing year 1888.
+2025-03-17 12:20:44,518 __main__     INFO     MRTM-0000504 — Processing year 1883.
+2025-03-17 12:26:17,889 __main__     INFO     MRTM-0000504 — Processing year 1884.
+2025-03-17 12:31:53,689 __main__     INFO     MRTM-0000504 — Processing year 1890.
+2025-03-17 12:38:13,565 __main__     INFO     MRTM-0000504 — Processing year 1872.
+2025-03-17 12:43:31,540 __main__     INFO     MRTM-0000504 — Processing year 1861.
+2025-03-17 12:49:20,406 __main__     INFO     MRTM-0000504 — Processing year 1868.
+2025-03-17 12:55:06,276 __main__     INFO     MRTM-0000504 — Processing year 1864.
+2025-03-17 13:00:43,604 __main__     INFO     MRTM-0000504 — Processing year 1891.
+2025-03-17 13:06:32,249 __main__     INFO     MRTM-0000504 — Processing year 1871.
+2025-03-17 13:11:58,644 __main__     INFO     MRTM-0000504 — Processing year 1894.
+2025-03-17 13:18:00,652 __main__     INFO     MRTM-0000504 — Processing year 1879.
+2025-03-17 13:23:40,266 __main__     INFO     MRTM-0000504 — Processing year 1876.
+2025-03-17 13:29:25,585 __main__     INFO     MRTM-0000504 — Processing year 1875.
+2025-03-17 13:35:15,850 __main__     INFO     MRTM-0000504 — Processing year 1886.
+2025-03-17 13:40:46,654 __main__     INFO     MRTM-0000504 — Processing year 1881.
+2025-03-17 13:46:27,549 __main__     INFO     ✅ MRTM-0000504 (27/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 13:46:27,550 __main__     INFO     ---------- Processing NLON - NLP 0001797 (28/100) ----------
+2025-03-17 13:46:27,868 __main__     INFO     NLON-0001797 — Processing year 1874.
+2025-03-17 13:49:34,249 __main__     INFO     NLON-0001797 — Processing year 1875.
+2025-03-17 13:54:09,790 __main__     INFO     ✅ NLON-0001797 (28/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 13:54:09,791 __main__     INFO     ---------- Processing NDTM - NLP 0002083 (29/100) ----------
+2025-03-17 13:54:10,364 __main__     INFO     NDTM-0002083 — Processing year 1856.
+2025-03-17 14:44:07,719 __main__     INFO     NDTM-0002083 — Processing year 1853.
+2025-03-17 14:59:00,427 __main__     INFO     NDTM-0002083 — Processing year 1854.
+2025-03-17 15:54:49,030 __main__     INFO     NDTM-0002083 — Processing year 1855.
+2025-03-17 16:40:41,531 __main__     INFO     NDTM-0002083 — Processing year 1857.
+2025-03-17 17:20:42,048 __main__     INFO     ✅ NDTM-0002083 (29/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 17:20:42,049 __main__     INFO     ---------- Processing NDTM - NLP 0002084 (30/100) ----------
+2025-03-17 17:20:42,233 __main__     INFO     NDTM-0002084 — Processing year 1860.
+2025-03-17 17:32:13,131 __main__     INFO     NDTM-0002084 — Processing year 1859.
+2025-03-17 18:59:22,302 __main__     INFO     NDTM-0002084 — Processing year 1858.
+2025-03-17 20:10:50,490 __main__     INFO     NDTM-0002084 — Processing year 1857.
+2025-03-17 20:53:18,680 __main__     INFO     ✅ NDTM-0002084 (30/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 20:53:18,681 __main__     INFO     ---------- Processing NDTM - NLP 0002085 (31/100) ----------
+2025-03-17 20:53:19,138 __main__     INFO     NDTM-0002085 — Processing year 1860.
+2025-03-17 21:34:55,749 __main__     INFO     NDTM-0002085 — Processing year 1861.
+2025-03-17 21:39:14,664 __main__     INFO     ✅ NDTM-0002085 (31/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-17 21:39:14,665 __main__     INFO     ---------- Processing LSGA - NLP 0002088 (32/100) ----------
+2025-03-17 21:39:15,089 __main__     INFO     LSGA-0002088 — Processing year 1837.
+2025-03-17 22:03:03,271 __main__     INFO     LSGA-0002088 — Processing year 1842.
+2025-03-17 22:36:17,779 __main__     INFO     LSGA-0002088 — Processing year 1844.
+2025-03-17 23:19:10,048 __main__     INFO     LSGA-0002088 — Processing year 1832.
+2025-03-17 23:21:20,256 __main__     INFO     LSGA-0002088 — Processing year 1846.
+2025-03-17 23:56:39,715 __main__     INFO     LSGA-0002088 — Processing year 1850.
+2025-03-18 00:11:53,915 __main__     INFO     LSGA-0002088 — Processing year 1833.
+2025-03-18 00:30:58,540 __main__     INFO     LSGA-0002088 — Processing year 1849.
+2025-03-18 00:45:43,209 __main__     INFO     LSGA-0002088 — Processing year 1840.
+2025-03-18 01:22:59,291 __main__     INFO     LSGA-0002088 — Processing year 1835.
+2025-03-18 01:40:07,182 __main__     INFO     LSGA-0002088 — Processing year 1843.
+2025-03-18 02:17:03,419 __main__     INFO     LSGA-0002088 — Processing year 1853.
+2025-03-18 02:54:06,537 __main__     INFO     LSGA-0002088 — Processing year 1839.
+2025-03-18 03:11:50,794 __main__     INFO     LSGA-0002088 — Processing year 1847.
+2025-03-18 03:38:58,867 __main__     INFO     LSGA-0002088 — Processing year 1841.
+2025-03-18 04:19:53,000 __main__     INFO     LSGA-0002088 — Processing year 1851.
+2025-03-18 04:35:02,878 __main__     INFO     LSGA-0002088 — Processing year 1845.
+2025-03-18 04:51:20,773 __main__     INFO     LSGA-0002088 — Processing year 1854.
+2025-03-18 05:09:35,899 __main__     INFO     LSGA-0002088 — Processing year 1834.
+2025-03-18 05:28:17,997 __main__     INFO     LSGA-0002088 — Processing year 1836.
+2025-03-18 05:52:50,473 __main__     INFO     LSGA-0002088 — Processing year 1852.
+2025-03-18 06:10:37,375 __main__     INFO     LSGA-0002088 — Processing year 1848.
+2025-03-18 06:52:08,212 __main__     INFO     LSGA-0002088 — Processing year 1838.
+2025-03-18 07:30:53,742 __main__     INFO     ✅ LSGA-0002088 (32/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-18 07:30:53,742 __main__     INFO     ---------- Processing LSGA - NLP 0002089 (33/100) ----------
+2025-03-18 07:30:54,382 __main__     INFO     LSGA-0002089 — Processing year 1854.
+2025-03-18 07:52:34,232 __main__     INFO     LSGA-0002089 — Processing year 1855.
+2025-03-18 08:09:22,519 __main__     INFO     ✅ LSGA-0002089 (33/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-18 08:09:22,520 __main__     INFO     ---------- Processing LSGA - NLP 0002090 (34/100) ----------
+2025-03-18 08:09:22,728 __main__     INFO     LSGA-0002090 — Processing year 1856.
+2025-03-18 08:17:13,920 __main__     INFO     LSGA-0002090 — Processing year 1855.
+2025-03-18 08:40:56,891 __main__     INFO     ✅ LSGA-0002090 (34/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-18 08:40:56,892 __main__     INFO     ---------- Processing SJCH - NLP 0002193 (35/100) ----------
+2025-03-18 08:40:57,508 __main__     INFO     SJCH-0002193 — Processing year 1814.
+2025-03-18 09:00:15,043 __main__     INFO     SJCH-0002193 — Processing year 1811.
+2025-03-18 09:18:49,661 __main__     INFO     SJCH-0002193 — Processing year 1813.
+2025-03-18 09:39:12,293 __main__     INFO     SJCH-0002193 — Processing year 1810.
+2025-03-18 09:58:34,863 __main__     INFO     SJCH-0002193 — Processing year 1806.
+2025-03-18 10:18:29,414 __main__     INFO     SJCH-0002193 — Processing year 1808.
+2025-03-18 10:34:12,767 __main__     INFO     SJCH-0002193 — Processing year 1824.
+2025-03-18 10:58:17,023 __main__     INFO     SJCH-0002193 — Processing year 1837.
+2025-03-18 11:28:02,745 __main__     INFO     SJCH-0002193 — Processing year 1807.
+2025-03-18 11:46:05,110 __main__     INFO     SJCH-0002193 — Processing year 1842.
+2025-03-18 12:09:54,918 __main__     INFO     SJCH-0002193 — Processing year 1823.
+2025-03-18 12:31:38,625 __main__     INFO     SJCH-0002193 — Processing year 1844.
+2025-03-18 12:56:58,765 __main__     INFO     SJCH-0002193 — Processing year 1856.
+2025-03-18 13:26:45,419 __main__     INFO     SJCH-0002193 — Processing year 1832.
+2025-03-18 13:57:44,209 __main__     INFO     SJCH-0002193 — Processing year 1846.
+2025-03-18 14:31:44,103 __main__     INFO     SJCH-0002193 — Processing year 1850.
+2025-03-18 14:55:51,149 __main__     INFO     SJCH-0002193 — Processing year 1833.
+2025-03-18 15:20:09,239 __main__     INFO     SJCH-0002193 — Processing year 1849.
+2025-03-18 15:49:40,803 __main__     INFO     SJCH-0002193 — Processing year 1840.
+2025-03-18 16:17:04,455 __main__     INFO     SJCH-0002193 — Processing year 1821.
+2025-03-18 16:31:13,412 __main__     INFO     SJCH-0002193 — Processing year 1809.
+2025-03-18 16:43:08,121 __main__     INFO     SJCH-0002193 — Processing year 1817.
+2025-03-18 16:51:07,830 __main__     INFO     SJCH-0002193 — Processing year 1859.
+2025-03-18 17:30:18,776 __main__     INFO     SJCH-0002193 — Processing year 1835.
+2025-03-18 17:51:27,607 __main__     INFO     SJCH-0002193 — Processing year 1865.
+2025-03-18 18:21:15,783 __main__     INFO     SJCH-0002193 — Processing year 1858.
+2025-03-18 19:03:48,298 __main__     INFO     SJCH-0002193 — Processing year 1862.
+2025-03-18 19:33:50,470 __main__     INFO     SJCH-0002193 — Processing year 1819.
+2025-03-18 19:49:44,355 __main__     INFO     SJCH-0002193 — Processing year 1843.
+2025-03-18 20:11:39,204 __main__     INFO     SJCH-0002193 — Processing year 1805.
+2025-03-18 20:28:28,644 __main__     INFO     SJCH-0002193 — Processing year 1853.
+2025-03-18 20:50:38,148 __main__     INFO     SJCH-0002193 — Processing year 1804.
+2025-03-18 21:08:13,805 __main__     INFO     SJCH-0002193 — Processing year 1866.
+2025-03-18 21:27:35,839 __main__     INFO     SJCH-0002193 — Processing year 1839.
+2025-03-18 21:52:38,218 __main__     INFO     SJCH-0002193 — Processing year 1826.
+2025-03-18 22:16:23,062 __main__     INFO     SJCH-0002193 — Processing year 1847.
+2025-03-18 22:39:51,121 __main__     INFO     SJCH-0002193 — Processing year 1841.
+2025-03-18 23:02:53,895 __main__     INFO     SJCH-0002193 — Processing year 1801.
+2025-03-18 23:18:07,384 __main__     INFO     SJCH-0002193 — Processing year 1831.
+2025-03-18 23:41:01,386 __main__     INFO     SJCH-0002193 — Processing year 1827.
+2025-03-19 00:03:20,382 __main__     INFO     SJCH-0002193 — Processing year 1815.
+2025-03-19 00:16:34,264 __main__     INFO     SJCH-0002193 — Processing year 1828.
+2025-03-19 00:34:18,053 __main__     INFO     SJCH-0002193 — Processing year 1803.
+2025-03-19 00:47:16,186 __main__     INFO     SJCH-0002193 — Processing year 1864.
+2025-03-19 01:20:31,042 __main__     INFO     SJCH-0002193 — Processing year 1830.
+2025-03-19 01:37:44,415 __main__     INFO     SJCH-0002193 — Processing year 1851.
+2025-03-19 01:58:17,067 __main__     INFO     SJCH-0002193 — Processing year 1845.
+2025-03-19 02:19:21,348 __main__     INFO     SJCH-0002193 — Processing year 1854.
+2025-03-19 02:40:45,548 __main__     INFO     SJCH-0002193 — Processing year 1825.
+2025-03-19 02:58:00,835 __main__     INFO     SJCH-0002193 — Processing year 1855.
+2025-03-19 03:18:00,317 __main__     INFO     SJCH-0002193 — Processing year 1820.
+2025-03-19 03:31:46,115 __main__     INFO     SJCH-0002193 — Processing year 1812.
+2025-03-19 03:43:22,358 __main__     INFO     SJCH-0002193 — Processing year 1822.
+2025-03-19 03:56:07,121 __main__     INFO     SJCH-0002193 — Processing year 1802.
+2025-03-19 04:06:32,377 __main__     INFO     SJCH-0002193 — Processing year 1834.
+2025-03-19 04:20:46,837 __main__     INFO     SJCH-0002193 — Processing year 1836.
+2025-03-19 04:37:32,071 __main__     INFO     SJCH-0002193 — Processing year 1818.
+2025-03-19 04:49:05,274 __main__     INFO     SJCH-0002193 — Processing year 1852.
+2025-03-19 05:07:17,023 __main__     INFO     SJCH-0002193 — Processing year 1863.
+2025-03-19 05:24:23,580 __main__     INFO     SJCH-0002193 — Processing year 1848.
+2025-03-19 05:42:33,986 __main__     INFO     SJCH-0002193 — Processing year 1829.
+2025-03-19 05:54:53,445 __main__     INFO     SJCH-0002193 — Processing year 1838.
+2025-03-19 06:10:45,438 __main__     INFO     SJCH-0002193 — Processing year 1816.
+2025-03-19 06:13:09,092 __main__     INFO     SJCH-0002193 — Processing year 1857.
+2025-03-19 06:35:58,002 __main__     INFO     ✅ SJCH-0002193 (35/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 06:35:58,002 __main__     INFO     ---------- Processing TSUN - NLP 0002194 (36/100) ----------
+2025-03-19 06:35:58,412 __main__     INFO     TSUN-0002194 — Processing year 1860.
+2025-03-19 07:59:29,418 __main__     INFO     TSUN-0002194 — Processing year 1814.
+2025-03-19 08:24:03,472 __main__     INFO     TSUN-0002194 — Processing year 1811.
+2025-03-19 08:51:10,580 __main__     INFO     TSUN-0002194 — Processing year 1813.
+2025-03-19 09:14:47,329 __main__     INFO     TSUN-0002194 — Processing year 1810.
+2025-03-19 09:40:55,078 __main__     INFO     TSUN-0002194 — Processing year 1806.
+2025-03-19 10:06:03,591 __main__     INFO     TSUN-0002194 — Processing year 1867.
+2025-03-19 11:47:38,775 __main__     INFO     TSUN-0002194 — Processing year 1808.
+2025-03-19 12:21:06,776 __main__     INFO     TSUN-0002194 — Processing year 1824.
+2025-03-19 12:59:10,430 __main__     INFO     TSUN-0002194 — Processing year 1837.
+2025-03-19 13:52:29,871 __main__     INFO     TSUN-0002194 — Processing year 1870.
+2025-03-19 14:31:04,151 __main__     ERROR    TSUN-0002194-1870-08-20 — Copy of /mnt/project_impresso/original/BL_old/0002194/1870/0820/0002194_18700820_0002.jp2 failed due to execption [Errno 28] No space left on device, To copy again!.
+2025-03-19 14:31:04,221 __main__     ERROR    TSUN-0002194: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/TSUN/0002194/1870/01/05'
+2025-03-19 14:31:04,222 __main__     INFO     ✅ TSUN-0002194 (36/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,222 __main__     INFO     ---------- Processing BLWJ - NLP 0002243 (37/100) ----------
+2025-03-19 14:31:04,241 __main__     ERROR    BLWJ-0002243: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BLWJ'
+2025-03-19 14:31:04,241 __main__     INFO     ✅ BLWJ-0002243 (37/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,241 __main__     INFO     ---------- Processing CLNW - NLP 0002244 (38/100) ----------
+2025-03-19 14:31:04,257 __main__     ERROR    CLNW-0002244: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/CLNW'
+2025-03-19 14:31:04,257 __main__     INFO     ✅ CLNW-0002244 (38/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,257 __main__     INFO     ---------- Processing ISNT - NLP 0002245 (39/100) ----------
+2025-03-19 14:31:04,279 __main__     ERROR    ISNT-0002245: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/ISNT'
+2025-03-19 14:31:04,279 __main__     INFO     ✅ ISNT-0002245 (39/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,279 __main__     INFO     ---------- Processing ISNT - NLP 0002246 (40/100) ----------
+2025-03-19 14:31:04,291 __main__     ERROR    ISNT-0002246: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/ISNT'
+2025-03-19 14:31:04,291 __main__     INFO     ✅ ISNT-0002246 (40/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,292 __main__     INFO     ---------- Processing BEHI - NLP 0002247 (41/100) ----------
+2025-03-19 14:31:04,323 __main__     ERROR    BEHI-0002247: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BEHI'
+2025-03-19 14:31:04,323 __main__     INFO     ✅ BEHI-0002247 (41/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,324 __main__     INFO     ---------- Processing BEHI - NLP 0002249 (42/100) ----------
+2025-03-19 14:31:04,342 __main__     ERROR    BEHI-0002249: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BEHI'
+2025-03-19 14:31:04,343 __main__     INFO     ✅ BEHI-0002249 (42/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,343 __main__     INFO     ---------- Processing IWGZ - NLP 0002251 (43/100) ----------
+2025-03-19 14:31:04,362 __main__     ERROR    IWGZ-0002251: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/IWGZ'
+2025-03-19 14:31:04,362 __main__     INFO     ✅ IWGZ-0002251 (43/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,362 __main__     INFO     ---------- Processing IWGZ - NLP 0002252 (44/100) ----------
+2025-03-19 14:31:04,373 __main__     ERROR    IWGZ-0002252: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/IWGZ'
+2025-03-19 14:31:04,373 __main__     INFO     ✅ IWGZ-0002252 (44/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,374 __main__     INFO     ---------- Processing IWGZ - NLP 0002253 (45/100) ----------
+2025-03-19 14:31:04,389 __main__     ERROR    IWGZ-0002253: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/IWGZ'
+2025-03-19 14:31:04,390 __main__     INFO     ✅ IWGZ-0002253 (45/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,391 __main__     INFO     ---------- Processing LNPT - NLP 0002254 (46/100) ----------
+2025-03-19 14:31:04,414 __main__     ERROR    LNPT-0002254: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/LNPT'
+2025-03-19 14:31:04,414 __main__     INFO     ✅ LNPT-0002254 (46/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,414 __main__     INFO     ---------- Processing LOPA - NLP 0002255 (47/100) ----------
+2025-03-19 14:31:04,424 __main__     ERROR    LOPA-0002255: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/LOPA'
+2025-03-19 14:31:04,424 __main__     INFO     ✅ LOPA-0002255 (47/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,424 __main__     INFO     ---------- Processing NWTS - NLP 0002256 (48/100) ----------
+2025-03-19 14:31:04,448 __main__     ERROR    NWTS-0002256: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/NWTS'
+2025-03-19 14:31:04,448 __main__     INFO     ✅ NWTS-0002256 (48/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,448 __main__     INFO     ---------- Processing TNEW - NLP 0002257 (49/100) ----------
+2025-03-19 14:31:04,467 __main__     ERROR    TNEW-0002257: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/TNEW'
+2025-03-19 14:31:04,467 __main__     INFO     ✅ TNEW-0002257 (49/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,467 __main__     INFO     ---------- Processing TNEW - NLP 0002258 (50/100) ----------
+2025-03-19 14:31:04,480 __main__     ERROR    TNEW-0002258: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/TNEW'
+2025-03-19 14:31:04,480 __main__     INFO     ✅ TNEW-0002258 (50/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,480 __main__     INFO     ---------- Processing TNEW - NLP 0002259 (51/100) ----------
+2025-03-19 14:31:04,490 __main__     ERROR    TNEW-0002259: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/TNEW'
+2025-03-19 14:31:04,490 __main__     INFO     ✅ TNEW-0002259 (51/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,490 __main__     INFO     ---------- Processing SCPR - NLP 0002261 (52/100) ----------
+2025-03-19 14:31:04,504 __main__     ERROR    SCPR-0002261: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/SCPR'
+2025-03-19 14:31:04,504 __main__     INFO     ✅ SCPR-0002261 (52/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,504 __main__     INFO     ---------- Processing SCPR - NLP 0002262 (53/100) ----------
+2025-03-19 14:31:04,516 __main__     ERROR    SCPR-0002262: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/SCPR'
+2025-03-19 14:31:04,516 __main__     INFO     ✅ SCPR-0002262 (53/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,516 __main__     INFO     ---------- Processing WKCH - NLP 0002264 (54/100) ----------
+2025-03-19 14:31:04,535 __main__     ERROR    WKCH-0002264: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WKCH'
+2025-03-19 14:31:04,535 __main__     INFO     ✅ WKCH-0002264 (54/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,535 __main__     INFO     ---------- Processing WKCH - NLP 0002265 (55/100) ----------
+2025-03-19 14:31:04,547 __main__     ERROR    WKCH-0002265: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WKCH'
+2025-03-19 14:31:04,547 __main__     INFO     ✅ WKCH-0002265 (55/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,547 __main__     INFO     ---------- Processing WKCH - NLP 0002266 (56/100) ----------
+2025-03-19 14:31:04,557 __main__     ERROR    WKCH-0002266: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WKCH'
+2025-03-19 14:31:04,557 __main__     INFO     ✅ WKCH-0002266 (56/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,557 __main__     INFO     ---------- Processing WKCH - NLP 0002267 (57/100) ----------
+2025-03-19 14:31:04,568 __main__     ERROR    WKCH-0002267: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WKCH'
+2025-03-19 14:31:04,568 __main__     INFO     ✅ WKCH-0002267 (57/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,568 __main__     INFO     ---------- Processing WKCH - NLP 0002268 (58/100) ----------
+2025-03-19 14:31:04,584 __main__     ERROR    WKCH-0002268: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WKCH'
+2025-03-19 14:31:04,584 __main__     INFO     ✅ WKCH-0002268 (58/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,584 __main__     INFO     ---------- Processing WJBS - NLP 0002269 (59/100) ----------
+2025-03-19 14:31:04,596 __main__     ERROR    WJBS-0002269: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WJBS'
+2025-03-19 14:31:04,596 __main__     INFO     ✅ WJBS-0002269 (59/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,596 __main__     INFO     ---------- Processing CWPG - NLP 0002270 (60/100) ----------
+2025-03-19 14:31:04,612 __main__     ERROR    CWPG-0002270: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/CWPG/0002270'
+2025-03-19 14:31:04,612 __main__     INFO     ✅ CWPG-0002270 (60/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,612 __main__     INFO     ---------- Processing BPDH - NLP 0002347 (61/100) ----------
+2025-03-19 14:31:04,622 __main__     ERROR    BPDH-0002347: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BPDH'
+2025-03-19 14:31:04,622 __main__     INFO     ✅ BPDH-0002347 (61/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,622 __main__     INFO     ---------- Processing CBEP - NLP 0002348 (62/100) ----------
+2025-03-19 14:31:04,636 __main__     ERROR    CBEP-0002348: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/CBEP'
+2025-03-19 14:31:04,637 __main__     INFO     ✅ CBEP-0002348 (62/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,637 __main__     INFO     ---------- Processing DPLT - NLP 0002349 (63/100) ----------
+2025-03-19 14:31:04,652 __main__     ERROR    DPLT-0002349: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/DPLT'
+2025-03-19 14:31:04,652 __main__     INFO     ✅ DPLT-0002349 (63/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,652 __main__     INFO     ---------- Processing DPLT - NLP 0002350 (64/100) ----------
+2025-03-19 14:31:04,659 __main__     ERROR    DPLT-0002350: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/DPLT'
+2025-03-19 14:31:04,659 __main__     INFO     ✅ DPLT-0002350 (64/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,659 __main__     INFO     ---------- Processing DPLT - NLP 0002351 (65/100) ----------
+2025-03-19 14:31:04,678 __main__     ERROR    DPLT-0002351: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/DPLT'
+2025-03-19 14:31:04,679 __main__     INFO     ✅ DPLT-0002351 (65/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,679 __main__     INFO     ---------- Processing CHPL - NLP 0002352 (66/100) ----------
+2025-03-19 14:31:04,693 __main__     ERROR    CHPL-0002352: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/CHPL'
+2025-03-19 14:31:04,693 __main__     INFO     ✅ CHPL-0002352 (66/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,693 __main__     INFO     ---------- Processing CHPL - NLP 0002353 (67/100) ----------
+2025-03-19 14:31:04,727 __main__     ERROR    CHPL-0002353: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/CHPL'
+2025-03-19 14:31:04,727 __main__     INFO     ✅ CHPL-0002353 (67/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,727 __main__     INFO     ---------- Processing CHPL - NLP 0002354 (68/100) ----------
+2025-03-19 14:31:04,742 __main__     ERROR    CHPL-0002354: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/CHPL'
+2025-03-19 14:31:04,742 __main__     INFO     ✅ CHPL-0002354 (68/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,742 __main__     INFO     ---------- Processing LCPP - NLP 0002355 (69/100) ----------
+2025-03-19 14:31:04,758 __main__     ERROR    LCPP-0002355: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/LCPP'
+2025-03-19 14:31:04,758 __main__     INFO     ✅ LCPP-0002355 (69/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,759 __main__     INFO     ---------- Processing MRTT - NLP 0002356 (70/100) ----------
+2025-03-19 14:31:04,770 __main__     ERROR    MRTT-0002356: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/MRTT'
+2025-03-19 14:31:04,770 __main__     INFO     ✅ MRTT-0002356 (70/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,770 __main__     INFO     ---------- Processing NWTM - NLP 0002357 (71/100) ----------
+2025-03-19 14:31:04,783 __main__     ERROR    NWTM-0002357: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/NWTM'
+2025-03-19 14:31:04,783 __main__     INFO     ✅ NWTM-0002357 (71/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,783 __main__     INFO     ---------- Processing NWTM - NLP 0002358 (72/100) ----------
+2025-03-19 14:31:04,798 __main__     ERROR    NWTM-0002358: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/NWTM'
+2025-03-19 14:31:04,798 __main__     INFO     ✅ NWTM-0002358 (72/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,798 __main__     INFO     ---------- Processing NCEF - NLP 0002359 (73/100) ----------
+2025-03-19 14:31:04,812 __main__     ERROR    NCEF-0002359: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/NCEF'
+2025-03-19 14:31:04,812 __main__     INFO     ✅ NCEF-0002359 (73/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,812 __main__     INFO     ---------- Processing PICT - NLP 0002361 (74/100) ----------
+2025-03-19 14:31:04,828 __main__     ERROR    PICT-0002361: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/PICT'
+2025-03-19 14:31:04,828 __main__     INFO     ✅ PICT-0002361 (74/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,828 __main__     INFO     ---------- Processing ALST - NLP 0002362 (75/100) ----------
+2025-03-19 14:31:04,834 __main__     ERROR    ALST-0002362: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/ALST'
+2025-03-19 14:31:04,834 __main__     INFO     ✅ ALST-0002362 (75/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,835 __main__     INFO     ---------- Processing ALST - NLP 0002363 (76/100) ----------
+2025-03-19 14:31:04,841 __main__     ERROR    ALST-0002363: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/ALST'
+2025-03-19 14:31:04,841 __main__     INFO     ✅ ALST-0002363 (76/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,841 __main__     INFO     ---------- Processing AGMO - NLP 0002364 (77/100) ----------
+2025-03-19 14:31:04,848 __main__     ERROR    AGMO-0002364: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/AGMO'
+2025-03-19 14:31:04,848 __main__     INFO     ✅ AGMO-0002364 (77/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,848 __main__     INFO     ---------- Processing AGMO - NLP 0002365 (78/100) ----------
+2025-03-19 14:31:04,854 __main__     ERROR    AGMO-0002365: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/AGMO'
+2025-03-19 14:31:04,855 __main__     INFO     ✅ AGMO-0002365 (78/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,855 __main__     INFO     ---------- Processing AGMO - NLP 0002366 (79/100) ----------
+2025-03-19 14:31:04,862 __main__     ERROR    AGMO-0002366: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/AGMO'
+2025-03-19 14:31:04,862 __main__     INFO     ✅ AGMO-0002366 (79/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,862 __main__     INFO     ---------- Processing AGMO - NLP 0002367 (80/100) ----------
+2025-03-19 14:31:04,869 __main__     ERROR    AGMO-0002367: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/AGMO'
+2025-03-19 14:31:04,869 __main__     INFO     ✅ AGMO-0002367 (80/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,869 __main__     INFO     ---------- Processing ARGB - NLP 0002368 (81/100) ----------
+2025-03-19 14:31:04,876 __main__     ERROR    ARGB-0002368: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/ARGB'
+2025-03-19 14:31:04,876 __main__     INFO     ✅ ARGB-0002368 (81/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,876 __main__     INFO     ---------- Processing BCL2 - NLP 0002369 (82/100) ----------
+2025-03-19 14:31:04,883 __main__     ERROR    BCL2-0002369: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BCL2'
+2025-03-19 14:31:04,884 __main__     INFO     ✅ BCL2-0002369 (82/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,884 __main__     INFO     ---------- Processing BCE1 - NLP 0002370 (83/100) ----------
+2025-03-19 14:31:04,892 __main__     ERROR    BCE1-0002370: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BCE1'
+2025-03-19 14:31:04,892 __main__     INFO     ✅ BCE1-0002370 (83/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,892 __main__     INFO     ---------- Processing GLSE - NLP 0002371 (84/100) ----------
+2025-03-19 14:31:04,899 __main__     ERROR    GLSE-0002371: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/GLSE'
+2025-03-19 14:31:04,900 __main__     INFO     ✅ GLSE-0002371 (84/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,900 __main__     INFO     ---------- Processing BREM - NLP 0002372 (85/100) ----------
+2025-03-19 14:31:04,908 __main__     ERROR    BREM-0002372: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BREM'
+2025-03-19 14:31:04,908 __main__     INFO     ✅ BREM-0002372 (85/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,908 __main__     INFO     ---------- Processing BRLB - NLP 0002373 (86/100) ----------
+2025-03-19 14:31:04,915 __main__     ERROR    BRLB-0002373: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRLB'
+2025-03-19 14:31:04,916 __main__     INFO     ✅ BRLB-0002373 (86/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,916 __main__     INFO     ---------- Processing BRLU - NLP 0002374 (87/100) ----------
+2025-03-19 14:31:04,923 __main__     ERROR    BRLU-0002374: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRLU'
+2025-03-19 14:31:04,923 __main__     INFO     ✅ BRLU-0002374 (87/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,924 __main__     INFO     ---------- Processing BRLU - NLP 0002375 (88/100) ----------
+2025-03-19 14:31:04,930 __main__     ERROR    BRLU-0002375: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRLU'
+2025-03-19 14:31:04,930 __main__     INFO     ✅ BRLU-0002375 (88/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,930 __main__     INFO     ---------- Processing BRLU - NLP 0002376 (89/100) ----------
+2025-03-19 14:31:04,938 __main__     ERROR    BRLU-0002376: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRLU'
+2025-03-19 14:31:04,938 __main__     INFO     ✅ BRLU-0002376 (89/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,938 __main__     INFO     ---------- Processing BRLU - NLP 0002377 (90/100) ----------
+2025-03-19 14:31:04,944 __main__     ERROR    BRLU-0002377: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRLU'
+2025-03-19 14:31:04,944 __main__     INFO     ✅ BRLU-0002377 (90/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,944 __main__     INFO     ---------- Processing BRLU - NLP 0002378 (91/100) ----------
+2025-03-19 14:31:04,950 __main__     ERROR    BRLU-0002378: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRLU'
+2025-03-19 14:31:04,950 __main__     INFO     ✅ BRLU-0002378 (91/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,950 __main__     INFO     ---------- Processing BRLU - NLP 0002379 (92/100) ----------
+2025-03-19 14:31:04,957 __main__     ERROR    BRLU-0002379: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRLU'
+2025-03-19 14:31:04,957 __main__     INFO     ✅ BRLU-0002379 (92/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,957 __main__     INFO     ---------- Processing WKTS - NLP 0002380 (93/100) ----------
+2025-03-19 14:31:04,964 __main__     ERROR    WKTS-0002380: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WKTS'
+2025-03-19 14:31:04,964 __main__     INFO     ✅ WKTS-0002380 (93/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,965 __main__     INFO     ---------- Processing WKTS - NLP 0002381 (94/100) ----------
+2025-03-19 14:31:04,971 __main__     ERROR    WKTS-0002381: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WKTS'
+2025-03-19 14:31:04,971 __main__     INFO     ✅ WKTS-0002381 (94/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,971 __main__     INFO     ---------- Processing WKTS - NLP 0002382 (95/100) ----------
+2025-03-19 14:31:04,978 __main__     ERROR    WKTS-0002382: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/WKTS'
+2025-03-19 14:31:04,978 __main__     INFO     ✅ WKTS-0002382 (95/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,978 __main__     INFO     ---------- Processing BRST - NLP 0002383 (96/100) ----------
+2025-03-19 14:31:04,987 __main__     ERROR    BRST-0002383: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRST'
+2025-03-19 14:31:04,987 __main__     INFO     ✅ BRST-0002383 (96/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,987 __main__     INFO     ---------- Processing BRSS - NLP 0002384 (97/100) ----------
+2025-03-19 14:31:04,995 __main__     ERROR    BRSS-0002384: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/BRSS'
+2025-03-19 14:31:04,995 __main__     INFO     ✅ BRSS-0002384 (97/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:04,995 __main__     INFO     ---------- Processing PELL - NLP 0002385 (98/100) ----------
+2025-03-19 14:31:05,001 __main__     ERROR    PELL-0002385: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/PELL'
+2025-03-19 14:31:05,001 __main__     INFO     ✅ PELL-0002385 (98/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:05,002 __main__     INFO     ---------- Processing TCDN - NLP 0002386 (99/100) ----------
+2025-03-19 14:31:05,009 __main__     ERROR    TCDN-0002386: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/TCDN'
+2025-03-19 14:31:05,009 __main__     INFO     ✅ TCDN-0002386 (99/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:05,009 __main__     INFO     ---------- Processing MRHD - NLP 0002408 (100/100) ----------
+2025-03-19 14:31:05,018 __main__     ERROR    MRHD-0002408: There was an exception when processing this NLP!! Exception: [Errno 28] No space left on device: '/mnt/impresso_images_BL/MRHD'
+2025-03-19 14:31:05,018 __main__     INFO     ✅ MRHD-0002408 (100/100) - Done with the copy. There was 0 failed copies and problem_input_dirs:[].
+2025-03-19 14:31:05,019 __main__     INFO     ✅✅ Success! Done with all 100 in this chunk: ['0000211', '0000219', '0000220', '0000221', '0000236', '0000268', '0000269', '0000356', '0000485', '0000486', '0000487', '0000488', '0000489', '0000490', '0000491', '0000493', '0000494', '0000495', '0000496', '0000497', '0000498', '0000499', '0000500', '0000501', '0000502', '0000503', '0000504', '0001797', '0002083', '0002084', '0002085', '0002088', '0002089', '0002090', '0002193', '0002194', '0002243', '0002244', '0002245', '0002246', '0002247', '0002249', '0002251', '0002252', '0002253', '0002254', '0002255', '0002256', '0002257', '0002258', '0002259', '0002261', '0002262', '0002264', '0002265', '0002266', '0002267', '0002268', '0002269', '0002270', '0002347', '0002348', '0002349', '0002350', '0002351', '0002352', '0002353', '0002354', '0002355', '0002356', '0002357', '0002358', '0002359', '0002361', '0002362', '0002363', '0002364', '0002365', '0002366', '0002367', '0002368', '0002369', '0002370', '0002371', '0002372', '0002373', '0002374', '0002375', '0002376', '0002377', '0002378', '0002379', '0002380', '0002381', '0002382', '0002383', '0002384', '0002385', '0002386', '0002408']!!
