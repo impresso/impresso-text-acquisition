@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import shutil
@@ -28,12 +29,11 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
         issue (CanonicalIssue): Radio Bulleting issue this page is from.
-        path (str): Path to the json page file.
+        path (str): Path to the jp2 page file.
     """
 
-    def __init__(self, _id: str, number: int, page_path: str) -> None:
+    def __init__(self, _id: str, number: int) -> None:
         super().__init__(_id, number)
-        self.path = page_path
         self.iiif_base_uri = os.path.join(IIIF_ENDPOINT_URI, self.id, IIIF_SUFFIX)
         self.page_data = {
             "id": self.id,
@@ -49,7 +49,7 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         # go from the "ocr_pages" format of the json file to the canonical page regions etc
         # page numbering starts at 1
         ocr_json = self.issue.page_jsons[self.number-1]
-        page_regions = self.extract_regions(ocr_json)#[parse_textblock(tb, self.ci_id) for tb in text_blocks]
+        page_regions = self._extract_regions(ocr_json)#[parse_textblock(tb, self.ci_id) for tb in text_blocks]
 
         self.page_data["cc"] = True
         self.page_data["r"] = page_regions
@@ -74,24 +74,85 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
 
     def __init__(self, issue_dir: IssueDir) -> None:   
         super().__init__(issue_dir)
-        self.json_file = issue_dir.path
+        self.json_file = self.find_json_file()
         self._notes = []
         self.pages = []
 
         self._find_pages()
-        self._find_content_item()
+        self._compose_content_item()
 
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "st": SourceType.RB.value,
+            "sm": SourceMedium.TPS.value,
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
             "n": self._notes,
         }
+
+    def find_json_file(self, base_dir: str = "/mnt/project_impresso/original/") -> str | None:
+        """Ensure the path to the issue considered contains a JSON file.
+
+        TODO remove base_dir as param
+        Args:
+            path (str): Path to the issue considered
+
+        Raises:
+            FileNotFoundError: No JSON OCR file was found in the path.
+        """
+        json_file_path = os.path.join(base_dir, self.path, f"{self.id}.json")
+        if not os.path.exists(json_file_path):
+            msg = (
+                f"{self.id} - The issue's folder {self.path} does not contain any the "
+                "required json file . Issue cannot be processed as a result."
+            )
+            raise FileNotFoundError(msg)
+        
+        else:
+            return json_file_path
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
         Created :obj:`NewspaperPage` instances are added to :attr:`pages`.
         """
+
+        # open the JSON issue file
+        with open(self.json_file, encoding="utf-8") as f:
+            bulletin_json = json.load(f)
+
+        self.bulletin_lang = bulletin_json['lang']
+
+        self.page_jsons = []
+
+        for page in bulletin_json["ocr_pages"]:
+            
+            page_img_file = bulletin_json["jp2_full_paths"][page["page_num"]]
+            page_no = int(page["page_num"])+1
+            page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
+            page_img_name = page_img_file.split("/")[-1].split(".")[0]
+            # ensure the page numbering is correct
+            assert page_img_name == page_id, f"{self.id} problem with page numbering/naming, page_img_name ({page_img_name}) != page_id ({page_id})"
+            
+            # format the page json for future use
+            self.page_jsons.append(page)
+
+            # create page object and add it to the list of pages
+            page = SwissInfoRadioBulletinPage(page_id, page_no)
+            self.pages.append(page)
+
+            # TODO maybe - extract fonts
+
+    def _compose_content_item(self) -> None:
+
+        ci_metadata = {
+            'id': "{}-i{}".format(self.id, str(1).zfill(4)),
+            "lg": self.bulletin_lang,
+            "pp": [p.number for p in self.pages],
+            # only this type for now
+            "tp": "radio_bulletin",
+            # "t" not defined for now, TODO check in metadata if we have info
+            "ro": 1,
+        }
+        self.content_items = [{"m": ci_metadata}]

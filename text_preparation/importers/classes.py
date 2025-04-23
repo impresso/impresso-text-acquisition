@@ -56,7 +56,7 @@ class CanonicalIssue(ABC):
         self._notes = []
         self.pages = []
         ## TODO remove!!
-        self.rights = issue_dir.rights
+        #self.rights = issue_dir.rights
 
     @abstractmethod
     def _find_pages(self) -> None:

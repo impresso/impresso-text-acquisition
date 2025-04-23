@@ -218,6 +218,8 @@ def serialize_pages(
 
         out_file = os.path.join(out_dir, canonical_filename)
 
+        # TODO - add schema validation here
+
         with open(out_file, "w", encoding="utf-8") as jsonfile:
             json.dump(page.page_data, jsonfile)
             logger.info("Written page '%s' to %s", page.number, out_file)
@@ -509,6 +511,9 @@ def compress_issues(
 
     # put a file lock to avoid the overwriting of files due to parallelization
     lock = FileLock(filepath + ".lock", timeout=13)
+
+    # TODO - add schema validation here
+    
     items = [issue.issue_data for issue in issues]
     try:
         with lock:
