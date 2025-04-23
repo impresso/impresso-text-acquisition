@@ -30,11 +30,8 @@ from text_preparation.importers.olive.parsers import (
     olive_toc_parser,
     parse_styles,
 )
-from text_preparation.utils import get_issue_schema, get_page_schema
 
 logger = logging.getLogger(__name__)
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 

@@ -11,11 +11,6 @@ from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.swissinfo.detect import SwissInfoIssueDir
 from impresso_essentials.io.fs_utils import canonical_path
 
-from text_preparation.utils import get_issue_schema, get_page_schema
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
-
 logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"

@@ -15,15 +15,13 @@ import shutil
 from abc import ABC, abstractmethod
 from zipfile import ZipFile
 
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, validate_against_schema
 from impresso_essentials.io.fs_utils import canonical_path
 
-from text_preparation.utils import get_issue_schema, get_page_schema
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
-
 logger = logging.getLogger(__name__)
+
+CANONICAL_ISSUE_SCHEMA_PATH = "impresso-schemas/json/canonical/issue.schema.json"
+CANONICAL_PAGE_SCHEMA_PATH = "impresso-schemas/json/canonical/page.schema.json"
 
 
 class CanonicalIssue(ABC):
@@ -73,16 +71,18 @@ class CanonicalIssue(ABC):
         return IssueDir(self.alias, self.date, self.edition, self.path)
         #return IssueDir(self.alias, self.date, self.edition, self.src_type, self.src_medium, self.path)
 
-    def to_json(self) -> str:
-        """Validate ``self.issue_data`` & serialize it to string.
+    def validate(self) -> None:
+        """Validate ``self.issue_data`` against the issue canonical schema.
 
         Note:
             Validation adds a substantial overhead to computing time. For
             serialization of large amounts of issues it is recommendable to
             bypass schema validation.
         """
-        issue = IssueSchema(**self.issue_data)
-        return issue.serialize()
+        validate_against_schema(
+            self.issue_data,
+            CANONICAL_ISSUE_SCHEMA_PATH
+        )
 
 
 class CanonicalPage(ABC):
@@ -108,16 +108,19 @@ class CanonicalPage(ABC):
         self.page_data = {}
         self.issue = None
 
-    def to_json(self) -> str:
-        """Validate ``self.page.data`` & serialize it to string.
+    def validate(self) -> None:
+        """Validate ``self.page_data`` against the page canonical schema.
 
         Note:
             Validation adds a substantial overhead to computing time. For
-            serialization of large amounts of pages it is recommendable to
+            serialization of large amounts of issues it is recommendable to
             bypass schema validation.
         """
-        page = Pageschema(**self.page_data)
-        return page.serialize()
+        validate_against_schema(
+            self.page_data,
+            CANONICAL_PAGE_SCHEMA_PATH
+        )
+
 
     @abstractmethod
     def add_issue(self, issue: CanonicalIssue) -> None:

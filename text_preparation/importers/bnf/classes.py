@@ -30,10 +30,7 @@ from text_preparation.importers.mets_alto import (
     MetsAltoCanonicalPage,
 )
 from text_preparation.importers.mets_alto.alto import distill_coordinates, parse_style
-from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 

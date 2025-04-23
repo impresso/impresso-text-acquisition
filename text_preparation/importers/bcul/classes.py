@@ -23,10 +23,7 @@ from text_preparation.importers.bcul.helpers import (
 )
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
-from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 

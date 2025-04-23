@@ -17,10 +17,7 @@ from impresso_essentials.utils import IssueDir
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.mets_alto import alto
-from text_preparation.utils import get_issue_schema, get_page_schema
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_page_schema
 
 logger = logging.getLogger(__name__)
 
