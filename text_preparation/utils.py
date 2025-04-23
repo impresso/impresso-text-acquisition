@@ -30,14 +30,14 @@ def get_page_schema(
             "impresso-schemas/json/canonical/page.schema.json".
 
     Returns:
-        pjs.util.Namespace: Newspaper page schema based on canonical format.
+        pjs.util.Namespace: Printed page schema based on canonical format.
     """
     file_manager = ExitStack()
     schema_path = get_pkg_resource(file_manager, schema_folder, "text_preparation")
     with open(os.path.join(schema_path), "r", encoding="utf-8") as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
-    ns = builder.build_classes().NewspaperPage
+    ns = builder.build_classes().Page
     file_manager.close()
     return ns
 
@@ -52,14 +52,14 @@ def get_issue_schema(
             "impresso-schemas/json/canonical/issue.schema.json".
 
     Returns:
-        pjs.util.Namespace: Newspaper issue schema based on canonical format.
+        pjs.util.Namespace: Issue schema based on canonical format.
     """
     file_manager = ExitStack()
     schema_path = get_pkg_resource(file_manager, schema_folder, "text_preparation")
     with open(os.path.join(schema_path), "r", encoding="utf-8") as f:
         json_schema = json.load(f)
     builder = pjs.ObjectBuilder(json_schema)
-    ns = builder.build_classes().NewspaperIssue
+    ns = builder.build_classes().Issue
     file_manager.close()
     return ns
 
