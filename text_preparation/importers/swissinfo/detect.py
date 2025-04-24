@@ -11,9 +11,7 @@ from text_preparation.importers.bcul.helpers import parse_date, find_mit_file
 
 logger = logging.getLogger(__name__)
 
-SwissInfoIssueDir = namedtuple(
-    "IssueDirectory", ["alias", "date", "edition", "path"]
-)
+SwissInfoIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path"])
 """A light-weight data structure to represent a radio bulletin issue.
 
 This named tuple contains basic metadata about a newspaper issue. They

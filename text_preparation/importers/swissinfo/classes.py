@@ -17,6 +17,13 @@ logger = logging.getLogger(__name__)
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 IIIF_SUFFIX = "info.json"
 IIIF_IMAGE_SUFFIX = "full/full/0/default.jpg"
+METADATA_FILENAME = "SOC_rb_metadata.json"
+
+# declare the constant values for the bulletins - CI type and channel
+SWISSINFO_CI_TYPE = "chronicle"
+DEFAULT_RB_TYPE = "radio_bulletin"
+SWISSINFO_RB_CHANNEL = "SOC (KWD)"
+
 
 class SwissInfoRadioBulletinPage(CanonicalPage):
     """Radio-Bulletin Page for SWISSINFO's OCR format.
@@ -40,6 +47,9 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "r": [],  # here go the page regions
             "iiif_img_base_uri": self.iiif_base_uri,
+            "st": SourceType.RB.value,
+            "sm": SourceMedium.TPS.value,
+            "cc": True,  # all Swissinfo data has had rescaled coords
         }
 
     def add_issue(self, issue: CanonicalIssue) -> None:
@@ -48,12 +58,20 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
     def parse(self) -> None:
         # go from the "ocr_pages" format of the json file to the canonical page regions etc
         # page numbering starts at 1
-        ocr_json = self.issue.page_jsons[self.number-1]
-        page_regions = self._extract_regions(ocr_json)#[parse_textblock(tb, self.ci_id) for tb in text_blocks]
+        ocr_json = self.issue.page_jsons[self.number - 1]
 
-        self.page_data["cc"] = True
+        # add the facsimile width and height from the rescaling
+        self.page_data["fw"] = ocr_json["jp2_img_size"][0]
+        self.page_data["fh"] = ocr_json["jp2_img_size"][1]
+
+        # add the page regions to the page data
+        page_regions = self._extract_regions(
+            ocr_json
+        )  # [parse_textblock(tb, self.ci_id) for tb in text_blocks]
         self.page_data["r"] = page_regions
 
+    def _extract_regions(self, ocr_json: dict[str, Any]) -> list[dict[str, Any]]:
+        return ocr_json
 
 
 class SwissInfoRadioBulletinIssue(CanonicalIssue):
@@ -72,7 +90,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
         pages (list): list of :obj: `SwissInfoRadioBulletinPage` instances from this issue.
     """
 
-    def __init__(self, issue_dir: IssueDir) -> None:   
+    def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
         self.json_file = self.find_json_file()
         self._notes = []
@@ -80,6 +98,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
 
         self._find_pages()
         self._compose_content_item()
+        self._add_bulletin_metadata()
 
         self.issue_data = {
             "id": self.id,
@@ -88,27 +107,33 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
             "sm": SourceMedium.TPS.value,
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
-            "n": self._notes,
+            "rc": SWISSINFO_RB_CHANNEL,
         }
 
-    def find_json_file(self, base_dir: str = "/mnt/project_impresso/original/") -> str | None:
+        if self.program:
+            self.issue_data["rp"] = self.program
+
+        self.issue_data["n"] = self._notes
+
+    def find_json_file(
+        self,
+    ) -> str | None:
         """Ensure the path to the issue considered contains a JSON file.
 
-        TODO remove base_dir as param
         Args:
             path (str): Path to the issue considered
 
         Raises:
             FileNotFoundError: No JSON OCR file was found in the path.
         """
-        json_file_path = os.path.join(base_dir, self.path, f"{self.id}.json")
+        json_file_path = os.path.join(self.path, f"{self.id}.json")
         if not os.path.exists(json_file_path):
             msg = (
                 f"{self.id} - The issue's folder {self.path} does not contain any the "
                 "required json file . Issue cannot be processed as a result."
             )
             raise FileNotFoundError(msg)
-        
+
         else:
             return json_file_path
 
@@ -122,19 +147,27 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
         with open(self.json_file, encoding="utf-8") as f:
             bulletin_json = json.load(f)
 
-        self.bulletin_lang = bulletin_json['lang']
+        self.bulletin_lang = bulletin_json["lang"]
+        # remove the local part of the path
+        self.src_pdf_file = "/".join(bulletin_json["original_path"].split("/")[-3:])
 
         self.page_jsons = []
 
         for page in bulletin_json["ocr_pages"]:
-            
+
             page_img_file = bulletin_json["jp2_full_paths"][page["page_num"]]
-            page_no = int(page["page_num"])+1
+            page_no = int(page["page_num"]) + 1
             page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
             page_img_name = page_img_file.split("/")[-1].split(".")[0]
             # ensure the page numbering is correct
-            assert page_img_name == page_id, f"{self.id} problem with page numbering/naming, page_img_name ({page_img_name}) != page_id ({page_id})"
-            
+            assert (
+                page_img_name == page_id
+            ), f"{self.id} problem with page numbering/naming, page_img_name ({page_img_name}) != page_id ({page_id})"
+
+            self._notes.append(
+                f"Page {page_no}: page size within OCR before coord rescaling: {page['ocr_page_size']}"
+            )
+
             # format the page json for future use
             self.page_jsons.append(page)
 
@@ -147,12 +180,35 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
     def _compose_content_item(self) -> None:
 
         ci_metadata = {
-            'id': "{}-i{}".format(self.id, str(1).zfill(4)),
+            "id": "{}-i{}".format(self.id, str(1).zfill(4)),
             "lg": self.bulletin_lang,
             "pp": [p.number for p in self.pages],
             # only this type for now
             "tp": "radio_bulletin",
-            # "t" not defined for now, TODO check in metadata if we have info
             "ro": 1,
         }
-        self.content_items = [{"m": ci_metadata}]
+
+        # the only legacy we can provide is the original pdf filename
+        ci_legacy = {"source": self.src_pdf_file}
+        self.content_items = [{"m": ci_metadata, "l": ci_legacy}]
+
+    def _add_bulletin_metadata(self) -> None:
+        # The metadata file is in the top-most directory of swissinfo json data
+        metadata_file_path = "/".join(self.path.split("/")[:-5] + [METADATA_FILENAME])
+        with open(metadata_file_path, encoding="utf-8") as f:
+            rb_metadata = json.load(f)
+
+        # fetch the metadata for the current bulletin
+        archive_key = os.path.splitext(os.path.basename(self.src_pdf_file))[0]
+        bulletin_metadata = [p for p in rb_metadata if p["archive_key"] == archive_key]
+
+        # not all bulletins had metadata in the swi.xml file
+        if len(bulletin_metadata) > 0:
+            self.content_items[0]["m"]["t"] = bulletin_metadata[0]["segment_title"]
+            self.content_items[0]["m"]["tp"] = SWISSINFO_CI_TYPE
+            self.program = bulletin_metadata[0]["program_title"]
+            if bulletin_metadata[0]["program_subtitle"] != "":
+                self.program += f" - {bulletin_metadata[0]['program_subtitle']}"
+        else:
+            self.content_items[0]["m"]["tp"] = DEFAULT_RB_TYPE
+            self.program = None

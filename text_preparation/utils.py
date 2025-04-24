@@ -1,5 +1,4 @@
-"""This module contains generic helper functions for the text-importer module.
-"""
+"""This module contains generic helper functions for the text-importer module."""
 
 import json
 import logging
@@ -221,49 +220,57 @@ def write_jsonlines_file(
 
                 writer.write_all(contents)
 
-                logger.info(
-                    "Written %s %s to %s", len(contents), content_type, filepath
-                )
+                logger.info("Written %s %s to %s", len(contents), content_type, filepath)
                 writer.close()
     except Exception as e:
         logger.error("Error for %s", filepath)
         logger.exception(e)
         if failed_log is not None:
-            write_error(
-                os.path.basename(filepath), "write_jsonlines_file()", e, failed_log
-            )
+            write_error(os.path.basename(filepath), "write_jsonlines_file()", e, failed_log)
 
-def coords_to_xy(coords):
-    return [coords[0], coords[1], coords[0]+coords[2], coords[1]+coords[3]]
 
-def draw_box_on_img(base_img_path, coords_xy, img = None, width=10):
+def coords_to_xy(coords, as_int=False):
+    if as_int:
+        coords = [int(c) for c in coords]
+    return [coords[0], coords[1], coords[0] + coords[2], coords[1] + coords[3]]
+
+
+def coords_to_xywh(coords, as_int=True):
+    if as_int:
+        coords = [int(c) for c in coords]
+    return [int(coords[0]), coords[1], coords[2] - coords[0], coords[3] - coords[1]]
+
+
+def draw_box_on_img(base_img_path, coords_xy, img=None, width=10):
     if not img:
-        img = Image.open(base_img_path)  
-    ImageDraw.Draw(img).rectangle(coords_xy, outline ="red", width=width)
+        img = Image.open(base_img_path)
+    ImageDraw.Draw(img).rectangle(coords_xy, outline="red", width=width)
     return img
 
+
 def read_xml(file_path):
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         raw_xml = f.read()
 
-    return BeautifulSoup(raw_xml, 'xml')
+    return BeautifulSoup(raw_xml, "xml")
+
 
 def rescale_coords(
-    coords: list[float], 
-    curr_size: tuple[float, float] = None, 
-    dest_size: tuple[float, float] = None, 
-    curr_res: float = None, 
+    coords: list[float],
+    curr_size: tuple[float, float] = None,
+    dest_size: tuple[float, float] = None,
+    curr_res: float = None,
     dest_res: float = None,
-    xy_format: bool = True, 
-    int_sc_factor: bool = False
+    xy_format: bool = True,
+    int_sc_factor: bool = False,
 ) -> list[float]:
     """Scales image or bounding box coordinates based on image size or resolution.
 
     This function rescales a set of coordinates (`coords`) based on either:
     - The current and target image sizes (`curr_size` and `dest_size`).
     - The current and target resolutions (`curr_res` and `dest_res`).
-    
-    If `xy_format` is False and `curr_res`/`dest_res` are not provided, the function 
+
+    If `xy_format` is False and `curr_res`/`dest_res` are not provided, the function
     estimates a resolution-based scaling factor using image sizes (`width * height`).
 
     When `xy_format` is True, the function assumes coordinates are in "x1, y1, x2, y2" format.
@@ -279,7 +286,7 @@ def rescale_coords(
         dest_res (float, optional): Target image resolution (optional for `xy_format=False`).
         xy_format (bool, optional): If True, treats coordinates as "x1, y1, x2, y2".
             If False, treats coordinates as "x, y, width, height". Defaults to True.
-        int_sc_factor (bool, optional): If True, scales using integer division for factor calculation. 
+        int_sc_factor (bool, optional): If True, scales using integer division for factor calculation.
             Defaults to False.
 
     Returns:
@@ -292,17 +299,21 @@ def rescale_coords(
     Example:
         >>> scale_coords([10, 20, 30, 40], (100, 200), (200, 400))
         [20.0, 40.0, 60.0, 80.0]
-    """  
+    """
     # Validate input parameters
     if xy_format:
         if curr_size is None or dest_size is None:
-            raise ValueError("When `xy_format` is True, `curr_size` and `dest_size` must be provided.")
+            raise ValueError(
+                "When `xy_format` is True, `curr_size` and `dest_size` must be provided."
+            )
         if 0 in curr_size:
             raise ValueError("Current image size must be non-zero values.")
     else:
         if curr_res is None or dest_res is None:
             if curr_size is None or dest_size is None:
-                raise ValueError("When `xy_format` is False, either (`curr_res` and `dest_res`) or (`curr_size` and `dest_size`) must be provided.")
+                raise ValueError(
+                    "When `xy_format` is False, either (`curr_res` and `dest_res`) or (`curr_size` and `dest_size`) must be provided."
+                )
             # Estimate resolution from image size
             curr_res = curr_size[0] * curr_size[1]
             dest_res = dest_size[0] * dest_size[1]
@@ -311,8 +322,16 @@ def rescale_coords(
 
     # Compute scaling factors
     if xy_format:
-        x_scale = int(dest_size[0]) / int(curr_size[0]) if int_sc_factor else dest_size[0] / curr_size[0]
-        y_scale = int(dest_size[1]) / int(curr_size[1]) if int_sc_factor else dest_size[1] / curr_size[1]
+        x_scale = (
+            int(dest_size[0]) / int(curr_size[0])
+            if int_sc_factor
+            else dest_size[0] / curr_size[0]
+        )
+        y_scale = (
+            int(dest_size[1]) / int(curr_size[1])
+            if int_sc_factor
+            else dest_size[1] / curr_size[1]
+        )
 
         return [c * (x_scale if i % 2 == 0 else y_scale) for i, c in enumerate(coords)]
     else:
