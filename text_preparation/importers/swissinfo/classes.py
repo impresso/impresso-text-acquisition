@@ -10,6 +10,7 @@ from zipfile import ZipFile
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.swissinfo.detect import SwissInfoIssueDir
+from text_preparation.importers.swissinfo.helpers import parse_lines, compute_paragraph_coords
 from impresso_essentials.io.fs_utils import canonical_path
 
 logger = logging.getLogger(__name__)
@@ -71,7 +72,25 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         self.page_data["r"] = page_regions
 
     def _extract_regions(self, ocr_json: dict[str, Any]) -> list[dict[str, Any]]:
-        return ocr_json
+
+        all_line_xy_coords, lines = parse_lines(ocr_json["blocks_with_lines"])
+
+        # easier to merge all the coords if they stay in x1yx2y2 format
+        para_coords = compute_paragraph_coords(all_line_xy_coords)
+
+        # in SWISSINFO rb, we have 1 block=1 line.
+        # we decided to keep the paragraphs equal to the regions, so 1 paragraph and 1 region
+        paragraph = {
+            "c": para_coords,
+            "l": lines,
+        }
+
+        # return the constructed region
+        return {
+            "c": para_coords,
+            "p": [paragraph],
+            "pOf": self.issue.content_items[0]["m"]["id"],
+        }
 
 
 class SwissInfoRadioBulletinIssue(CanonicalIssue):
@@ -93,6 +112,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
     def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
         self.json_file = self.find_json_file()
+        self.metadata_file = issue_dir.metadata_file
         self._notes = []
         self.pages = []
 
@@ -194,8 +214,8 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
 
     def _add_bulletin_metadata(self) -> None:
         # The metadata file is in the top-most directory of swissinfo json data
-        metadata_file_path = "/".join(self.path.split("/")[:-5] + [METADATA_FILENAME])
-        with open(metadata_file_path, encoding="utf-8") as f:
+        # metadata_file_path = "/".join(self.path.split("/")[:-5] + [METADATA_FILENAME])
+        with open(self.metadata_file, encoding="utf-8") as f:
             rb_metadata = json.load(f)
 
         # fetch the metadata for the current bulletin

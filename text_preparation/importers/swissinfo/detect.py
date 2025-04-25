@@ -2,6 +2,7 @@ import logging
 import os
 import json
 import string
+from datetime import date
 from collections import namedtuple
 
 from dask import bag as db
@@ -11,7 +12,11 @@ from text_preparation.importers.bcul.helpers import parse_date, find_mit_file
 
 logger = logging.getLogger(__name__)
 
-SwissInfoIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path"])
+METADATA_FILENAME = "SOC_rb_metadata.json"
+
+SwissInfoIssueDir = namedtuple(
+    "IssueDirectory", ["alias", "date", "edition", "path", "metadata_file"]
+)
 """A light-weight data structure to represent a radio bulletin issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -37,3 +42,115 @@ Args:
     path='./SOC_CJ/1940/07/22/a', 
 )
 """
+
+
+def dir2issue(path: str, metadata_file_path: str) -> SwissInfoIssueDir | None:
+    """Create a `SwissInfoIssueDir` object from a directory.
+
+    Note:
+        This function is called internally by `detect_issues`
+
+    Args:
+        path (str): The path of the issue.
+        access_rights (dict): Dictionary for access rights.
+
+    Returns:
+        SwissInfoIssueDir | None: New `SwissInfoIssueDir` object.
+    """
+    split_path = path.split("/")
+    alias = split_path[-4]
+    issue_date = date.fromisoformat("-".join(split_path[-3:]))
+    edition = split_path[-1]
+
+    return SwissInfoIssueDir(
+        alias=alias,
+        date=issue_date,
+        edition=edition,
+        path=path,
+        metadata_file=metadata_file_path,
+    )
+
+
+def detect_issues(base_dir: str, access_rights: str | None = None) -> list[SwissInfoIssueDir]:
+    """Detect BCUL newspaper issues to import within the filesystem.
+
+    This function expects the directory structure that BCUL used to
+    organize the dump of Abbyy files.
+
+    Args:
+        base_dir (str): Path to the base directory of newspaper data.
+        access_rights (str): unused argument kept for conformity for now.
+
+    Returns:
+        list[BculIssueDir]: List of `BCULIssueDir` instances, to be imported.
+    """
+
+    swissinfo_path = os.path.join(base_dir, "SWISSINFO/WW2-SOC-bulletins-json")
+    metadata_file_path = os.path.join(swissinfo_path, METADATA_FILENAME)
+
+    dir_path, dirs, _ = next(os.walk(swissinfo_path))
+
+    journal_dirs = [os.path.join(dir_path, j_dir) for j_dir in dirs]
+    # iteratively
+    issues_dirs = [
+        os.path.join(alias, year, month, day)
+        for alias in journal_dirs
+        for year in os.listdir(alias)
+        for month in os.listdir(os.path.join(alias, year))
+        for day in os.listdir(os.path.join(alias, year, month))
+    ]
+
+    return [dir2issue(_dir, metadata_file_path) for _dir in issues_dirs]
+
+
+def select_issues(
+    base_dir: str, config: dict, access_rights: str
+) -> list[SwissInfoIssueDir] | None:
+    """Detect selectively newspaper issues to import.
+
+    The behavior is very similar to :func:`detect_issues` with the only
+    difference that ``config`` specifies some rules to filter the data to
+    import. See `this section <../importers.html#configuration-files>`__ for
+    further details on how to configure filtering.
+
+    Args:
+        base_dir (str): Path to the base directory of newspaper data.
+        config (dict): Config dictionary for filtering.
+        access_rights (str): Path to `access_rights_and_aliases.json` file.
+
+    Returns:
+        list[BculIssueDir] | None: List of `BculIssueDir` to import.
+    """
+
+    # read filters from json configuration (see config.example.json)
+    try:
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
+        year_flag = config["year_only"]
+
+    except KeyError:
+        logger.critical(
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
+        )
+        return
+
+    issues = detect_issues(base_dir, access_rights)
+    issue_bag = db.from_sequence(issues)
+    selected_issues = issue_bag.filter(
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
+    ).compute()
+
+    exclude_flag = False if not exclude_list else True
+    filtered_issues = (
+        _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
+        if not exclude_flag
+        else selected_issues
+    )
+    logger.info(
+        "%s newspaper issues remained after applying filter: %s",
+        len(filtered_issues),
+        filtered_issues,
+    )
+
+    return filtered_issues
