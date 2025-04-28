@@ -12,11 +12,12 @@ from text_preparation.utils import coords_to_xywh
 logger = logging.getLogger(__name__)
 
 
-def parse_lines(blocks_with_lines):
+def parse_lines(blocks_with_lines, pg_id, pg_notes):
 
     all_line_xy_coords = []
     all_lines = []
     hyphen_at_last = False
+    par_sizes = []
     for block_id, block in enumerate(blocks_with_lines):
         all_line_xy_coords.append(block["rescaled_bbox"])
         # there is usually only one paragraph per paragraph
@@ -38,14 +39,27 @@ def parse_lines(blocks_with_lines):
 
                 # second half of a hyphen should be at the start of a line/block (which is not the first)
                 if (block_id != 0 or line_id != 0) and t_id == 0 and hyphen_at_last:
-
-                    if not ("hy" in all_lines[-1]["t"][-1] and all_lines[-1]["t"][-1]["hy"]):
-                        print("Warning! problem with hyphen_at_last!")
-                        raise NotImplementedError
+                    if (
+                        line_id != 0
+                        and len(all_lines) == 0
+                        and not ("hy" in block_lines[-1]["t"][-1])
+                    ) or (len(all_lines) != 0 and not ("hy" in all_lines[-1]["t"][-1])):
+                        msg = f"{pg_id} - Warning! problem with hyphen_at_last!: curr_token: {curr_token}, all_lines[-1]['t'][-1]: {all_lines[-1]['t'][-1]}"
+                        logger.info(msg)
+                        print(msg)
+                        # saving in the notes
+                        pg_notes.append(
+                            f"block {block_id} ('number' {block['number']}), line {line_id}, token {t_id} - problem with hyphenation: hyphen_at_last is true but no 'hy' in previous token."
+                        )
 
                     # if the first token of the line is a the second part of a hyphen,
                     # we need to merge it with the last token (after removing the hyphen)
-                    full_word = all_lines[-1]["t"][-1]["tx"].split("-")[0] + token["text"]
+                    if len(all_lines) == 0:
+                        full_word = (
+                            block_lines[-1]["t"][-1]["tx"].split("-")[0] + token["text"]
+                        )
+                    else:
+                        full_word = all_lines[-1]["t"][-1]["tx"].split("-")[0] + token["text"]
                     curr_token["nf"] = full_word
 
                 # reset the hyphenation flag
@@ -62,15 +76,21 @@ def parse_lines(blocks_with_lines):
 
             block_lines.append({"c": coords_to_xywh(line["rescaled_bbox"]), "t": tokens})
 
+        par_sizes.append(len(block_lines))
         # there is usually only one line per block
         if len(block_lines) == 1:
             all_lines.append(block_lines[0])
         else:
             # cases where there were more than one line seemed to be errors - to be checked.
-            print("Warning! more than one line in this paragraph, adding them separately!!")
+            # msg = f"{pg_id} - Warning! {len(block_lines)} lines in this paragraph, adding them separately!! block coords: {[b['c'] for b in block_lines]}"
+            pg_notes.append(
+                f"block {block_id} ('number' {block['number']}), lines {len(all_lines)}-{len(all_lines)+len(block_lines)} were in the same block initially."
+            )
+            # print(msg)
+            # logger.info(msg)
             all_lines.extend(block_lines)
 
-    return all_line_xy_coords, all_lines
+    return all_line_xy_coords, all_lines, par_sizes
 
 
 def compute_paragraph_coords(all_line_coords):

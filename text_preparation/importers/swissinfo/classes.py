@@ -4,6 +4,7 @@ import os
 import shutil
 from time import strftime
 from typing import Any
+from statistics import mean
 
 from zipfile import ZipFile
 
@@ -43,6 +44,8 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
     def __init__(self, _id: str, number: int) -> None:
         super().__init__(_id, number)
         self.iiif_base_uri = os.path.join(IIIF_ENDPOINT_URI, self.id, IIIF_SUFFIX)
+        self.notes = []
+        self.avg_par_size = None
         self.page_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
@@ -70,13 +73,36 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
             ocr_json
         )  # [parse_textblock(tb, self.ci_id) for tb in text_blocks]
         self.page_data["r"] = page_regions
+        self.page_data["n"] = self.notes
+        self.page_data["parag_avg_size"] = self.avg_par_size
 
     def _extract_regions(self, ocr_json: dict[str, Any]) -> list[dict[str, Any]]:
 
-        all_line_xy_coords, lines = parse_lines(ocr_json["blocks_with_lines"])
+        all_line_xy_coords, lines, par_sizes = parse_lines(
+            ocr_json["blocks_with_lines"], self.id, self.notes
+        )
 
-        # easier to merge all the coords if they stay in x1yx2y2 format
-        para_coords = compute_paragraph_coords(all_line_xy_coords)
+        if len(all_line_xy_coords) == 0:
+            msg = (
+                f"{self.id} - Warning! No line coords to merge! len(ocr_json['blocks_with_lines'])={len(ocr_json['blocks_with_lines'])}, len(lines)={len(lines)}. Returning empty region."
+                f"checking if there are other blocks: len(ocr_json['blocks_without_lines'])={len(ocr_json['blocks_without_lines'])}, ocr_json['blocks_without_lines'][0]['rescaled_bbox']={ocr_json['blocks_without_lines'][0]['rescaled_bbox']}, ocr_json['jp2_img_size']={ocr_json['jp2_img_size']}"
+            )
+            print(msg)
+            logger.info(msg)
+            return {}
+        else:
+            # easier to merge all the coords if they stay in x1yx2y2 format
+            para_coords = compute_paragraph_coords(all_line_xy_coords)
+
+        self.avg_par_size = mean(par_sizes)
+        if self.avg_par_size > 2 and len(par_sizes) < 10:
+            print(
+                f"- {self.id} - WOULD KEEP avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
+            )
+        else:
+            print(
+                f"- {self.id} - WOULD SEPARATE avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
+            )
 
         # in SWISSINFO rb, we have 1 block=1 line.
         # we decided to keep the paragraphs equal to the regions, so 1 paragraph and 1 region
