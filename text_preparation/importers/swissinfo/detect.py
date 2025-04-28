@@ -58,8 +58,8 @@ def dir2issue(path: str, metadata_file_path: str) -> SwissInfoIssueDir | None:
         SwissInfoIssueDir | None: New `SwissInfoIssueDir` object.
     """
     split_path = path.split("/")
-    alias = split_path[-4]
-    issue_date = date.fromisoformat("-".join(split_path[-3:]))
+    alias = split_path[-5]
+    issue_date = date.fromisoformat("-".join(split_path[-4:-1]))
     edition = split_path[-1]
 
     return SwissInfoIssueDir(
@@ -72,20 +72,19 @@ def dir2issue(path: str, metadata_file_path: str) -> SwissInfoIssueDir | None:
 
 
 def detect_issues(base_dir: str, access_rights: str | None = None) -> list[SwissInfoIssueDir]:
-    """Detect BCUL newspaper issues to import within the filesystem.
+    """Detect SWISSINFO Radio bulletins to import within the filesystem.
 
-    This function expects the directory structure that BCUL used to
-    organize the dump of Abbyy files.
+    This function expects the directory structure that we created for Swissinfo.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         access_rights (str): unused argument kept for conformity for now.
 
     Returns:
-        list[BculIssueDir]: List of `BCULIssueDir` instances, to be imported.
+        list[SwissInfoIssueDir]: List of `SwissInfoIssueDir` instances, to be imported.
     """
 
-    swissinfo_path = os.path.join(base_dir, "SWISSINFO/WW2-SOC-bulletins-json")
+    swissinfo_path = os.path.join(base_dir, "WW2-SOC-bulletins-json")
     metadata_file_path = os.path.join(swissinfo_path, METADATA_FILENAME)
 
     dir_path, dirs, _ = next(os.walk(swissinfo_path))
@@ -93,11 +92,12 @@ def detect_issues(base_dir: str, access_rights: str | None = None) -> list[Swiss
     journal_dirs = [os.path.join(dir_path, j_dir) for j_dir in dirs]
     # iteratively
     issues_dirs = [
-        os.path.join(alias, year, month, day)
+        os.path.join(alias, year, month, day, edition)
         for alias in journal_dirs
         for year in os.listdir(alias)
         for month in os.listdir(os.path.join(alias, year))
         for day in os.listdir(os.path.join(alias, year, month))
+        for edition in os.listdir(os.path.join(alias, year, month, day))
     ]
 
     return [dir2issue(_dir, metadata_file_path) for _dir in issues_dirs]
@@ -119,7 +119,7 @@ def select_issues(
         access_rights (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
-        list[BculIssueDir] | None: List of `BculIssueDir` to import.
+        list[SwissInfoIssueDir] | None: List of `SwissInfoIssueDir` to import.
     """
 
     # read filters from json configuration (see config.example.json)

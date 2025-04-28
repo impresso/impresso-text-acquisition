@@ -125,9 +125,7 @@ class MetsAltoCanonicalPage(CanonicalPage):
 
         pselement = doc.find("PrintSpace")
         page_regions, notes = alto.parse_printspace(pselement, mappings)
-        self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(
-            page_regions
-        )
+        self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(page_regions)
         # Add notes for missing coordinates in SWA
         if len(notes) > 0:
             self.page_data["n"] = notes

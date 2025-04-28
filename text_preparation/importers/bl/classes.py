@@ -108,9 +108,7 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
             page_file_names, page_numbers, page_canonical_names
         ):
             try:
-                self.pages.append(
-                    BlNewspaperPage(page_id, page_no, filename, self.path)
-                )
+                self.pages.append(BlNewspaperPage(page_id, page_no, filename, self.path))
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -231,9 +229,7 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
             "m": metadata,
             "l": {
                 "id": item_div.get("ID"),
-                "parts": self._parse_content_parts(
-                    item_div, phys_structmap, structlink
-                ),
+                "parts": self._parse_content_parts(item_div, phys_structmap, structlink),
             },
         }
         for p in content_item["l"]["parts"]:
@@ -275,9 +271,7 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
             # Parse Each contentitem
             dmd_sec = mets_doc.find("dmdSec", {"ID": div.get("DMDID")})
             content_items.append(
-                self._parse_content_item(
-                    div, counter, phys_structmap, structlink, dmd_sec
-                )
+                self._parse_content_item(div, counter, phys_structmap, structlink, dmd_sec)
             )
             counter += 1
 

@@ -12,7 +12,7 @@ Options:
     --temp-dir=<td>     Temporary directory to extract .zip archives
     --config-file=<cf>  Configuration file for selective import
     --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket
-    --scheduler=<sch>  Tell dask to use an existing scheduler (otherwise it'll create one)
+    --scheduler=<sch>   Tell dask to use an existing scheduler (otherwise it'll create one)
     --log-file=<f>      Log file; when missing print log to stdout
     --access-rights=<ar>  Access right file if relevant (only for `olive` and `rero` importers)
     --chunk-size=<cs>   Chunk size in years used to group issues when importing
@@ -20,7 +20,7 @@ Options:
     --num-workers=<nw>  Number of workers to use for local dask cluster
     --verbose   Verbose log messages (good for debugging)
     --clear    Removes the output folder (if already existing)
-    --incremental   Skips issues already present in output directory 
+    --incremental   Skips issues already present in output directory
     --version    Prints version and exits.
 
 """  # noqa: E501
@@ -182,9 +182,10 @@ def main(
         select_func (Callable[[str, str, str], list[IssueDir]]): `select`
             function of the used importer.
     """
-
+    print("Inside generic importer")
     # store CLI parameters
     args = docopt(__doc__)
+    print(f"Args: {args}")
     inp_dir = args["--input-dir"]
     outp_dir = args["--output-dir"]
     temp_dir = args["--temp-dir"]
@@ -252,9 +253,7 @@ def main(
         logger.debug("Issues to skip: %s", issues_to_skip)
         logger.info("%s issues to skip", len(issues_to_skip))
         issues = list(
-            filter(
-                lambda x: (x.alias, x.date, x.edition) not in issues_to_skip, issues
-            )
+            filter(lambda x: (x.alias, x.date, x.edition) not in issues_to_skip, issues)
         )
         logger.debug("Remaining issues: %s", issues)
         logger.info("%s remaining issues", len(issues))
