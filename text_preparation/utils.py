@@ -14,13 +14,17 @@ from PIL import Image, ImageDraw
 from smart_open import open as smart_open_function
 import python_jsonschema_objects as pjs
 
-from impresso_essentials.utils import get_pkg_resource
+from impresso_essentials.utils import get_pkg_resource, validate_against_schema
 
 logger = logging.getLogger(__name__)
 
+# path to the canonical schemas (in essentials, in text_prep, it's `impresso-schemas``)
+CANONICAL_PAGE_SCHEMA = "schemas/json/canonical/page.schema.json"
+CANONICAL_ISSUE_SCHEMA = "schemas/json/canonical/issue.schema.json"
+
 
 def get_page_schema(
-    schema_folder: str = "impresso-schemas/json/canonical/page.schema.json",
+    schema_folder: str = f"impresso-{CANONICAL_PAGE_SCHEMA}",
 ) -> pjs.util.Namespace:
     """Generate a list of python classes starting from a JSON schema.
 
@@ -42,7 +46,7 @@ def get_page_schema(
 
 
 def get_issue_schema(
-    schema_folder: str = "impresso-schemas/json/canonical/issue.schema.json",
+    schema_folder: str = f"impresso-{CANONICAL_ISSUE_SCHEMA}",
 ) -> pjs.util.Namespace:
     """Generate a list of python classes starting from a JSON schema.
 
@@ -61,6 +65,20 @@ def get_issue_schema(
     ns = builder.build_classes().Issue
     file_manager.close()
     return ns
+
+
+def validate_page_schema(page_json: dict, page_schema: str = CANONICAL_PAGE_SCHEMA):
+    msg = f"{page_json['id']} - Validating against page schema"
+    print(msg)
+    logger.info(msg)
+    return validate_against_schema(page_json, page_schema)
+
+
+def validate_issue_schema(issue_json: dict, issue_schema: str = CANONICAL_ISSUE_SCHEMA):
+    msg = f"{issue_json['id']} - Validating against issue schema"
+    print(msg)
+    logger.info(msg)
+    return validate_against_schema(issue_json, issue_schema)
 
 
 def verify_imported_issues(

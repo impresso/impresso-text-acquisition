@@ -275,6 +275,7 @@ def main(
         git_repo=git.Repo(repo_path),
         temp_dir=temp_dir,
         notes=manifest_note,
+        only_counting=False,
     )
 
     import_issues(

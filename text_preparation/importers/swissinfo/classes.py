@@ -141,6 +141,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
         self.metadata_file = issue_dir.metadata_file
         self._notes = []
         self.pages = []
+        self.has_pages = True
 
         self._find_pages()
         self._compose_content_item()
@@ -200,9 +201,17 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
         self.page_jsons = []
 
         for page in bulletin_json["ocr_pages"]:
+            page_no = int(page["page_num"]) + 1
+            if len(page["blocks_with_lines"]) == 0:
+                msg = (
+                    f"{self.id}, page {page_no} has no block with lines - not initializing it."
+                )
+                print(msg)
+                logger.info(msg)
+                self._notes.append(msg)
+                continue
 
             page_img_file = bulletin_json["jp2_full_paths"][page["page_num"]]
-            page_no = int(page["page_num"]) + 1
             page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
             page_img_name = page_img_file.split("/")[-1].split(".")[0]
             # ensure the page numbering is correct
@@ -222,6 +231,12 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
             self.pages.append(page)
 
             # TODO maybe - extract fonts
+
+        if len(self.pages) == 0:
+            msg = f"{self.id}, No OCR in any of the pages! This issue won't be ingested."
+            print(msg)
+            logger.warning(msg)
+            self.has_pages = False
 
     def _compose_content_item(self) -> None:
 

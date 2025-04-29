@@ -22,18 +22,20 @@ from pathlib import Path
 from time import strftime
 from typing import Tuple, Type
 from botocore.exceptions import BotoCoreError
+from jsonschema import ValidationError
 
 import jsonlines
 from dask import bag as db
 from dask.distributed import Client
 from filelock import FileLock
-from impresso_essentials.utils import IssueDir, chunk
+from impresso_essentials.utils import IssueDir, chunk, PARTNER_TO_MEDIA
 from impresso_essentials.io.fs_utils import canonical_path
 from impresso_essentials.io.s3 import get_s3_resource
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import counts_for_canonical_issue
 from smart_open import open as smart_open_function
 
+from text_preparation.utils import validate_page_schema, validate_issue_schema
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.olive.classes import OliveNewspaperIssue
 from text_preparation.importers.swa.classes import SWANewspaperIssue
@@ -218,7 +220,12 @@ def serialize_pages(
 
         out_file = os.path.join(out_dir, canonical_filename)
 
-        # TODO - add schema validation here
+        try:
+            validate_page_schema(out_file)
+        except ValidationError as e:
+            msg = f"Invalid schema for {canonical_filename}: {e}"
+            logger.error(msg)
+            print(msg)
 
         with open(out_file, "w", encoding="utf-8") as jsonfile:
             json.dump(page.page_data, jsonfile)
@@ -277,9 +284,7 @@ def import_issues(
     """
     msg = f"Issues to import: {len(issues)}"
     logger.info(msg)
-    failed_log_path = os.path.join(
-        out_dir, f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log'
-    )
+    failed_log_path = os.path.join(out_dir, f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log')
     if chunk_size is not None:
         csize = int(chunk_size)
         chunks = groupby(
@@ -328,9 +333,7 @@ def import_issues(
 
         logger.info("Done compressing issues for %s, updating the manifest...", period)
         # Once the issues were written to the fs without issues, add their info to the manifest
-        for index, (np_year, filepath, yearly_stats) in enumerate(
-            compressed_issue_files
-        ):
+        for index, (np_year, filepath, yearly_stats) in enumerate(compressed_issue_files):
             manifest.add_count_list_by_title_year(
                 np_year.split("-")[0], np_year.split("-")[1], yearly_stats
             )
@@ -389,9 +392,7 @@ def import_issues(
                     output_dir=pages_out_dir,
                     failed_log=failed_log_path,
                 )
-                .starmap(
-                    upload_pages, bucket_name=s3_bucket, failed_log=failed_log_path
-                )
+                .starmap(upload_pages, bucket_name=s3_bucket, failed_log=failed_log_path)
                 .starmap(cleanup)
                 .compute()
             )
@@ -412,8 +413,12 @@ def import_issues(
     remove_filelocks(out_dir)
 
     # finalize and compute the manifest
-    if s3_bucket is not None and "sandbox" in s3_bucket or 'sandbox' in manifest.output_bucket_name:
-        # don't push to git if output bucket it sandbox
+    if (
+        s3_bucket is not None
+        and "sandbox" in s3_bucket
+        or "sandbox" in manifest.output_bucket_name
+    ):
+        # don't push to git if output bucket is sandbox
         manifest.compute(export_to_git_and_s3=False)
         manifest.validate_and_export_manifest(push_to_git=False)
     else:
@@ -468,9 +473,7 @@ def compress_pages(
                     logger.error("Reading data from %s failed", json_file)
                     logger.exception(e)
                     write_error(filepath, e, failed_log)
-            logger.info(
-                "Written %s docs from %s to %s", items_count, json_file, filepath
-            )
+            logger.info("Written %s docs from %s to %s", items_count, json_file, filepath)
 
         writer.close()
 
@@ -512,10 +515,17 @@ def compress_issues(
     # put a file lock to avoid the overwriting of files due to parallelization
     lock = FileLock(filepath + ".lock", timeout=13)
 
-    # TODO - add schema validation here
-    
-    items = [issue.issue_data for issue in issues]
+    items = []
+    yearly_stats = []
+    last_id = None
     try:
+        for issue in issues:
+            last_id = issue.id
+            validate_issue_schema(issue.issue_data)
+            if alias not in PARTNER_TO_MEDIA["SWISSINFO"] or issue.has_pages:
+                # for swissinfo, only add the issue when there is actually data
+                items.append(issue.issue_data)
+
         with lock:
             with smart_open_function(filepath, "ab") as fout:
                 writer = jsonlines.Writer(fout)
@@ -525,12 +535,19 @@ def compress_issues(
 
                 logger.info("Written %s issues to %s", len(items), filepath)
                 writer.close()
+
+    except ValidationError as e:
+        msg = f"Invalid schema for {filepath} - {last_id}: {e}"
+        logger.error(msg)
+        print(msg)
+        write_error(filepath, e, failed_log)
     except Exception as e:
-        logger.error("Error for %s: %s", filepath, e)
+        msg = f"Error for {filepath}: {e}"
+        print(msg)
+        logger.error(msg)
         write_error(filepath, e, failed_log)
     else:
         # Once the issues were written without problems, add their info to the manifest
-        yearly_stats = []
         for i in items:
             yearly_stats.append(counts_for_canonical_issue(i))
 
@@ -600,9 +617,7 @@ def upload_pages(
     # create connection with bucket
     # copy contents to s3 key
     alias, year, _, _, _ = sort_key.split("-")
-    key_name = os.path.join(
-        alias, "pages", f"{alias}-{year}", os.path.basename(filepath)
-    )
+    key_name = os.path.join(alias, "pages", f"{alias}-{year}", os.path.basename(filepath))
     # key_name = "{}/pages/{}/{}".format(alias, f"{alias}-{year}", os.path.basename(filepath))
     s3 = get_s3_resource()
     if bucket_name is not None:
@@ -633,6 +648,4 @@ def remove_filelocks(output_dir: str) -> None:
             if file.endswith(".lock"):
                 os.remove(os.path.join(output_dir, file))
         except FileNotFoundError as e:
-            logger.error(
-                "File %s could not be removed as it does not exist: %s.", file, e
-            )
+            logger.error("File %s could not be removed as it does not exist: %s.", file, e)

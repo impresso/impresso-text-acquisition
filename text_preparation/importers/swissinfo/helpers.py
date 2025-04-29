@@ -43,8 +43,18 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
                         line_id != 0
                         and len(all_lines) == 0
                         and not ("hy" in block_lines[-1]["t"][-1])
-                    ) or (len(all_lines) != 0 and not ("hy" in all_lines[-1]["t"][-1])):
-                        msg = f"{pg_id} - Warning! problem with hyphen_at_last!: curr_token: {curr_token}, all_lines[-1]['t'][-1]: {all_lines[-1]['t'][-1]}"
+                    ):
+                        msg = f"{pg_id} - Warning! problem 1 with hyphen_at_last!: curr_token: {curr_token}, block_lines[-1]['t'][-1]: {block_lines[-1]['t'][-1]}"
+                        logger.info(msg)
+                        print(msg)
+                        # saving in the notes
+                        pg_notes.append(
+                            f"block {block_id} ('number' {block['number']}), line {line_id}, token {t_id} - problem with hyphenation: hyphen_at_last is true but no 'hy' in previous token."
+                        )
+                    elif (
+                        block_id != 0 and line_id == 0 and not ("hy" in all_lines[-1]["t"][-1])
+                    ):
+                        msg = f"{pg_id} - Warning! problem 2 with hyphen_at_last!: curr_token: {curr_token}, all_lines[-1]['t'][-1]: {all_lines[-1]['t'][-1]}"
                         logger.info(msg)
                         print(msg)
                         # saving in the notes
