@@ -65,7 +65,6 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         # go from the "ocr_pages" format of the json file to the canonical page regions etc
         # page numbering starts at 1
         ocr_json = self.issue.page_jsons[self.number - 1]
-        self.split_page_blocks = self.issue.split_page_blocks
 
         # add the facsimile width and height from the rescaling
         self.page_data["fw"] = ocr_json["jp2_img_size"][0]
@@ -81,8 +80,10 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
 
     def _extract_regions(self, ocr_json: dict[str, Any]) -> list[dict[str, Any]]:
 
-        all_blocks_xy_coords, paragraphs, par_sizes = parse_lines(
-            ocr_json["blocks_with_lines"], self.id, self.notes
+        all_blocks_xy_coords, paragraphs = parse_lines(
+            ocr_json["blocks_with_lines"],
+            self.id,
+            self.notes,
         )
 
         if len(all_blocks_xy_coords) == 0:
@@ -97,7 +98,15 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
             # easier to merge all the coords if they stay in x1yx2y2 format
             region_coords = coords_to_xywh(compute_agg_coords(all_blocks_xy_coords))
 
-        self.avg_par_size = mean(par_sizes)
+        if self.issue.split_page_blocks:
+            # merging all the lines of various paragraphs into one paragraph
+            merged_paragraph_lines = []
+
+            for p in paragraphs:
+                merged_paragraph_lines.extend(p["l"])
+            # there is now one paragraph = to the region, so same coordinates
+            paragraphs = [{"c": region_coords, "l": merged_paragraph_lines}]
+        """self.avg_par_size = mean(par_sizes)
         if self.avg_par_size < 3.5 or len(par_sizes) > 20:
             print(
                 f"- {self.id} - WOULD SEPARATE & split_page_blocks: {self.split_page_blocks} | avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
@@ -105,7 +114,7 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         else:
             print(
                 f"- {self.id} - WOULD KEEP & split_page_blocks: {self.split_page_blocks} | avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
-            )
+            )"""
 
         # in SWISSINFO rb, we have 1 block=1 line.
         # we decided to keep the paragraphs equal to the regions, so 1 paragraph and 1 region

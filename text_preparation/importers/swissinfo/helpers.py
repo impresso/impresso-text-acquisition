@@ -17,7 +17,7 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
     all_blocks_xy_coords = []
     paragraphs = []
     hyphen_at_last = False
-    par_sizes = []
+    # par_sizes = []
     for block_id, block in enumerate(blocks_with_lines):
         all_blocks_xy_coords.append(block["rescaled_bbox"])
         # there is usually only one paragraph per paragraph
@@ -92,7 +92,7 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
             block_lines.append({"c": coords_to_xywh(line["rescaled_bbox"]), "t": tokens})
             # block_xy_coords.append(line["rescaled_bbox"])
 
-        par_sizes.append(len(block_lines))
+        # par_sizes.append(len(block_lines))
         paragraphs.append({"c": coords_to_xywh(block["rescaled_bbox"]), "l": block_lines})
         # there is usually only one line per block
         """if len(block_lines) == 1:
@@ -107,7 +107,7 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
             # logger.info(msg)
             all_lines.extend(block_lines)"""
 
-    return all_blocks_xy_coords, paragraphs, par_sizes
+    return all_blocks_xy_coords, paragraphs  # , par_sizes
 
 
 def compute_agg_coords(all_coords):
