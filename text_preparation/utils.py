@@ -68,16 +68,16 @@ def get_issue_schema(
 
 
 def validate_page_schema(page_json: dict, page_schema: str = CANONICAL_PAGE_SCHEMA):
-    msg = f"{page_json['id']} - Validating against page schema"
-    print(msg)
-    logger.info(msg)
+    # msg = f"{page_json['id']} - Validating against page schema"
+    # print(msg)
+    # logger.info(msg)
     return validate_against_schema(page_json, page_schema)
 
 
 def validate_issue_schema(issue_json: dict, issue_schema: str = CANONICAL_ISSUE_SCHEMA):
-    msg = f"{issue_json['id']} - Validating against issue schema"
-    print(msg)
-    logger.info(msg)
+    # msg = f"{issue_json['id']} - Validating against issue schema"
+    # print(msg)
+    # logger.info(msg)
     return validate_against_schema(issue_json, issue_schema)
 
 

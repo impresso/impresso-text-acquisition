@@ -11,8 +11,9 @@ from zipfile import ZipFile
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.swissinfo.detect import SwissInfoIssueDir
-from text_preparation.importers.swissinfo.helpers import parse_lines, compute_paragraph_coords
+from text_preparation.importers.swissinfo.helpers import parse_lines, compute_agg_coords
 from impresso_essentials.io.fs_utils import canonical_path
+from text_preparation.utils import coords_to_xywh
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,7 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         self.iiif_base_uri = os.path.join(IIIF_ENDPOINT_URI, self.id, IIIF_SUFFIX)
         self.notes = []
         self.avg_par_size = None
+        self.split_page_blocks = None
         self.page_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
@@ -63,6 +65,7 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         # go from the "ocr_pages" format of the json file to the canonical page regions etc
         # page numbering starts at 1
         ocr_json = self.issue.page_jsons[self.number - 1]
+        self.split_page_blocks = self.issue.split_page_blocks
 
         # add the facsimile width and height from the rescaling
         self.page_data["fw"] = ocr_json["jp2_img_size"][0]
@@ -78,45 +81,47 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
 
     def _extract_regions(self, ocr_json: dict[str, Any]) -> list[dict[str, Any]]:
 
-        all_line_xy_coords, lines, par_sizes = parse_lines(
+        all_blocks_xy_coords, paragraphs, par_sizes = parse_lines(
             ocr_json["blocks_with_lines"], self.id, self.notes
         )
 
-        if len(all_line_xy_coords) == 0:
+        if len(all_blocks_xy_coords) == 0:
             msg = (
-                f"{self.id} - Warning! No line coords to merge! len(ocr_json['blocks_with_lines'])={len(ocr_json['blocks_with_lines'])}, len(lines)={len(lines)}. Returning empty region."
+                f"{self.id} - Warning! No line coords to merge! len(ocr_json['blocks_with_lines'])={len(ocr_json['blocks_with_lines'])}, len(paragraphs)={len(paragraphs)}. Returning empty region."
                 f"checking if there are other blocks: len(ocr_json['blocks_without_lines'])={len(ocr_json['blocks_without_lines'])}, ocr_json['blocks_without_lines'][0]['rescaled_bbox']={ocr_json['blocks_without_lines'][0]['rescaled_bbox']}, ocr_json['jp2_img_size']={ocr_json['jp2_img_size']}"
             )
             print(msg)
             logger.info(msg)
-            return {}
+            return []
         else:
             # easier to merge all the coords if they stay in x1yx2y2 format
-            para_coords = compute_paragraph_coords(all_line_xy_coords)
+            region_coords = coords_to_xywh(compute_agg_coords(all_blocks_xy_coords))
 
         self.avg_par_size = mean(par_sizes)
-        if self.avg_par_size > 2 and len(par_sizes) < 10:
+        if self.avg_par_size < 3.5 or len(par_sizes) > 20:
             print(
-                f"- {self.id} - WOULD KEEP avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
+                f"- {self.id} - WOULD SEPARATE & split_page_blocks: {self.split_page_blocks} | avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
             )
         else:
             print(
-                f"- {self.id} - WOULD SEPARATE avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
+                f"- {self.id} - WOULD KEEP & split_page_blocks: {self.split_page_blocks} | avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
             )
 
         # in SWISSINFO rb, we have 1 block=1 line.
         # we decided to keep the paragraphs equal to the regions, so 1 paragraph and 1 region
-        paragraph = {
+        """paragraph = {
             "c": para_coords,
             "l": lines,
-        }
+        }"""
 
         # return the constructed region
-        return {
-            "c": para_coords,
-            "p": [paragraph],
-            "pOf": self.issue.content_items[0]["m"]["id"],
-        }
+        return [
+            {
+                "c": region_coords,
+                "p": paragraphs,
+                "pOf": self.issue.content_items[0]["m"]["id"],
+            }
+        ]
 
 
 class SwissInfoRadioBulletinIssue(CanonicalIssue):
@@ -199,17 +204,25 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
         self.src_pdf_file = "/".join(bulletin_json["original_path"].split("/")[-3:])
 
         self.page_jsons = []
+        missing_pages = []
+        # whether the page blocks should be split into lines or kept to create paragraphs
+        self.split_page_blocks = False
 
         for page in bulletin_json["ocr_pages"]:
             page_no = int(page["page_num"]) + 1
             if len(page["blocks_with_lines"]) == 0:
-                msg = (
-                    f"{self.id}, page {page_no} has no block with lines - not initializing it."
-                )
-                print(msg)
-                logger.info(msg)
+                missing_pages.append(page_no)
+                msg = f"{self.id}, page {page_no} has no block with lines, it will not contain text."
+                # print(msg)
+                # logger.info(msg)
                 self._notes.append(msg)
-                continue
+            else:
+                par_sizes = [len(block["lines"]) for block in page["blocks_with_lines"]]
+                # print(f"")
+                # if the blocks of any of the pages are split, they are split for all pages.
+                self.split_page_blocks = self.split_page_blocks or (
+                    mean(par_sizes) < 3.5 or len(par_sizes) > 20
+                )
 
             page_img_file = bulletin_json["jp2_full_paths"][page["page_num"]]
             page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
@@ -232,11 +245,15 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
 
             # TODO maybe - extract fonts
 
-        if len(self.pages) == 0:
+        if len(self.pages) == len(missing_pages):
             msg = f"{self.id}, No OCR in any of the pages! This issue won't be ingested."
             print(msg)
             logger.warning(msg)
             self.has_pages = False
+        elif len(missing_pages) != 0:
+            msg = f"{self.id}, some of the pages ({missing_pages}) had no OCR but not all!"
+            print(msg)
+            logger.warning(msg)
 
     def _compose_content_item(self) -> None:
 

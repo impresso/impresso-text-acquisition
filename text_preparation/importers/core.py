@@ -189,7 +189,9 @@ def issue2pages(issue: CanonicalIssue) -> list[CanonicalPage]:
 
 
 def serialize_pages(
-    pages: list[CanonicalPage], output_dir: str | None = None
+    pages: list[CanonicalPage],
+    output_dir: str | None = None,
+    failed_log: str | None = None,
 ) -> list[Tuple[IssueDir, str]]:
     """Serialize a list of pages to an output directory.
 
@@ -197,6 +199,8 @@ def serialize_pages(
         pages (list[CanonicalPage]): Input canonical pages.
         output_dir (str | None, optional): Path to the output directory.
             Defaults to None.
+        failed_log (str | None, optional): Path to the log file used when an
+            instantiation was not successful. Defaults to None.
 
     Returns:
         list[Tuple[IssueDir, str]]: A list of tuples (`IssueDir`, `path`),
@@ -221,11 +225,12 @@ def serialize_pages(
         out_file = os.path.join(out_dir, canonical_filename)
 
         try:
-            validate_page_schema(out_file)
+            validate_page_schema(page.page_data)
         except ValidationError as e:
             msg = f"Invalid schema for {canonical_filename}: {e}"
             logger.error(msg)
             print(msg)
+            write_error(out_file, e, failed_log)
 
         with open(out_file, "w", encoding="utf-8") as jsonfile:
             json.dump(page.page_data, jsonfile)
@@ -373,7 +378,9 @@ def import_issues(
                 .map(issue2pages)
                 .flatten()
                 .map_partitions(process_pages, failed_log=failed_log_path)
-                .map_partitions(serialize_pages, output_dir=out_dir)
+                .map_partitions(
+                    serialize_pages, output_dir=out_dir, failed_log=failed_log_path
+                )
             )
 
             pages_out_dir = os.path.join(out_dir, "pages")
@@ -522,9 +529,14 @@ def compress_issues(
         for issue in issues:
             last_id = issue.id
             validate_issue_schema(issue.issue_data)
-            if alias not in PARTNER_TO_MEDIA["SWISSINFO"] or issue.has_pages:
+            if alias not in PARTNER_TO_MEDIA["SWISSINFO"]:
+                items.append(issue.issue_data)
+            elif issue.has_pages:
                 # for swissinfo, only add the issue when there is actually data
                 items.append(issue.issue_data)
+            else:
+                msg = f"{issue} - Issue has no pages (no OCR text), it's not ingested."
+                write_error(issue, msg, failed_log)
 
         with lock:
             with smart_open_function(filepath, "ab") as fout:

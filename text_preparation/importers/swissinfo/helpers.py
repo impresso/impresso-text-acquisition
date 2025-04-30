@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 def parse_lines(blocks_with_lines, pg_id, pg_notes):
 
-    all_line_xy_coords = []
-    all_lines = []
+    all_blocks_xy_coords = []
+    paragraphs = []
     hyphen_at_last = False
     par_sizes = []
     for block_id, block in enumerate(blocks_with_lines):
-        all_line_xy_coords.append(block["rescaled_bbox"])
+        all_blocks_xy_coords.append(block["rescaled_bbox"])
         # there is usually only one paragraph per paragraph
         block_lines = []
         for line_id, line in enumerate(block["lines"]):
@@ -41,21 +41,23 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
                 if (block_id != 0 or line_id != 0) and t_id == 0 and hyphen_at_last:
                     if (
                         line_id != 0
-                        and len(all_lines) == 0
+                        and len(paragraphs) == 0
                         and not ("hy" in block_lines[-1]["t"][-1])
                     ):
                         msg = f"{pg_id} - Warning! problem 1 with hyphen_at_last!: curr_token: {curr_token}, block_lines[-1]['t'][-1]: {block_lines[-1]['t'][-1]}"
-                        logger.info(msg)
+                        # logger.info(msg)
                         print(msg)
                         # saving in the notes
                         pg_notes.append(
                             f"block {block_id} ('number' {block['number']}), line {line_id}, token {t_id} - problem with hyphenation: hyphen_at_last is true but no 'hy' in previous token."
                         )
                     elif (
-                        block_id != 0 and line_id == 0 and not ("hy" in all_lines[-1]["t"][-1])
+                        block_id != 0
+                        and line_id == 0
+                        and not ("hy" in paragraphs[-1]["l"][-1]["t"][-1])
                     ):
-                        msg = f"{pg_id} - Warning! problem 2 with hyphen_at_last!: curr_token: {curr_token}, all_lines[-1]['t'][-1]: {all_lines[-1]['t'][-1]}"
-                        logger.info(msg)
+                        msg = f"{pg_id} - Warning! problem 2 with hyphen_at_last!: curr_token: {curr_token}, all_lines[-1]['l'][-1]['t'][-1]: {paragraphs[-1]['l'][-1]['t'][-1]}"
+                        # logger.info(msg)
                         print(msg)
                         # saving in the notes
                         pg_notes.append(
@@ -64,12 +66,15 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
 
                     # if the first token of the line is a the second part of a hyphen,
                     # we need to merge it with the last token (after removing the hyphen)
-                    if len(all_lines) == 0:
+                    if len(paragraphs) == 0:
                         full_word = (
                             block_lines[-1]["t"][-1]["tx"].split("-")[0] + token["text"]
                         )
                     else:
-                        full_word = all_lines[-1]["t"][-1]["tx"].split("-")[0] + token["text"]
+                        full_word = (
+                            paragraphs[-1]["l"][-1]["t"][-1]["tx"].split("-")[0]
+                            + token["text"]
+                        )
                     curr_token["nf"] = full_word
 
                 # reset the hyphenation flag
@@ -85,10 +90,12 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
                 hyphen_at_last = False
 
             block_lines.append({"c": coords_to_xywh(line["rescaled_bbox"]), "t": tokens})
+            # block_xy_coords.append(line["rescaled_bbox"])
 
         par_sizes.append(len(block_lines))
+        paragraphs.append({"c": coords_to_xywh(block["rescaled_bbox"]), "l": block_lines})
         # there is usually only one line per block
-        if len(block_lines) == 1:
+        """if len(block_lines) == 1:
             all_lines.append(block_lines[0])
         else:
             # cases where there were more than one line seemed to be errors - to be checked.
@@ -98,17 +105,17 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
             )
             # print(msg)
             # logger.info(msg)
-            all_lines.extend(block_lines)
+            all_lines.extend(block_lines)"""
 
-    return all_line_xy_coords, all_lines, par_sizes
+    return all_blocks_xy_coords, paragraphs, par_sizes
 
 
-def compute_paragraph_coords(all_line_coords):
+def compute_agg_coords(all_coords):
     """
     Compute the coordinates of a paragraph from the coordinates of its lines.
     """
-    x1 = min([l[0] for l in all_line_coords])
-    y1 = min([l[1] for l in all_line_coords])
-    x2 = max([l[2] for l in all_line_coords])
-    y2 = max([l[3] for l in all_line_coords])
+    x1 = min([l[0] for l in all_coords])
+    y1 = min([l[1] for l in all_coords])
+    x2 = max([l[2] for l in all_coords])
+    y2 = max([l[3] for l in all_coords])
     return coords_to_xywh([x1, y1, x2, y2])
