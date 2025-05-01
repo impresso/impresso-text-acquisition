@@ -1,19 +1,14 @@
-import json
-import logging
 import os
-import shutil
+import logging
+import json
 from time import strftime
 from typing import Any
 from statistics import mean
 
-from zipfile import ZipFile
-
-from impresso_essentials.utils import IssueDir, SourceType, SourceMedium
-from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
-from text_preparation.importers.swissinfo.detect import SwissInfoIssueDir
-from text_preparation.importers.swissinfo.helpers import parse_lines, compute_agg_coords
-from impresso_essentials.io.fs_utils import canonical_path
 from text_preparation.utils import coords_to_xywh
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
+from text_preparation.importers.swissinfo.helpers import parse_lines, compute_agg_coords
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium
 
 logger = logging.getLogger(__name__)
 
@@ -106,22 +101,6 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
                 merged_paragraph_lines.extend(p["l"])
             # there is now one paragraph = to the region, so same coordinates
             paragraphs = [{"c": region_coords, "l": merged_paragraph_lines}]
-        """self.avg_par_size = mean(par_sizes)
-        if self.avg_par_size < 3.5 or len(par_sizes) > 20:
-            print(
-                f"- {self.id} - WOULD SEPARATE & split_page_blocks: {self.split_page_blocks} | avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
-            )
-        else:
-            print(
-                f"- {self.id} - WOULD KEEP & split_page_blocks: {self.split_page_blocks} | avg_par_size = {self.avg_par_size}, len(par_sizes)={len(par_sizes)}, par_sizes={par_sizes}"
-            )"""
-
-        # in SWISSINFO rb, we have 1 block=1 line.
-        # we decided to keep the paragraphs equal to the regions, so 1 paragraph and 1 region
-        """paragraph = {
-            "c": para_coords,
-            "l": lines,
-        }"""
 
         # return the constructed region
         return [
@@ -267,7 +246,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
     def _compose_content_item(self) -> None:
 
         ci_metadata = {
-            "id": "{}-i{}".format(self.id, str(1).zfill(4)),
+            "id": f"{self.id}-i{str(1).zfill(4)}",
             "lg": self.bulletin_lang,
             "pp": [p.number for p in self.pages],
             # only this type for now

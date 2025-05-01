@@ -12,7 +12,9 @@ from text_preparation.utils import coords_to_xywh
 logger = logging.getLogger(__name__)
 
 
-def parse_lines(blocks_with_lines, pg_id, pg_notes):
+def parse_lines(
+    blocks_with_lines: dict, pg_id: str, pg_notes: list[str]
+) -> tuple[list[list[int]], list[dict]]:
 
     all_blocks_xy_coords = []
     paragraphs = []
@@ -90,27 +92,13 @@ def parse_lines(blocks_with_lines, pg_id, pg_notes):
                 hyphen_at_last = False
 
             block_lines.append({"c": coords_to_xywh(line["rescaled_bbox"]), "t": tokens})
-            # block_xy_coords.append(line["rescaled_bbox"])
 
-        # par_sizes.append(len(block_lines))
         paragraphs.append({"c": coords_to_xywh(block["rescaled_bbox"]), "l": block_lines})
-        # there is usually only one line per block
-        """if len(block_lines) == 1:
-            all_lines.append(block_lines[0])
-        else:
-            # cases where there were more than one line seemed to be errors - to be checked.
-            # msg = f"{pg_id} - Warning! {len(block_lines)} lines in this paragraph, adding them separately!! block coords: {[b['c'] for b in block_lines]}"
-            pg_notes.append(
-                f"block {block_id} ('number' {block['number']}), lines {len(all_lines)}-{len(all_lines)+len(block_lines)} were in the same block initially."
-            )
-            # print(msg)
-            # logger.info(msg)
-            all_lines.extend(block_lines)"""
 
-    return all_blocks_xy_coords, paragraphs  # , par_sizes
+    return all_blocks_xy_coords, paragraphs
 
 
-def compute_agg_coords(all_coords):
+def compute_agg_coords(all_coords: list[list[int]]) -> list[int]:
     """
     Compute the coordinates of a paragraph from the coordinates of its lines.
     """
