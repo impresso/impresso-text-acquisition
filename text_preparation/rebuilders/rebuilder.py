@@ -1,5 +1,5 @@
 """Functions and CLI to rebuild text from impresso's canonical format.
-For EPFL members, this script can be scaled by running it using Runai, 
+For EPFL members, this script can be scaled by running it using Runai,
 as documented on https://github.com/impresso/impresso-infrastructure/blob/main/howtos/runai.md.
 
 Usage:
@@ -52,346 +52,26 @@ from text_preparation.rebuilders.helpers import (
     rejoin_articles,
     reconstruct_iiif_link,
     insert_whitespace,
+    _article_has_problem,
+    _article_without_problem,
+    TYPE_MAPPINGS,
+)
+from text_preparation.rebuilders.paper_rebuilders import (
+    rebuild_paper_text,
+    rebuild_paper_text_passim,
+    rebuild_paper_for_solr,
+    rebuild_paper_for_passim,
+    filter_and_process_paper_cis,
+)
+from text_preparation.rebuilders.audio_rebuilders import (
+    rebuild_audio_text,
+    rebuild_audio_text_passim,
+    rebuild_audio_for_solr,
+    rebuild_audio_for_passim,
+    filter_and_process_audio_cis,
 )
 
 logger = logging.getLogger(__name__)
-
-
-TYPE_MAPPINGS = {
-    "article": "ar",
-    "ar": "ar",
-    "advertisement": "ad",
-    "ad": "ad",
-    "pg": None,
-    "image": "img",
-    "table": "tb",
-    "death_notice": "ob",
-    "weather": "w",
-}
-# TODO KB data: add familial announcement?
-
-
-def rebuild_text(
-    page: list[dict], language: Optional[str], string: Optional[str] = None
-) -> tuple[str, dict[list], dict[list]]:
-    """Rebuild the text of an article for Solr ingestion.
-
-    If `string` is not `None`, then the rebuilt text is appended to it.
-
-    Args:
-        page (list[dict]): Newspaper page conforming to the impresso JSON pages schema.
-        language (str | None): Language of the article being rebuilt
-        string (str | None, optional): Rebuilt text of previous page. Defaults to None.
-
-    Returns:
-        tuple[str, dict[list], dict[list]]: [0] Article fulltext, [1] offsets and
-            [2] coordinates of token regions.
-    """
-
-    coordinates = {"regions": [], "tokens": []}
-
-    offsets = {"line": [], "para": [], "region": []}
-
-    if string is None:
-        string = ""
-
-    # in order to be able to keep line break information
-    # we iterate over a list of lists (lines of tokens)
-    for region in page:
-
-        if len(string) > 0:
-            offsets["region"].append(len(string))
-
-        coordinates["regions"].append(region["c"])
-
-        for para in region["p"]:
-
-            if len(string) > 0:
-                offsets["para"].append(len(string))
-
-            for line in para["l"]:
-
-                for n, token in enumerate(line["t"]):
-                    region = {}
-                    if "c" not in token:
-                        print(f"'c' was not present in token: {token}, line: {line}")
-                        continue
-                    region["c"] = token["c"]
-                    region["s"] = len(string)
-
-                    if "hy" in token:
-                        region["l"] = len(token["tx"][:-1]) - 1
-                        region["hy1"] = True
-                    elif "nf" in token:
-                        region["l"] = len(token["nf"])
-                        region["hy2"] = True
-
-                        token_text = token["nf"] if token["nf"] is not None else ""
-                    else:
-                        if token["tx"]:
-                            region["l"] = len(token["tx"])
-                        else:
-                            region["l"] = 0
-
-                        token_text = token["tx"] if token["tx"] is not None else ""
-
-                    # don't add the tokens corresponding to the first part of a hyphenated word
-                    if "hy" not in token:
-                        next_token = (
-                            line["t"][n + 1]["tx"] if n != len(line["t"]) - 1 else None
-                        )
-                        ws = insert_whitespace(
-                            token["tx"],
-                            next_t=next_token,
-                            prev_t=line["t"][n - 1]["tx"] if n != 0 else None,
-                            lang=language,
-                        )
-                        string += f"{token_text} " if ws else f"{token_text}"
-
-                    # if token is the last in a line
-                    if n == len(line["t"]) - 1:
-                        if "hy" in token:
-                            offsets["line"].append(region["s"])
-                        else:
-                            token_length = len(token["tx"]) if token["tx"] else 0
-                            offsets["line"].append(region["s"] + token_length)
-
-                    coordinates["tokens"].append(region)
-
-    return (string, coordinates, offsets)
-
-
-def rebuild_text_passim(
-    page: list[dict], language: Optional[str], string: Optional[str] = None
-) -> tuple[str, list[dict]]:
-    """The text rebuilding function from pages for passim.
-
-    If `string` is not `None`, then the rebuilt text is appended to it.
-
-    Args:
-        page (list[dict]): Newspaper page conforming to the impresso JSON pages schema.
-        language (str | None): Language of the article being rebuilt
-        string (str | None, optional): Rebuilt text of previous page. Defaults to None.
-
-    Returns:
-        tuple[str, list[dict]]: [0] article fulltext, [1] coordinates of token regions.
-    """
-
-    regions = []
-
-    if string is None:
-        string = ""
-
-    # in order to be able to keep line break information
-    # we iterate over a list of lists (lines of tokens)
-
-    for region in page:
-
-        for para in region["p"]:
-
-            for line in para["l"]:
-
-                for n, token in enumerate(line["t"]):
-
-                    region_string = ""
-
-                    if "c" not in token:
-                        # if the coordniates are missing, they should be skipped
-                        logger.debug("Missing 'c' in token %s", token)
-                        print(f"Missing 'c' in token {token}")
-                        continue
-
-                    # each page region is a token
-                    output_region = {
-                        "start": None,
-                        "length": None,
-                        "coords": {
-                            "x": token["c"][0],
-                            "y": token["c"][1],
-                            "w": token["c"][2],
-                            "h": token["c"][3],
-                        },
-                    }
-
-                    if len(string) == 0:
-                        output_region["start"] = 0
-                    else:
-                        output_region["start"] = len(string)
-
-                    # if token is the last in a line
-                    if n == len(line["t"]) - 1:
-                        tmp = f"{token['tx']}\n"
-                        region_string += tmp
-                    else:
-                        ws = insert_whitespace(
-                            token["tx"],
-                            next_t=line["t"][n + 1]["tx"],
-                            prev_t=line["t"][n - 1]["tx"] if n != 0 else None,
-                            lang=language,
-                        )
-                        region_string += f"{token['tx']} " if ws else f"{token['tx']}"
-
-                    string += region_string
-                    output_region["length"] = len(region_string)
-                    regions.append(output_region)
-
-    return (string, regions)
-
-
-def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
-    """Rebuilds the text of an article content-item given its metadata as input.
-
-    Note:
-        This rebuild function is thought especially for ingesting the newspaper
-        data into our Solr index.
-
-    Args:
-        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
-
-    Returns:
-        dict[str, Any]: The rebuilt content-item following the Impresso JSON Schema.
-    """
-    t = Timer()
-
-    article_id = content_item["m"]["id"]
-    logger.debug("Started rebuilding article %s", article_id)
-
-    issue_id = "-".join(article_id.split("-")[:-1])
-
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
-    }
-
-    year, month, day, _, ci_num = article_id.split("-")[1:]
-    d = datetime.date(int(year), int(month), int(day))
-
-    if content_item["m"]["tp"] in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
-    else:
-        mapped_type = content_item["m"]["tp"]
-
-    fulltext = ""
-    linebreaks = []
-    parabreaks = []
-    regionbreaks = []
-
-    article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
-
-    # if the reading order is not defined, use the number associated to each CI
-    reading_order = (
-        content_item["m"]["ro"] if "ro" in content_item["m"] else int(ci_num[1:])
-    )
-
-    article = {
-        "id": article_id,
-        "pp": content_item["m"]["pp"],
-        "d": d.isoformat(),
-        "olr": False if mapped_type is None else True,
-        "ts": timestamp(),
-        "lg": article_lang,
-        "tp": mapped_type,
-        "ro": reading_order,
-        "ppreb": [],
-        "lb": [],
-        "cc": content_item["m"]["cc"],
-    }
-
-    if mapped_type == "img":
-        article["iiif_link"] = reconstruct_iiif_link(content_item)
-
-    if "t" in content_item["m"]:
-        article["t"] = content_item["m"]["t"]
-
-    if mapped_type != "img":
-        for n, page_no in enumerate(article["pp"]):
-
-            page = content_item["pprr"][n]
-
-            if fulltext == "":
-                fulltext, coords, offsets = rebuild_text(page, article_lang)
-            else:
-                fulltext, coords, offsets = rebuild_text(page, article_lang, fulltext)
-
-            linebreaks += offsets["line"]
-            parabreaks += offsets["para"]
-            regionbreaks += offsets["region"]
-
-            page_doc = {
-                "id": page_file_names[page_no].replace(".json", ""),
-                "n": page_no,
-                "t": coords["tokens"],
-                # todo add paragraphs?
-                "r": coords["regions"],
-            }
-            article["ppreb"].append(page_doc)
-        article["lb"] = linebreaks
-        article["pb"] = parabreaks
-        article["rb"] = regionbreaks
-        logger.debug("Done rebuilding article %s (Took %s)", article_id, t.stop())
-        article["ft"] = fulltext
-
-    return article
-
-
-def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
-    """Rebuilds the text of an article content-item to be used with passim.
-
-    Args:
-        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
-
-    Returns:
-        dict[str, Any]: The rebuilt content-item built for passim.
-    """
-    np, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
-
-    article_id = content_item["m"]["id"]
-    logger.debug("Started rebuilding article %s", article_id)
-    issue_id = "-".join(article_id.split("-")[:-1])
-
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
-    }
-
-    article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
-
-    if content_item["m"]["tp"] in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
-    else:
-        mapped_type = content_item["m"]["tp"]
-
-    passim_document = {
-        "series": np,
-        "date": f"{date[0]}-{date[1]}-{date[2]}",
-        "id": content_item["m"]["id"],
-        "cc": content_item["m"]["cc"],
-        "tp": mapped_type,
-        "lg": article_lang,
-        "pages": [],
-    }
-
-    if "t" in content_item["m"]:
-        passim_document["title"] = content_item["m"]["t"]
-
-    fulltext = ""
-    for n, page_no in enumerate(content_item["m"]["pp"]):
-
-        page = content_item["pprr"][n]
-
-        if fulltext == "":
-            fulltext, regions = rebuild_text_passim(page, article_lang)
-        else:
-            fulltext, regions = rebuild_text_passim(page, article_lang, fulltext)
-
-        page_doc = {
-            "id": page_file_names[page_no].replace(".json", ""),
-            "seq": page_no,
-            "regions": regions,
-        }
-        passim_document["pages"].append(page_doc)
-
-    passim_document["text"] = fulltext
-
-    return passim_document
 
 
 def compress(key, json_files, output_dir):
@@ -426,9 +106,7 @@ def compress(key, json_files, output_dir):
                 reader = jsonlines.Reader(inpf)
                 articles = list(reader)
                 writer.write_all(articles)
-            logger.info(
-                "Written %s docs from %s to %s", len(articles), json_file, filepath
-            )
+            logger.info("Written %s docs from %s to %s", len(articles), json_file, filepath)
 
         writer.close()
 
@@ -496,30 +174,6 @@ def cleanup(upload_success, filepath):
         logger.info("Not removing %s as upload has failed", filepath)
 
 
-def _article_has_problem(article):
-    """Helper function to keep articles with problems.
-
-    :param article: input article
-    :type article: dict
-    :return: `True` or `False`
-    :rtype: boolean
-    """
-    return article["has_problem"]
-
-
-def _article_without_problem(article):
-    """Helper function to keep articles without problems.
-
-    :param article: input article
-    :type article: dict
-    :return: `True` or `False`
-    :rtype: boolean
-    """
-    if article["has_problem"]:
-        logger.warning("Article %s won't be rebuilt.", article["m"]["id"])
-    return not article["has_problem"]
-
-
 def rebuild_issues(
     issues, input_bucket, output_dir, dask_client, _format="solr", filter_language=None
 ):
@@ -542,26 +196,35 @@ def rebuild_issues(
             for f in os.listdir(path):
                 os.remove(os.path.join(path, f))
 
-    # determine which rebuild function to apply
-    if _format == "solr":
-        rebuild_function = rebuild_for_solr
-    elif _format == "passim":
-        rebuild_function = rebuild_for_passim
-    else:
-        raise NotImplementedError
-
-    # create a temporary output directory named after newspaper and year
+    # create a temporary output directory named after media title and year
     # e.g. IMP-1994
-    issue, _ = issues[0]
-    key = f"{issue.journal}-{issue.date.year}"
+    issueDir, issue_json = issues[0]
+    key = f"{issueDir.alias}-{issueDir.date.year}"
     issue_dir = os.path.join(output_dir, key)
     mkdir(issue_dir)
+
+    # identify the source type and medium of the issue (and thus media title)
+    issue_type = issue_json["st"]
+    issue_medium = issue_json["sm"]
+
+    if issue_medium == "audio":
+        # TODO implement
+        filter_and_process_func = filter_and_process_audio_cis
+        raise NotImplementedError
+    elif issue_medium in ["print", "typescript"]:
+        filter_and_process_func = filter_and_process_paper_cis
+    else:
+        raise NotImplementedError
 
     # warning about large graph comes here
     print("Fleshing out articles by issue...")
     issues_bag = db.from_sequence(issues, partition_size=3)
 
-    faulty_issues = (
+    articles_bag = filter_and_process_func(
+        issues_bag, input_bucket, issue_type, issue_medium, _format
+    )
+
+    """faulty_issues = (
         issues_bag.filter(lambda i: len(i[1]["pp"]) == 0)
         .map(lambda i: i[1])
         .pluck("id")
@@ -593,7 +256,7 @@ def rebuild_issues(
 
     articles_bag = (
         articles_bag.filter(_article_without_problem).map(rebuild_function).persist()
-    )
+    )"""
 
     def has_language(ci):
         if "lg" not in ci:
@@ -673,9 +336,7 @@ def main() -> None:
     languages = arguments["--languages"]
     repo_path = arguments["--git-repo"]
     temp_dir = arguments["--temp-dir"]
-    prev_manifest_path = (
-        arguments["--prev-manifest"] if arguments["--prev-manifest"] else None
-    )
+    prev_manifest_path = arguments["--prev-manifest"] if arguments["--prev-manifest"] else None
 
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -725,8 +386,8 @@ def main() -> None:
                 proc_b_msg = f"Processing batch {n + 1}/{len(config)} [{batch}]"
                 logger.info(proc_b_msg)
                 print(proc_b_msg)
-                newspaper = list(batch.keys())[0]
-                start_year, end_year = batch[newspaper]
+                alias = list(batch.keys())[0]
+                start_year, end_year = batch[alias]
 
                 for year in range(start_year, end_year):
                     proc_year_msg = f"Processing year {year} \nRetrieving issues..."
@@ -734,9 +395,9 @@ def main() -> None:
                     print(proc_year_msg)
 
                     try:
-                        input_issues = read_s3_issues(newspaper, year, bucket_name)
+                        input_issues = read_s3_issues(alias, year, bucket_name)
                     except FileNotFoundError:
-                        fnf_msg = f"{newspaper}-{year} not found in {bucket_name}"
+                        fnf_msg = f"{alias}-{year} not found in {bucket_name}"
                         logger.info(fnf_msg)
                         print(fnf_msg)
                         continue
@@ -753,8 +414,8 @@ def main() -> None:
                     del input_issues
 
                     logger.debug("year_stats: %s", year_stats)
-                    manifest.add_by_title_year(newspaper, year, year_stats[0])
-                    titles.add(newspaper)
+                    manifest.add_by_title_year(alias, year, year_stats[0])
+                    titles.add(alias)
 
                 msg = (
                     f"Uploading {len(rebuilt_issues)} rebuilt bz2files "

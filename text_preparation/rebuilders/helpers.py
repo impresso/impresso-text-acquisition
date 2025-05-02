@@ -22,6 +22,44 @@ IIIF_ENDPOINT_BASE_2_SUFFIX = {
     "https://scriptorium.bcu-lausanne.ch/api": "300,/0/default.jpg",
 }
 
+TYPE_MAPPINGS = {
+    "article": "ar",
+    "ar": "ar",
+    "advertisement": "ad",
+    "ad": "ad",
+    "pg": None,
+    "image": "img",
+    "table": "tb",
+    "death_notice": "ob",
+    "weather": "w",
+    "chronicle": "ch",
+}
+# TODO KB data: add familial announcement?
+
+
+def _article_has_problem(article):
+    """Helper function to keep articles with problems.
+
+    :param article: input article
+    :type article: dict
+    :return: `True` or `False`
+    :rtype: boolean
+    """
+    return article["has_problem"]
+
+
+def _article_without_problem(article):
+    """Helper function to keep articles without problems.
+
+    :param article: input article
+    :type article: dict
+    :return: `True` or `False`
+    :rtype: boolean
+    """
+    if article["has_problem"]:
+        logger.warning("Article %s won't be rebuilt.", article["m"]["id"])
+    return not article["has_problem"]
+
 
 def read_issue(issue, bucket_name, s3_client=None):
     """Read the data from S3 for a given newspaper issue.
@@ -65,14 +103,10 @@ def read_issue_pages(issue, issue_json, bucket=None):
     year = issue.date.year
 
     filename = (
-        f"{bucket}/{newspaper}/pages/{newspaper}-{year}"
-        f"/{issue_json['id']}-pages.jsonl.bz2"
+        f"{bucket}/{newspaper}/pages/{newspaper}-{year}" f"/{issue_json['id']}-pages.jsonl.bz2"
     )
 
-    pages = [
-        json.loads(page)
-        for page in alternative_read_text(filename, IMPRESSO_STORAGEOPT)
-    ]
+    pages = [json.loads(page) for page in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
 
     print(filename)
     issue_json["pp"] = pages
@@ -118,11 +152,7 @@ def rejoin_articles(issue, issue_json):
         regions_by_page = []
         for page in pages:
             regions_by_page.append(
-                [
-                    region
-                    for region in page["r"]
-                    if "pOf" in region and region["pOf"] == art_id
-                ]
+                [region for region in page["r"] if "pOf" in region and region["pOf"] == art_id]
             )
         article["pprr"] = regions_by_page
         try:
@@ -143,9 +173,7 @@ def pages_to_article(article, pages):
         print("Extracting text regions for article %s", art_id)
         regions_by_page = []
         for page in pages:
-            regions_by_page.append(
-                [region for region in page["r"] if region["pOf"] == art_id]
-            )
+            regions_by_page.append([region for region in page["r"] if region["pOf"] == art_id])
         convert_coords = [page["cc"] for page in pages]
         article["m"]["cc"] = sum(convert_coords) / len(convert_coords) == 1.0
         article["has_problem"] = False
@@ -286,9 +314,10 @@ def insert_whitespace(
         insert_ws = False
 
     # the first char of the next token is punctuation.
-    elif next_t is not None and len(next_t) != 0 and (
-        next_t in wsrules["pct_no_ws_before"]
-        or next_t[0] in wsrules["pct_no_ws_before"]
+    elif (
+        next_t is not None
+        and len(next_t) != 0
+        and (next_t in wsrules["pct_no_ws_before"] or next_t[0] in wsrules["pct_no_ws_before"])
     ):
         insert_ws = False
 
@@ -303,8 +332,7 @@ def insert_whitespace(
             return True
 
     debug_msg = (
-        f"Insert whitespace: curr={token}, follow={next_t}, "
-        f"prev={prev_t} ({insert_ws})"
+        f"Insert whitespace: curr={token}, follow={next_t}, " f"prev={prev_t} ({insert_ws})"
     )
     logger.debug(debug_msg)
 
