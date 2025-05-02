@@ -52,24 +52,11 @@ from text_preparation.rebuilders.helpers import (
     rejoin_articles,
     reconstruct_iiif_link,
     insert_whitespace,
-    _article_has_problem,
-    _article_without_problem,
+    rebuild_for_passim,
     TYPE_MAPPINGS,
 )
-from text_preparation.rebuilders.paper_rebuilders import (
-    rebuild_paper_text,
-    rebuild_paper_text_passim,
-    rebuild_paper_for_solr,
-    rebuild_paper_for_passim,
-    filter_and_process_paper_cis,
-)
-from text_preparation.rebuilders.audio_rebuilders import (
-    rebuild_audio_text,
-    rebuild_audio_text_passim,
-    rebuild_audio_for_solr,
-    rebuild_audio_for_passim,
-    filter_and_process_audio_cis,
-)
+from text_preparation.rebuilders.paper_rebuilders import filter_and_process_paper_cis
+from text_preparation.rebuilders.audio_rebuilders import filter_and_process_audio_cis
 
 logger = logging.getLogger(__name__)
 
@@ -198,10 +185,10 @@ def rebuild_issues(
 
     # create a temporary output directory named after media title and year
     # e.g. IMP-1994
-    issueDir, issue_json = issues[0]
-    key = f"{issueDir.alias}-{issueDir.date.year}"
-    issue_dir = os.path.join(output_dir, key)
-    mkdir(issue_dir)
+    issue_dir, issue_json = issues[0]
+    key = f"{issue_dir.alias}-{issue_dir.date.year}"
+    issue_out_dir = os.path.join(output_dir, key)
+    mkdir(issue_out_dir)
 
     # identify the source type and medium of the issue (and thus media title)
     issue_type = issue_json["st"]
@@ -224,40 +211,6 @@ def rebuild_issues(
         issues_bag, input_bucket, issue_type, issue_medium, _format
     )
 
-    """faulty_issues = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) == 0)
-        .map(lambda i: i[1])
-        .pluck("id")
-        .compute()
-    )
-    msg = f"Issues with no pages (will be skipped): {faulty_issues}"
-    logger.debug(msg)
-    print(msg)
-    del faulty_issues
-    msg = f"Number of partitions: {issues_bag.npartitions}"
-    logger.debug(msg)
-    print(msg)
-
-    articles_bag = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
-        .starmap(read_issue_pages, bucket=input_bucket)
-        .starmap(rejoin_articles)
-        .flatten()
-        .persist()
-    )
-
-    faulty_articles_n = (
-        articles_bag.filter(_article_has_problem).pluck("m").pluck("id").compute()
-    )
-    msg = f"Skipped articles: {faulty_articles_n}"
-    logger.debug(msg)
-    print(msg)
-    del faulty_articles_n
-
-    articles_bag = (
-        articles_bag.filter(_article_without_problem).map(rebuild_function).persist()
-    )"""
-
     def has_language(ci):
         if "lg" not in ci:
             return False
@@ -267,10 +220,10 @@ def rebuild_issues(
         filtered_articles = articles_bag.filter(has_language).persist()
         print(f"filtered_articles.count().compute(): {filtered_articles.count().compute()}")
         stats_for_issues = compute_stats_in_rebuilt_bag(filtered_articles, key)
-        result = filtered_articles.map(json.dumps).to_textfiles(f"{issue_dir}/*.json")
+        result = filtered_articles.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
     else:
         stats_for_issues = compute_stats_in_rebuilt_bag(articles_bag, key)
-        result = articles_bag.map(json.dumps).to_textfiles(f"{issue_dir}/*.json")
+        result = articles_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
 
     dask_client.cancel(issues_bag)
     logger.info("done.")

@@ -10,8 +10,10 @@ from impresso_essentials.io.s3 import (
     alternative_read_text,
     get_s3_resource,
 )
-
+from impresso_essentials.io.fs_utils import parse_canonical_filename
 from impresso_essentials.text_utils import WHITESPACE_RULES
+from text_preparation.rebuilders.audio_rebuilders import recompose_audio_fulltext
+from text_preparation.rebuilders.paper_rebuilders import recompose_paper_fulltext
 
 logger = logging.getLogger(__name__)
 
@@ -97,21 +99,102 @@ def read_page(page_key, bucket_name, s3_client):
         return None
 
 
-def read_issue_pages(issue, issue_json, bucket=None):
+def read_issue_supports(issue, issue_json, pages: bool, bucket=None):
     """Read all pages of a given issue from S3 in parallel."""
-    newspaper = issue.journal
+    support = "pages" if pages else "audios"
+    alias = issue.journal
     year = issue.date.year
 
     filename = (
-        f"{bucket}/{newspaper}/pages/{newspaper}-{year}" f"/{issue_json['id']}-pages.jsonl.bz2"
+        f"{bucket}/{alias}/{support}/{alias}-{year}" f"/{issue_json['id']}-{support}.jsonl.bz2"
     )
 
-    pages = [json.loads(page) for page in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
+    supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
 
     print(filename)
-    issue_json["pp"] = pages
-    del pages
+    if pages:
+        issue_json["pp"] = supports
+    else:
+        issue_json["rr"] = supports
+    del supports
     return (issue, issue_json)
+
+
+def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
+    """Rebuilds the text of an article content-item to be used with passim.
+
+    Args:
+        content_item (dict[str, Any]): The content-item to rebuild using its metadata.
+
+    Returns:
+        dict[str, Any]: The rebuilt content-item built for passim.
+    """
+    # TODO: ensure the medium and types are in the CI!
+    alias, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
+
+    ci_id = content_item["m"]["id"]
+    logger.debug("Started rebuilding article %s", ci_id)
+    issue_id = "-".join(ci_id.split("-")[:-1])
+
+    support_file_names = (
+        {r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]}
+        if content_item["sm"] == "audio"
+        else {p: f"{issue_id}-r{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]}
+    )
+
+    # fetch the article language, noting the deprecated "l" field
+    if "lg" in content_item["m"]:
+        article_lang = content_item["m"]["lg"]
+    elif "l" in content_item["m"]:
+        article_lang = content_item["m"]["l"]
+    else:
+        article_lang = None
+
+    if content_item["m"]["tp"] in TYPE_MAPPINGS:
+        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
+    else:
+        mapped_type = content_item["m"]["tp"]
+
+    passim_document = {
+        "series": alias,
+        "date": f"{date[0]}-{date[1]}-{date[2]}",
+        "id": content_item["m"]["id"],
+        "cc": content_item["m"]["cc"],
+        "tp": mapped_type,
+        "lg": article_lang,
+    }
+
+    if content_item["sm"] == "audio":
+        passim_document["audios"] = []
+    else:
+        passim_document["pages"] = []
+
+    if "t" in content_item["m"]:
+        passim_document["title"] = content_item["m"]["t"]
+
+    """fulltext = ""
+    for n, page_no in enumerate(content_item["m"]["pp"]):
+
+        page = content_item["pprr"][n]
+
+        if fulltext == "":
+            fulltext, regions = rebuild_paper_text_passim(page, article_lang)
+        else:
+            fulltext, regions = rebuild_paper_text_passim(page, article_lang, fulltext)
+
+        page_doc = {
+            "id": page_file_names[page_no].replace(".json", ""),
+            "seq": page_no,
+            "regions": regions,
+        }
+        passim_document["pages"].append(page_doc)
+
+    passim_document["text"] = fulltext
+    """
+    if content_item["sm"] == "audio":
+        return recompose_audio_fulltext(content_item, passim_document, support_file_names)
+    else:
+        return recompose_paper_fulltext(content_item, passim_document, support_file_names)
 
 
 def rejoin_articles(issue, issue_json):

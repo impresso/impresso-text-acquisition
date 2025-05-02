@@ -24,7 +24,7 @@ from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
 
 from text_preparation.rebuilders.helpers import (
-    read_issue_pages,
+    read_issue_supports,
     rejoin_articles,
     reconstruct_iiif_link,
     insert_whitespace,
@@ -302,6 +302,32 @@ def rebuild_audio_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     return article
 
 
+def recompose_audio_fulltext(content_item, passim_document, audio_file_names):
+    fulltext = ""
+    # TODO, ensure that ["rr"] is present in i['m']
+    for n, audio_no in enumerate(content_item["m"]["rr"]):
+
+        audio = content_item["pprr"][n]
+
+        if fulltext == "":
+            fulltext, regions = rebuild_audio_text_passim(audio, passim_document["lg"])
+        else:
+            fulltext, regions = rebuild_audio_text_passim(
+                audio, passim_document["lg"], fulltext
+            )
+
+        page_doc = {
+            "id": audio_file_names[audio_no].replace(".json", ""),
+            "seq": audio_no,
+            "regions": regions,
+        }
+        passim_document["audios"].append(page_doc)
+
+    passim_document["text"] = fulltext
+
+    return passim_document
+
+
 def rebuild_audio_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
     """Rebuilds the text of an article content-item to be used with passim.
 
@@ -392,7 +418,7 @@ def filter_and_process_audio_cis(issues_bag, input_bucket, issue_type, issue_med
 
     articles_bag = (
         issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
-        .starmap(read_issue_pages, bucket=input_bucket)
+        .starmap(read_issue_supports, pages=False, bucket=input_bucket)
         .starmap(rejoin_articles)
         .flatten()
         .persist()

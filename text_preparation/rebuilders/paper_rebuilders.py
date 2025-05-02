@@ -24,12 +24,13 @@ from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
 
 from text_preparation.rebuilders.helpers import (
-    read_issue_pages,
+    read_issue_supports,
     rejoin_articles,
     reconstruct_iiif_link,
     insert_whitespace,
     _article_has_problem,
     _article_without_problem,
+    rebuild_for_passim,
     TYPE_MAPPINGS,
 )
 
@@ -297,6 +298,31 @@ def rebuild_paper_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     return article
 
 
+def recompose_paper_fulltext(content_item, passim_document, page_file_names):
+    fulltext = ""
+    for n, page_no in enumerate(content_item["m"]["pp"]):
+
+        page = content_item["pprr"][n]
+
+        if fulltext == "":
+            fulltext, regions = rebuild_paper_text_passim(page, passim_document["lg"])
+        else:
+            fulltext, regions = rebuild_paper_text_passim(
+                page, passim_document["lg"], fulltext
+            )
+
+        page_doc = {
+            "id": page_file_names[page_no].replace(".json", ""),
+            "seq": page_no,
+            "regions": regions,
+        }
+        passim_document["pages"].append(page_doc)
+
+    passim_document["text"] = fulltext
+
+    return passim_document
+
+
 def rebuild_paper_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
     """Rebuilds the text of an article content-item to be used with passim.
 
@@ -306,7 +332,7 @@ def rebuild_paper_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The rebuilt content-item built for passim.
     """
-    np, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
+    alias, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
 
     article_id = content_item["m"]["id"]
     logger.debug("Started rebuilding article %s", article_id)
@@ -324,7 +350,7 @@ def rebuild_paper_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
         mapped_type = content_item["m"]["tp"]
 
     passim_document = {
-        "series": np,
+        "series": alias,
         "date": f"{date[0]}-{date[1]}-{date[2]}",
         "id": content_item["m"]["id"],
         "cc": content_item["m"]["cc"],
@@ -362,11 +388,13 @@ def filter_and_process_paper_cis(issues_bag, input_bucket, issue_type, issue_med
     # Process the issues into rebuilt CIs for "paper" issues
     # ie. data for which the source medium is "print" or "typescript"
 
+    # issues_bag contains pairs of issueDir objects and their corresponding json canonical issue
+
     # determine which rebuild function to apply
     if _format == "solr":
         rebuild_function = rebuild_paper_for_solr
     elif _format == "passim":
-        rebuild_function = rebuild_paper_for_passim
+        rebuild_function = rebuild_for_passim
     else:
         raise NotImplementedError
 
@@ -386,7 +414,7 @@ def filter_and_process_paper_cis(issues_bag, input_bucket, issue_type, issue_med
 
     articles_bag = (
         issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
-        .starmap(read_issue_pages, bucket=input_bucket)
+        .starmap(read_issue_supports, pages=True, bucket=input_bucket)
         .starmap(rejoin_articles)
         .flatten()
         .persist()
