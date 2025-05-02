@@ -302,6 +302,54 @@ def rebuild_audio_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     return article
 
 
+def reconstruct_audios(issue_json, ci, cis):
+    # TODO adapt to radio data!!!
+    pages = []
+    page_ids = [page["id"] for page in issue_json["pp"]]
+    for page_no in ci["m"]["pp"]:
+        # given a page  number (from issue.json) and its canonical ID
+        # find the position of that page in the array of pages (with text
+        # regions)
+        page_no_string = f"p{str(page_no).zfill(4)}"
+        try:
+            page_idx = [
+                n for n, page in enumerate(issue_json["pp"]) if page_no_string in page["id"]
+            ][0]
+            pages.append(issue_json["pp"][page_idx])
+        except IndexError:
+            ci["has_problem"] = True
+            cis.append(ci)
+            logger.error(
+                "Page %s not found for item %s. Issue %s has pages %s",
+                page_no_string,
+                ci["m"]["id"],
+                issue_json["id"],
+                page_ids,
+            )
+            continue
+
+    regions_by_page = []
+    for page in pages:
+        regions_by_page.append(
+            [
+                region
+                for region in page["r"]
+                if "pOf" in region and region["pOf"] == ci["m"]["id"]
+            ]
+        )
+    ci["pprr"] = regions_by_page
+    try:
+        convert_coords = [p["cc"] for p in pages]
+        ci["m"]["cc"] = sum(convert_coords) / len(convert_coords) == 1.0
+    except Exception:
+        # it just means there was no CC field in the pages
+        ci["m"]["cc"] = None
+
+    cis.append(ci)
+
+    return cis
+
+
 def recompose_audio_fulltext(content_item, passim_document, audio_file_names):
     fulltext = ""
     # TODO, ensure that ["rr"] is present in i['m']

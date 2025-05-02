@@ -12,8 +12,14 @@ from impresso_essentials.io.s3 import (
 )
 from impresso_essentials.io.fs_utils import parse_canonical_filename
 from impresso_essentials.text_utils import WHITESPACE_RULES
-from text_preparation.rebuilders.audio_rebuilders import recompose_audio_fulltext
-from text_preparation.rebuilders.paper_rebuilders import recompose_paper_fulltext
+from text_preparation.rebuilders.audio_rebuilders import (
+    recompose_audio_fulltext,
+    reconstruct_audios,
+)
+from text_preparation.rebuilders.paper_rebuilders import (
+    recompose_paper_fulltext,
+    reconstruct_pages,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -172,25 +178,6 @@ def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
     if "t" in content_item["m"]:
         passim_document["title"] = content_item["m"]["t"]
 
-    """fulltext = ""
-    for n, page_no in enumerate(content_item["m"]["pp"]):
-
-        page = content_item["pprr"][n]
-
-        if fulltext == "":
-            fulltext, regions = rebuild_paper_text_passim(page, article_lang)
-        else:
-            fulltext, regions = rebuild_paper_text_passim(page, article_lang, fulltext)
-
-        page_doc = {
-            "id": page_file_names[page_no].replace(".json", ""),
-            "seq": page_no,
-            "regions": regions,
-        }
-        passim_document["pages"].append(page_doc)
-
-    passim_document["text"] = fulltext
-    """
     if content_item["sm"] == "audio":
         return recompose_audio_fulltext(content_item, passim_document, support_file_names)
     else:
@@ -198,15 +185,26 @@ def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
 
 
 def rejoin_articles(issue, issue_json):
-    print(f"Rejoining pages for issue {issue.path}")
-    articles = []
-    for article in issue_json["i"]:
+    print(f"Rejoining physical supports (pages or audios) for issue {issue.path}")
+    cis = []
+    for ci in issue_json["i"]:
 
-        art_id = article["m"]["id"]
-        article["has_problem"] = False
-        article["m"]["pp"] = sorted(list(set(article["m"]["pp"])))
+        ci_id = ci["m"]["id"]
+        ci["has_problem"] = False
+        ci["sm"] = issue_json["sm"]
+        ci["st"] = issue_json["st"]
 
-        pages = []
+        if issue_json["sm"] == "audio":
+            # for audio recordings there is only 1 per issue
+            ci["m"]["rr"] = sorted(list(set(issue_json["rr"])))
+            cis = reconstruct_pages(issue_json, ci, cis)
+        else:
+            ci["m"]["pp"] = sorted(list(set(ci["m"]["pp"])))
+            cis = reconstruct_audios(issue_json, ci, cis)
+
+    return cis
+
+    """    pages = []
         page_ids = [page["id"] for page in issue_json["pp"]]
         for page_no in article["m"]["pp"]:
             # given a page  number (from issue.json) and its canonical ID
@@ -246,7 +244,7 @@ def rejoin_articles(issue, issue_json):
             article["m"]["cc"] = None
 
         articles.append(article)
-    return articles
+    return articles"""
 
 
 def pages_to_article(article, pages):
