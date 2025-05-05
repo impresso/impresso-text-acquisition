@@ -1,47 +1,20 @@
-import sys
-import traceback
-import datetime
-import json
-import pathlib
+"""Rebuild helpers for audio data."""
+
 import logging
-import os
-import shutil
-import signal
-from typing import Any, Optional
-import git
-
-import dask.bag as db
-import jsonlines
-from dask.distributed import Client, progress
-from docopt import docopt
-from smart_open import smart_open
-
-from impresso_essentials.io.fs_utils import parse_canonical_filename
-from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import Timer, timestamp
-
-from impresso_essentials.versioning.data_manifest import DataManifest
-from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
+from typing import Optional
 
 from text_preparation.rebuilders.helpers import (
-    read_issue_supports,
-    rejoin_cis,
-    reconstruct_iiif_link,
     insert_whitespace,
-    ci_has_problem,
-    ci_without_problem,
-    TYPE_MAPPINGS,
 )
 
 logger = logging.getLogger(__name__)
 
 
 def rebuild_audio_text(
-    page: list[dict], language: Optional[str], string: Optional[str] = None
+    audio: list[dict], language: Optional[str], string: Optional[str] = None
 ) -> tuple[str, dict[list], dict[list]]:
     """Rebuild the text of an article for Solr ingestion.
 
-    TODO adapt to radio data!!!
     If `string` is not `None`, then the rebuilt text is appended to it.
 
     Args:
@@ -50,80 +23,83 @@ def rebuild_audio_text(
         string (str | None, optional): Rebuilt text of previous page. Defaults to None.
 
     Returns:
-        tuple[str, dict[list], dict[list]]: [0] Article fulltext, [1] offsets and
+        tuple[str, dict[list], dict[list]]: [0] CI fulltext, [1] offsets and
             [2] coordinates of token regions.
     """
+    coordinates = {"sections": [], "tokens": []}
 
-    coordinates = {"regions": [], "tokens": []}
-
-    offsets = {"line": [], "para": [], "region": []}
+    offsets = {"speech_seg": [], "utterance": [], "section": []}
 
     if string is None:
         string = ""
 
     # in order to be able to keep line break information
     # we iterate over a list of lists (lines of tokens)
-    for region in page:
+    for sec in audio:
 
         if len(string) > 0:
-            offsets["region"].append(len(string))
+            offsets["section"].append(len(string))
 
-        coordinates["regions"].append(region["c"])
+        coordinates["sections"].append(sec["tc"])
 
-        for para in region["p"]:
+        for utterance in sec["u"]:
 
             if len(string) > 0:
-                offsets["para"].append(len(string))
+                offsets["utterance"].append(len(string))
 
-            for line in para["l"]:
+            for speech_seg in utterance["ss"]:
 
-                for n, token in enumerate(line["t"]):
-                    region = {}
-                    if "c" not in token:
-                        print(f"'c' was not present in token: {token}, line: {line}")
+                for n, token in enumerate(speech_seg["t"]):
+                    section = {}
+                    if "tc" not in token:
+                        print(
+                            f"'tc' was not present in token: {token}, speech_seg: {speech_seg}"
+                        )
                         continue
-                    region["c"] = token["c"]
-                    region["s"] = len(string)
+                    section["tc"] = token["tc"]
+                    section["s"] = len(string)
 
                     token_text = None
                     if "hy" in token:
-                        region["l"] = len(token["tx"][:-1]) - 1
-                        region["hy1"] = True
+                        section["l"] = len(token["tx"][:-1]) - 1
+                        section["hy1"] = True
                     elif "nf" in token:
-                        region["l"] = len(token["nf"])
-                        region["hy2"] = True
+                        section["l"] = len(token["nf"])
+                        section["hy2"] = True
 
                         token_text = token["nf"] if token["nf"] is not None else ""
                     else:
                         if token["tx"]:
-                            region["l"] = len(token["tx"])
+                            section["l"] = len(token["tx"])
                         else:
-                            region["l"] = 0
+                            section["l"] = 0
 
                         token_text = token["tx"] if token["tx"] is not None else ""
 
                     # don't add the tokens corresponding to the first part of a hyphenated word
                     if "hy" not in token:
                         next_token = (
-                            line["t"][n + 1]["tx"] if n != len(line["t"]) - 1 else None
+                            speech_seg["t"][n + 1]["tx"]
+                            if n != len(speech_seg["t"]) - 1
+                            else None
                         )
                         ws = insert_whitespace(
                             token["tx"],
                             next_t=next_token,
-                            prev_t=line["t"][n - 1]["tx"] if n != 0 else None,
+                            prev_t=speech_seg["t"][n - 1]["tx"] if n != 0 else None,
                             lang=language,
                         )
                         string += f"{token_text} " if ws else f"{token_text}"
 
-                    # if token is the last in a line
-                    if n == len(line["t"]) - 1:
+                    # if token is the last in a speech segment
+                    if n == len(speech_seg["t"]) - 1:
                         if "hy" in token:
-                            offsets["line"].append(region["s"])
+                            offsets["speech_seg"].append(section["s"])
                         else:
                             token_length = len(token["tx"]) if token["tx"] else 0
-                            offsets["line"].append(region["s"] + token_length)
+                            offsets["speech_seg"].append(section["s"] + token_length)
 
-                    coordinates["tokens"].append(region)
+                    coordinates["tokens"].append(section)
 
     return (string, coordinates, offsets)
 
@@ -132,8 +108,6 @@ def rebuild_audio_text_passim(
     page: list[dict], language: Optional[str], string: Optional[str] = None
 ) -> tuple[str, list[dict]]:
     """The text rebuilding function from pages for passim.
-
-    TODO adapt to radio data!!!
 
     If `string` is not `None`, then the rebuilt text is appended to it.
 
@@ -145,7 +119,7 @@ def rebuild_audio_text_passim(
     Returns:
         tuple[str, list[dict]]: [0] article fulltext, [1] coordinates of token regions.
     """
-
+    # TODO adapt to radio data!!!
     regions = []
 
     if string is None:
@@ -207,150 +181,55 @@ def rebuild_audio_text_passim(
     return (string, regions)
 
 
-def rebuild_audio_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
-    """Rebuilds the text of an article content-item given its metadata as input.
-
-    TODO adapt to radio data!!!
-
-    Note:
-        This rebuild function is thought especially for ingesting the newspaper
-        data into our Solr index.
-
-    Args:
-        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
-
-    Returns:
-        dict[str, Any]: The rebuilt content-item following the Impresso JSON Schema.
-    """
-    t = Timer()
-
-    article_id = content_item["m"]["id"]
-    logger.debug("Started rebuilding article %s", article_id)
-
-    issue_id = "-".join(article_id.split("-")[:-1])
-
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
+def reconstruct_audio_text_elements(solr_ci, content_item):
+    issue_id = "-".join(solr_ci["id"].split("-")[:-1])
+    audio_file_names = {
+        r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]
     }
-
-    year, month, day, _, ci_num = article_id.split("-")[1:]
-    d = datetime.date(int(year), int(month), int(day))
-
-    if content_item["m"]["tp"] in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
-    else:
-        mapped_type = content_item["m"]["tp"]
 
     fulltext = ""
-    linebreaks = []
-    parabreaks = []
-    regionbreaks = []
+    speechsegsbreaks = []
+    utterancebreaks = []
+    sectionbreaks = []
 
-    article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
+    # there should be only one record, but keeping the formatting
+    for n, audio_rec_no in enumerate(solr_ci["rr"]):
 
-    # if the reading order is not defined, use the number associated to each CI
-    reading_order = content_item["m"]["ro"] if "ro" in content_item["m"] else int(ci_num[1:])
+        audio = content_item["rrss"][n]
 
-    article = {
-        "id": article_id,
-        "pp": content_item["m"]["pp"],
-        "d": d.isoformat(),
-        "olr": False if mapped_type is None else True,
-        "ts": timestamp(),
-        "lg": article_lang,
-        "tp": mapped_type,
-        "ro": reading_order,
-        "ppreb": [],
-        "lb": [],
-        "cc": content_item["m"]["cc"],
+        if fulltext == "":
+            fulltext, coords, offsets = rebuild_audio_text(audio, solr_ci["lg"])
+        else:
+            fulltext, coords, offsets = rebuild_audio_text(audio, solr_ci["lg"], fulltext)
+
+        speechsegsbreaks += offsets["speech_seg"]
+        utterancebreaks += offsets["utterance"]
+        sectionbreaks += offsets["section"]
+
+        audio_doc = {
+            "id": audio_file_names[audio_rec_no].replace(".json", ""),
+            "n": audio_rec_no,
+            "t": coords["tokens"],
+            # TODO add utterances?
+            # "u": coords["utterances"]
+            "s": coords["sections"],
+        }
+        solr_ci["rreb"].append(audio_doc)
+    solr_ci["ssb"] = speechsegsbreaks
+    solr_ci["ub"] = utterancebreaks
+    solr_ci["sb"] = sectionbreaks
+    solr_ci["ft"] = fulltext
+
+    return solr_ci
+
+
+def recompose_audio_fulltext_passim(content_item, passim_document):
+    issue_id = "-".join(passim_document["id"].split("-")[:-1])
+
+    audio_file_names = {
+        r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]
     }
 
-    if mapped_type == "img":
-        article["iiif_link"] = reconstruct_iiif_link(content_item)
-
-    if "t" in content_item["m"]:
-        article["t"] = content_item["m"]["t"]
-
-    if mapped_type != "img":
-        for n, page_no in enumerate(article["pp"]):
-
-            page = content_item["pprr"][n]
-
-            if fulltext == "":
-                fulltext, coords, offsets = rebuild_audio_text(page, article_lang)
-            else:
-                fulltext, coords, offsets = rebuild_audio_text(page, article_lang, fulltext)
-
-            linebreaks += offsets["line"]
-            parabreaks += offsets["para"]
-            regionbreaks += offsets["region"]
-
-            page_doc = {
-                "id": page_file_names[page_no].replace(".json", ""),
-                "n": page_no,
-                "t": coords["tokens"],
-                # todo add paragraphs?
-                "r": coords["regions"],
-            }
-            article["ppreb"].append(page_doc)
-        article["lb"] = linebreaks
-        article["pb"] = parabreaks
-        article["rb"] = regionbreaks
-        logger.debug("Done rebuilding article %s (Took %s)", article_id, t.stop())
-        article["ft"] = fulltext
-
-    return article
-
-
-def reconstruct_audios(issue_json, ci, cis):
-    # TODO adapt to radio data!!!
-    pages = []
-    page_ids = [page["id"] for page in issue_json["pp"]]
-    for page_no in ci["m"]["pp"]:
-        # given a page  number (from issue.json) and its canonical ID
-        # find the position of that page in the array of pages (with text
-        # regions)
-        page_no_string = f"p{str(page_no).zfill(4)}"
-        try:
-            page_idx = [
-                n for n, page in enumerate(issue_json["pp"]) if page_no_string in page["id"]
-            ][0]
-            pages.append(issue_json["pp"][page_idx])
-        except IndexError:
-            ci["has_problem"] = True
-            cis.append(ci)
-            logger.error(
-                "Page %s not found for item %s. Issue %s has pages %s",
-                page_no_string,
-                ci["m"]["id"],
-                issue_json["id"],
-                page_ids,
-            )
-            continue
-
-    regions_by_page = []
-    for page in pages:
-        regions_by_page.append(
-            [
-                region
-                for region in page["r"]
-                if "pOf" in region and region["pOf"] == ci["m"]["id"]
-            ]
-        )
-    ci["pprr"] = regions_by_page
-    try:
-        convert_coords = [p["cc"] for p in pages]
-        ci["m"]["cc"] = sum(convert_coords) / len(convert_coords) == 1.0
-    except Exception:
-        # it just means there was no CC field in the pages
-        ci["m"]["cc"] = None
-
-    cis.append(ci)
-
-    return cis
-
-
-def recompose_audio_fulltext(content_item, passim_document, audio_file_names):
     fulltext = ""
     # TODO, ensure that ["rr"] is present in i['m']
     for n, audio_no in enumerate(content_item["m"]["rr"]):
@@ -358,16 +237,16 @@ def recompose_audio_fulltext(content_item, passim_document, audio_file_names):
         audio = content_item["pprr"][n]
 
         if fulltext == "":
-            fulltext, regions = rebuild_audio_text_passim(audio, passim_document["lg"])
+            fulltext, sections = rebuild_audio_text_passim(audio, passim_document["lg"])
         else:
-            fulltext, regions = rebuild_audio_text_passim(
+            fulltext, sections = rebuild_audio_text_passim(
                 audio, passim_document["lg"], fulltext
             )
 
         page_doc = {
             "id": audio_file_names[audio_no].replace(".json", ""),
             "seq": audio_no,
-            "regions": regions,
+            "sections": sections,
         }
         passim_document["audios"].append(page_doc)
 
@@ -376,108 +255,43 @@ def recompose_audio_fulltext(content_item, passim_document, audio_file_names):
     return passim_document
 
 
-def rebuild_audio_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
-    """Rebuilds the text of an article content-item to be used with passim.
+def reconstruct_audios(issue_json, ci, cis):
+    # TODO adapt to radio data!!! (eg start time etc etc)
+    audios = []
+    audio_ids = [audio["id"] for audio in issue_json["rr"]]
+    # there should only be one record, but keeping the same approach
+    for audio_no in ci["m"]["rr"]:
+        # given a page  number (from issue.json) and its canonical ID
+        # find the position of that page in the array of pages (with text
+        # regions)
+        audio_no_string = f"p{str(audio_no).zfill(4)}"
+        try:
+            audio_idx = [
+                n for n, audio in enumerate(issue_json["rr"]) if audio_no_string in audio["id"]
+            ][0]
+            audios.append(issue_json["rr"][audio_idx])
+        except IndexError:
+            ci["has_problem"] = True
+            cis.append(ci)
+            logger.error(
+                "Audio %s not found for item %s. Issue %s has audios %s",
+                audio_no_string,
+                ci["m"]["id"],
+                issue_json["id"],
+                audio_ids,
+            )
+            continue
 
-    TODO adapt to radio data!!!
-    Args:
-        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
+    sections_by_audio = []
+    for audio in audios:
+        sections_by_audio.append(
+            [
+                section
+                for section in audio["s"]
+                if "pOf" in section and section["pOf"] == ci["m"]["id"]
+            ]
+        )
+    ci["rrss"] = sections_by_audio
+    cis.append(ci)
 
-    Returns:
-        dict[str, Any]: The rebuilt content-item built for passim.
-    """
-    np, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
-
-    article_id = content_item["m"]["id"]
-    logger.debug("Started rebuilding article %s", article_id)
-    issue_id = "-".join(article_id.split("-")[:-1])
-
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
-    }
-
-    article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
-
-    if content_item["m"]["tp"] in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
-    else:
-        mapped_type = content_item["m"]["tp"]
-
-    passim_document = {
-        "series": np,
-        "date": f"{date[0]}-{date[1]}-{date[2]}",
-        "id": content_item["m"]["id"],
-        "cc": content_item["m"]["cc"],
-        "tp": mapped_type,
-        "lg": article_lang,
-        "pages": [],
-    }
-
-    if "t" in content_item["m"]:
-        passim_document["title"] = content_item["m"]["t"]
-
-    fulltext = ""
-    for n, page_no in enumerate(content_item["m"]["pp"]):
-
-        page = content_item["pprr"][n]
-
-        if fulltext == "":
-            fulltext, regions = rebuild_audio_text_passim(page, article_lang)
-        else:
-            fulltext, regions = rebuild_audio_text_passim(page, article_lang, fulltext)
-
-        page_doc = {
-            "id": page_file_names[page_no].replace(".json", ""),
-            "seq": page_no,
-            "regions": regions,
-        }
-        passim_document["pages"].append(page_doc)
-
-    passim_document["text"] = fulltext
-
-    return passim_document
-
-
-def filter_and_process_audio_cis(issues_bag, input_bucket, issue_type, issue_medium, _format):
-    # Process the issues into rebuilt CIs for "paper" issues
-    # ie. data for which the source medium is "print" or "typescript"
-
-    # determine which rebuild function to apply
-    if _format == "solr":
-        rebuild_function = rebuild_audio_for_solr
-    elif _format == "passim":
-        rebuild_function = rebuild_audio_for_passim
-    else:
-        raise NotImplementedError
-
-    faulty_issues = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) == 0)
-        .map(lambda i: i[1])
-        .pluck("id")
-        .compute()
-    )
-    msg = f"Issues with no pages (will be skipped): {faulty_issues}"
-    logger.debug(msg)
-    print(msg)
-    del faulty_issues
-    msg = f"Number of partitions: {issues_bag.npartitions}"
-    logger.debug(msg)
-    print(msg)
-
-    articles_bag = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
-        .starmap(read_issue_supports, pages=False, bucket=input_bucket)
-        .starmap(rejoin_cis)
-        .flatten()
-        .persist()
-    )
-
-    faulty_articles_n = articles_bag.filter(ci_has_problem).pluck("m").pluck("id").compute()
-    msg = f"Skipped articles: {faulty_articles_n}"
-    logger.debug(msg)
-    print(msg)
-    del faulty_articles_n
-
-    articles_bag = articles_bag.filter(ci_without_problem).map(rebuild_function).persist()
-
-    return articles_bag
+    return cis

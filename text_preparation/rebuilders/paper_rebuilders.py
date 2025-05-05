@@ -1,37 +1,9 @@
-import sys
-import traceback
-import datetime
-import json
-import pathlib
+"""Rebuild helpers for the paper (print, typescript) text data."""
+
 import logging
-import os
-import shutil
-import signal
-from typing import Any, Optional
-import git
-
-import dask.bag as db
-import jsonlines
-from dask.distributed import Client, progress
-from docopt import docopt
-from smart_open import smart_open
-
-from impresso_essentials.io.fs_utils import parse_canonical_filename
-from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import Timer, timestamp
-
-from impresso_essentials.versioning.data_manifest import DataManifest
-from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
-
+from typing import Optional
 from text_preparation.rebuilders.helpers import (
-    read_issue_supports,
-    rejoin_cis,
-    reconstruct_iiif_link,
     insert_whitespace,
-    ci_has_problem,
-    ci_without_problem,
-    rebuild_for_passim,
-    TYPE_MAPPINGS,
 )
 
 logger = logging.getLogger(__name__)
@@ -50,7 +22,7 @@ def rebuild_paper_text(
         string (str | None, optional): Rebuilt text of previous page. Defaults to None.
 
     Returns:
-        tuple[str, dict[list], dict[list]]: [0] Article fulltext, [1] offsets and
+        tuple[str, dict[list], dict[list]]: [0] CI fulltext, [1] offsets and
             [2] coordinates of token regions.
     """
 
@@ -63,14 +35,14 @@ def rebuild_paper_text(
 
     # in order to be able to keep line break information
     # we iterate over a list of lists (lines of tokens)
-    for region in page:
+    for reg in page:
 
         if len(string) > 0:
             offsets["region"].append(len(string))
 
-        coordinates["regions"].append(region["c"])
+        coordinates["regions"].append(reg["c"])
 
-        for para in region["p"]:
+        for para in reg["p"]:
 
             if len(string) > 0:
                 offsets["para"].append(len(string))
@@ -205,100 +177,55 @@ def rebuild_paper_text_passim(
     return (string, regions)
 
 
-def rebuild_paper_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
-    """Rebuilds the text of an article content-item given its metadata as input.
-
-    Note:
-        This rebuild function is thought especially for ingesting the newspaper
-        data into our Solr index.
-
-    Args:
-        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
-
-    Returns:
-        dict[str, Any]: The rebuilt content-item following the Impresso JSON Schema.
-    """
-    t = Timer()
-
-    article_id = content_item["m"]["id"]
-    logger.debug("Started rebuilding article %s", article_id)
-
-    issue_id = "-".join(article_id.split("-")[:-1])
-
+def reconstruct_page_text_elements(solr_ci, content_item):
+    issue_id = "-".join(solr_ci["id"].split("-")[:-1])
     page_file_names = {
         p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
     }
-
-    year, month, day, _, ci_num = article_id.split("-")[1:]
-    d = datetime.date(int(year), int(month), int(day))
-
-    if content_item["m"]["tp"] in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
-    else:
-        mapped_type = content_item["m"]["tp"]
 
     fulltext = ""
     linebreaks = []
     parabreaks = []
     regionbreaks = []
 
-    article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
+    for n, page_no in enumerate(solr_ci["pp"]):
 
-    # if the reading order is not defined, use the number associated to each CI
-    reading_order = content_item["m"]["ro"] if "ro" in content_item["m"] else int(ci_num[1:])
+        page = content_item["pprr"][n]
 
-    article = {
-        "id": article_id,
-        "pp": content_item["m"]["pp"],
-        "d": d.isoformat(),
-        "olr": False if mapped_type is None else True,
-        "ts": timestamp(),
-        "lg": article_lang,
-        "tp": mapped_type,
-        "ro": reading_order,
-        "ppreb": [],
-        "lb": [],
-        "cc": content_item["m"]["cc"],
+        if fulltext == "":
+            fulltext, coords, offsets = rebuild_paper_text(page, solr_ci["lg"])
+        else:
+            fulltext, coords, offsets = rebuild_paper_text(page, solr_ci["lg"], fulltext)
+
+        linebreaks += offsets["line"]
+        parabreaks += offsets["para"]
+        regionbreaks += offsets["region"]
+
+        page_doc = {
+            "id": page_file_names[page_no].replace(".json", ""),
+            "n": page_no,
+            "t": coords["tokens"],
+            # TODO add paragraphs?
+            # "p": coords["paragraphs"],
+            "r": coords["regions"],
+        }
+        solr_ci["ppreb"].append(page_doc)
+    solr_ci["lb"] = linebreaks
+    solr_ci["pb"] = parabreaks
+    solr_ci["rb"] = regionbreaks
+    solr_ci["ft"] = fulltext
+
+    return solr_ci
+
+
+def recompose_paper_fulltext_passim(content_item, passim_document):
+
+    issue_id = "-".join(passim_document["id"].split("-")[:-1])
+
+    page_file_names = {
+        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
     }
 
-    if mapped_type == "img":
-        article["iiif_link"] = reconstruct_iiif_link(content_item)
-
-    if "t" in content_item["m"]:
-        article["t"] = content_item["m"]["t"]
-
-    if mapped_type != "img":
-        for n, page_no in enumerate(article["pp"]):
-
-            page = content_item["pprr"][n]
-
-            if fulltext == "":
-                fulltext, coords, offsets = rebuild_paper_text(page, article_lang)
-            else:
-                fulltext, coords, offsets = rebuild_paper_text(page, article_lang, fulltext)
-
-            linebreaks += offsets["line"]
-            parabreaks += offsets["para"]
-            regionbreaks += offsets["region"]
-
-            page_doc = {
-                "id": page_file_names[page_no].replace(".json", ""),
-                "n": page_no,
-                "t": coords["tokens"],
-                # todo add paragraphs?
-                "r": coords["regions"],
-            }
-            article["ppreb"].append(page_doc)
-        article["lb"] = linebreaks
-        article["pb"] = parabreaks
-        article["rb"] = regionbreaks
-        logger.debug("Done rebuilding article %s (Took %s)", article_id, t.stop())
-        article["ft"] = fulltext
-
-    return article
-
-
-def recompose_paper_fulltext(content_item, passim_document, page_file_names):
     fulltext = ""
     for n, page_no in enumerate(content_item["m"]["pp"]):
 
@@ -310,67 +237,6 @@ def recompose_paper_fulltext(content_item, passim_document, page_file_names):
             fulltext, regions = rebuild_paper_text_passim(
                 page, passim_document["lg"], fulltext
             )
-
-        page_doc = {
-            "id": page_file_names[page_no].replace(".json", ""),
-            "seq": page_no,
-            "regions": regions,
-        }
-        passim_document["pages"].append(page_doc)
-
-    passim_document["text"] = fulltext
-
-    return passim_document
-
-
-def rebuild_paper_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
-    """Rebuilds the text of an article content-item to be used with passim.
-
-    Args:
-        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
-
-    Returns:
-        dict[str, Any]: The rebuilt content-item built for passim.
-    """
-    alias, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
-
-    article_id = content_item["m"]["id"]
-    logger.debug("Started rebuilding article %s", article_id)
-    issue_id = "-".join(article_id.split("-")[:-1])
-
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
-    }
-
-    article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
-
-    if content_item["m"]["tp"] in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
-    else:
-        mapped_type = content_item["m"]["tp"]
-
-    passim_document = {
-        "series": alias,
-        "date": f"{date[0]}-{date[1]}-{date[2]}",
-        "id": content_item["m"]["id"],
-        "cc": content_item["m"]["cc"],
-        "tp": mapped_type,
-        "lg": article_lang,
-        "pages": [],
-    }
-
-    if "t" in content_item["m"]:
-        passim_document["title"] = content_item["m"]["t"]
-
-    fulltext = ""
-    for n, page_no in enumerate(content_item["m"]["pp"]):
-
-        page = content_item["pprr"][n]
-
-        if fulltext == "":
-            fulltext, regions = rebuild_paper_text_passim(page, article_lang)
-        else:
-            fulltext, regions = rebuild_paper_text_passim(page, article_lang, fulltext)
 
         page_doc = {
             "id": page_file_names[page_no].replace(".json", ""),
@@ -429,50 +295,3 @@ def reconstruct_pages(issue_json, ci, cis):
     cis.append(ci)
 
     return cis
-
-
-def filter_and_process_paper_cis(issues_bag, input_bucket, issue_type, issue_medium, _format):
-    # Process the issues into rebuilt CIs for "paper" issues
-    # ie. data for which the source medium is "print" or "typescript"
-
-    # issues_bag contains pairs of issueDir objects and their corresponding json canonical issue
-
-    # determine which rebuild function to apply
-    if _format == "solr":
-        rebuild_function = rebuild_paper_for_solr
-    elif _format == "passim":
-        rebuild_function = rebuild_for_passim
-    else:
-        raise NotImplementedError
-
-    faulty_issues = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) == 0)
-        .map(lambda i: i[1])
-        .pluck("id")
-        .compute()
-    )
-    msg = f"Issues with no pages (will be skipped): {faulty_issues}"
-    logger.debug(msg)
-    print(msg)
-    del faulty_issues
-    msg = f"Number of partitions: {issues_bag.npartitions}"
-    logger.debug(msg)
-    print(msg)
-
-    articles_bag = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
-        .starmap(read_issue_supports, pages=True, bucket=input_bucket)
-        .starmap(rejoin_cis)
-        .flatten()
-        .persist()
-    )
-
-    faulty_articles_n = articles_bag.filter(ci_has_problem).pluck("m").pluck("id").compute()
-    msg = f"Skipped articles: {faulty_articles_n}"
-    logger.debug(msg)
-    print(msg)
-    del faulty_articles_n
-
-    articles_bag = articles_bag.filter(ci_without_problem).map(rebuild_function).persist()
-
-    return articles_bag

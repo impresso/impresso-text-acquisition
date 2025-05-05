@@ -24,14 +24,12 @@ Options:
 
 import sys
 import traceback
-import datetime
 import json
 import pathlib
 import logging
 import os
 import shutil
 import signal
-from typing import Any, Optional
 import git
 
 import dask.bag as db
@@ -40,9 +38,8 @@ from dask.distributed import Client, progress
 from docopt import docopt
 from smart_open import smart_open
 
-from impresso_essentials.io.fs_utils import parse_canonical_filename
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import Timer, timestamp, SourceMedium, SourceType
+from impresso_essentials.utils import SourceMedium, SourceType
 
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
@@ -52,20 +49,8 @@ from text_preparation.rebuilders.helpers import (
     rejoin_cis,
     ci_has_problem,
     ci_without_problem,
-    reconstruct_iiif_link,
-    insert_whitespace,
+    rebuild_for_solr,
     rebuild_for_passim,
-    TYPE_MAPPINGS,
-)
-from text_preparation.rebuilders.paper_rebuilders import (
-    filter_and_process_paper_cis,
-    rebuild_paper_for_solr,
-    rebuild_paper_for_passim,
-)
-from text_preparation.rebuilders.audio_rebuilders import (
-    filter_and_process_audio_cis,
-    rebuild_audio_for_solr,
-    rebuild_audio_for_passim,
 )
 
 logger = logging.getLogger(__name__)
@@ -89,8 +74,8 @@ def compress(key, json_files, output_dir):
         (e.g. GDL-1900).
     """
 
-    newspaper, year = key.split("-")
-    filename = f"{newspaper}-{year}.jsonl.bz2"
+    alias, year = key.split("-")
+    filename = f"{alias}-{year}.jsonl.bz2"
     filepath = os.path.join(output_dir, filename)
     logger.info("Compressing %s JSON files into %s", len(json_files), filepath)
     print(f"Compressing {len(json_files)} JSON files into {filepath}")
@@ -101,9 +86,9 @@ def compress(key, json_files, output_dir):
         for json_file in json_files:
             with open(json_file, "r", encoding="utf-8") as inpf:
                 reader = jsonlines.Reader(inpf)
-                articles = list(reader)
-                writer.write_all(articles)
-            logger.info("Written %s docs from %s to %s", len(articles), json_file, filepath)
+                cis = list(reader)
+                writer.write_all(cis)
+            logger.info("Written %s docs from %s to %s", len(cis), json_file, filepath)
 
         writer.close()
 
@@ -131,13 +116,13 @@ def upload(sort_key, filepath, bucket_name=None):
 
     .. note::
 
-        `sort_key` is expected to be the concatenation of newspaper ID and year
+        `sort_key` is expected to be the concatenation of media title alias and year
         (e.g. GDL-1900).
     """
     # create connection with bucket
     # copy contents to s3 key
-    newspaper, _ = sort_key.split("-")
-    key_name = f"{newspaper}/{os.path.basename(filepath)}"
+    alias, _ = sort_key.split("-")
+    key_name = f"{alias}/{os.path.basename(filepath)}"
     if "/" in bucket_name:
         # if the provided bucket also contains a partition, add it to the key name
         bucket_name, partition = bucket_name.split("/")
@@ -171,31 +156,29 @@ def cleanup(upload_success, filepath):
         logger.info("Not removing %s as upload has failed", filepath)
 
 
-def filter_and_process_cis(issues_bag, input_bucket, issue_type, issue_medium, _format):
+def filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format):
     # Process the issues into rebuilt CIs
 
     is_audio = issue_medium == "audio" if SourceMedium.has_value(issue_medium) else None
 
     # determine which rebuild function to apply
-    match (_format, is_audio):
-        case ("solr", False):
-            rebuild_function = rebuild_paper_for_solr
-        case ("passim", False):
-            rebuild_function = rebuild_paper_for_passim
-        case ("solr", True):
-            rebuild_function = rebuild_audio_for_solr
-        case ("passim", True):
-            rebuild_function = rebuild_audio_for_passim
-        case _:
-            raise NotImplementedError
+    if _format == "solr":
+        rebuild_function = rebuild_for_solr
+    elif _format == "passim":
+        rebuild_function = rebuild_for_passim
+    else:
+        raise NotImplementedError
 
+    support_property = "rr" if is_audio else "pp"
     faulty_issues = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) == 0)
+        issues_bag.filter(lambda i: len(i[1][support_property]) == 0)
         .map(lambda i: i[1])
         .pluck("id")
         .compute()
     )
-    msg = f"Issues with no pages (will be skipped): {faulty_issues}"
+
+    val_to_print = "audio record" if is_audio else "pages"
+    msg = f"Issues with no {val_to_print} (will be skipped): {faulty_issues}"
     logger.debug(msg)
     print(msg)
     del faulty_issues
@@ -203,23 +186,23 @@ def filter_and_process_cis(issues_bag, input_bucket, issue_type, issue_medium, _
     logger.debug(msg)
     print(msg)
 
-    articles_bag = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
-        .starmap(read_issue_supports, pages=False, bucket=input_bucket)
+    cis_bag = (
+        issues_bag.filter(lambda i: len(i[1][support_property]) > 0)
+        .starmap(read_issue_supports, is_audio=is_audio, bucket=input_bucket)
         .starmap(rejoin_cis)
         .flatten()
         .persist()
     )
 
-    faulty_articles_n = articles_bag.filter(ci_has_problem).pluck("m").pluck("id").compute()
-    msg = f"Skipped articles: {faulty_articles_n}"
+    faulty_cis_n = cis_bag.filter(ci_has_problem).pluck("m").pluck("id").compute()
+    msg = f"Skipped content-items: {faulty_cis_n}"
     logger.debug(msg)
     print(msg)
-    del faulty_articles_n
+    del faulty_cis_n
 
-    articles_bag = articles_bag.filter(ci_without_problem).map(rebuild_function).persist()
+    cis_bag = cis_bag.filter(ci_without_problem).map(rebuild_function).persist()
 
-    return articles_bag
+    return cis_bag
 
 
 def rebuild_issues(
@@ -261,22 +244,11 @@ def rebuild_issues(
     issue_type = issue_json["st"]
     issue_medium = issue_json["sm"]
 
-    if issue_medium == "audio":
-        # TODO implement
-        filter_and_process_func = filter_and_process_audio_cis
-        raise NotImplementedError
-    elif issue_medium in ["print", "typescript"]:
-        filter_and_process_func = filter_and_process_paper_cis
-    else:
-        raise NotImplementedError
-
     # warning about large graph comes here
     print("Fleshing out articles by issue...")
     issues_bag = db.from_sequence(issues, partition_size=3)
 
-    cis_bag = filter_and_process_func(
-        issues_bag, input_bucket, issue_type, issue_medium, _format
-    )
+    cis_bag = filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format)
 
     def has_language(ci):
         if "lg" not in ci:

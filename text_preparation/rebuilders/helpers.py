@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+import datetime
 from typing import Any, Optional
 
 from impresso_essentials.io.s3 import (
@@ -12,14 +13,16 @@ from impresso_essentials.io.s3 import (
 )
 from impresso_essentials.io.fs_utils import parse_canonical_filename
 from impresso_essentials.text_utils import WHITESPACE_RULES
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, Timer, timestamp
 from text_preparation.rebuilders.audio_rebuilders import (
-    recompose_audio_fulltext,
+    recompose_audio_fulltext_passim,
     reconstruct_audios,
+    reconstruct_audio_text_elements,
 )
 from text_preparation.rebuilders.paper_rebuilders import (
-    recompose_paper_fulltext,
+    recompose_paper_fulltext_passim,
     reconstruct_pages,
+    reconstruct_page_text_elements,
 )
 
 logger = logging.getLogger(__name__)
@@ -129,9 +132,11 @@ def read_page(page_key: str, bucket_name: str, s3_client) -> dict[str, Any] | No
         return None
 
 
-def read_issue_supports(issue, issue_json, pages: bool, bucket=None):
-    """Read all pages of a given issue from S3 in parallel."""
-    support = "pages" if pages else "audios"
+def read_issue_supports(
+    issue: IssueDir, issue_json: dict[str, Any], is_audio: bool, bucket: str | None = None
+):
+    """Read all pages/audio records of a given issue from S3 in parallel."""
+    support = "audios" if is_audio else "pages"
     alias = issue.alias
     year = issue.date.year
 
@@ -142,16 +147,94 @@ def read_issue_supports(issue, issue_json, pages: bool, bucket=None):
     supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
 
     print(filename)
-    if pages:
-        issue_json["pp"] = supports
-    else:
+    if is_audio:
         issue_json["rr"] = supports
+    else:
+        issue_json["pp"] = supports
     del supports
     return (issue, issue_json)
 
 
+def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
+    """Rebuilds the text of an article content-item given its metadata as input.
+
+    Note:
+        This rebuild function is thought especially for ingesting the newspaper
+        data into our Solr index.
+
+    Args:
+        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
+
+    Returns:
+        dict[str, Any]: The rebuilt content-item following the Impresso JSON Schema.
+    """
+    t = Timer()
+
+    ci_id = content_item["m"]["id"]
+    logger.debug("Started rebuilding ci %s", ci_id)
+
+    issue_id = "-".join(ci_id.split("-")[:-1])
+
+    year, month, day, _, ci_num = ci_id.split("-")[1:]
+    d = datetime.date(int(year), int(month), int(day))
+
+    if content_item["m"]["tp"] in TYPE_MAPPINGS:
+        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
+    else:
+        mapped_type = content_item["m"]["tp"]
+
+    if "lg" in content_item["m"]:
+        ci_lang = content_item["m"]["lg"]
+    elif "l" in content_item["m"]:
+        ci_lang = content_item["m"]["l"]
+    else:
+        ci_lang = None
+
+    # if the reading order is not defined, use the number associated to each CI
+    reading_order = content_item["m"]["ro"] if "ro" in content_item["m"] else int(ci_num[1:])
+    has_olr = False if mapped_type is None or content_item["st"] == "radio_broadcast" else True
+
+    solr_ci = {
+        "id": ci_id,
+        "ts": timestamp(),
+        "pp": content_item["m"]["pp"],
+        "d": d.isoformat(),
+        "cc": content_item["m"]["cc"],
+        "olr": has_olr,
+        "st": content_item["st"],
+        "sm": content_item["sm"],
+        "lg": ci_lang,
+        "tp": mapped_type,
+        "ro": reading_order,
+        "ppreb": [],
+        "lb": [],
+    }
+
+    if mapped_type == "img":
+        solr_ci["iiif_link"] = reconstruct_iiif_link(content_item)
+
+    # add the metadata on the content item if it's available
+    if "t" in content_item["m"]:
+        solr_ci["title"] = content_item["m"]["t"]
+    if "rc" in content_item:
+        solr_ci["rc"] = content_item["rc"]
+    if "rp" in content_item:
+        solr_ci["rp"] = content_item["rp"]
+
+    if mapped_type != "img":
+        if content_item["sm"] == "audio":
+            solr_ci = reconstruct_audio_text_elements(solr_ci, content_item)
+        else:
+            solr_ci = reconstruct_page_text_elements(solr_ci, content_item)
+        logger.debug("Done rebuilding CI %s (Took %s)", ci_id, t.stop())
+
+    return solr_ci
+
+
 def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
     """Rebuilds the text of an article content-item to be used with passim.
+
+    TODO check that this works with passim!
 
     Args:
         content_item (dict[str, Any]): The content-item to rebuild using its metadata.
@@ -159,26 +242,18 @@ def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The rebuilt content-item built for passim.
     """
-    # TODO: ensure the medium and types are in the CI!
     alias, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
 
     ci_id = content_item["m"]["id"]
     logger.debug("Started rebuilding article %s", ci_id)
-    issue_id = "-".join(ci_id.split("-")[:-1])
 
-    support_file_names = (
-        {r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]}
-        if content_item["sm"] == "audio"
-        else {p: f"{issue_id}-r{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]}
-    )
-
-    # fetch the article language, noting the deprecated "l" field
+    # fetch the ci language, noting the deprecated "l" field
     if "lg" in content_item["m"]:
-        article_lang = content_item["m"]["lg"]
+        ci_lang = content_item["m"]["lg"]
     elif "l" in content_item["m"]:
-        article_lang = content_item["m"]["l"]
+        ci_lang = content_item["m"]["l"]
     else:
-        article_lang = None
+        ci_lang = None
 
     if content_item["m"]["tp"] in TYPE_MAPPINGS:
         mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
@@ -191,7 +266,7 @@ def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
         "id": content_item["m"]["id"],
         "cc": content_item["m"]["cc"],
         "tp": mapped_type,
-        "lg": article_lang,
+        "lg": ci_lang,
     }
 
     if content_item["sm"] == "audio":
@@ -203,9 +278,9 @@ def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
         passim_document["title"] = content_item["m"]["t"]
 
     if content_item["sm"] == "audio":
-        return recompose_audio_fulltext(content_item, passim_document, support_file_names)
+        return recompose_audio_fulltext_passim(content_item, passim_document)
     else:
-        return recompose_paper_fulltext(content_item, passim_document, support_file_names)
+        return recompose_paper_fulltext_passim(content_item, passim_document)
 
 
 def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, Any]]:
@@ -232,7 +307,15 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
             cis = reconstruct_pages(issue_json, ci, cis)
         else:
             ci["m"]["pp"] = sorted(list(set(ci["m"]["pp"])))
+            # TODO implement!
             cis = reconstruct_audios(issue_json, ci, cis)
+
+        if issue_json["st"] == "radio_broadcast":
+            # if the radio channel and program are defined, add them to the content item
+            if "rc" in issue_json:
+                ci["rc"] = issue_json["rc"]
+            if "rp" in issue_json:
+                ci["rp"] = issue_json["rp"]
 
     return cis
 
