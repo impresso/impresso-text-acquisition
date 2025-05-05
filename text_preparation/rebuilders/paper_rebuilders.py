@@ -25,11 +25,11 @@ from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_
 
 from text_preparation.rebuilders.helpers import (
     read_issue_supports,
-    rejoin_articles,
+    rejoin_cis,
     reconstruct_iiif_link,
     insert_whitespace,
-    _article_has_problem,
-    _article_without_problem,
+    ci_has_problem,
+    ci_without_problem,
     rebuild_for_passim,
     TYPE_MAPPINGS,
 )
@@ -462,21 +462,17 @@ def filter_and_process_paper_cis(issues_bag, input_bucket, issue_type, issue_med
     articles_bag = (
         issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
         .starmap(read_issue_supports, pages=True, bucket=input_bucket)
-        .starmap(rejoin_articles)
+        .starmap(rejoin_cis)
         .flatten()
         .persist()
     )
 
-    faulty_articles_n = (
-        articles_bag.filter(_article_has_problem).pluck("m").pluck("id").compute()
-    )
+    faulty_articles_n = articles_bag.filter(ci_has_problem).pluck("m").pluck("id").compute()
     msg = f"Skipped articles: {faulty_articles_n}"
     logger.debug(msg)
     print(msg)
     del faulty_articles_n
 
-    articles_bag = (
-        articles_bag.filter(_article_without_problem).map(rebuild_function).persist()
-    )
+    articles_bag = articles_bag.filter(ci_without_problem).map(rebuild_function).persist()
 
     return articles_bag

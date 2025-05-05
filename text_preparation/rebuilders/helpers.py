@@ -12,6 +12,7 @@ from impresso_essentials.io.s3 import (
 )
 from impresso_essentials.io.fs_utils import parse_canonical_filename
 from impresso_essentials.text_utils import WHITESPACE_RULES
+from impresso_essentials.utils import IssueDir
 from text_preparation.rebuilders.audio_rebuilders import (
     recompose_audio_fulltext,
     reconstruct_audios,
@@ -45,41 +46,46 @@ TYPE_MAPPINGS = {
 # TODO KB data: add familial announcement?
 
 
-def _article_has_problem(article):
-    """Helper function to keep articles with problems.
+def ci_has_problem(ci: dict[str, Any]) -> bool:
+    """Helper function to keep CIs with problems.
 
-    :param article: input article
-    :type article: dict
-    :return: `True` or `False`
-    :rtype: boolean
+    Args:
+        ci (dict[str, Any]): Input CI
+
+    Returns:
+        bool: Whether a problem was detected in the CI.
     """
-    return article["has_problem"]
+    return ci["has_problem"]
 
 
-def _article_without_problem(article):
-    """Helper function to keep articles without problems.
+def ci_without_problem(ci: dict[str, Any]) -> bool:
+    """Helper function to keep CIs without problems, and log others.
 
-    :param article: input article
-    :type article: dict
-    :return: `True` or `False`
-    :rtype: boolean
+    Args:
+        ci (dict[str, Any]): Input CI
+
+    Returns:
+        bool: Whether the CI ws problem-free.
     """
-    if article["has_problem"]:
-        logger.warning("Article %s won't be rebuilt.", article["m"]["id"])
-    return not article["has_problem"]
+    if ci["has_problem"]:
+        msg = f"Content-item {ci['m']['id']} won't be rebuilt as a problem was found."
+        logger.warning(msg)
+        print(msg)
+    return not ci["has_problem"]
 
 
-def read_issue(issue, bucket_name, s3_client=None):
-    """Read the data from S3 for a given newspaper issue.
+def read_issue(
+    issue: IssueDir, bucket_name: str, s3_client=None
+) -> tuple[IssueDir, dict[str, Any]]:
+    """Read the data from S3 for a given canonical issue.
 
+    Args:
+        issue (IssueDir): Input issue to fetch form S3
+        bucket_name (str): S3 bucket's name
+        s3_client (`boto3.resources.factory.s3.ServiceResource`, optional): open connection to S3 storage. Defaults to None.
 
-    :param issue: input issue
-    :type issue: `IssueDir`
-    :param bucket_name: bucket's name
-    :type bucket_name: str
-    :param s3_client: open connection to S3 storage
-    :type s3_client: `boto3.resources.factory.s3.ServiceResource`
-    :return: a JSON representation of the issue object
+    Returns:
+        tuple[IssueDir, dict[str, Any]]: Pair of the input issue and its JSON canonical representation.
     """
     if s3_client is None:
         s3_client = get_s3_resource()
@@ -91,24 +97,42 @@ def read_issue(issue, bucket_name, s3_client=None):
     return (issue, issue_json)
 
 
-def read_page(page_key, bucket_name, s3_client):
-    """Read the data from S3 for a given newspaper pages."""
+def read_page(page_key: str, bucket_name: str, s3_client) -> dict[str, Any] | None:
+    """Read the data from S3 for a given canonical page
+
+    Args:
+        page_key (str): S3 key to the page
+        bucket_name (str): S3 bucket's name
+        s3_client (`boto3.resources.factory.s3.ServiceResource`): open connection to S3 storage.
+
+    Returns:
+        dict[str, Any] | None: The page's JSON representation or None if the page could not be read.
+    """
 
     try:
         content_object = s3_client.Object(bucket_name, page_key)
         file_content = content_object.get()["Body"].read().decode("utf-8")
         page_json = json.loads(file_content)
-        logger.info("Read page %s from bucket %s", page_key, bucket_name)
+        # logger.info("Read page %s from bucket %s", page_key, bucket_name)
         return page_json
-    except Exception as e:
-        logger.error("There was a problem reading %s: %s", page_key, e)
+    except Exception as e:  # Replace with specific exceptions
+        if isinstance(e, s3_client.meta.client.exceptions.NoSuchKey):
+            msg = f"Key {page_key} does not exist in bucket {bucket_name}."
+        elif isinstance(e, s3_client.meta.client.exceptions.ClientError):
+            msg = f"Client error occurred while accessing {page_key}: {e}"
+        elif isinstance(e, json.JSONDecodeError):
+            msg = f"Failed to decode JSON for {page_key}: {e}"
+        else:
+            msg = f"An unexpected error occurred while reading {page_key}: {e}"
+        print(msg)
+        logger.error(msg)
         return None
 
 
 def read_issue_supports(issue, issue_json, pages: bool, bucket=None):
     """Read all pages of a given issue from S3 in parallel."""
     support = "pages" if pages else "audios"
-    alias = issue.journal
+    alias = issue.alias
     year = issue.date.year
 
     filename = (
@@ -184,12 +208,20 @@ def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
         return recompose_paper_fulltext(content_item, passim_document, support_file_names)
 
 
-def rejoin_articles(issue, issue_json):
+def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, Any]]:
+    """Rejoin the CIs of a given issue using its pyhsical supports (pages or audio records).
+
+    Args:
+        issue (IssueDir): Issue directory of issue to be processed.
+        issue_json (dict[str, Any]): Issue canonical json wôf which to rejoin CIs.
+
+    Returns:
+        list[dict[str, Any]]: Processed content-items for the issue.
+    """
     print(f"Rejoining physical supports (pages or audios) for issue {issue.path}")
     cis = []
     for ci in issue_json["i"]:
 
-        ci_id = ci["m"]["id"]
         ci["has_problem"] = False
         ci["sm"] = issue_json["sm"]
         ci["st"] = issue_json["st"]
@@ -203,48 +235,6 @@ def rejoin_articles(issue, issue_json):
             cis = reconstruct_audios(issue_json, ci, cis)
 
     return cis
-
-    """    pages = []
-        page_ids = [page["id"] for page in issue_json["pp"]]
-        for page_no in article["m"]["pp"]:
-            # given a page  number (from issue.json) and its canonical ID
-            # find the position of that page in the array of pages (with text
-            # regions)
-            page_no_string = f"p{str(page_no).zfill(4)}"
-            try:
-                page_idx = [
-                    n
-                    for n, page in enumerate(issue_json["pp"])
-                    if page_no_string in page["id"]
-                ][0]
-                pages.append(issue_json["pp"][page_idx])
-            except IndexError:
-                article["has_problem"] = True
-                articles.append(article)
-                logger.error(
-                    "Page %s not found for item %s. Issue %s has pages %s",
-                    page_no_string,
-                    art_id,
-                    issue_json["id"],
-                    page_ids,
-                )
-                continue
-
-        regions_by_page = []
-        for page in pages:
-            regions_by_page.append(
-                [region for region in page["r"] if "pOf" in region and region["pOf"] == art_id]
-            )
-        article["pprr"] = regions_by_page
-        try:
-            convert_coords = [p["cc"] for p in pages]
-            article["m"]["cc"] = sum(convert_coords) / len(convert_coords) == 1.0
-        except Exception:
-            # it just means there was no CC field in the pages
-            article["m"]["cc"] = None
-
-        articles.append(article)
-    return articles"""
 
 
 def pages_to_article(article, pages):

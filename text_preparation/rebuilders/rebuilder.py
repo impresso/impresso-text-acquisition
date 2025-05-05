@@ -42,21 +42,31 @@ from smart_open import smart_open
 
 from impresso_essentials.io.fs_utils import parse_canonical_filename
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import Timer, timestamp
+from impresso_essentials.utils import Timer, timestamp, SourceMedium, SourceType
 
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
 
 from text_preparation.rebuilders.helpers import (
-    read_issue_pages,
-    rejoin_articles,
+    read_issue_supports,
+    rejoin_cis,
+    ci_has_problem,
+    ci_without_problem,
     reconstruct_iiif_link,
     insert_whitespace,
     rebuild_for_passim,
     TYPE_MAPPINGS,
 )
-from text_preparation.rebuilders.paper_rebuilders import filter_and_process_paper_cis
-from text_preparation.rebuilders.audio_rebuilders import filter_and_process_audio_cis
+from text_preparation.rebuilders.paper_rebuilders import (
+    filter_and_process_paper_cis,
+    rebuild_paper_for_solr,
+    rebuild_paper_for_passim,
+)
+from text_preparation.rebuilders.audio_rebuilders import (
+    filter_and_process_audio_cis,
+    rebuild_audio_for_solr,
+    rebuild_audio_for_passim,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -161,6 +171,57 @@ def cleanup(upload_success, filepath):
         logger.info("Not removing %s as upload has failed", filepath)
 
 
+def filter_and_process_cis(issues_bag, input_bucket, issue_type, issue_medium, _format):
+    # Process the issues into rebuilt CIs
+
+    is_audio = issue_medium == "audio" if SourceMedium.has_value(issue_medium) else None
+
+    # determine which rebuild function to apply
+    match (_format, is_audio):
+        case ("solr", False):
+            rebuild_function = rebuild_paper_for_solr
+        case ("passim", False):
+            rebuild_function = rebuild_paper_for_passim
+        case ("solr", True):
+            rebuild_function = rebuild_audio_for_solr
+        case ("passim", True):
+            rebuild_function = rebuild_audio_for_passim
+        case _:
+            raise NotImplementedError
+
+    faulty_issues = (
+        issues_bag.filter(lambda i: len(i[1]["pp"]) == 0)
+        .map(lambda i: i[1])
+        .pluck("id")
+        .compute()
+    )
+    msg = f"Issues with no pages (will be skipped): {faulty_issues}"
+    logger.debug(msg)
+    print(msg)
+    del faulty_issues
+    msg = f"Number of partitions: {issues_bag.npartitions}"
+    logger.debug(msg)
+    print(msg)
+
+    articles_bag = (
+        issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
+        .starmap(read_issue_supports, pages=False, bucket=input_bucket)
+        .starmap(rejoin_cis)
+        .flatten()
+        .persist()
+    )
+
+    faulty_articles_n = articles_bag.filter(ci_has_problem).pluck("m").pluck("id").compute()
+    msg = f"Skipped articles: {faulty_articles_n}"
+    logger.debug(msg)
+    print(msg)
+    del faulty_articles_n
+
+    articles_bag = articles_bag.filter(ci_without_problem).map(rebuild_function).persist()
+
+    return articles_bag
+
+
 def rebuild_issues(
     issues, input_bucket, output_dir, dask_client, _format="solr", filter_language=None
 ):
@@ -191,6 +252,12 @@ def rebuild_issues(
     mkdir(issue_out_dir)
 
     # identify the source type and medium of the issue (and thus media title)
+    if "st" not in issue_json or "sm" not in issue_json:
+        # when the source type and medium are not in the issue,
+        # we know it's a newspaper (old format), add them
+        issue_json["st"] = SourceType.NP.value
+        issue_json["sm"] = SourceMedium.PT.value
+
     issue_type = issue_json["st"]
     issue_medium = issue_json["sm"]
 
@@ -207,7 +274,7 @@ def rebuild_issues(
     print("Fleshing out articles by issue...")
     issues_bag = db.from_sequence(issues, partition_size=3)
 
-    articles_bag = filter_and_process_func(
+    cis_bag = filter_and_process_func(
         issues_bag, input_bucket, issue_type, issue_medium, _format
     )
 
@@ -217,13 +284,15 @@ def rebuild_issues(
         return ci["lg"] in filter_language
 
     if filter_language:
-        filtered_articles = articles_bag.filter(has_language).persist()
-        print(f"filtered_articles.count().compute(): {filtered_articles.count().compute()}")
-        stats_for_issues = compute_stats_in_rebuilt_bag(filtered_articles, key)
-        result = filtered_articles.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
+        filtered_cis = cis_bag.filter(has_language).persist()
+        print(f"filtered_cis.count().compute(): {filtered_cis.count().compute()}")
+        # TODO provide sm and st to manifest
+        stats_for_issues = compute_stats_in_rebuilt_bag(filtered_cis, key)
+        result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
     else:
-        stats_for_issues = compute_stats_in_rebuilt_bag(articles_bag, key)
-        result = articles_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
+        # TODO provide sm and st to manifest
+        stats_for_issues = compute_stats_in_rebuilt_bag(cis_bag, key)
+        result = cis_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
 
     dask_client.cancel(issues_bag)
     logger.info("done.")
