@@ -106,4 +106,5 @@ def compute_agg_coords(all_coords: list[list[int]]) -> list[int]:
     y1 = min([l[1] for l in all_coords])
     x2 = max([l[2] for l in all_coords])
     y2 = max([l[3] for l in all_coords])
-    return coords_to_xywh([x1, y1, x2, y2])
+    return [x1, y1, x2, y2]
+    # return coords_to_xywh([x1, y1, x2, y2])
