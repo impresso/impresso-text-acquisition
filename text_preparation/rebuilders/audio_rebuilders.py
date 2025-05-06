@@ -1,17 +1,15 @@
 """Rebuild helpers for audio data."""
 
 import logging
-from typing import Optional
+from typing import Any
 
-from text_preparation.rebuilders.helpers import (
-    insert_whitespace,
-)
+from impresso_essentials.text_utils import insert_whitespace
 
 logger = logging.getLogger(__name__)
 
 
 def rebuild_audio_text(
-    audio: list[dict], language: Optional[str], string: Optional[str] = None
+    audio: list[dict], language: str | None, string: str | None = None
 ) -> tuple[str, dict[list], dict[list]]:
     """Rebuild the text of an article for Solr ingestion.
 
@@ -105,7 +103,7 @@ def rebuild_audio_text(
 
 
 def rebuild_audio_text_passim(
-    page: list[dict], language: Optional[str], string: Optional[str] = None
+    page: list[dict], language: str | None, string: str | None = None
 ) -> tuple[str, list[dict]]:
     """The text rebuilding function from pages for passim.
 
@@ -181,7 +179,9 @@ def rebuild_audio_text_passim(
     return (string, regions)
 
 
-def reconstruct_audio_text_elements(solr_ci, content_item):
+def recompose_ci_from_audio_solr(
+    solr_ci: dict[str, Any], content_item: dict[str, Any]
+) -> dict[str, Any]:
     issue_id = "-".join(solr_ci["id"].split("-")[:-1])
     audio_file_names = {
         r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]
@@ -223,7 +223,9 @@ def reconstruct_audio_text_elements(solr_ci, content_item):
     return solr_ci
 
 
-def recompose_audio_fulltext_passim(content_item, passim_document):
+def recompose_ci_from_audio_passim(
+    content_item: dict[str, Any], passim_document: dict[str, Any]
+) -> dict[str, Any]:
     issue_id = "-".join(passim_document["id"].split("-")[:-1])
 
     audio_file_names = {
@@ -255,8 +257,10 @@ def recompose_audio_fulltext_passim(content_item, passim_document):
     return passim_document
 
 
-def reconstruct_audios(issue_json, ci, cis):
-    # TODO adapt to radio data!!! (eg start time etc etc)
+def reconstruct_audios(
+    issue_json: dict[str, Any], ci: dict[str, Any], cis: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    # TODO finsih to adapt to radio data!!! (eg start time etc etc)
     audios = []
     audio_ids = [audio["id"] for audio in issue_json["rr"]]
     # there should only be one record, but keeping the same approach

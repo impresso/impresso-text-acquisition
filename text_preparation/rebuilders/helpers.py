@@ -12,17 +12,16 @@ from impresso_essentials.io.s3 import (
     get_s3_resource,
 )
 from impresso_essentials.io.fs_utils import parse_canonical_filename
-from impresso_essentials.text_utils import WHITESPACE_RULES
 from impresso_essentials.utils import IssueDir, Timer, timestamp
 from text_preparation.rebuilders.audio_rebuilders import (
-    recompose_audio_fulltext_passim,
     reconstruct_audios,
-    reconstruct_audio_text_elements,
+    recompose_ci_from_audio_passim,
+    recompose_ci_from_audio_solr,
 )
 from text_preparation.rebuilders.paper_rebuilders import (
-    recompose_paper_fulltext_passim,
     reconstruct_pages,
-    reconstruct_page_text_elements,
+    recompose_ci_from_page_passim,
+    recompose_ci_from_page_solr,
 )
 
 logger = logging.getLogger(__name__)
@@ -223,9 +222,9 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
 
     if mapped_type != "img":
         if content_item["sm"] == "audio":
-            solr_ci = reconstruct_audio_text_elements(solr_ci, content_item)
+            solr_ci = recompose_ci_from_audio_solr(solr_ci, content_item)
         else:
-            solr_ci = reconstruct_page_text_elements(solr_ci, content_item)
+            solr_ci = recompose_ci_from_page_solr(solr_ci, content_item)
         logger.debug("Done rebuilding CI %s (Took %s)", ci_id, t.stop())
 
     return solr_ci
@@ -278,9 +277,9 @@ def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
         passim_document["title"] = content_item["m"]["t"]
 
     if content_item["sm"] == "audio":
-        return recompose_audio_fulltext_passim(content_item, passim_document)
+        return recompose_ci_from_audio_passim(content_item, passim_document)
     else:
-        return recompose_paper_fulltext_passim(content_item, passim_document)
+        return recompose_ci_from_page_passim(content_item, passim_document)
 
 
 def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, Any]]:
@@ -434,60 +433,3 @@ def reconstruct_iiif_link(content_item: dict[str, Any]) -> str:
         # reconstruct the final image link
         return os.path.join(uri_base, coords, img_suffix)
     return None
-
-
-def insert_whitespace(
-    token: str,
-    next_t: Optional[str],
-    prev_t: Optional[str],
-    lang: Optional[str],
-) -> bool:
-    """Determine whether a whitespace should be inserted after a token.
-
-    Args:
-        token (str): Current token.
-        next_t (str): Following token.
-        prev_t (str): Previous token.
-        lang (str): Language of text.
-
-    Returns:
-        bool: Whether a whitespace should be inserted after the `token`.
-    """
-    # if current token text is None, previous token's whitespace rule applies
-    if token is None or len(token) == 0:
-        return False
-
-    wsrules = WHITESPACE_RULES[lang if lang in WHITESPACE_RULES else "other"]
-
-    insert_ws = True
-
-    if (
-        token in wsrules["pct_no_ws_before_after"]
-        or next_t in wsrules["pct_no_ws_before_after"]
-    ):
-        insert_ws = False
-
-    # the first char of the next token is punctuation.
-    elif (
-        next_t is not None
-        and len(next_t) != 0
-        and (next_t in wsrules["pct_no_ws_before"] or next_t[0] in wsrules["pct_no_ws_before"])
-    ):
-        insert_ws = False
-
-    # the last char of current token is punctuation.
-    elif token in wsrules["pct_no_ws_after"] or token[-1] in wsrules["pct_no_ws_after"]:
-        insert_ws = False
-
-    elif token in wsrules["pct_number"] and prev_t is not None and next_t is not None:
-        if prev_t.isdigit() and next_t.isdigit():
-            return False
-        else:
-            return True
-
-    debug_msg = (
-        f"Insert whitespace: curr={token}, follow={next_t}, " f"prev={prev_t} ({insert_ws})"
-    )
-    logger.debug(debug_msg)
-
-    return insert_ws

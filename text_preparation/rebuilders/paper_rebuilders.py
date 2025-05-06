@@ -2,9 +2,7 @@
 
 import logging
 from typing import Optional
-from text_preparation.rebuilders.helpers import (
-    insert_whitespace,
-)
+from impresso_essentials.text_utils import insert_whitespace
 
 logger = logging.getLogger(__name__)
 
@@ -177,7 +175,7 @@ def rebuild_paper_text_passim(
     return (string, regions)
 
 
-def reconstruct_page_text_elements(solr_ci, content_item):
+def recompose_ci_from_page_solr(solr_ci, content_item):
     issue_id = "-".join(solr_ci["id"].split("-")[:-1])
     page_file_names = {
         p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
@@ -218,9 +216,9 @@ def reconstruct_page_text_elements(solr_ci, content_item):
     return solr_ci
 
 
-def recompose_paper_fulltext_passim(content_item, passim_document):
+def recompose_ci_from_page_passim(content_item, passim_doc):
 
-    issue_id = "-".join(passim_document["id"].split("-")[:-1])
+    issue_id = "-".join(passim_doc["id"].split("-")[:-1])
 
     page_file_names = {
         p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
@@ -232,22 +230,20 @@ def recompose_paper_fulltext_passim(content_item, passim_document):
         page = content_item["pprr"][n]
 
         if fulltext == "":
-            fulltext, regions = rebuild_paper_text_passim(page, passim_document["lg"])
+            fulltext, regions = rebuild_paper_text_passim(page, passim_doc["lg"])
         else:
-            fulltext, regions = rebuild_paper_text_passim(
-                page, passim_document["lg"], fulltext
-            )
+            fulltext, regions = rebuild_paper_text_passim(page, passim_doc["lg"], fulltext)
 
         page_doc = {
             "id": page_file_names[page_no].replace(".json", ""),
             "seq": page_no,
             "regions": regions,
         }
-        passim_document["pages"].append(page_doc)
+        passim_doc["pages"].append(page_doc)
 
-    passim_document["text"] = fulltext
+    passim_doc["text"] = fulltext
 
-    return passim_document
+    return passim_doc
 
 
 def reconstruct_pages(issue_json, ci, cis):
