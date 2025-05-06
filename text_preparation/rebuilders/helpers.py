@@ -11,7 +11,7 @@ from impresso_essentials.io.s3 import (
     alternative_read_text,
     get_s3_resource,
 )
-from impresso_essentials.io.fs_utils import parse_canonical_filename
+from impresso_essentials.io.fs_utils import parse_canonical_filename, canonical_path
 from impresso_essentials.utils import IssueDir, Timer, timestamp
 from text_preparation.rebuilders.audio_rebuilders import (
     reconstruct_audios,
@@ -139,13 +139,15 @@ def read_issue_supports(
     alias = issue.alias
     year = issue.date.year
 
-    filename = (
-        f"{bucket}/{alias}/{support}/{alias}-{year}" f"/{issue_json['id']}-{support}.jsonl.bz2"
+    if "s3//" not in bucket:
+        bucket = f"s3://{bucket}"
+
+    filename = os.path.join(
+        bucket, alias, support, f"{alias}-{year}", f"{issue_json['id']}-{support}.jsonl.bz2"
     )
 
     supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
 
-    print(filename)
     if is_audio:
         issue_json["rr"] = supports
     else:
@@ -292,7 +294,7 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
     Returns:
         list[dict[str, Any]]: Processed content-items for the issue.
     """
-    print(f"Rejoining physical supports (pages or audios) for issue {issue.path}")
+    print(f"Rejoining physical supports (pages or audios) for issue {issue_json['id']}")
     cis = []
     for ci in issue_json["i"]:
 
@@ -300,21 +302,21 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
         ci["sm"] = issue_json["sm"]
         ci["st"] = issue_json["st"]
 
-        if issue_json["sm"] == "audio":
-            # for audio recordings there is only 1 per issue
-            ci["m"]["rr"] = sorted(list(set(issue_json["rr"])))
-            cis = reconstruct_pages(issue_json, ci, cis)
-        else:
-            ci["m"]["pp"] = sorted(list(set(ci["m"]["pp"])))
-            # TODO implement!
-            cis = reconstruct_audios(issue_json, ci, cis)
-
         if issue_json["st"] == "radio_broadcast":
             # if the radio channel and program are defined, add them to the content item
             if "rc" in issue_json:
                 ci["rc"] = issue_json["rc"]
             if "rp" in issue_json:
                 ci["rp"] = issue_json["rp"]
+
+        if issue_json["sm"] == "audio":
+            # for audio recordings there is only 1 per issue
+            ci["m"]["rr"] = sorted(list(set(issue_json["rr"])))
+            cis = reconstruct_audios(issue_json, ci, cis)
+        else:
+            ci["m"]["pp"] = sorted(list(set(ci["m"]["pp"])))
+            # TODO implement!
+            cis = reconstruct_pages(issue_json, ci, cis)
 
     return cis
 

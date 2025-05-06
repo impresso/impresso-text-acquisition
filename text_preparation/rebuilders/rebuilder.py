@@ -39,7 +39,7 @@ from docopt import docopt
 from smart_open import smart_open
 
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import SourceMedium, SourceType
+from impresso_essentials.utils import SourceMedium, SourceType, init_logger
 
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
@@ -131,11 +131,14 @@ def upload(sort_key, filepath, bucket_name=None):
     try:
         bucket = s3.Bucket(bucket_name)
         bucket.upload_file(filepath, key_name)
-        logger.info("Uploaded %s to %s", filepath, key_name)
+        msg = f"Uploaded {filepath} to {key_name}"
+        print(msg)
+        logger.info(msg)
         return True, filepath
     except Exception as e:
-        logger.error(e)
-        logger.error("The upload of %s failed with error %s", filepath, e)
+        err_msg = f"The upload of {filepath} failed with error {e}"
+        logger.error(err_msg)
+        print(err_msg)
         return False, filepath
 
 
@@ -151,7 +154,9 @@ def cleanup(upload_success, filepath):
             os.remove(filepath)
             logger.info("Removed temporary file %s", filepath)
         except Exception as e:
-            logger.warning("Error %s occurred when removing %s", e, filepath)
+            msg = f"Error {e} occurred when removing {filepath}"
+            print(msg)
+            logger.warning(msg)
     else:
         logger.info("Not removing %s as upload has failed", filepath)
 
@@ -178,7 +183,7 @@ def filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format):
     )
 
     val_to_print = "audio record" if is_audio else "pages"
-    msg = f"Issues with no {val_to_print} (will be skipped): {faulty_issues}"
+    msg = f"{len(faulty_issues)} Issues with no {val_to_print} (will be skipped): {faulty_issues}"
     logger.debug(msg)
     print(msg)
     del faulty_issues
@@ -241,7 +246,6 @@ def rebuild_issues(
         issue_json["st"] = SourceType.NP.value
         issue_json["sm"] = SourceMedium.PT.value
 
-    issue_type = issue_json["st"]
     issue_medium = issue_json["sm"]
 
     # warning about large graph comes here
@@ -259,11 +263,16 @@ def rebuild_issues(
         filtered_cis = cis_bag.filter(has_language).persist()
         print(f"filtered_cis.count().compute(): {filtered_cis.count().compute()}")
         # TODO provide sm and st to manifest
-        stats_for_issues = compute_stats_in_rebuilt_bag(filtered_cis, key)
+        stats_for_issues = compute_stats_in_rebuilt_bag(
+            filtered_cis, key, title=issue_dir.alias
+        )
         result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
     else:
         # TODO provide sm and st to manifest
-        stats_for_issues = compute_stats_in_rebuilt_bag(cis_bag, key)
+        print(
+            f"cis_bag.count().compute(): {cis_bag.count().compute()}, out_dirs: {issue_out_dir}/*.json, cis_bag.take(3): {cis_bag.take(3)}"
+        )
+        stats_for_issues = compute_stats_in_rebuilt_bag(cis_bag, key, title=issue_dir.alias)
         result = cis_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
 
     dask_client.cancel(issues_bag)
@@ -337,7 +346,7 @@ def main() -> None:
     if languages:
         languages = languages.split(",")
 
-    init_logging(log_level, log_file)
+    init_logger(log_level, log_file)
 
     # clean output directory if existing
     if outp_dir is not None and os.path.exists(outp_dir):
@@ -407,7 +416,9 @@ def main() -> None:
                     rebuilt_issues.append((issue_key, json_files))
                     del input_issues
 
-                    logger.debug("year_stats: %s", year_stats)
+                    msg = f"{issue_key} - year_stats: {year_stats}"
+                    print(msg)
+                    logger.debug(msg)
                     manifest.add_by_title_year(alias, year, year_stats[0])
                     titles.add(alias)
 
@@ -418,12 +429,21 @@ def main() -> None:
                 logger.info(msg)
                 print(msg)
 
-                b = (
-                    db.from_sequence(rebuilt_issues)
-                    .starmap(compress, output_dir=outp_dir)
-                    .starmap(upload, bucket_name=output_bucket_name)
-                    .starmap(cleanup)
-                )
+                if len(rebuilt_issues) == 1:
+                    # if there is only one issue, we should not use starmap
+                    b = (
+                        db.from_sequence(rebuilt_issues)
+                        .map(compress, output_dir=outp_dir)
+                        .map(upload, bucket_name=output_bucket_name)
+                        .map(cleanup)
+                    )
+                else:
+                    b = (
+                        db.from_sequence(rebuilt_issues)
+                        .starmap(compress, output_dir=outp_dir)
+                        .starmap(upload, bucket_name=output_bucket_name)
+                        .starmap(cleanup)
+                    )
                 future = b.persist()
                 progress(future)
                 # clear memory of objects once computations are done
