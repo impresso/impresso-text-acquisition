@@ -90,6 +90,7 @@ def rebuild_paper_text(
                         if "hy" in token:
                             offsets["line"].append(region["s"])
                         else:
+                            # TODO check if possible to add a space after a coma
                             token_length = len(token["tx"]) if token["tx"] else 0
                             offsets["line"].append(region["s"] + token_length)
 

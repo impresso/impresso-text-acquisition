@@ -142,6 +142,7 @@ def read_issue_supports(
     if "s3//" not in bucket:
         bucket = f"s3://{bucket}"
 
+    # TODO add provider
     filename = os.path.join(
         bucket, alias, support, f"{alias}-{year}", f"{issue_json['id']}-{support}.jsonl.bz2"
     )
