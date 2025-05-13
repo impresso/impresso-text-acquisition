@@ -2,7 +2,7 @@
 
 In particular, the classes define newspaper Issues and Pages objects which
 convert OCR data in various formats (Olive, Mets/Alto, Tetml...) to a unified
-Impresso canoncial format, allowing to process and create a large corpus of 
+Impresso canoncial format, allowing to process and create a large corpus of
 digitized historical newspapers.
 The classes in this module are meant to be subclassed to handle independently
 the parsing for each OCR format.
@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 CANONICAL_ISSUE_SCHEMA_PATH = "impresso-schemas/json/canonical/issue.schema.json"
 CANONICAL_PAGE_SCHEMA_PATH = "impresso-schemas/json/canonical/page.schema.json"
+CANONICAL_AUDIO_SCHEMA_PATH = "impresso-schemas/json/canonical/audio_record.schema.json"
 
 
 class CanonicalIssue(ABC):
@@ -40,7 +41,8 @@ class CanonicalIssue(ABC):
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): List of :obj:`NewspaperPage` instances from this issue.
+        pages (list): List of :obj:`CanonicalPage` instances from this issue.
+        audio_records (list): List of :obj:`CanonicalAudioRecord` instances from this issue.
     """
 
     def __init__(self, issue_dir: IssueDir) -> None:
@@ -49,14 +51,16 @@ class CanonicalIssue(ABC):
         self.alias = issue_dir.alias
         self.path = issue_dir.path
         self.date = issue_dir.date
-        # TODO to add later! 
-        #self.src_type = issue_dir.src_type
-        #self.src_medium = issue_dir.src_medium
+        # TODO to add later!
+        # self.src_type = issue_dir.src_type
+        # self.src_medium = issue_dir.src_medium
         self.issue_data = {}
         self._notes = []
+        # defining both pages and audio_records, and child classes will handle them
         self.pages = []
+        self.audio_records = []
         ## TODO remove!!
-        #self.rights = issue_dir.rights
+        # self.rights = issue_dir.rights
 
     @abstractmethod
     def _find_pages(self) -> None:
@@ -69,7 +73,7 @@ class CanonicalIssue(ABC):
     def issuedir(self) -> IssueDir:
         """`IssueDir`: IssueDirectory corresponding to this issue."""
         return IssueDir(self.alias, self.date, self.edition, self.path)
-        #return IssueDir(self.alias, self.date, self.edition, self.src_type, self.src_medium, self.path)
+        # return IssueDir(self.alias, self.date, self.edition, self.src_type, self.src_medium, self.path)
 
     def validate(self) -> None:
         """Validate ``self.issue_data`` against the issue canonical schema.
@@ -79,14 +83,11 @@ class CanonicalIssue(ABC):
             serialization of large amounts of issues it is recommendable to
             bypass schema validation.
         """
-        validate_against_schema(
-            self.issue_data,
-            CANONICAL_ISSUE_SCHEMA_PATH
-        )
+        validate_against_schema(self.issue_data, CANONICAL_ISSUE_SCHEMA_PATH)
 
 
 class CanonicalPage(ABC):
-    """Abstract class representing a newspaper page.
+    """Abstract class representing a printed or typescripted page.
 
     Each text importer needs to define a subclass of ``CanonicalPage`` which
     specifies the logic to handle OCR data in a given format (e.g. Alto).
@@ -109,18 +110,8 @@ class CanonicalPage(ABC):
         self.issue = None
 
     def validate(self) -> None:
-        """Validate ``self.page_data`` against the page canonical schema.
-
-        Note:
-            Validation adds a substantial overhead to computing time. For
-            serialization of large amounts of issues it is recommendable to
-            bypass schema validation.
-        """
-        validate_against_schema(
-            self.page_data,
-            CANONICAL_PAGE_SCHEMA_PATH
-        )
-
+        """Validate ``self.page_data`` against the page canonical schema."""
+        validate_against_schema(self.page_data, CANONICAL_PAGE_SCHEMA_PATH)
 
     @abstractmethod
     def add_issue(self, issue: CanonicalIssue) -> None:
@@ -130,7 +121,7 @@ class CanonicalPage(ABC):
         the canonical issue.
 
         Args:
-            issue (NewspaperIssue): Newspaper issue containing this page.
+            issue (CanonicalIssue): Canonical issue containing this page.
         """
 
     @abstractmethod
@@ -140,6 +131,66 @@ class CanonicalPage(ABC):
         Note:
             This lazy behavior means that the page contents are not processed
             upon creation of the page object, but only once the ``parse()``
+            method is called.
+        """
+
+
+class CanonicalAudioRecord(ABC):
+    """Abstract class representing an radio audio record.
+
+    Each text importer for radio records needs to define a subclass of
+    ``CanonicalAudioRecord`` which specifies the logic to handle ASR data
+    in a given format (e.g. AudioDoc).
+    The concept and abstraction of Canonical Audio Record is a mirror of the
+    Canonical Page (for print - newspapers or typescript - radio bulletins) and
+    is meant to provide a data structure representing the digitization of an archival
+    content's physical support through automated techniques (ie. ASR or OCR/OLR).
+    As a result, this class aims to mimic as closely as possible the CanonicalPage and
+    might include attributes or methods that make sense only to maintain the logic of
+    our processings and data structures through our pipeline (eg. number as we only have
+    1 recording per radio audio program, while a print/typescript can have several pages).
+
+    Args:
+        _id (str): Canonical Audio Record ID (e.g. ``-1900-01-02-a-r0001``).
+        number (int): Record number (for compatibility with other source mediums).
+
+    Attributes:
+        id (str): Canonical Audio Record ID (e.g. ``INA-1900-01-02-a-r0001``).
+        number (int): Record number.
+        record_data (dict[str, Any]): Audio record data according to canonical format.
+        issue (CanonicalIssue | None): Issue this page is from.
+    """
+
+    def __init__(self, _id: str, number: int) -> None:
+        self.id = _id
+        self.number = number
+        # kept for compatibility for testing but should be removed
+        self.page_data = None
+        self.record_data = {}
+        self.issue = None
+
+    def validate(self) -> None:
+        """Validate ``self.record_data`` against the audio record canonical schema."""
+        validate_against_schema(self.record_data, CANONICAL_AUDIO_SCHEMA_PATH)
+
+    @abstractmethod
+    def add_issue(self, issue: CanonicalIssue) -> None:
+        """Add to an audio record object its parent, i.e. the canonical issue.
+
+        This allows each page to preserve contextual information coming from
+        the canonical issue.
+
+        Args:
+            issue (CanonicalIssue): Canonical issue containing this page.
+        """
+
+    @abstractmethod
+    def parse(self) -> None:
+        """Process the audio record XML file and transform into canonical AudioRecord format.
+
+        Note:
+            This lazy behavior means that the record contents are not processed
+            upon creation of the audio record object, but only once the ``parse()``
             method is called.
         """
 

@@ -27,7 +27,8 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
     """Radio-Bulletin Page for SWISSINFO's OCR format.
 
     Args:
-        page_dir (PageDir): Identifying information about the page.
+        _id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
+        number (int): Page number.
 
     Attributes:
         id (str): Canonical Page ID (e.g. ``SOC_CJ-1940-01-05-a-p0001``).
