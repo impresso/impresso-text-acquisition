@@ -3,14 +3,15 @@ import logging
 import json
 from time import strftime
 from typing import Any
-from statistics import mean
 
-from text_preparation.utils import coords_to_xywh
+from bs4 import BeautifulSoup
+
 from text_preparation.importers.classes import CanonicalIssue, CanonicalAudioRecord
-from text_preparation.importers.swissinfo.helpers import parse_lines, compute_agg_coords
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium
 
 logger = logging.getLogger(__name__)
+
+IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
 class INABroadcastAudioRecord(CanonicalAudioRecord):
@@ -26,6 +27,60 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         record_data (dict[str, Any]): Audio record data according to canonical format.
         issue (CanonicalIssue | None): Issue this page is from.
     """
+
+    def __init__(self, _id: str, number: int, xml_filepath: str) -> None:
+        super().__init__(_id, number)
+        # TODO fix for the correct IIIF
+        self.xml_filepath = xml_filepath
+        self.json_filepath = xml_filepath.replace(".xml", ".json")
+        self.iiif_base_uri = f"{IIIF_ENDPOINT_URI}"
+        self.notes = []
+
+        self.page_data = {
+            "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "r": [],  # here go the page regions
+            "iiif_base_uri": self.iiif_base_uri,
+            "st": SourceType.RB.value,
+            "sm": SourceMedium.AO.value,
+            "cc": True,  # kept for conformity but not very relevant
+        }
+
+    def add_issue(self, issue: CanonicalIssue) -> None:
+        self.issue = issue
+
+    @property
+    def xml(self) -> BeautifulSoup:
+        """Read XML file of the audio record and create a BeautifulSoup object.
+
+        Returns:
+            BeautifulSoup: BeautifulSoup object with XML of the audio record.
+        """
+        # In case of I/O error, retry twice,
+        tries = 3
+        for i in range(tries):
+            try:
+                with open(self.xml_filepath, "r", encoding="utf-8") as f:
+                    raw_xml = f.read()
+
+                xml_doc = BeautifulSoup(raw_xml, "xml")
+                return xml_doc
+            except IOError as e:
+                if i < tries - 1:  # i is zero indexed
+                    msg = (
+                        f"Caught error for {self.id}, retrying (up to {tries} "
+                        f"times) to read xml file. Error: {e}."
+                    )
+                    logger.error(msg)
+                    continue
+                else:
+                    logger.error("Reached maximum amount of errors for %s.", self.id)
+                    raise e
+
+    def parse(self) -> None:
+        xml_doc = self.xml
+
+        return None
 
 
 class INABroadcastIssue(CanonicalIssue):
@@ -51,7 +106,7 @@ class INABroadcastIssue(CanonicalIssue):
         self._notes = []
         self.audio_records = []
 
-        self._find_audios()
+        self._find_audio()
         self._parse_content_item()
 
         self.issue_data = {
@@ -69,9 +124,9 @@ class INABroadcastIssue(CanonicalIssue):
 
         self.issue_data["n"] = self._notes
 
-    def _find_audios(self) -> None:
-
+    def _find_audio(self) -> None:
+        self.program = None
         return None
 
     def _parse_content_item(self) -> None:
-        return None
+        self.content_items = []
