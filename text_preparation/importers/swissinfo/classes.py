@@ -8,7 +8,7 @@ from statistics import mean
 from text_preparation.utils import coords_to_xywh
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.swissinfo.helpers import parse_lines, compute_agg_coords
-from impresso_essentials.utils import IssueDir, SourceType, SourceMedium
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +47,7 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         self.page_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "r": [],  # here go the page regions
             "iiif_img_base_uri": self.iiif_base_uri,
             "st": SourceType.RB.value,
@@ -131,7 +132,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
 
     def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
-        self.json_file = self.find_json_file()
+        self.json_file = self._find_json_file()
         self.metadata_file = issue_dir.metadata_file
         self._notes = []
         self.pages = []
@@ -144,6 +145,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "st": SourceType.RB.value,
             "sm": SourceMedium.TPS.value,
             "i": self.content_items,
@@ -156,7 +158,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
 
         self.issue_data["n"] = self._notes
 
-    def find_json_file(
+    def _find_json_file(
         self,
     ) -> str | None:
         """Ensure the path to the issue considered contains a JSON file.

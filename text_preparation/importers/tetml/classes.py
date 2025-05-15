@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from time import strftime
 
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
@@ -36,6 +36,7 @@ class TetmlNewspaperPage(CanonicalPage):
         self.page_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "cc": True,
             "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
@@ -86,6 +87,7 @@ class TetmlNewspaperIssue(CanonicalIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],

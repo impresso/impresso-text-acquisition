@@ -13,6 +13,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 
+from impresso_essentials.utils import timestamp
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPES
 from text_preparation.importers.mets_alto import (
     MetsAltoCanonicalIssue,
@@ -136,9 +137,7 @@ class ReroNewspaperPage(MetsAltoCanonicalPage):
                             )
             success = True
         except Exception as e:
-            logger.error(
-                "Error %s occurred when converting coordinates for %s", e, self.id
-            )
+            logger.error("Error %s occurred when converting coordinates for %s", e, self.id)
         return success, page_regions
 
 
@@ -191,9 +190,7 @@ class ReroNewspaperIssue(MetsAltoCanonicalIssue):
             page_file_names, page_numbers, page_canonical_names
         ):
             try:
-                self.pages.append(
-                    ReroNewspaperPage(page_id, page_no, filename, alto_path)
-                )
+                self.pages.append(ReroNewspaperPage(page_id, page_no, filename, alto_path))
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -450,6 +447,7 @@ class ReroNewspaperIssue(MetsAltoCanonicalIssue):
 
         self.issue_data = {
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "i": content_items,
             "id": self.id,
             "pp": [p.id for p in self.pages],

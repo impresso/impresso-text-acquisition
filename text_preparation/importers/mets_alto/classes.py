@@ -13,7 +13,7 @@ from time import strftime
 from typing import Any
 
 from bs4 import BeautifulSoup
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, timestamp
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.mets_alto import alto
@@ -61,6 +61,7 @@ class MetsAltoCanonicalPage(CanonicalPage):
         self.page_data = {
             "id": _id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "r": [],  # here go the page regions
         }
 

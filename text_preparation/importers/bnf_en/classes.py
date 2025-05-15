@@ -12,7 +12,7 @@ from typing import Any, Optional
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, timestamp
 
 from text_preparation.importers import (
     CONTENTITEM_TYPES,
@@ -137,9 +137,7 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             page_file_names, page_numbers, page_canonical_names
         ):
             try:
-                self.pages.append(
-                    BnfEnNewspaperPage(page_id, page_no, filename, alto_path)
-                )
+                self.pages.append(BnfEnNewspaperPage(page_id, page_no, filename, alto_path))
             except Exception as e:
                 msg = f"Adding page {page_no} {page_id} {filename} raised following exception: {e}"
                 logger.error(msg)
@@ -398,13 +396,12 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
     def _parse_mets(self) -> None:
         content_items = self._parse_content_items()
 
-        iiif_manifest = os.path.join(
-            IIIF_ENDPOINT_URI, self.ark_link, IIIF_MANIFEST_SUFFIX
-        )
+        iiif_manifest = os.path.join(IIIF_ENDPOINT_URI, self.ark_link, IIIF_MANIFEST_SUFFIX)
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "i": content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,

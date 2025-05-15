@@ -11,6 +11,7 @@ from time import strftime
 from typing import Any
 
 from bs4.element import Tag
+from impresso_essentials.utils import timestamp
 from text_preparation.importers import (
     CONTENTITEM_TYPES,
     CONTENTITEM_TYPE_IMAGE,
@@ -292,8 +293,9 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
         content_items = self._parse_content_items()
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "i": content_items,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "id": self.id,
             "pp": [p.id for p in self.pages],
         }

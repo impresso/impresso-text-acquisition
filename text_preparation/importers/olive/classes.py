@@ -12,7 +12,7 @@ from time import strftime
 from typing import Any
 from zipfile import ZipFile
 
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage, ZipArchive
@@ -87,9 +87,7 @@ class OliveNewspaperPage(CanonicalPage):
             if (el["legacy"]["id"] in element_ids)
         }
 
-        self.page_data = recompose_page(
-            self.id, self.toc_data, elements, self.issue.clusters
-        )
+        self.page_data = recompose_page(self.id, self.toc_data, elements, self.issue.clusters)
 
         self.page_data["id"] = self.id
         self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.id)
@@ -196,6 +194,7 @@ class OliveNewspaperIssue(CanonicalIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "s": styles,
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
@@ -224,9 +223,7 @@ class OliveNewspaperIssue(CanonicalIssue):
 
             try:
                 archive = ZipFile(archive_path)
-                logger.debug(
-                    "Contents of archive for %s: %s", self.id, archive.namelist()
-                )
+                logger.debug("Contents of archive for %s: %s", self.id, archive.namelist())
                 return ZipArchive(archive, archive_tmp_path)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
@@ -305,9 +302,7 @@ class OliveNewspaperIssue(CanonicalIssue):
                 logger.error(e)
         return images
 
-    def _parse_styles_gallery(
-        self, file: str = "styleGallery.txt"
-    ) -> list[dict[str, Any]]:
+    def _parse_styles_gallery(self, file: str = "styleGallery.txt") -> list[dict[str, Any]]:
         """Parse the style file (plain text).
 
         Args:
@@ -321,9 +316,7 @@ class OliveNewspaperIssue(CanonicalIssue):
             try:
                 styles = parse_styles(self.archive.read(file).decode())
             except Exception as e:
-                msg = (
-                    f"Parsing styles file {file} for {self.id}, failed with error: {e}"
-                )
+                msg = f"Parsing styles file {file} for {self.id}, failed with error: {e}"
                 logger.warning(msg)
         else:
             logger.warning("Could not find styles %s for %s", file, self.id)
@@ -438,9 +431,7 @@ class OliveNewspaperIssue(CanonicalIssue):
                         else:
                             return json_data
                     except Exception as e:
-                        logger.error(
-                            "Decoding file %s failed with '%s'", image_info_path, e
-                        )
+                        logger.error("Decoding file %s failed with '%s'", image_info_path, e)
                         raise e
         if len(json_data) == 0:
             raise ValueError(f"Could not find image info for {self.id}")
@@ -471,9 +462,7 @@ class OliveNewspaperIssue(CanonicalIssue):
                 self._convert_images(image_info_record, page_n, page_xml)
 
                 self.pages.append(
-                    OliveNewspaperPage(
-                        can_id, page_n, data, image_info_record, page_xml
-                    )
+                    OliveNewspaperPage(can_id, page_n, data, image_info_record, page_xml)
                 )
 
     def _convert_images(
@@ -494,8 +483,7 @@ class OliveNewspaperIssue(CanonicalIssue):
             images_in_page = [
                 content_item
                 for content_item in self.content_items
-                if content_item["m"]["tp"] == "picture"
-                and page_n in content_item["m"]["pp"]
+                if content_item["m"]["tp"] == "picture" and page_n in content_item["m"]["pp"]
             ]
 
             for image in images_in_page:

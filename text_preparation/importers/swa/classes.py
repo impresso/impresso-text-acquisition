@@ -10,6 +10,7 @@ import os
 from time import strftime
 from zipfile import ZipFile
 
+from impresso_essentials.utils import timestamp
 from text_preparation.importers.classes import CanonicalIssue, ZipArchive
 from text_preparation.importers.mets_alto.alto import parse_printspace
 from text_preparation.importers.mets_alto.classes import MetsAltoCanonicalPage
@@ -145,6 +146,7 @@ class SWANewspaperIssue(CanonicalIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,
@@ -167,9 +169,7 @@ class SWANewspaperIssue(CanonicalIssue):
         if os.path.isfile(self.path):
             try:
                 archive = ZipFile(self.path)
-                logger.debug(
-                    "Contents of archive for %s: %s", self.id, archive.namelist()
-                )
+                logger.debug("Contents of archive for %s: %s", self.id, archive.namelist())
                 return ZipArchive(archive, temp_dir)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"

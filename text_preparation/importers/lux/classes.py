@@ -15,6 +15,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 
+from impresso_essentials.utils import timestamp
 from text_preparation.importers import (
     CONTENTITEM_TYPE_ADVERTISEMENT,
     CONTENTITEM_TYPE_ARTICLE,
@@ -117,13 +118,13 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
                             x, y, w, h = token["c"]
                             token["c"] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                            msg = f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}"
+                            msg = (
+                                f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}"
+                            )
                             logger.debug(msg)
             success = True
         except Exception as e:
-            logger.error(
-                "Error %s occurred when converting coordinates for %s", e, self.id
-            )
+            logger.error("Error %s occurred when converting coordinates for %s", e, self.id)
 
         return success, page_regions
 
@@ -184,9 +185,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             page_file_names, page_numbers, page_canonical_names
         ):
             try:
-                self.pages.append(
-                    LuxNewspaperPage(page_id, page_no, filename, text_path)
-                )
+                self.pages.append(LuxNewspaperPage(page_id, page_no, filename, text_path))
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -232,9 +231,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     )
         return parts
 
-    def _parse_dmdsec(
-        self, mets_doc: BeautifulSoup
-    ) -> tuple[list[dict[str, Any]], int]:
+    def _parse_dmdsec(self, mets_doc: BeautifulSoup) -> tuple[list[dict[str, Any]], int]:
         """Parse `<dmdSec>` tags of Mets file to find some content items.
 
         Only articles and pictures are in this section and are identified
@@ -399,9 +396,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             # filter content item part that is the actual image
             # the other part is the caption
             try:
-                part = [
-                    part for part in ci["l"]["parts"] if part["comp_role"] == "image"
-                ][0]
+                part = [part for part in ci["l"]["parts"] if part["comp_role"] == "image"][0]
             except IndexError as e:
                 err_msg = f"{legacy_id} without image subpart"
                 err_msg += f"; {legacy_id} has {ci['l']['parts']}"
@@ -550,9 +545,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     logger.error(err_msg)
                     continue
                 if div_has_body(div) and section_is_article(div):
-                    new_section = self._parse_section(
-                        section, div, content_items, counter
-                    )
+                    new_section = self._parse_section(section, div, content_items, counter)
                     new_sections.append(new_section)
                     counter += 1
         return new_sections
@@ -610,8 +603,9 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             ci["m"]["ro"] = reading_order_dict[ci["m"]["id"]]
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "i": content_items,
             "pp": [p.id for p in self.pages],
         }

@@ -12,7 +12,7 @@ from glob import glob
 from time import strftime
 
 from bs4 import BeautifulSoup
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, timestamp
 
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.bnf.helpers import (
@@ -78,9 +78,7 @@ class BnfNewspaperPage(MetsAltoCanonicalPage):
 
     def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
-        self.page_data["iiif_img_base_uri"] = os.path.join(
-            IIIF_ENDPOINT_URI, self.ark_link
-        )
+        self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.ark_link)
         self._parse_font_styles()
 
     def parse(self) -> None:
@@ -194,9 +192,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
             page_filenames, page_numbers, page_canonical_names
         ):
             try:
-                self.pages[page_no] = BnfNewspaperPage(
-                    page_id, page_no, filename, ocr_path
-                )
+                self.pages[page_no] = BnfNewspaperPage(page_id, page_no, filename, ocr_path)
             except Exception as e:
                 logger.error(
                     "Adding page %s %s %s raised following exception: %s",
@@ -207,9 +203,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
                 )
                 raise e
 
-    def _get_divs_by_type(
-        self, mets: BeautifulSoup
-    ) -> dict[str, list[tuple[str, str]]]:
+    def _get_divs_by_type(self, mets: BeautifulSoup) -> dict[str, list[tuple[str, str]]]:
         """Parse `div` tags, flatten them and sort them by type.
 
         First, parse the `dmdSec` tags, and sort them by type.
@@ -374,9 +368,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
             page = self.pages[image_part[0]["comp_page_no"]]
             block = page.xml.find("Illustration", {"ID": image_part_id})
             if block is None:
-                logger.warning(
-                    "Could not find image %s for CI %s", image_part_id, ci_id
-                )
+                logger.warning("Could not find image %s for CI %s", image_part_id, ci_id)
             else:
                 coords = distill_coordinates(block)
                 iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.ark_link, IIIF_SUFFIX)
@@ -429,8 +421,9 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         )
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "i": content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,

@@ -13,6 +13,7 @@ from typing import Any
 import requests
 from bs4 import BeautifulSoup, Tag
 
+from impresso_essentials.utils import timestamp
 from text_preparation.importers.bcul.helpers import (
     find_mit_file,
     get_page_number,
@@ -65,18 +66,26 @@ class BculNewspaperPage(CanonicalPage):
         self.page_data = {
             "id": _id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "r": [],  # here go the page regions
             "iiif_img_base_uri": iiif_uri,
         }
 
     @property
-    def xml(self) -> BeautifulSoup:
+    def xml(self) -> BeautifulSoup | None:
+        xml = None
         if self.path.endswith("bz2"):
             with codecs.open(self.path, encoding="bz2") as f:
                 xml = BeautifulSoup(f, "xml")
         elif self.path.endswith("xml"):
             with open(self.path, encoding="utf-8") as f:
                 xml = BeautifulSoup(f, "xml")
+        else:
+            msg = f"{self.id} - self.path ({self.path}) does not end with 'bz2' or 'xml'!"
+            logger.error(msg)
+            print(msg)
+            raise AttributeError(msg)
+
         return xml
 
     @property
@@ -166,6 +175,7 @@ class BculNewspaperIssue(CanonicalIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": self.iiif_manifest,
@@ -187,9 +197,7 @@ class BculNewspaperIssue(CanonicalIssue):
         page_identifier = os.path.basename(page_path).split(".")[0]
         return os.path.join(IIIF_IMG_BASE_URI, page_identifier)
 
-    def query_iiif_api(
-        self, num_tries: int = 0, max_retries: int = 3
-    ) -> dict[str, Any]:
+    def query_iiif_api(self, num_tries: int = 0, max_retries: int = 3) -> dict[str, Any]:
         """Query the Scriptorium IIIF API for the issue's manifest data.
 
         TODO: implement the retry approach with `celery` package or similar.
@@ -232,9 +240,7 @@ class BculNewspaperIssue(CanonicalIssue):
         logger.error(msg)
         raise requests.exceptions.HTTPError(msg)
 
-    def _get_iiif_link_xml(
-        self, page_number: int, canvases: dict[str, Any]
-    ) -> str | None:
+    def _get_iiif_link_xml(self, page_number: int, canvases: dict[str, Any]) -> str | None:
         """Return iiif image base uri in case `mit` file is in XML.
 
         In this case, the iiif URI to images needs to be fetched from the iiif
@@ -303,9 +309,7 @@ class BculNewspaperIssue(CanonicalIssue):
                     found = True
             if not found:
                 logger.error("Page %s not found in %s", p, self.path)
-                self._notes.append(
-                    f"Page {p} missing: not found in {self.path} or on API."
-                )
+                self._notes.append(f"Page {p} missing: not found in {self.path} or on API.")
 
     def _find_pages_json(self) -> None:
         """Finds the pages when the format for the `mit_file` is JSON.
@@ -331,9 +335,7 @@ class BculNewspaperIssue(CanonicalIssue):
             if page_path is None:
                 # if the page does not exist, skip this page
                 self._notes.append(f"Couldn't find the page corresponding to {file_id}")
-                logger.info(
-                    "%s: Did not find the page for %s skipping.", self.id, file_id
-                )
+                logger.info("%s: Did not find the page for %s skipping.", self.id, file_id)
                 continue
             page_no = get_page_number(f)
             page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
@@ -377,9 +379,7 @@ class BculNewspaperIssue(CanonicalIssue):
         # Get all images and tables
         for p in sorted(self.pages, key=lambda x: x.number):
             # Get page
-            page_cis = [
-                (div.get("blockType"), get_div_coords(div)) for div in p.get_ci_divs()
-            ]
+            page_cis = [(div.get("blockType"), get_div_coords(div)) for div in p.get_ci_divs()]
             # Sort by coordinates
             for div_type, coords in sorted(page_cis, key=lambda x: x[1]):
                 ci_id = self.id + "-i" + str(n).zfill(4)

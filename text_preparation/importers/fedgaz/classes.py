@@ -9,7 +9,7 @@ import pandas as pd
 
 import regex
 
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.importers.classes import CanonicalIssue
@@ -47,6 +47,7 @@ class FedgazNewspaperPage(TetmlNewspaperPage):
         self.page_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "cc": True,
             "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
@@ -102,6 +103,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
@@ -294,11 +296,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             max_insert = int(0.3 * len(title))
             # scaled by 3 to make insertions very cheap to account for bad OCR
             fuzzy_cost = (
-                "{i<="
-                + str(max_insert)
-                + ",1i+3d+3s<="
-                + str(max_cost_total * 3)
-                + r"}"
+                "{i<=" + str(max_insert) + ",1i+3d+3s<=" + str(max_cost_total * 3) + r"}"
             )
             # fuzzy match article headline to locate (bestmatch flag)
             pattern = r"(?b)(" + title + r")" + fuzzy_cost
