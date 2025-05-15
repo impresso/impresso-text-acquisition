@@ -163,7 +163,17 @@ class INABroadcastIssue(CanonicalIssue):
     def _find_audios(self) -> None:
         # currently nothing but once we have put the audios in a IIIF server
         # TODO change to go fetch the actual final audio MP3 file
-        return None
+        # There is only one audio for each issue
+        audio_id = self.metadata["Audio Record ID"]
+        self.audio_file_path = self.xml_file_path.replace(".xml", ".MP3")
+
+        if not os.path.exists(self.audio_file_path):
+            msg = f"{self.id} - The issue's audio record MP3 file {self.audio_file_path} cannot be found!."
+            print(msg)
+            logger.warning(msg)
+            self._notes.append(msg)
+
+        self.audio_records.append(INABroadcastAudioRecord(audio_id, 1, self.xml_file_path))
 
     def _parse_content_item(self) -> None:
         self.content_items = []
