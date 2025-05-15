@@ -8,7 +8,6 @@ from collections import namedtuple
 from dask import bag as db
 
 from text_preparation.importers.detect import _apply_datefilter
-from text_preparation.importers.bcul.helpers import parse_date, find_mit_file
 
 logger = logging.getLogger(__name__)
 
