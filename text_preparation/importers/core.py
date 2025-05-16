@@ -35,8 +35,16 @@ from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import counts_for_canonical_issue
 from smart_open import open as smart_open_function
 
-from text_preparation.utils import validate_page_schema, validate_issue_schema
-from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
+from text_preparation.utils import (
+    validate_page_schema,
+    validate_issue_schema,
+    validate_audio_schema,
+)
+from text_preparation.importers.classes import (
+    CanonicalIssue,
+    CanonicalPage,
+    CanonicalAudioRecord,
+)
 from text_preparation.importers.olive.classes import OliveNewspaperIssue
 from text_preparation.importers.swa.classes import SWANewspaperIssue
 
@@ -64,6 +72,8 @@ def write_error(
         note = f"{thing}: {error}"
     else:
         if isinstance(thing, CanonicalPage):
+            issuedir = thing.issue.issuedir
+        if isinstance(thing, CanonicalAudioRecord):
             issuedir = thing.issue.issuedir
         elif isinstance(thing, CanonicalIssue):
             issuedir = thing.issuedir
@@ -169,34 +179,61 @@ def dirs2issues(
     return ret
 
 
-def issue2pages(issue: CanonicalIssue) -> list[CanonicalPage]:
-    """Flatten an issue into a list of their pages.
+def is_audio(issue: CanonicalIssue) -> bool:
+    # if "sm" is not in issue.issue_data, then it's a newspaper
+    if "sm" not in issue.issue_data or (
+        "sm" in issue.issue_data and issue.issue_data["sm"] in ["print", "typescript"]
+    ):
+        return False
+    elif issue.issue_data["sm"] == "audio":
+        return True
+    else:
+        msg = (
+            f"{issue.id} - Source medium for this issue is not valid! {issue.issue_data['sm']}"
+        )
+        print(msg)
+        raise NotImplementedError(msg)
 
+
+def issue2supports(issue: CanonicalIssue) -> list[CanonicalPage] | list[CanonicalAudioRecord]:
+    """Flatten an issue into a list of their pages or audio records.
+
+    Case of newspapers and radio bulletins:
     As an issue consists of several pages, this function is useful
     in order to process each page in a truly parallel fashion.
 
+    For radio audio broadcasts, it's more to keep a unified processing approach
+
     Args:
-        issue (CanonicalIssue): Issue to collect the pages of.
+        issue (CanonicalIssue): Issue to collect the pages or audio records of.
 
     Returns:
-        list[CanonicalPage]: List of pages of the given issue.
+        list[CanonicalPage] | list[CanonicalAudioRecord]: List of pages or audio records of the given issue.
     """
-    pages = []
-    for page in issue.pages:
-        page.add_issue(issue)
-        pages.append(page)
-    return pages
+    if is_audio(issue):
+        support_list = issue.audio_records
+    else:
+        support_list = issue.pages
+
+    supports = []
+    for support in support_list:
+        support.add_issue(issue)
+        supports.append(support)
+
+    return supports
 
 
-def serialize_pages(
-    pages: list[CanonicalPage],
+def serialize_supports(
+    supports: list[CanonicalPage] | list[CanonicalAudioRecord],
     output_dir: str | None = None,
     failed_log: str | None = None,
+    is_audio: bool | None = None,
 ) -> list[Tuple[IssueDir, str]]:
-    """Serialize a list of pages to an output directory.
+    """Serialize a list of pages or audio records to an output directory.
 
     Args:
-        pages (list[CanonicalPage]): Input canonical pages.
+        pages (list[CanonicalPage] | list[CanonicalAudioRecord]): Input
+            canonical pages or audio supports.
         output_dir (str | None, optional): Path to the output directory.
             Defaults to None.
         failed_log (str | None, optional): Path to the log file used when an
@@ -209,23 +246,33 @@ def serialize_pages(
     """
     result = []
 
-    for page in pages:
+    for support in supports:
 
-        issue_dir = copy(page.issue.issuedir)
+        issue_dir = copy(support.issue.issuedir)
 
         out_dir = os.path.join(output_dir, canonical_path(issue_dir, as_dir=True))
 
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
 
-        canonical_filename = canonical_path(
-            issue_dir, "p" + str(page.number).zfill(4), ".json"
-        )
+        if is_audio:
+            canonical_filename = canonical_path(
+                issue_dir, "r" + str(support.number).zfill(4), ".json"
+            )
+        else:
+            canonical_filename = canonical_path(
+                issue_dir, "p" + str(support.number).zfill(4), ".json"
+            )
 
         out_file = os.path.join(out_dir, canonical_filename)
 
         try:
-            validate_page_schema(page.page_data)
+            if is_audio:
+                validate_audio_schema(support.record_data)
+                validated_data = support.record_data
+            else:
+                validate_page_schema(support.page_data)
+                validated_data = support.page_data
         except ValidationError as e:
             msg = f"Invalid schema for {canonical_filename}: {e}"
             logger.error(msg)
@@ -233,8 +280,13 @@ def serialize_pages(
             write_error(out_file, e, failed_log)
 
         with open(out_file, "w", encoding="utf-8") as jsonfile:
-            json.dump(page.page_data, jsonfile)
-            logger.info("Written page '%s' to %s", page.number, out_file)
+            json.dump(validated_data, jsonfile)
+            logger.info(
+                "Written %s '%s' to %s",
+                "record" if is_audio else "page",
+                support.number,
+                out_file,
+            )
         result.append((issue_dir, out_file))
 
     # this can be deleted, I believe as it has no effect
@@ -242,23 +294,25 @@ def serialize_pages(
     return result
 
 
-def process_pages(pages: list[CanonicalPage], failed_log: str) -> list[CanonicalPage]:
+def process_supports(
+    supports: list[CanonicalPage | CanonicalAudioRecord], failed_log: str
+) -> list[CanonicalPage | CanonicalAudioRecord]:
     """Given a list of pages, trigger the ``.parse()`` method of each page.
 
     Args:
-        pages (list[CanonicalPage]): Input canonical pages.
+        supports (list[CanonicalPage | CanonicalAudioRecord]): Input canonical supports.
         failed_log (str): File path of failed log.
 
     Returns:
-        list[CanonicalPage]: A list of processed pages.
+        list[CanonicalPage | CanonicalAudioRecord]: A list of processed supports.
     """
     result = []
-    for page in pages:
+    for support in supports:
         try:
-            page.parse()
-            result.append(page)
+            support.parse()
+            result.append(support)
         except Exception as e:
-            write_error(page, e, failed_log)
+            write_error(support, e, failed_log)
     return result
 
 
@@ -272,8 +326,9 @@ def import_issues(
     chunk_size: int | None,
     manifest: DataManifest,
     client: Client | None = None,
+    is_audio: bool | None = False,
 ) -> None:
-    """Import a bunch of canonical issues (newspaper or radio-bulletin).
+    """Import a bunch of canonical issues (newspaper or radio-broadcast).
 
     Args:
         issues (list[IssueDir]): Issues to import.
@@ -287,6 +342,7 @@ def import_issues(
             (applies only to importers make use of ``ZipArchive``).
         chunk_size (int | None): Chunk size in years used to process issues.
     """
+    supports_name = "audios" if is_audio else "pages"
     msg = f"Issues to import: {len(issues)}"
     logger.info(msg)
     failed_log_path = os.path.join(out_dir, f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log')
@@ -332,7 +388,12 @@ def import_issues(
 
         compressed_issue_files = (
             issue_bag.groupby(lambda i: (i.alias, i.date.year))
-            .starmap(compress_issues, output_dir=out_dir, failed_log=failed_log_path)
+            .starmap(
+                compress_issues,
+                output_dir=out_dir,
+                failed_log=failed_log_path,
+                is_audio=is_audio,
+            )
             .compute()
         )
 
@@ -371,41 +432,51 @@ def import_issues(
         chunks = chunk(processed_issues, 400)
 
         for chunk_n, chunk_of_issues in enumerate(chunks):
-            logger.info("Processing chunk %s of pages for %s", chunk_n, period)
+            logger.info("Processing chunk %s of pages/audios for %s", chunk_n, period)
 
-            pages_bag = (
+            supports_bag = (
                 db.from_sequence(chunk_of_issues, partition_size=2)
-                .map(issue2pages)
+                .map(issue2supports)
                 .flatten()
-                .map_partitions(process_pages, failed_log=failed_log_path)
+                .map_partitions(process_supports, failed_log=failed_log_path)
                 .map_partitions(
-                    serialize_pages, output_dir=out_dir, failed_log=failed_log_path
+                    serialize_supports,
+                    output_dir=out_dir,
+                    failed_log=failed_log_path,
+                    is_audio=is_audio,
                 )
             )
 
-            pages_out_dir = os.path.join(out_dir, "pages")
-            Path(pages_out_dir).mkdir(exist_ok=True)
+            supports_out_dir = os.path.join(out_dir, supports_name)
+            Path(supports_out_dir).mkdir(exist_ok=True)
 
             logger.info(
-                "Start compressing and uploading pages of chunk %s for %s",
+                "Start compressing and uploading %s of chunk %s for %s",
+                supports_name,
                 chunk_n,
                 period,
             )
-            pages_bag = (
-                pages_bag.groupby(lambda x: canonical_path(x[0]))
+            supports_bag = (
+                supports_bag.groupby(lambda x: canonical_path(x[0]))
                 .starmap(
-                    compress_pages,
-                    suffix="pages",
-                    output_dir=pages_out_dir,
+                    compress_supports,
+                    suffix=supports_name,
+                    output_dir=supports_out_dir,
                     failed_log=failed_log_path,
                 )
-                .starmap(upload_pages, bucket_name=s3_bucket, failed_log=failed_log_path)
+                .starmap(
+                    upload_supports,
+                    bucket_name=s3_bucket,
+                    failed_log=failed_log_path,
+                    supports_name=supports_name,
+                )
                 .starmap(cleanup)
                 .compute()
             )
 
             logger.info(
-                "Done compressing and uploading pages of chunk %s for %s",
+                "Done compressing and uploading %s of chunk %s for %s",
+                supports_name,
                 chunk_n,
                 period,
             )
@@ -441,7 +512,7 @@ def import_issues(
         client.shutdown()
 
 
-def compress_pages(
+def compress_supports(
     key: str,
     json_files: list[str],
     output_dir: str,
@@ -492,6 +563,7 @@ def compress_issues(
     issues: list[CanonicalIssue],
     output_dir: str | None = None,
     failed_log: str | None = None,
+    is_audio: bool | None = None,
 ) -> Tuple[str, str, list[dict[str, int]]]:
     """Compress issues of the same alias-year and save them in a json file.
 
@@ -560,8 +632,10 @@ def compress_issues(
         write_error(filepath, e, failed_log)
     else:
         # Once the issues were written without problems, add their info to the manifest
+        # src mediuem can be something else, but it does not affect here
+        src_medium = "audio" if is_audio else "print"
         for i in items:
-            yearly_stats.append(counts_for_canonical_issue(i))
+            yearly_stats.append(counts_for_canonical_issue(i, src_medium=src_medium))
 
     return f"{alias}-{year}", filepath, yearly_stats
 
@@ -607,11 +681,12 @@ def upload_issues(
     return False, filepath
 
 
-def upload_pages(
+def upload_supports(
     sort_key: str,
     filepath: str,
     bucket_name: str | None = None,
     failed_log: str | None = None,
+    supports_name: str | None = None,
 ) -> Tuple[bool, str]:
     """Upload a page JSON file to a given S3 bucket.
 
@@ -629,8 +704,11 @@ def upload_pages(
     # create connection with bucket
     # copy contents to s3 key
     alias, year, _, _, _ = sort_key.split("-")
-    key_name = os.path.join(alias, "pages", f"{alias}-{year}", os.path.basename(filepath))
+    key_name = os.path.join(
+        alias, supports_name, f"{alias}-{year}", os.path.basename(filepath)
+    )
     # key_name = "{}/pages/{}/{}".format(alias, f"{alias}-{year}", os.path.basename(filepath))
+    # or key_name = "{}/audios/{}/{}".format(alias, f"{alias}-{year}", os.path.basename(filepath))
     s3 = get_s3_resource()
     if bucket_name is not None:
         try:

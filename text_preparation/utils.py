@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 # path to the canonical schemas (in essentials, in text_prep, it's `impresso-schemas``)
 CANONICAL_PAGE_SCHEMA = "schemas/json/canonical/page.schema.json"
 CANONICAL_ISSUE_SCHEMA = "schemas/json/canonical/issue.schema.json"
+CANONICAL_RECORD_SCHEMA = "schemas/json/canonical/audio_record.schema.json"
 
 
 def get_page_schema(
@@ -72,6 +73,13 @@ def validate_page_schema(page_json: dict, page_schema: str = CANONICAL_PAGE_SCHE
     # print(msg)
     # logger.info(msg)
     return validate_against_schema(page_json, page_schema)
+
+
+def validate_audio_schema(audio_json: dict, audio_schema: str = CANONICAL_RECORD_SCHEMA):
+    # msg = f"{page_json['id']} - Validating against page schema"
+    # print(msg)
+    # logger.info(msg)
+    return validate_against_schema(audio_json, audio_schema)
 
 
 def validate_issue_schema(issue_json: dict, issue_schema: str = CANONICAL_ISSUE_SCHEMA):
