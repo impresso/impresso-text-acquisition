@@ -43,7 +43,6 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
 
         self.record_data = {
             "id": self.id,
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
             "s": [],  # here go the audio sections
             "iiif_base_uri": self.iiif_base_uri,
@@ -138,7 +137,6 @@ class INABroadcastIssue(CanonicalIssue):
 
         self.issue_data = {
             "id": self.id,
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
             "st": SourceType.RB.value,
             "sm": SourceMedium.AO.value,

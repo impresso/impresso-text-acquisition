@@ -2,7 +2,7 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
-    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar> --git-repo=<gr> --num-workers=<nw>]
+    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar> --git-repo=<gr> --num-workers=<nw> --is-audio]
     <importer-name>importer.py --version
 
 Options:
@@ -18,6 +18,7 @@ Options:
     --chunk-size=<cs>   Chunk size in years used to group issues when importing
     --git-repo=<gr>   Local path to the "impresso-text-acquisition" git directory (including it).
     --num-workers=<nw>  Number of workers to use for local dask cluster
+    --is-audio  Whether the data to import is audio data (source medium)
     --verbose   Verbose log messages (good for debugging)
     --clear    Removes the output folder (if already existing)
     --incremental   Skips issues already present in output directory
@@ -202,6 +203,7 @@ def main(
     config_file = args["--config-file"]
     repo_path = args["--git-repo"]
     num_workers = args["--num-workers"]
+    is_audio = args["--is-audio"]
 
     if print_version:
         print(f"impresso-txt-importer v{__version__}")
@@ -278,6 +280,7 @@ def main(
         only_counting=False,
     )
 
+    print("Right before import issues")
     import_issues(
         issues,
         outp_dir,
@@ -288,4 +291,5 @@ def main(
         chunk_size,
         manifest,
         client,
+        is_audio,
     )

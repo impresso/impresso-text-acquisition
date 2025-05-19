@@ -179,7 +179,7 @@ def dirs2issues(
     return ret
 
 
-def is_audio(issue: CanonicalIssue) -> bool:
+def is_audio_issue(issue: CanonicalIssue) -> bool:
     # if "sm" is not in issue.issue_data, then it's a newspaper
     if "sm" not in issue.issue_data or (
         "sm" in issue.issue_data and issue.issue_data["sm"] in ["print", "typescript"]
@@ -210,7 +210,7 @@ def issue2supports(issue: CanonicalIssue) -> list[CanonicalPage] | list[Canonica
     Returns:
         list[CanonicalPage] | list[CanonicalAudioRecord]: List of pages or audio records of the given issue.
     """
-    if is_audio(issue):
+    if is_audio_issue(issue):
         support_list = issue.audio_records
     else:
         support_list = issue.pages
@@ -343,7 +343,9 @@ def import_issues(
         chunk_size (int | None): Chunk size in years used to process issues.
     """
     supports_name = "audios" if is_audio else "pages"
+    print(f"supports_name: {supports_name}")
     msg = f"Issues to import: {len(issues)}"
+    print(msg)
     logger.info(msg)
     failed_log_path = os.path.join(out_dir, f'failed-{strftime("%Y-%m-%d-%H-%M-%S")}.log')
     if chunk_size is not None:
@@ -367,6 +369,8 @@ def import_issues(
             logger.info(msg)
     else:
         chunks = [(None, issues)]
+
+    print(f"chunks: {chunks}")
 
     for year, issue_chunk in chunks:
         if year is None:
