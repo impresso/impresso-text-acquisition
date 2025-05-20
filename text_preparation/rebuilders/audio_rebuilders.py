@@ -270,7 +270,7 @@ def reconstruct_audios(
         # given a page  number (from issue.json) and its canonical ID
         # find the position of that page in the array of pages (with text
         # regions)
-        audio_no_string = f"p{str(audio_no).zfill(4)}"
+        audio_no_string = f"r{str(audio_no).zfill(4)}"
         try:
             audio_idx = [
                 n for n, audio in enumerate(issue_json["rr"]) if audio_no_string in audio["id"]

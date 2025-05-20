@@ -197,12 +197,15 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     reading_order = content_item["m"]["ro"] if "ro" in content_item["m"] else int(ci_num[1:])
     has_olr = False if mapped_type is None or content_item["st"] == "radio_broadcast" else True
 
+    support_field = "rr" if content_item["sm"] == "audio" else "pp"
+
     solr_ci = {
         "id": ci_id,
         "ts": timestamp(),
-        "pp": content_item["m"]["pp"],
+        support_field: content_item["m"][support_field],
         "d": d.isoformat(),
-        "cc": content_item["m"]["cc"],
+        # for audio, cc is true by default
+        "cc": True if content_item["sm"] == "audio" else content_item["m"]["cc"],
         "olr": has_olr,
         "st": content_item["st"],
         "sm": content_item["sm"],
@@ -305,7 +308,8 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
     Returns:
         list[dict[str, Any]]: Processed content-items for the issue.
     """
-    print(f"Rejoining physical supports (pages or audios) for issue {issue_json['id']}")
+    msg = f"Rejoining physical supports (pages or audios) for issue {issue_json['id']}"
+    logger.debug(msg)
     cis = []
     for ci in issue_json["i"]:
 
@@ -321,17 +325,17 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
                 ci["rp"] = issue_json["rp"]
             if "rr" in issue_json:
                 # TODO update in the case we can have >1 record per CI or vice-versa
-                if len(ci["rr"]) > 1:
+                if len(ci["m"]["rr"]) > 1:
                     msg = f"{ci['if']} - PROBLEM - there is more than one record for this CI! Only tkeing the first"
                     print(msg)
                     logger.warning(msg)
                 # taking the start time and duration of the first record for this CI (numbering starts at 1)
-                ci["stt"] = issue_json[ci["rr"][0] - 1]["stt"]
-                ci["dur"] = issue_json[ci["rr"][0] - 1]["dur"]
+                ci["stt"] = issue_json["rr"][ci["m"]["rr"][0] - 1]["stt"]
+                ci["dur"] = issue_json["rr"][ci["m"]["rr"][0] - 1]["dur"]
 
         if issue_json["sm"] == "audio":
             # for audio recordings there is only 1 per issue
-            ci["m"]["rr"] = sorted(list(set(issue_json["rr"])))
+            ci["m"]["rr"] = sorted(list(set(ci["m"]["rr"])))
             cis = reconstruct_audios(issue_json, ci, cis)
         else:
             ci["m"]["pp"] = sorted(list(set(ci["m"]["pp"])))

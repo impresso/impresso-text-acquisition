@@ -327,7 +327,7 @@ def main() -> None:
 
     arguments = docopt(__doc__)
     clear_output = arguments["--clear"]
-    bucket_name = f's3://{arguments["--input-bucket"]}'
+    input_bucket_name = arguments["--input-bucket"]
     output_bucket_name = arguments["--output-bucket"]
     outp_dir = arguments["--output-dir"]
     filter_config_file = arguments["--filter-config"]
@@ -341,12 +341,14 @@ def main() -> None:
     temp_dir = arguments["--temp-dir"]
     prev_manifest_path = arguments["--prev-manifest"] if arguments["--prev-manifest"] else None
 
+    # bucket_name = f"s3://{input_bucket_name}"
+
     signal.signal(signal.SIGINT, signal_handler)
 
     if languages:
         languages = languages.split(",")
 
-    init_logger(log_level, log_file)
+    init_logger(logger, log_level, log_file)
 
     # clean output directory if existing
     if outp_dir is not None and os.path.exists(outp_dir):
@@ -374,7 +376,7 @@ def main() -> None:
     manifest = DataManifest(
         data_stage=data_stage,
         s3_output_bucket=output_bucket_name,
-        s3_input_bucket=bucket_name,
+        s3_input_bucket=input_bucket_name,
         git_repo=git.Repo(repo_path),
         temp_dir=temp_dir,
         previous_mft_path=prev_manifest_path if prev_manifest_path != "" else None,
@@ -397,17 +399,17 @@ def main() -> None:
                     logger.info(proc_year_msg)
                     print(proc_year_msg)
 
-                    try:
-                        input_issues = read_s3_issues(alias, year, bucket_name)
-                    except FileNotFoundError:
-                        fnf_msg = f"{alias}-{year} not found in {bucket_name}"
+                    input_issues = read_s3_issues(alias, year, input_bucket_name)
+                    if len(input_issues) == 0:
+                        # read_s3_issues does not raise an exception anymore
+                        fnf_msg = f"{alias}-{year} not found in {input_bucket_name}"
                         logger.info(fnf_msg)
                         print(fnf_msg)
                         continue
 
                     issue_key, json_files, year_stats = rebuild_issues(
                         issues=input_issues,
-                        input_bucket=bucket_name,
+                        input_bucket=input_bucket_name,
                         output_dir=outp_dir,
                         dask_client=client,
                         _format=output_format,
@@ -429,22 +431,13 @@ def main() -> None:
                 logger.info(msg)
                 print(msg)
 
-                if len(rebuilt_issues) == 1:
-                    # if there is only one issue, we should not use starmap
-                    b = (
-                        db.from_sequence(rebuilt_issues)
-                        .map(compress, output_dir=outp_dir)
-                        .map(upload, bucket_name=output_bucket_name)
-                        .map(cleanup)
-                    )
-                else:
-                    b = (
-                        db.from_sequence(rebuilt_issues)
-                        .starmap(compress, output_dir=outp_dir)
-                        .starmap(upload, bucket_name=output_bucket_name)
-                        .starmap(cleanup)
-                    )
-                future = b.persist()
+                future = (
+                    db.from_sequence(rebuilt_issues)
+                    .starmap(compress, output_dir=outp_dir)
+                    .starmap(upload, bucket_name=output_bucket_name)
+                    .starmap(cleanup)
+                ).persist()
+
                 progress(future)
                 # clear memory of objects once computations are done
                 client.restart()

@@ -188,7 +188,7 @@ def recompose_ci_from_page_solr(
     linebreaks = []
     parabreaks = []
     regionbreaks = []
-    solr_ci["rreb"] = []
+    solr_ci["ppreb"] = []
 
     for n, page_no in enumerate(solr_ci["pp"]):
 
