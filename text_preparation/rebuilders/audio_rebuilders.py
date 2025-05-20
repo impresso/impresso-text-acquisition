@@ -57,6 +57,7 @@ def rebuild_audio_text(
                     section["tc"] = token["tc"]
                     section["s"] = len(string)
 
+                    # TODO remove because probably no hyphens in ASR
                     token_text = None
                     if "hy" in token:
                         section["l"] = len(token["tx"][:-1]) - 1
@@ -191,6 +192,7 @@ def recompose_ci_from_audio_solr(
     speechsegsbreaks = []
     utterancebreaks = []
     sectionbreaks = []
+    solr_ci["rreb"] = []
 
     # there should be only one record, but keeping the formatting
     for n, audio_rec_no in enumerate(solr_ci["rr"]):

@@ -1,7 +1,7 @@
 """Rebuild helpers for the paper (print, typescript) text data."""
 
 import logging
-from typing import Optional
+from typing import Optional, Any
 from impresso_essentials.text_utils import insert_whitespace
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ def rebuild_paper_text(
                         if "hy" in token:
                             offsets["line"].append(region["s"])
                         else:
-                            # TODO check if possible to add a space after a coma
+                            # TODO check if possible to add a space after a coma or period
                             token_length = len(token["tx"]) if token["tx"] else 0
                             offsets["line"].append(region["s"] + token_length)
 
@@ -176,7 +176,9 @@ def rebuild_paper_text_passim(
     return (string, regions)
 
 
-def recompose_ci_from_page_solr(solr_ci, content_item):
+def recompose_ci_from_page_solr(
+    solr_ci: dict[str, Any], content_item: dict[str, Any]
+) -> dict[str, Any]:
     issue_id = "-".join(solr_ci["id"].split("-")[:-1])
     page_file_names = {
         p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
@@ -186,6 +188,7 @@ def recompose_ci_from_page_solr(solr_ci, content_item):
     linebreaks = []
     parabreaks = []
     regionbreaks = []
+    solr_ci["rreb"] = []
 
     for n, page_no in enumerate(solr_ci["pp"]):
 

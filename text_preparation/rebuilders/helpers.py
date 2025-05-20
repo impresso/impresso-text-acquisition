@@ -39,6 +39,7 @@ TYPE_MAPPINGS = {
     "advertisement": "ad",
     "ad": "ad",
     "pg": None,
+    "page": None,
     "image": "img",
     "table": "tb",
     "death_notice": "ob",
@@ -208,12 +209,14 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         "lg": ci_lang,
         "tp": mapped_type,
         "ro": reading_order,
-        "ppreb": [],
-        "lb": [],
     }
 
     if mapped_type == "img":
         solr_ci["iiif_link"] = reconstruct_iiif_link(content_item)
+
+    if content_item["sm"] == "audio":
+        solr_ci["stt"] = content_item["stt"]
+        solr_ci["dur"] = content_item["dur"]
 
     # add the metadata on the content item if it's available
     if "t" in content_item["m"]:
@@ -222,6 +225,13 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         solr_ci["rc"] = content_item["rc"]
     if "rp" in content_item:
         solr_ci["rp"] = content_item["rp"]
+
+    # special case for BL data
+    if "var_t" in content_item["m"]:
+        solr_ci["var_t"] = content_item["m"]["var_t"]
+    # special case for INA data
+    if "archival_note" in content_item["m"]:
+        solr_ci["archival_note"] = content_item["m"]["archival_note"]
 
     if mapped_type != "img":
         if content_item["sm"] == "audio":
@@ -309,6 +319,15 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
                 ci["rc"] = issue_json["rc"]
             if "rp" in issue_json:
                 ci["rp"] = issue_json["rp"]
+            if "rr" in issue_json:
+                # TODO update in the case we can have >1 record per CI or vice-versa
+                if len(ci["rr"]) > 1:
+                    msg = f"{ci['if']} - PROBLEM - there is more than one record for this CI! Only tkeing the first"
+                    print(msg)
+                    logger.warning(msg)
+                # taking the start time and duration of the first record for this CI (numbering starts at 1)
+                ci["stt"] = issue_json[ci["rr"][0] - 1]["stt"]
+                ci["dur"] = issue_json[ci["rr"][0] - 1]["dur"]
 
         if issue_json["sm"] == "audio":
             # for audio recordings there is only 1 per issue

@@ -18,7 +18,7 @@ def get_utterances(xml_doc) -> list[dict]:
     last_speaker = None
     last_utt_stime = 0
     last_utt_etime = 0
-    for xml_ss in xml_speech_segs:
+    for idx, xml_ss in enumerate(xml_speech_segs):
 
         tokens = [
             {"tc": extract_time_coords_from_elem(word), "tx": word.get_text()}
@@ -26,7 +26,7 @@ def get_utterances(xml_doc) -> list[dict]:
         ]
 
         if xml_ss.get("spkid") == last_speaker:
-            # case 1, same speaker as last speech segment,
+            # case 1, same speaker as last speech segment
             same_speaker_speech_segs.append(
                 {"tc": extract_time_coords_from_elem(xml_ss), "t": tokens}
             )
@@ -42,7 +42,6 @@ def get_utterances(xml_doc) -> list[dict]:
                         "ss": same_speaker_speech_segs,
                     }
                 )
-                print(f"Saving utterance: {utterances[-1]}")
 
             # start the new utterance
             last_utt_stime = float(xml_ss.get("stime"))
@@ -51,5 +50,15 @@ def get_utterances(xml_doc) -> list[dict]:
             same_speaker_speech_segs = [
                 {"tc": extract_time_coords_from_elem(xml_ss), "t": tokens}
             ]
+
+        if idx == len(xml_speech_segs) - 1:
+            # if it's the last speech segment, save the current utterance
+            utterances.append(
+                {
+                    "tc": [last_utt_stime, last_utt_etime - last_utt_stime],
+                    "speaker": last_speaker,
+                    "ss": same_speaker_speech_segs,
+                }
+            )
 
     return utterances

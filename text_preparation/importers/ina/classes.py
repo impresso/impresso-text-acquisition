@@ -236,7 +236,7 @@ class INABroadcastIssue(CanonicalIssue):
         ci_metadata = {
             "id": f"{self.id}-i{str(1).zfill(4)}",
             "lg": self._find_lang(),
-            "pp": [p.number for p in self.pages],
+            "rr": [r.number for r in self.audio_records],
             # only this type for now
             "tp": "radio_broadcast_episode",
             "ro": 1,
@@ -244,6 +244,9 @@ class INABroadcastIssue(CanonicalIssue):
 
         if self.metadata["Titre propre"] is not None:
             ci_metadata["t"] = self.metadata["Titre propre"]
+
+        if self.metadata["Résumé"] is not None:
+            ci_metadata["archival_note"] = self.metadata["Résumé"]
 
         # the legacy we can provide is the original notice ID and filename in the metadata
         ci_legacy = {
