@@ -85,7 +85,7 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         if len(all_blocks_xy_coords) == 0:
             msg = (
                 f"{self.id} - Warning! No line coords to merge! len(ocr_json['blocks_with_lines'])={len(ocr_json['blocks_with_lines'])}, len(paragraphs)={len(paragraphs)}. Returning empty region."
-                f"checking if there are other blocks: len(ocr_json['blocks_without_lines'])={len(ocr_json['blocks_without_lines'])}, ocr_json['blocks_without_lines'][0]['rescaled_bbox']={ocr_json['blocks_without_lines'][0]['rescaled_bbox']}, ocr_json['jp2_img_size']={ocr_json['jp2_img_size']}"
+                f"checking if there are other blocks: len(ocr_json['blocks_without_lines'])={len(ocr_json['blocks_without_lines'])}, ocr_json['blocks_without_lines']={ocr_json['blocks_without_lines']}, ocr_json['jp2_img_size']={ocr_json['jp2_img_size']}"
             )
             print(msg)
             logger.info(msg)

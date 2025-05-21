@@ -28,7 +28,7 @@ import jsonlines
 from dask import bag as db
 from dask.distributed import Client
 from filelock import FileLock
-from impresso_essentials.utils import IssueDir, chunk, PARTNER_TO_MEDIA
+from impresso_essentials.utils import IssueDir, chunk, PARTNER_TO_MEDIA, get_src_info_for_alias
 from impresso_essentials.io.fs_utils import canonical_path
 from impresso_essentials.io.s3 import get_s3_resource
 from impresso_essentials.versioning.data_manifest import DataManifest
@@ -405,7 +405,9 @@ def import_issues(
         # Once the issues were written to the fs without issues, add their info to the manifest
         for index, (np_year, filepath, yearly_stats) in enumerate(compressed_issue_files):
             manifest.add_count_list_by_title_year(
-                np_year.split("-")[0], np_year.split("-")[1], yearly_stats
+                np_year.split("-")[0],
+                np_year.split("-")[1],
+                yearly_stats,
             )
             # remove the yearly stats from the filenames
             compressed_issue_files[index] = (np_year, filepath)
@@ -637,7 +639,7 @@ def compress_issues(
     else:
         # Once the issues were written without problems, add their info to the manifest
         # src mediuem can be something else, but it does not affect here
-        src_medium = "audio" if is_audio else "print"
+        src_medium = get_src_info_for_alias(alias)
         for i in items:
             yearly_stats.append(counts_for_canonical_issue(i, src_medium=src_medium))
 
