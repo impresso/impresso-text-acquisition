@@ -2,7 +2,7 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
-    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar> --git-repo=<gr> --num-workers=<nw> --is-audio]
+    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar> --git-repo=<gr> --num-workers=<nw> --dont-push-manifest --is-audio]
     <importer-name>importer.py --version
 
 Options:
@@ -18,6 +18,7 @@ Options:
     --chunk-size=<cs>   Chunk size in years used to group issues when importing
     --git-repo=<gr>   Local path to the "impresso-text-acquisition" git directory (including it).
     --num-workers=<nw>  Number of workers to use for local dask cluster
+    --dont-push-manifest  Whether to push the generated manifest to github (will push if not specified)
     --is-audio  Whether the data to import is audio data (source medium)
     --verbose   Verbose log messages (good for debugging)
     --clear    Removes the output folder (if already existing)
@@ -203,6 +204,7 @@ def main(
     config_file = args["--config-file"]
     repo_path = args["--git-repo"]
     num_workers = args["--num-workers"]
+    dont_push_to_git = args["--dont-push-manifest"]
     is_audio = args["--is-audio"]
 
     if print_version:
@@ -278,6 +280,7 @@ def main(
         temp_dir=temp_dir,
         notes=manifest_note,
         only_counting=False,
+        push_to_git=not dont_push_to_git,
     )
 
     print("Right before import issues")

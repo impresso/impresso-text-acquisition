@@ -46,7 +46,6 @@ class SwissInfoRadioBulletinPage(CanonicalPage):
         self.split_page_blocks = None
         self.page_data = {
             "id": self.id,
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
             "r": [],  # here go the page regions
             "iiif_img_base_uri": self.iiif_base_uri,
@@ -144,7 +143,6 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
 
         self.issue_data = {
             "id": self.id,
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
             "st": SourceType.RB.value,
             "sm": SourceMedium.TPS.value,

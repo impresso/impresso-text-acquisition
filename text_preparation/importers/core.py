@@ -504,7 +504,7 @@ def import_issues(
         manifest.compute(export_to_git_and_s3=False)
         manifest.validate_and_export_manifest(push_to_git=False)
     else:
-        manifest.compute(export_to_git_and_s3=True)
+        manifest.compute()
 
     if temp_dir is not None and os.path.isdir(temp_dir):
         shutil.rmtree(temp_dir, ignore_errors=True)
