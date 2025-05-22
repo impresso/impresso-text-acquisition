@@ -24,7 +24,7 @@ def rebuild_audio_text(
         tuple[str, dict[list], dict[list]]: [0] CI fulltext, [1] offsets and
             [2] coordinates of token regions.
     """
-    coordinates = {"sections": [], "tokens": []}
+    coordinates = {"sections": [], "utterances": [], "tokens": []}
 
     offsets = {"speech_seg": [], "utterance": [], "section": []}
 
@@ -57,23 +57,12 @@ def rebuild_audio_text(
                     section["tc"] = token["tc"]
                     section["s"] = len(string)
 
-                    # TODO remove because probably no hyphens in ASR
-                    token_text = None
-                    if "hy" in token:
-                        section["l"] = len(token["tx"][:-1]) - 1
-                        section["hy1"] = True
-                    elif "nf" in token:
-                        section["l"] = len(token["nf"])
-                        section["hy2"] = True
-
-                        token_text = token["nf"] if token["nf"] is not None else ""
+                    if token["tx"]:
+                        section["l"] = len(token["tx"])
+                        token_text = token["tx"]
                     else:
-                        if token["tx"]:
-                            section["l"] = len(token["tx"])
-                        else:
-                            section["l"] = 0
-
-                        token_text = token["tx"] if token["tx"] is not None else ""
+                        section["l"] = 0
+                        token_text = ""
 
                     # don't add the tokens corresponding to the first part of a hyphenated word
                     if "hy" not in token:
@@ -92,11 +81,7 @@ def rebuild_audio_text(
 
                     # if token is the last in a speech segment
                     if n == len(speech_seg["t"]) - 1:
-                        if "hy" in token:
-                            offsets["speech_seg"].append(section["s"])
-                        else:
-                            token_length = len(token["tx"]) if token["tx"] else 0
-                            offsets["speech_seg"].append(section["s"] + token_length)
+                        offsets["speech_seg"].append(section["s"] + section["l"])
 
                     coordinates["tokens"].append(section)
 
@@ -212,8 +197,7 @@ def recompose_ci_from_audio_solr(
             "id": audio_file_names[audio_rec_no].replace(".json", ""),
             "n": audio_rec_no,
             "t": coords["tokens"],
-            # TODO add utterances?
-            # "u": coords["utterances"]
+            "u": coords["utterances"],
             "s": coords["sections"],
         }
         solr_ci["rreb"].append(audio_doc)
