@@ -273,6 +273,7 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
         if len(bulletin_metadata) > 0:
             self.content_items[0]["m"]["t"] = bulletin_metadata[0]["segment_title"]
             self.content_items[0]["m"]["tp"] = SWISSINFO_CI_TYPE
+            self.content_items[0]["m"]["var_t"] = bulletin_metadata[0]["program_title"]
             self.program = bulletin_metadata[0]["program_title"]
             if bulletin_metadata[0]["program_subtitle"] != "":
                 self.program += f" - {bulletin_metadata[0]['program_subtitle']}"

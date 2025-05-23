@@ -229,7 +229,7 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     if "rp" in content_item:
         solr_ci["rp"] = content_item["rp"]
 
-    # special case for BL data
+    # special case for BL and SWISSINFO data - when there can be period-specific titles
     if "var_t" in content_item["m"]:
         solr_ci["var_t"] = content_item["m"]["var_t"]
     # special case for INA data
