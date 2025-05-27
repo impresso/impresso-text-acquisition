@@ -3,6 +3,7 @@ import json
 import re
 import logging
 import shutil
+from copy import deepcopy
 from ast import literal_eval
 from datetime import datetime
 import fire
@@ -20,8 +21,9 @@ ALIAS_NLPS_TO_SKIP = {
 
 BL_OCR_BASE_PATH = "/mnt/project_impresso/original/BL"
 BL_IMG_BASE_PATH = "/mnt/impresso_images_BL"
-ALIAS_TO_NLP_PATH = "/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BL/BL_alias_to_NLP.json"
-REPROCESS_FILEPATH = "/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BL/pages_to_reprocess.json"
+ALIAS_TO_NLP_PATH = "../../data/sample_data/BL/BL_alias_to_NLP.json"
+REPROCESS_FILEPATH = "../../data/sample_data/BL/pages_to_reprocess.json"
+OCR_FORMATS_FILEPATH = "../../data/sample_data/BL/BL_ocr_formats.json"
 RENAMING_INFO_FILENAME = "renaming_info.json"
 
 img_filename_pattern = "^d{7}_d{8}_d{4}.jp2$"
@@ -42,9 +44,14 @@ def rename_jp2_files_for_issue(input_dir, issue_id, nlp, orc_issue_dir, rename_f
     # see if there is an existing info dict for this issue, otherwise intialize a new one
     info_filepath = os.path.join(input_dir, RENAMING_INFO_FILENAME)
     if os.path.exists(info_filepath):
+        msg = f"{input_dir} - {info_filepath} file already present, reading it."
+        print(msg)
+        # logger.debug(msg)
         with open(info_filepath, "r", encoding="utf-8") as f:
-            info_dict = json.load(f)
+            og_info_dict = json.load(f)
+        info_dict = deepcopy(og_info_dict)
     else:
+        og_info_dict = None
         info_dict = {}
 
     for og_filename in os.listdir(input_dir):
@@ -99,9 +106,10 @@ def rename_jp2_files_for_issue(input_dir, issue_id, nlp, orc_issue_dir, rename_f
                 logger.error(msg)
                 info_dict[page_num]["had_exception_when_renaming"] = True
 
-            # already save the info dict in case
-            with open(info_filepath, "w", encoding="utf-8") as fout:
-                json.dump(info_dict, fout)
+            if not og_info_dict or info_dict != og_info_dict:
+                # already save the info dict in case, if it's not already saved
+                with open(info_filepath, "w", encoding="utf-8") as fout:
+                    json.dump(info_dict, fout)
 
         # if the found file had already been renamed, ensure it's in the info dict and skip
         elif issue_id in og_filename:
