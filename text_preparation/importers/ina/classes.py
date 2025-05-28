@@ -16,6 +16,9 @@ logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
+# TODO update and add new languages once they are found in the data.
+LANG_MAPPING = {"fre": "fr"}
+
 
 class INABroadcastAudioRecord(CanonicalAudioRecord):
     """Radio-Broadcast Audio Record for INA's ASR format.
@@ -229,7 +232,7 @@ class INABroadcastIssue(CanonicalIssue):
                 print(msg)
                 self._notes.append(msg)
 
-            return max(langs)
+            return LANG_MAPPING[max(langs)]
 
     def _parse_content_item(self) -> None:
 
