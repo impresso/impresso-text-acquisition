@@ -8,6 +8,7 @@ from ast import literal_eval
 from datetime import datetime
 import fire
 import pandas as pd
+import traceback
 from tqdm import tqdm
 from PIL import Image
 from bs4 import BeautifulSoup
@@ -28,7 +29,7 @@ REPROCESS_FILEPATH = "../../data/sample_data/BL/renaming_errors_or_to_reprocess.
 OCR_FORMATS_FILEPATH = "../../data/sample_data/BL/BL_ocr_formats.json"
 RENAMING_INFO_FILENAME = "renaming_info.json"
 
-KNOWN_OCR_FORMATS = ["OmniPage-NLP", "BL-ALIAS", "ABBYY-NLP", "ABBYY-ALIAS"]
+KNOWN_OCR_FORMATS = ["OmniPage-NLP", "BL-ALIAS", "ABBYY-NLP", "ABBYY-ALIAS", "Nuance-NLP"]
 VALID_OCR_FORMATS = ["OmniPage-NLP"]
 
 img_filename_pattern = "^d{7}_d{8}_d{4}.jp2$"
@@ -100,7 +101,7 @@ def rename_jp2_files_for_issue(input_dir, issue_id, nlp, orc_issue_dir, rename_f
                 if rename_files:
                     os.rename(original_path, new_path)
                     msg = f"renamed {og_filename} to {new_filename}"
-                    print(msg)
+                    # print(msg)
                     logger.debug(msg)
                 else:
                     print(f"Would have renamed {og_filename} to {new_filename}")
@@ -112,20 +113,22 @@ def rename_jp2_files_for_issue(input_dir, issue_id, nlp, orc_issue_dir, rename_f
                 info_dict[page_num]["had_exception_when_renaming"] = True
 
             if not og_info_dict or info_dict != og_info_dict:
-                # already save the info dict in case, if it's not already saved
+                # save the info dict, if it's not already saved
                 with open(info_filepath, "w", encoding="utf-8") as fout:
                     json.dump(info_dict, fout)
 
         # if the found file had already been renamed, ensure it's in the info dict and skip
         elif issue_id in og_filename:
-
-            if str(page_num_from_filename(og_filename, f"{issue_id}-p")) not in info_dict:
+            pg_num = str(page_num_from_filename(og_filename, f"{issue_id}-p"))
+            if pg_num not in info_dict:
                 # for now only log these cases, as they should not occur. If they do, add the record to the dict
                 msg = f"{input_dir} - file {og_filename} has already been renamed, but not in info file!"
-            else:
-                msg = f"{input_dir} - file {og_filename} has already been renamed, skipping."
-            print(msg)
-            logger.info(msg)
+                print(msg)
+                logger.info(msg)
+            elif pg_num == 1:
+                msg = f"{input_dir} - file {og_filename} has already been renamed, skipping. (Only printing for page 1)"
+                print(msg)
+                logger.info(msg)
 
         # if the file is .jp2 but does not have any of the expected formats, save it for future processings
         else:
@@ -202,9 +205,7 @@ def identify_edition(img_day_dir, nlp, nlps_for_alias):
 def id_bl_alias_format(alias, ocr_files, ocr_issue_dir, ocr_formats) -> dict[str, list]:
     _, nlp, year, month, day = ocr_issue_dir.split(alias)[-1].split("/")
     expected_prefix = f"WO1_{alias}_{year}_{month}_{day}-"
-    matching_files = [
-        f for f in ocr_files if f.startswith(expected_prefix) and f.endswith(".xml")
-    ]
+    matching_files = [f for f in ocr_files if expected_prefix in f and f.endswith(".xml")]
 
     if matching_files:
         # add the matching files to the BL-ALIAS OCR format if there are any
@@ -224,18 +225,36 @@ def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
         # the possible OCR formats are ABBYY-NLP or OmniPage-NLP
         page_files = [f for f in ocr_files if f.startswith(nlp_prefix) and f != mets_file]
 
-        # randomly open a page to differentiate between the two possible formats
-        with open(os.path.join(ocr_issue_dir, page_files[0]), "r", encoding="utf-8") as f:
-            raw_xml_page = f.read()
+        pg_idx = 0
+        software_names = ["ccs docworks"]
+        while list(set(software_names)) == ["ccs docworks"]:
+            # randomly open a page to differentiate between the two possible formats
+            with open(
+                os.path.join(ocr_issue_dir, page_files[pg_idx]), "r", encoding="utf-8"
+            ) as f:
+                raw_xml_page = f.read()
 
-        nlp_page_doc = BeautifulSoup(raw_xml_page, "xml")
+            nlp_page_doc = BeautifulSoup(raw_xml_page, "xml")
 
-        software_names = [e.get_text() for e in nlp_page_doc.find_all("softwareName")]
-        if "OmniPage" in software_names:
+            software_names = [
+                e.get_text().lower() for e in nlp_page_doc.find_all("softwareName")
+            ]
+
+            if pg_idx > 0:
+                # if the page only has this software name, retry with another page
+                msg = f"{ocr_issue_dir} - Only found software names {software_names} in page {pg_idx+1}, retrying with another page."
+                print(msg)
+                logger.info(msg)
+            else:
+                pg_idx += 1
+
+        if "omnipage" in software_names:
             # Omni is the software name
             ocr_formats["OmniPage-NLP"] = page_files + [mets_file]
-        elif "FineReader" in software_names:
+        elif "finereader" in software_names:
             ocr_formats["ABBYY-NLP"] = page_files + [mets_file]
+        elif "nuance" in software_names:
+            ocr_formats["Nuance-NLP"] = page_files + [mets_file]
         else:
             msg = f"{ocr_issue_dir} - The software name and creators don't match OmniPage nor ABBY (should be OmniPage or FineReader)! software_names:{software_names}"
             print(msg)
@@ -249,11 +268,20 @@ def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
             raw_xml_page = f.read()
 
         alias_page_doc = BeautifulSoup(raw_xml_page, "xml")
-        software_names = [e.get_text() for e in alias_page_doc.find_all("softwareName")]
-        if "FineReader" in software_names or alias_page_doc.find_all("UKP"):
+        software_names = [
+            e.get_text().lower() for e in alias_page_doc.find_all("softwareName")
+        ]
+        software_creators = [
+            e.get_text().lower() for e in alias_page_doc.find_all("softwareCreator")
+        ]
+        if (
+            "finereader" in software_names
+            or alias_page_doc.find_all("UKP")
+            or any("abbyy" in s for s in software_creators)
+        ):
             ocr_formats["ABBYY-ALIAS"] = page_files + [mets_file]
         else:
-            msg = f"{ocr_issue_dir} - The filenames indicate the format should be ABBYY-ALIAS, but the software name doens't match (should be FineReader)! software_names:{software_names}"
+            msg = f"{ocr_issue_dir} - The filenames indicate the format should be ABBYY-ALIAS, but the software name doens't match (should be FineReader)! software_names:{software_names}, software_creators={software_creators}"
             print(msg)
             logger.warning(msg)
 
@@ -304,7 +332,7 @@ def id_ocr_format(ocr_issue_dir, alias):
 
 def main(
     log_file: str,
-    chunk_size: int = 60,
+    chunk_size: int = 93,
     chunk_idx: int = 0,
     verbose: bool = False,
 ) -> None:
@@ -429,7 +457,16 @@ def main(
                                 else:
                                     # add here identification of OCR format and filtering.
                                     _, ocr_formats = id_ocr_format(root, bl_alias)
-                                    ocr_formats_for_alias[year][root] = ocr_formats
+                                    # don't store the full list of files for formats with mets files
+                                    proc_formats = {
+                                        form: (
+                                            [f for f in files if "mets" in f]
+                                            if form not in ["BL-ALIAS", "UNKNOWN"]
+                                            else files
+                                        )
+                                        for form, files in ocr_formats.items()
+                                    }
+                                    ocr_formats_for_alias[year][root] = proc_formats
 
                                 # only rename images for issues with an OCR format that we're ready to process
                                 if any(
@@ -461,11 +498,15 @@ def main(
                                             img_input_dir, issue_id, nlp, root
                                         )
 
-                                        if year in to_reprocess_for_alias and to_reprocess:
-                                            to_reprocess_for_alias[year].update(to_reprocess)
-                                        else:
-                                            to_reprocess_for_alias[year] = to_reprocess
+                                        if to_reprocess:
+                                            if year in to_reprocess_for_alias:
+                                                to_reprocess_for_alias[year].update(
+                                                    to_reprocess
+                                                )
+                                            else:
+                                                to_reprocess_for_alias[year] = to_reprocess
 
+                                        info_dict["ocr_formats"] = ocr_formats
                                         # write the info dict to disk also with the OCR, but it needs to be in the write-allowed dir
                                         with open(
                                             os.path.join(root, RENAMING_INFO_FILENAME).replace(
@@ -491,18 +532,32 @@ def main(
                                         first_day_of_year = False
 
                 # If there was anything to reprocess for this alias, save it
-                if to_reprocess_for_alias or edition_errors_for_alias:
-                    all_errors_or_to_reprocess[bl_alias] = {
-                        "to_reprocess": to_reprocess_for_alias,
-                        "edition_errors": edition_errors_for_alias,
-                    }
+                if edition_errors_for_alias:
+                    if bl_alias in all_errors_or_to_reprocess:
+                        all_errors_or_to_reprocess[bl_alias][
+                            "edition_errors"
+                        ] = edition_errors_for_alias
+                    else:
+                        all_errors_or_to_reprocess[bl_alias] = {
+                            "edition_errors": edition_errors_for_alias
+                        }
+                if to_reprocess_for_alias:
+                    if bl_alias in all_errors_or_to_reprocess:
+                        all_errors_or_to_reprocess[bl_alias][
+                            "to_reprocess"
+                        ] = to_reprocess_for_alias
+                    else:
+                        all_errors_or_to_reprocess[bl_alias] = {
+                            "to_reprocess": to_reprocess_for_alias
+                        }
+
                 # save the ocr formats for future reference
                 if bl_alias in all_ocr_formats:
                     all_ocr_formats[bl_alias].update(ocr_formats_for_alias)
                 else:
                     all_ocr_formats[bl_alias] = ocr_formats_for_alias
             except Exception as e:
-                msg = f"{bl_alias}-{nlp}: There was an exception when processing this alias!! Exception: {e}"
+                msg = f"{bl_alias}-{nlp}: There was an exception when processing this alias!! Exception: {e}, {traceback.format_exc()}"
                 print(msg)
                 logger.error(msg)
 
