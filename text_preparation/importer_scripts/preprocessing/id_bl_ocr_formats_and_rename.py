@@ -152,22 +152,19 @@ def identify_edition(img_day_dir, nlp, nlps_for_alias):
 
     for root, dirs, files in os.walk(img_day_dir):
         if files and not dirs:
-            edition = root.split("/")[-1]
-            if edition not in all_files_for_nlp:
-                all_files_for_nlp[edition] = [
-                    os.path.join(root, f)
-                    for f in files
-                    if nlp in f and f != RENAMING_INFO_FILENAME
-                ]
-            else:
-                all_files_for_nlp[edition].extend(
-                    [
-                        os.path.join(root, f)
-                        for f in files
-                        if nlp in f and f != RENAMING_INFO_FILENAME
-                    ]
-                )
-            editions_with_files.add(edition)
+            year, month, day, edition = root.split("/")[-4:]
+            ed_files_for_nlp = [
+                os.path.join(root, f)
+                for f in files
+                if (nlp in f or f"{year}-{month}-{day}" in f) and f != RENAMING_INFO_FILENAME
+            ]
+            if ed_files_for_nlp:
+                # only add this edition if there are files for this NLP inside
+                if edition not in all_files_for_nlp:
+                    all_files_for_nlp[edition] = ed_files_for_nlp
+                else:
+                    all_files_for_nlp[edition].extend(ed_files_for_nlp)
+                editions_with_files.add(edition)
 
             if len(nlps_for_alias) > 1:
                 other_nlps = [n for n in nlps_for_alias if n != nlp]
@@ -180,12 +177,14 @@ def identify_edition(img_day_dir, nlp, nlps_for_alias):
     if len(editions_with_files) == 1 and editions_with_files[0] not in nlps_per_edition:
         # if we find this nlp only in this edition, and no other nlps there, it's the correct one
         return editions_with_files[0], None
+
     elif len(editions_with_files) > 1:
         msg = f"{nlp} - {img_day_dir} - Edition not fully identifiable (case 1)! keeping in logs for next processings."
         print(msg)
         logger.warning(msg)
         return None, {
-            (nlp, img_day_dir): (
+            img_day_dir: (
+                nlp,
                 1,
                 f"Files for this NLP in multiple editions: all_files_for_nlp = {all_files_for_nlp}",
             )
@@ -195,7 +194,8 @@ def identify_edition(img_day_dir, nlp, nlps_for_alias):
         print(msg)
         logger.warning(msg)
         return None, {
-            (nlp, img_day_dir): (
+            img_day_dir: (
+                nlp,
                 2,
                 f"Mulitple NLPs represented for some editions: nlps_per_edition = {nlps_per_edition}",
             )
@@ -228,7 +228,14 @@ def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
         pg_idx = 0
         software_names = ["ccs docworks"]
         while list(set(software_names)) == ["ccs docworks"]:
-            # randomly open a page to differentiate between the two possible formats
+
+            if pg_idx >= len(page_files):
+                msg = f"{ocr_issue_dir} - pg_idx>=len(page_files): pg_idx={pg_idx}, page_files={page_files}."
+                print(msg)
+                logger.warning(msg)
+                break
+
+            # open a page to differentiate between the two possible formats
             with open(
                 os.path.join(ocr_issue_dir, page_files[pg_idx]), "r", encoding="utf-8"
             ) as f:
@@ -426,110 +433,105 @@ def main(
 
             try:
 
-                for nlp in os.listdir(alias_root_dir):
+                nlp_root_dir = os.path.join(BL_OCR_BASE_PATH, bl_alias, nlp)
+                years_for_nlp = os.listdir(nlp_root_dir)
 
-                    nlp_root_dir = os.path.join(BL_OCR_BASE_PATH, bl_alias, nlp)
-                    years_for_nlp = os.listdir(nlp_root_dir)
-                    for y_id, year in enumerate(years_for_nlp, start=1):
+                for y_id, year in enumerate(years_for_nlp, start=1):
 
-                        msg = f"-->  {bl_alias} - Starting year {year} ({y_id}/{len(years_for_nlp)}) for NLP {nlp}"
-                        print(msg)
-                        logger.info(msg)
+                    msg = f"-->  {bl_alias} - Starting year {year} ({y_id}/{len(years_for_nlp)}) for NLP {nlp}"
+                    print(msg)
+                    logger.info(msg)
 
-                        # initialize the ocr formats dict for this year if it's not there yet
-                        if year not in ocr_formats_for_alias:
-                            ocr_formats_for_alias[year] = {}
+                    # initialize the ocr formats dict for this year if it's not there yet
+                    if year not in ocr_formats_for_alias:
+                        ocr_formats_for_alias[year] = {}
 
-                        first_day_of_year = True
+                    first_day_of_year = True
 
-                        year_root_dir = os.path.join(BL_OCR_BASE_PATH, bl_alias, nlp, year)
+                    year_root_dir = os.path.join(BL_OCR_BASE_PATH, bl_alias, nlp, year)
 
-                        for root, dirs, files in os.walk(year_root_dir):
+                    for root, dirs, files in os.walk(year_root_dir):
 
-                            # identify when we are in the dirctory of an issue
-                            if len(dirs) == 0 and len(files) != 0:
+                        # identify when we are in the dirctory of an issue
+                        if len(dirs) == 0 and len(files) != 0:
 
-                                _, month, day = root.replace(year_root_dir, "").split("/")
+                            _, month, day = root.replace(year_root_dir, "").split("/")
 
-                                # don't recompute the OCR format if it was already computed
-                                if root in ocr_formats_for_alias[year]:
-                                    ocr_formats = ocr_formats_for_alias[root]
-                                else:
-                                    # add here identification of OCR format and filtering.
-                                    _, ocr_formats = id_ocr_format(root, bl_alias)
-                                    # don't store the full list of files for formats with mets files
-                                    proc_formats = {
-                                        form: (
-                                            [f for f in files if "mets" in f]
-                                            if form not in ["BL-ALIAS", "UNKNOWN"]
-                                            else files
-                                        )
-                                        for form, files in ocr_formats.items()
-                                    }
-                                    ocr_formats_for_alias[year][root] = proc_formats
+                            # don't recompute the OCR format if it was already computed
+                            if root in ocr_formats_for_alias[year]:
+                                ocr_formats = ocr_formats_for_alias[year][root]
+                            else:
+                                # add here identification of OCR format and filtering.
+                                _, ocr_formats = id_ocr_format(root, bl_alias)
+                                # don't store the full list of files for formats with mets files
+                                proc_formats = {
+                                    form: (
+                                        [f for f in files if "mets" in f]
+                                        if form not in ["BL-ALIAS", "UNKNOWN"]
+                                        else files
+                                    )
+                                    for form, files in ocr_formats.items()
+                                }
+                                ocr_formats_for_alias[year][root] = proc_formats
 
-                                # only rename images for issues with an OCR format that we're ready to process
-                                if any(
-                                    ocr_form in VALID_OCR_FORMATS
-                                    for ocr_form in ocr_formats.keys()
-                                ):
-                                    if first_day_of_year:
-                                        msg = f"{root} - valid ocr format, will rename the image files: ocr_formats={ocr_formats}"
-                                        print(msg)
-                                        logger.info(msg)
-                                        first_day_of_year = False
+                            # only rename images for issues with an OCR format that we're ready to process
+                            if any(
+                                ocr_form in VALID_OCR_FORMATS
+                                for ocr_form in ocr_formats.keys()
+                            ):
+                                if first_day_of_year:
+                                    msg = f"{root} - valid ocr format, will rename the image files: ocr_formats={ocr_formats}"
+                                    print(msg)
+                                    logger.info(msg)
+                                    first_day_of_year = False
 
-                                    img_day_dir = os.path.join(
-                                        BL_IMG_BASE_PATH, bl_alias, year, month, day
+                                img_day_dir = os.path.join(
+                                    BL_IMG_BASE_PATH, bl_alias, year, month, day
+                                )
+
+                                # try to identify the correct edition
+                                edition, to_log = identify_edition(
+                                    img_day_dir, nlp, alias_to_nlp[bl_alias]
+                                )
+
+                                if edition:
+                                    # edition is not None, we can go ahead with it (and log it!)
+                                    img_input_dir = os.path.join(img_day_dir, edition)
+                                    issue_id = "-".join([bl_alias, year, month, day, edition])
+                                    info_dict, to_reprocess = rename_jp2_files_for_issue(
+                                        img_input_dir, issue_id, nlp, root
                                     )
 
-                                    # try to identify the correct edition
-                                    edition, to_log = identify_edition(
-                                        img_day_dir, nlp, alias_to_nlp[bl_alias]
-                                    )
-
-                                    if edition:
-                                        # edition is not None, we can go ahead with it (and log it!)
-                                        img_input_dir = os.path.join(img_day_dir, edition)
-                                        issue_id = "-".join(
-                                            [bl_alias, year, month, day, edition]
-                                        )
-                                        info_dict, to_reprocess = rename_jp2_files_for_issue(
-                                            img_input_dir, issue_id, nlp, root
-                                        )
-
-                                        if to_reprocess:
-                                            if year in to_reprocess_for_alias:
-                                                to_reprocess_for_alias[year].update(
-                                                    to_reprocess
-                                                )
-                                            else:
-                                                to_reprocess_for_alias[year] = to_reprocess
-
-                                        info_dict["ocr_formats"] = ocr_formats
-                                        # write the info dict to disk also with the OCR, but it needs to be in the write-allowed dir
-                                        with open(
-                                            os.path.join(root, RENAMING_INFO_FILENAME).replace(
-                                                BL_OCR_BASE_PATH, BL_OCR_W_BASE_PATH
-                                            ),
-                                            "w",
-                                            encoding="utf-8",
-                                        ) as fout:
-                                            json.dump(info_dict, fout)
-
-                                    elif to_log:
-                                        # log
-                                        if year in edition_errors_for_alias:
-                                            edition_errors_for_alias[year].update(to_log)
+                                    if to_reprocess:
+                                        if year in to_reprocess_for_alias:
+                                            to_reprocess_for_alias[year].update(to_reprocess)
                                         else:
-                                            edition_errors_for_alias[year] = to_log
-                                else:
-                                    # only log a wrong format for the first day of the year
-                                    if first_day_of_year:
-                                        msg = f"{root} - Not an OCR format we will process for now - waiting"
-                                        print(msg)
-                                        logger.info(msg)
-                                        first_day_of_year = False
+                                            to_reprocess_for_alias[year] = to_reprocess
+
+                                    info_dict["ocr_formats"] = ocr_formats
+                                    # write the info dict to disk also with the OCR, but it needs to be in the write-allowed dir
+                                    with open(
+                                        os.path.join(root, RENAMING_INFO_FILENAME).replace(
+                                            BL_OCR_BASE_PATH, BL_OCR_W_BASE_PATH
+                                        ),
+                                        "w",
+                                        encoding="utf-8",
+                                    ) as fout:
+                                        json.dump(info_dict, fout)
+
+                                elif to_log:
+                                    # log
+                                    if year in edition_errors_for_alias:
+                                        edition_errors_for_alias[year].update(to_log)
+                                    else:
+                                        edition_errors_for_alias[year] = to_log
+                            else:
+                                # only log a wrong format for the first day of the year
+                                if first_day_of_year:
+                                    msg = f"{root} - Not an OCR format we will process for now - waiting"
+                                    print(msg)
+                                    logger.info(msg)
+                                    first_day_of_year = False
 
                 # If there was anything to reprocess for this alias, save it
                 if edition_errors_for_alias:
@@ -574,7 +576,7 @@ def main(
 
         # save the OCR formats which were already identified
         with open(OCR_FORMATS_FILEPATH, "w", encoding="utf-8") as f:
-            json.dump(all_ocr_formats, f)
+            json.dump(all_ocr_formats, f, indent=2)
 
     msg = f"✅✅ Success! Done with all {len(alias_chunk)} in this chunk: {alias_chunk}!!"
     print(msg)
