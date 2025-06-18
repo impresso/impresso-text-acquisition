@@ -229,6 +229,12 @@ def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
         software_names = ["ccs docworks"]
         while list(set(software_names)) == ["ccs docworks"]:
 
+            if pg_idx > 0:
+                # if the page only has this software name, retry with another page
+                msg = f"{ocr_issue_dir} - Only found software names {software_names} in page {pg_idx+1}, retrying with another page."
+                print(msg)
+                logger.info(msg)
+
             if pg_idx >= len(page_files):
                 msg = f"{ocr_issue_dir} - pg_idx>=len(page_files): pg_idx={pg_idx}, page_files={page_files}."
                 print(msg)
@@ -247,13 +253,8 @@ def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
                 e.get_text().lower() for e in nlp_page_doc.find_all("softwareName")
             ]
 
-            if pg_idx > 0:
-                # if the page only has this software name, retry with another page
-                msg = f"{ocr_issue_dir} - Only found software names {software_names} in page {pg_idx+1}, retrying with another page."
-                print(msg)
-                logger.info(msg)
-            else:
-                pg_idx += 1
+            # increase the page number for next iteration
+            pg_idx += 1
 
         if "omnipage" in software_names:
             # Omni is the software name
