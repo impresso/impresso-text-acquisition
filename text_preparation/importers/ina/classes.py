@@ -10,11 +10,12 @@ from mutagen.mp3 import MP3
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalAudioRecord
 from text_preparation.importers.ina.helpers import get_utterances
+from impresso_essentials.io.fs_utils import canonical_path
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
+IIIF_ENDPOINT_URI = "https://impresso-project.ch/media/audio/"
 
 # TODO update and add new languages once they are found in the data.
 LANG_MAPPING = {"fre": "fr"}
@@ -24,11 +25,11 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
     """Radio-Broadcast Audio Record for INA's ASR format.
 
     Args:
-        _id (str): Canonical Audio Record ID (e.g. ``-1900-01-02-a-r0001``).
+        _id (str): Canonical Audio Record ID (e.g. ``CFCE-1900-01-02-a-r0001``).
         number (int): Record number (for compatibility with other source mediums).
 
     Attributes:
-        id (str): Canonical Audio Record ID (e.g. ``INA-1900-01-02-a-r0001``).
+        id (str): Canonical Audio Record ID (e.g. ``CFCE-1900-01-02-a-r0001``).
         number (int): Record number.
         record_data (dict[str, Any]): Audio record data according to canonical format.
         issue (CanonicalIssue | None): Issue this page is from.
@@ -41,7 +42,7 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         self.json_filepath = xml_filepath.replace(".xml", ".json")
         # TODO change once the mp3 files are moved and renamed
         self.mp3_filepath = xml_filepath.replace(".xml", ".MP3")
-        self.iiif_base_uri = f"{IIIF_ENDPOINT_URI}"
+        self.iiif_base_uri = self.create_iiif()
         self.notes = []
 
         self.record_data = {
@@ -55,6 +56,10 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
             "sm": SourceMedium.AO.value,
             "cc": True,  # kept for conformity but not very relevant
         }
+
+    def create_iiif(self) -> str:
+        internal_path = os.path.dirname(self.id.replace("-", "/"))
+        return os.path.join(IIIF_ENDPOINT_URI, "INA", internal_path, f"{self.id}.mp3")
 
     def add_issue(self, issue: CanonicalIssue) -> None:
         self.issue = issue
