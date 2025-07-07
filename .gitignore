@@ -7,6 +7,7 @@ text_preparation/data/out/out_pauline/
 text_preparation/data/out/canonical_out/test_out/*/*/*/*/*/*.json
 text_preparation/data/out/canonical_out/test_out/*.log
 text_preparation/data/out/canonical_out/*/*/*/*/*/*.json
+text_preparation/data/out/canonical_out/test_out/*
 text_preparation/data/logs/importer_logs/debug_*
 text_preparation/data/logs/BL_processing_logs/*
 text_preparation/data/logs/importer_logs/playground_*
