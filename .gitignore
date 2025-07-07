@@ -3,8 +3,8 @@
 *pyc
 text_preparation/data/tmp/
 text_preparation/data/temp/
-text_preparation/data/out_pauline/
-text_preparation/data/canonical_out/*/*/*/*/*/*.json
+text_preparation/data/out/out_pauline/
+text_preparation/data/out/canonical_out/*/*/*/*/*/*.json
 text_preparation/data/logs/importer_logs/debug_*
 text_preparation/data/logs/BL_processing_logs/*
 text_preparation/data/logs/importer_logs/playground_*
