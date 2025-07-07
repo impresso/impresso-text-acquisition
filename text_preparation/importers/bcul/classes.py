@@ -213,9 +213,7 @@ class BculNewspaperIssue(CanonicalIssue):
             Exception: If the maximum number of retry attempts is reached.
         """
         try:
-            logger.info(
-                "Submitting request to iiif API for %s: %s", self.id, self.iiif_manifest
-            )
+            logger.info("Submitting request to iiif API for %s: %s", self.id, self.iiif_manifest)
             response = requests.get(self.iiif_manifest, timeout=60)
             if response.status_code == 200:
                 return response.json()["sequences"][0]["canvases"]
@@ -373,7 +371,7 @@ class BculNewspaperIssue(CanonicalIssue):
             }
             self.content_items.append(ci)
 
-        # TODO - Add legacy!!
+        # TODO - Add legacy!! (Scriptorium Issue # and page # inside legacy)
 
         n = len(self.content_items) + 1
         # Get all images and tables
@@ -393,7 +391,6 @@ class BculNewspaperIssue(CanonicalIssue):
                 }
 
                 # Content item is an image
-                # TODO check this works with samples that have images
                 if ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
                     ci["m"]["iiif_link"] = os.path.join(p.iiif_base_uri, IIIF_SUFFIX)
                     ci["c"] = coords

@@ -131,7 +131,7 @@ def apply_detect_func(
         list[IssueDir]: List of detected issues for this importer.
     """
     if issue_class is BlNewspaperIssue:
-        return detect_func(input_dir, access_rights=access_rights, tmp_dir=tmp_dir)
+        return detect_func(input_dir, tmp_dir=tmp_dir)
     else:
         return detect_func(input_dir, access_rights=access_rights)
 
@@ -159,9 +159,7 @@ def apply_select_func(
         list[IssueDir]: List of selected issues for this importer and config.
     """
     if issue_class is BlNewspaperIssue:
-        return select_func(
-            input_dir, config=config, access_rights=access_rights, tmp_dir=tmp_dir
-        )
+        return select_func(input_dir, config=config, tmp_dir=tmp_dir)
 
     return select_func(input_dir, config=config, access_rights=access_rights)
 
@@ -235,9 +233,7 @@ def main(
             select_func=select_func,
             tmp_dir=temp_dir,
         )
-        logger.info(
-            "%s issues remained to import after applying filter: %s", len(issues), issues
-        )
+        logger.info("%s issues remained to import after applying filter: %s", len(issues), issues)
     else:
         logger.info("No config file found.")
         issues = apply_detect_func(
@@ -256,9 +252,7 @@ def main(
         ]
         logger.debug("Issues to skip: %s", issues_to_skip)
         logger.info("%s issues to skip", len(issues_to_skip))
-        issues = list(
-            filter(lambda x: (x.alias, x.date, x.edition) not in issues_to_skip, issues)
-        )
+        issues = list(filter(lambda x: (x.alias, x.date, x.edition) not in issues_to_skip, issues))
         logger.debug("Remaining issues: %s", issues)
         logger.info("%s remaining issues", len(issues))
 
