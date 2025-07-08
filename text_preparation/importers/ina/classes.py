@@ -1,8 +1,13 @@
+"""This module contains the definition of INA importer classes.
+
+The classes define Issues and Audio record objects which convert ASR data
+to a unified canoncial format.
+"""
+
 import os
 import logging
 import json
 from time import strftime, gmtime
-from typing import Any
 from collections import Counter
 
 from bs4 import BeautifulSoup
@@ -10,7 +15,6 @@ from mutagen.mp3 import MP3
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalAudioRecord
 from text_preparation.importers.ina.helpers import get_utterances
-from impresso_essentials.io.fs_utils import canonical_path
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
 logger = logging.getLogger(__name__)
@@ -37,7 +41,6 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
 
     def __init__(self, _id: str, number: int, xml_filepath: str) -> None:
         super().__init__(_id, number)
-        # TODO fix for the correct IIIF
         self.xml_filepath = xml_filepath
         self.json_filepath = xml_filepath.replace(".xml", ".json")
         # TODO change once the mp3 files are moved and renamed
@@ -58,6 +61,11 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         }
 
     def create_iiif(self) -> str:
+        """Create the IIIF URI for this audio record from all its parts
+
+        Returns:
+            str: Created IIIF URI for this audio record.
+        """
         internal_path = os.path.dirname(self.id.replace("-", "/"))
         return os.path.join(IIIF_ENDPOINT_URI, "INA", internal_path, f"{self.id}.mp3")
 
@@ -217,7 +225,7 @@ class INABroadcastIssue(CanonicalIssue):
 
     def _find_lang(self) -> str:
 
-        # sometimes the language is given inside the
+        # sometimes the language is given inside the metadata
         if self.metadata["Résumé"] is not None and "En anglais" in self.metadata["Résumé"]:
             return "en"
 

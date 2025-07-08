@@ -155,6 +155,7 @@ def detect_issues(base_dir: str, tmp_dir: str) -> list[BlIssueDir]:
     This function expects the directory structure that the BL used to
     organize the dump of Mets/Alto OCR data.
     TODO add NLP
+    TODO update to match new structure
 
     Args:
         base_dir (str): Path to the base directory of newspaper data,

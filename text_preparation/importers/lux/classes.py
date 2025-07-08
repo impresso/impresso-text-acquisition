@@ -118,9 +118,7 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
                             x, y, w, h = token["c"]
                             token["c"] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                            msg = (
-                                f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}"
-                            )
+                            msg = f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}"
                             logger.debug(msg)
             success = True
         except Exception as e:
@@ -163,9 +161,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         # visiting the `text` sub-folder with the alto XML files
         text_path = os.path.join(self.path, "text")
         page_file_names = [
-            file
-            for file in os.listdir(text_path)
-            if not file.startswith(".") and ".xml" in file
+            file for file in os.listdir(text_path) if not file.startswith(".") and ".xml" in file
         ]
 
         page_numbers = []
@@ -181,9 +177,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         ]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
                 self.pages.append(LuxNewspaperPage(page_id, page_no, filename, text_path))
             except Exception as e:
@@ -267,7 +261,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
 
                 # Prepare ci metadata
                 metadata = {
-                    "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+                    "id": f"{self.id}-i{str(counter).zfill(4)}",
                     "pp": [],
                     "tp": (
                         CONTENTITEM_TYPE_ARTICLE
@@ -294,7 +288,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 item = {"m": metadata, "l": {"id": section_id, "parts": parts}}
 
                 # TODO: keep language (there may be more than one)
-                # TODO: how to get language information for these CIs ?
                 if item["m"]["tp"] == CONTENTITEM_TYPE_ARTICLE:
                     lang = section.find_all("languageTerm")[0].getText()
                     item["m"]["lg"] = lang
@@ -347,11 +340,10 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             else:
                 continue
 
-            # TODO: how to get language information for these CIs ?
             # The language of those CI should be in
             # the DMDSEC of their parent section.
             metadata = {
-                "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+                "id": f"{self.id}-i{str(counter).zfill(4)}",
                 "tp": content_item_type,
                 "pp": [],
                 "t": div.get("LABEL"),
@@ -448,15 +440,11 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 )
                 encoded_ark_id = encode_ark(self.ark_id)
                 iiif_base_link = f"{IIIF_ENDPOINT_URI}/{encoded_ark_id}"
-                ci["m"][
-                    "iiif_link"
-                ] = f"{iiif_base_link}%2fpages%2f{curr_page.number}/info.json"
+                ci["m"]["iiif_link"] = f"{iiif_base_link}%2fpages%2f{curr_page.number}/info.json"
                 ci["c"] = list(coordinates)
                 del ci["l"]["parts"]
             except Exception as e:
-                err_msg = "An error occurred with {}".format(
-                    os.path.join(curr_page.basedir, curr_page.filename)
-                )
+                err_msg = f"An error occurred with {os.path.join(curr_page.basedir, curr_page.filename)}. "
                 err_msg += f"<ComposedBlock> @ID {part['comp_id']} not found"
                 logger.error(err_msg)
                 self._notes.append(err_msg)
@@ -493,7 +481,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         )
 
         metadata = {
-            "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+            "id": f"{self.id}-i{str(counter).zfill(4)}",
             "pp": [],
             "tp": CONTENTITEM_TYPE_ARTICLE,
         }

@@ -59,8 +59,6 @@ class CanonicalIssue(ABC):
         # defining both pages and audio_records, and child classes will handle them
         self.pages = []
         self.audio_records = []
-        ## TODO remove!!
-        # self.rights = issue_dir.rights
 
     @abstractmethod
     def _find_pages(self) -> None:

@@ -71,7 +71,7 @@ class BnfEnNewspaperPage(MetsAltoCanonicalPage):
         self.issue = issue
         ark = issue.ark_link
         self.page_data["iiif_img_base_uri"] = os.path.join(
-            IIIF_ENDPOINT_URI, ark, "f{}".format(self.number)
+            IIIF_ENDPOINT_URI, ark, f"f{self.number}"
         )
 
 
@@ -117,9 +117,7 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             raise ValueError(msg)
 
         page_file_names = [
-            file
-            for file in os.listdir(alto_path)
-            if not file.startswith(".") and ".xml" in file
+            file for file in os.listdir(alto_path) if not file.startswith(".") and ".xml" in file
         ]
 
         page_numbers = []
@@ -128,14 +126,10 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             page_no = fname.split(".")[0].split("-")[1]
             page_numbers.append(int(page_no))
 
-        page_canonical_names = [
-            "{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers
-        ]
+        page_canonical_names = [f"{self.id}-p{str(page_n).zfill(4)}" for page_n in page_numbers]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
                 self.pages.append(BnfEnNewspaperPage(page_id, page_no, filename, alto_path))
             except Exception as e:
@@ -223,7 +217,7 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             logger.warning("Found new content item type: %s", div_type)
 
         metadata = {
-            "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+            "id": f"{self.id}-i{str(counter).zfill(4)}",
             "tp": div_type,
             "pp": [],
             "t": item_div.get("LABEL"),
@@ -247,9 +241,7 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
                 content_item["m"]["pp"].append(pge_no)
 
         if div_type in [CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE]:
-            content_item["c"], content_item["m"]["iiif_link"] = self._get_image_info(
-                content_item
-            )
+            content_item["c"], content_item["m"]["iiif_link"] = self._get_image_info(content_item)
 
         return content_item
 
@@ -266,9 +258,7 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             list[Tag]: List of all children divs not of type `Section`.
         """
         logger.info("Decomposing section type")
-        section_divs = [
-            d for d in div.findAll("div") if d.get("TYPE").lower() in BNF_CONTENT_TYPES
-        ]
+        section_divs = [d for d in div.findAll("div") if d.get("TYPE").lower() in BNF_CONTENT_TYPES]
         # Sort to get same IDS
         section_divs = sorted(section_divs, key=lambda x: x.get("ID").lower())
 
@@ -387,9 +377,7 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
                 ]
 
         # coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
-        iiif_link = os.path.join(
-            IIIF_ENDPOINT_URI, self.ark_link, f"f{page.number}", IIIF_SUFFIX
-        )
+        iiif_link = os.path.join(IIIF_ENDPOINT_URI, self.ark_link, f"f{page.number}", IIIF_SUFFIX)
 
         return coords, iiif_link
 

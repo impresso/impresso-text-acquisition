@@ -1,5 +1,4 @@
-"""This module contains helper functions to find BNL OCR data to be imported.
-"""
+"""This module contains helper functions to find BNL OCR data to be imported."""
 
 import logging
 import os
@@ -13,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
-LuxIssueDir = namedtuple(
-    "IssueDirectory", ["alias", "date", "edition", "path", "rights"]
-)
+LuxIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -32,7 +29,6 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
 
 >>> from datetime import date
 >>> i = LuxIssueDir('armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/', 'protected')
@@ -54,7 +50,6 @@ def dir2issue(path: str) -> LuxIssueDir:
     local_id = issue_dir.split("_")[2]
     issue_date = issue_dir.split("_")[3]
     year, month, day = issue_date.split("-")
-    rights = "open_public" if "public_domain" in path else "closed"
 
     if len(issue_dir.split("_")) == 4:
         edition = "a"
@@ -62,9 +57,7 @@ def dir2issue(path: str) -> LuxIssueDir:
         edition = issue_dir.split("_")[4]
         edition = EDITIONS_MAPPINGS[int(edition)]
 
-    return LuxIssueDir(
-        local_id, date(int(year), int(month), int(day)), edition, path, rights
-    )
+    return LuxIssueDir(local_id, date(int(year), int(month), int(day)), edition, path)
 
 
 def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
@@ -72,6 +65,7 @@ def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
 
     This function expects the directory structure that BNL used to
     organize the dump of Mets/Alto OCR data.
+    TODO remove access rights
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
@@ -93,7 +87,7 @@ def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
 
 
 def select_issues(
-    base_dir: str, config: dict, access_rights: str
+    base_dir: str, config: dict, access_rights: str = None
 ) -> list[LuxIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
@@ -101,6 +95,7 @@ def select_issues(
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
+    TODO remove access rights
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
@@ -118,12 +113,11 @@ def select_issues(
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())

@@ -217,9 +217,7 @@ class OliveNewspaperIssue(CanonicalIssue):
         """
         archive_path = os.path.join(self.path, file)
         if os.path.isfile(archive_path):
-            archive_tmp_path = os.path.join(
-                temp_dir, canonical_path(self.issuedir, as_dir=True)
-            )
+            archive_tmp_path = os.path.join(temp_dir, canonical_path(self.issuedir, as_dir=True))
 
             try:
                 archive = ZipFile(archive_path)
@@ -340,9 +338,7 @@ class OliveNewspaperIssue(CanonicalIssue):
             [
                 item
                 for item in self.archive.namelist()
-                if ".xml" in item
-                and not item.startswith("._")
-                and ("/Ar" in item or "/Ad" in item)
+                if ".xml" in item and not item.startswith("._") and ("/Ar" in item or "/Ad" in item)
             ]
         )
 
@@ -415,9 +411,7 @@ class OliveNewspaperIssue(CanonicalIssue):
                 path=issue_dir,
             )
 
-            image_info_name = canonical_path(
-                issue_w_images, suffix="image-info", extension=".json"
-            )
+            image_info_name = canonical_path(issue_w_images, suffix="image-info", extension=".json")
 
             image_info_path = os.path.join(issue_w_images.path, image_info_name)
 
@@ -446,7 +440,7 @@ class OliveNewspaperIssue(CanonicalIssue):
             image_info = self._get_image_info()
             pages_xml = self._get_page_xml_files()
             for page_n, data in self.toc_data.items():
-                can_id = "{}-p{}".format(self.id, str(page_n).zfill(4))
+                can_id = f"{self.id}-p{str(page_n).zfill(4)}"
                 image_info_records = [p for p in image_info if int(p["pg"]) == page_n]
 
                 if len(image_info_records) == 0:

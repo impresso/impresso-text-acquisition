@@ -17,7 +17,6 @@ from impresso_essentials.utils import IssueDir, timestamp
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.mets_alto import alto
-from text_preparation.utils import get_page_schema
 
 logger = logging.getLogger(__name__)
 
