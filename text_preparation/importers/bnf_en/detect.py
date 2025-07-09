@@ -37,7 +37,7 @@ Args:
     ark_link (str): Unique IIIF identifier associated with this issue.
 
 >>> from datetime import date
->>> i = BnfEnIssueDir('BLB', date(1845,12,28), 'a', './Le-Gaulois/18820208_1', 'open')
+>>> i = BnfEnIssueDir('BLB', date(1845,12,28), 'a', './Le-Gaulois/18820208_1')
 """
 
 API_JOURNAL_URL = "https://gallica.bnf.fr/services/Issues?ark={ark}/date"
@@ -332,16 +332,14 @@ def dir2issue(path: str, iiif_arks: dict[str, str]) -> BnfEnIssueDir | None:
     )
 
 
-def detect_issues(base_dir: str, access_rights: str = None) -> list[BnfEnIssueDir]:
+def detect_issues(base_dir: str) -> list[BnfEnIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNF-EN used to
     organize the dump of Mets/Alto OCR data.
-    TODO remove access rights
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str, optional): Not used for this importer (kept for conformity).
 
     Returns:
         list[BnfEnIssueDir]: List of `BnfEnIssueDir` instances to import.
@@ -360,21 +358,17 @@ def detect_issues(base_dir: str, access_rights: str = None) -> list[BnfEnIssueDi
     return issue_dirs
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str = None
-) -> list[BnfEnIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[BnfEnIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
-    TODO remove access rights
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Not used for this importer (kept for conformity).
 
     Returns:
         list[BnfEnIssueDir] | None: `BnfEnIssueDir` instances to import.

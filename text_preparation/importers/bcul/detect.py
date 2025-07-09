@@ -123,7 +123,7 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
     )
 
 
-def detect_issues(base_dir: str, aliases_json: str) -> list[BculIssueDir]:
+def detect_issues(base_dir: str, aliases_json: str = None) -> list[BculIssueDir]:
     """Detect BCUL newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BCUL used to
@@ -174,7 +174,9 @@ def detect_issues(base_dir: str, aliases_json: str) -> list[BculIssueDir]:
     return issue_dirs
 
 
-def select_issues(base_dir: str, config: dict, aliases_json: str) -> list[BculIssueDir] | None:
+def select_issues(
+    base_dir: str, config: dict, aliases_json: str = None
+) -> list[BculIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only

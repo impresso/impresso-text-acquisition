@@ -160,8 +160,6 @@ def detect_issues(base_dir: str, tmp_dir: str) -> list[BlIssueDir]:
     Args:
         base_dir (str): Path to the base directory of newspaper data,
             this directory should contain `zip` files.
-        access_rights (str): Not used for this importer, but argument is
-            kept for uniformity.
         tmp_dir (str): Temporary directory to unzip archives.
 
     Returns:

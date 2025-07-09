@@ -29,7 +29,7 @@ Args:
     path (str): Path to the directory containing the issue's OCR data.
 
 >>> from datetime import date
->>> i = OliveIssueDir('GDL', date(1900,1,1), 'a', './GDL-1900-01-01/', 'open')
+>>> i = OliveIssueDir('GDL', date(1900,1,1), 'a', './GDL-1900-01-01/')
 """
 
 
@@ -52,7 +52,6 @@ def dir2olivedir(issue_dir: IssueDir) -> OliveIssueDir:
 
 def olive_detect_issues(
     base_dir: str,
-    access_rights: str,
     alias_filter: set | None = None,
     exclude: bool = False,
 ) -> list[OliveIssueDir]:
@@ -65,7 +64,6 @@ def olive_detect_issues(
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): Path to ``access_rights.json`` file.
         alias_filter (set | None, optional): IDs of newspapers to consider.
             Defaults to None.
         exclude (bool, optional): Whether ``alias_filter`` should determine
@@ -79,22 +77,19 @@ def olive_detect_issues(
     ]
 
 
-def olive_select_issues(
-    base_dir: str, config: dict[str, Any], access_rights: str = None
-) -> list[OliveIssueDir]:
+def olive_select_issues(base_dir: str, config: dict[str, Any]) -> list[OliveIssueDir]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`olive_detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
-    TODO remove access rights, and potentially identify if the function is needed
+    TODO potentially identify if the function is needed
     or if it should be replaced by importers.detect.select_issues
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict[str, Any]): Config dictionary for filtering.
-        access_rights (str): Path to ``access_rights.json`` file.
 
     Returns:
         list[OliveIssueDir]: List of `OliveIssueDir` instances, to be imported.

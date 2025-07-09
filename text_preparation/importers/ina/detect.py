@@ -76,15 +76,13 @@ def dir2issue(path: str, metadata_file_path: str) -> INAIssueDir | None:
     )
 
 
-def detect_issues(base_dir: str, access_rights: str | None = None) -> list[INAIssueDir]:
+def detect_issues(base_dir: str) -> list[INAIssueDir]:
     """Detect INA Radio broadcasts to import within the filesystem.
 
     This function expects the directory structure that we created for Swissinfo.
-    TODO remove access rights
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): unused argument kept for conformity for now.
 
     Returns:
         list[INAIssueDir]: List of `INAIssueDir` instances, to be imported.
@@ -118,21 +116,17 @@ def detect_issues(base_dir: str, access_rights: str | None = None) -> list[INAIs
     return [dir2issue(_dir, metadata_file_path) for _dir in journal_dirs]
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str = None
-) -> list[INAIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[INAIssueDir] | None:
     """Detect selectively issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
-    TODO remove access rights
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
         list[INAIssueDir] | None: List of `INAIssueDir` to import.

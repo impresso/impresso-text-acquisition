@@ -77,9 +77,7 @@ class TetmlNewspaperIssue(CanonicalIssue):
         self.article_data = self.parse_articles()
 
         # using canonical ('m') and additional non-canonical ('meta') metadata
-        self.content_items = [
-            {"m": art["m"], "meta": art["meta"]} for art in self.article_data
-        ]
+        self.content_items = [{"m": art["m"], "meta": art["meta"]} for art in self.article_data]
 
         # instantiate the individual pages
         self._find_pages()
@@ -88,7 +86,7 @@ class TetmlNewspaperIssue(CanonicalIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
-            "s": None,  # TODO: ignore style for the time being
+            # "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
         }
@@ -148,7 +146,5 @@ class TetmlNewspaperIssue(CanonicalIssue):
             for can_page, page_content in zip(can_pages, art["pages"]):
                 can_id = f"{self.id}-p{can_page:04}"
                 self.pages.append(
-                    TetmlNewspaperPage(
-                        can_id, can_page, page_content, art["meta"]["tetml_path"]
-                    )
+                    TetmlNewspaperPage(can_id, can_page, page_content, art["meta"]["tetml_path"])
                 )

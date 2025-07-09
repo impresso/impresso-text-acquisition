@@ -1,5 +1,4 @@
-"""This module contains helper functions to find RERO OCR data to be imported.
-"""
+"""This module contains helper functions to find RERO OCR data to be imported."""
 
 import json
 import logging
@@ -15,9 +14,7 @@ logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
-Rero2IssueDir = namedtuple(
-    "IssueDirectory", ["alias", "date", "edition", "path", "rights"]
-)
+Rero2IssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -34,14 +31,13 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
 
 >>> from datetime import date
->>> i = Rero2IssueDir('BLB', date(1845,12,28), 'a', './BLB/data/BLB/18451228_01', 'open')
+>>> i = Rero2IssueDir('BLB', date(1845,12,28), 'a', './BLB/data/BLB/18451228_01')
 """
 
 
-def dir2issue(path: str, access_rights: dict) -> Rero2IssueDir:
+def dir2issue(path: str) -> Rero2IssueDir:
     """Create a `Rero2IssueDir` from a directory (RERO format).
 
     Args:
@@ -62,13 +58,10 @@ def dir2issue(path: str, access_rights: dict) -> Rero2IssueDir:
         date=date,
         edition=edition,
         path=path,
-        rights=get_access_right(alias, date, access_rights),
     )
 
 
-def detect_issues(
-    base_dir: str, access_rights: str, data_dir: str = "data"
-) -> list[Rero2IssueDir]:
+def detect_issues(base_dir: str, data_dir: str = "data") -> list[Rero2IssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that RERO used to
@@ -78,7 +71,6 @@ def detect_issues(
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): Path to ``access_rights.json`` file.
         data_dir (str, optional): Directory where data is stored
             (usually `data/`). Defaults to 'data'.
 
@@ -102,15 +94,10 @@ def detect_issues(
         if ".DS_Store" not in l
     ]
 
-    with open(access_rights, "r", encoding="utf-8") as f:
-        access_rights_dict = json.load(f)
-
-    return [dir2issue(_dir, access_rights_dict) for _dir in issues_dirs]
+    return [dir2issue(_dir) for _dir in issues_dirs]
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> list[Rero2IssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[Rero2IssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -121,7 +108,6 @@ def select_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Path to ``access_rights.json`` file.
 
     Returns:
         list[Rero2IssueDir] | None: `Rero2IssueDir` instances to be imported.
@@ -134,12 +120,11 @@ def select_issues(
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())

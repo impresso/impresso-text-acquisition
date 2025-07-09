@@ -1,7 +1,8 @@
+"""This module contains the definition of the SWISSINFO importer classes."""
+
 import os
 import logging
 import json
-from time import strftime
 from typing import Any
 from statistics import mean
 
@@ -201,7 +202,9 @@ class SwissInfoRadioBulletinIssue(CanonicalIssue):
             page_no = int(page["page_num"]) + 1
             if len(page["blocks_with_lines"]) == 0:
                 missing_pages.append(page_no)
-                msg = f"{self.id}, page {page_no} has no block with lines, it will not contain text."
+                msg = (
+                    f"{self.id}, page {page_no} has no block with lines, it will not contain text."
+                )
                 # print(msg)
                 # logger.info(msg)
                 self._notes.append(msg)

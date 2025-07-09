@@ -1,4 +1,6 @@
-from bs4 import BeautifulSoup, NavigableString
+"""Helper functions used by the INA Importer."""
+
+from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 

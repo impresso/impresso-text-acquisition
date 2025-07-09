@@ -48,7 +48,6 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
             continue
 
         if child.name == "String":
-
             # Here we do this in case coordinates are not found for this String
             try:
                 coords = distill_coordinates(child)

@@ -149,16 +149,13 @@ def dir2issue(issue_path: str) -> BnfIssueDir:
     return issue
 
 
-def detect_issues(base_dir: str, access_rights: str = None) -> list[BnfIssueDir]:
+def detect_issues(base_dir: str) -> list[BnfIssueDir]:
     """Detect BNF issues to import within the filesystem
 
     This function the directory structure used by BNF (one subdir by journal).
-    TODO remove access rights argument
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str, optional): Not used for this importer, but argument
-            is kept for normality. Defaults to None.
 
     Returns:
         list[BnfIssueDir]: List of `BnfIssueDir` instances, to be imported.
@@ -183,9 +180,7 @@ def detect_issues(base_dir: str, access_rights: str = None) -> list[BnfIssueDir]
     return [i for i in issue_dirs if i is not None]
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str = None
-) -> Optional[List[BnfIssueDir]]:
+def select_issues(base_dir: str, config: dict) -> Optional[List[BnfIssueDir]]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -193,13 +188,9 @@ def select_issues(
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
 
-    TODO remove access rights argument
-
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Not used for this imported, but argument is kept
-            for normality.
 
     Returns:
         Optional[List[BnfIssueDir]]: List of `BnfIssueDir` instances, to be imported.

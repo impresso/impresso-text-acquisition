@@ -1,7 +1,7 @@
+"""This module contains helper functions to find SWISSINFO OCR data to be imported."""
+
 import logging
 import os
-import json
-import string
 from datetime import date
 from collections import namedtuple
 
@@ -39,6 +39,7 @@ Args:
     date=datetime.date(1940, 07, 22), 
     edition='a', 
     path='./SOC_CJ/1940/07/22/a', 
+    metadata_file='../data/sample_data/SWISSINFO/bulletins_metadata.json'
 )
 """
 
@@ -70,7 +71,7 @@ def dir2issue(path: str, metadata_file_path: str) -> SwissInfoIssueDir | None:
     )
 
 
-def detect_issues(base_dir: str, access_rights: str | None = None) -> list[SwissInfoIssueDir]:
+def detect_issues(base_dir: str) -> list[SwissInfoIssueDir]:
     """Detect SWISSINFO Radio bulletins to import within the filesystem.
 
     This function expects the directory structure that we created for Swissinfo.
@@ -102,9 +103,7 @@ def detect_issues(base_dir: str, access_rights: str | None = None) -> list[Swiss
     return [dir2issue(_dir, metadata_file_path) for _dir in issues_dirs]
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> list[SwissInfoIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[SwissInfoIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -115,7 +114,6 @@ def select_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
         list[SwissInfoIssueDir] | None: List of `SwissInfoIssueDir` to import.
@@ -133,7 +131,7 @@ def select_issues(
         )
         return
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())

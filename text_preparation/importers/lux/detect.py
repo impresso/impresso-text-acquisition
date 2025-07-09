@@ -31,7 +31,7 @@ Args:
     path (str): Path to the directory containing the issue's OCR data.
 
 >>> from datetime import date
->>> i = LuxIssueDir('armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/', 'protected')
+>>> i = LuxIssueDir('armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/')
 """
 
 
@@ -60,17 +60,14 @@ def dir2issue(path: str) -> LuxIssueDir:
     return LuxIssueDir(local_id, date(int(year), int(month), int(day)), edition, path)
 
 
-def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
+def detect_issues(base_dir: str) -> list[LuxIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNL used to
     organize the dump of Mets/Alto OCR data.
-    TODO remove access rights
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        ar (str, optional): Access rights, not used for this imported, but
-            argument is kept for uniformity. Defaults to None.
 
     Returns:
         list[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
@@ -86,22 +83,17 @@ def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
     return [dir2issue(_dir) for _dir in issue_dirs]
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str = None
-) -> list[LuxIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
-    TODO remove access rights
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Not used for this imported, but argument is kept
-            for uniformity.
 
     Returns:
         list[LuxIssueDir] | None: List of `LuxIssueDir` instances to import.
