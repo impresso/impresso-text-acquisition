@@ -11,7 +11,7 @@ from impresso_essentials.io.s3 import (
     alternative_read_text,
     get_s3_resource,
 )
-from impresso_essentials.io.fs_utils import parse_canonical_filename, canonical_path
+from impresso_essentials.io.fs_utils import parse_canonical_filename
 from impresso_essentials.utils import IssueDir, Timer, timestamp
 from text_preparation.rebuilders.audio_rebuilders import (
     reconstruct_audios,
@@ -85,10 +85,11 @@ def read_issue(
     Args:
         issue (IssueDir): Input issue to fetch form S3
         bucket_name (str): S3 bucket's name
-        s3_client (`boto3.resources.factory.s3.ServiceResource`, optional): open connection to S3 storage. Defaults to None.
+        s3_client (`boto3.resources.factory.s3.ServiceResource`, optional): open connection
+            to S3 storage. Defaults to None.
 
     Returns:
-        tuple[IssueDir, dict[str, Any]]: Pair of the input issue and its JSON canonical representation.
+        tuple[IssueDir, dict[str, Any]]: Input issue and its JSON canonical representation.
     """
     if s3_client is None:
         s3_client = get_s3_resource()
@@ -134,8 +135,22 @@ def read_page(page_key: str, bucket_name: str, s3_client) -> dict[str, Any] | No
 
 def read_issue_supports(
     issue: IssueDir, issue_json: dict[str, Any], is_audio: bool, bucket: str | None = None
-):
-    """Read all pages/audio records of a given issue from S3 in parallel."""
+) -> tuple[IssueDir, dict[str, Any]]:
+    """Read all pages/audio records of a given issue from S3 in parallel, and add them to it.
+
+    The found and read files will then be added to the issue's canonical json representation
+    in the properties `rr` or `pp` based on `is_audio`.
+
+    Args:
+        issue (IssueDir): IssueDir object for which to read the pages/audios.
+        issue_json (dict[str, Any]): `issue_data` dict of the given issue.
+        is_audio (bool): Whether the issue corresponds to audio data.
+        bucket (str | None, optional): Bucket where to go fetch the pages/audios.
+            Defaults to None.
+
+    Returns:
+        tuple[IssueDir, dict[str, Any]]: The given issue, with the pages/audios data added.
+    """
     support = "audios" if is_audio else "pages"
     alias = issue.alias
     year = issue.date.year
@@ -175,8 +190,6 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
 
     ci_id = content_item["m"]["id"]
     logger.debug("Started rebuilding ci %s", ci_id)
-
-    issue_id = "-".join(ci_id.split("-")[:-1])
 
     year, month, day, _, ci_num = ci_id.split("-")[1:]
     d = datetime.date(int(year), int(month), int(day))
@@ -249,7 +262,7 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
 def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
     """Rebuilds the text of an article content-item to be used with passim.
 
-    TODO check that this works with passim!
+    TODO Check that this works with passim!
 
     Args:
         content_item (dict[str, Any]): The content-item to rebuild using its metadata.
@@ -339,13 +352,12 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
             cis = reconstruct_audios(issue_json, ci, cis)
         else:
             ci["m"]["pp"] = sorted(list(set(ci["m"]["pp"])))
-            # TODO implement!
             cis = reconstruct_pages(issue_json, ci, cis)
 
     return cis
 
 
-def pages_to_article(article, pages):
+def pages_to_article(article: dict[str, Any], pages: list[dict[str, Any]]) -> dict[str, Any]:
     """Return all text regions belonging to a given article."""
     try:
         art_id = article["m"]["id"]

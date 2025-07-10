@@ -50,9 +50,7 @@ def rebuild_audio_text(
                 for n, token in enumerate(speech_seg["t"]):
                     section = {}
                     if "tc" not in token:
-                        print(
-                            f"'tc' was not present in token: {token}, speech_seg: {speech_seg}"
-                        )
+                        print(f"'tc' was not present in token: {token}, speech_seg: {speech_seg}")
                         continue
                     section["tc"] = token["tc"]
                     section["s"] = len(string)
@@ -67,9 +65,7 @@ def rebuild_audio_text(
                     # don't add the tokens corresponding to the first part of a hyphenated word
                     if "hy" not in token:
                         next_token = (
-                            speech_seg["t"][n + 1]["tx"]
-                            if n != len(speech_seg["t"]) - 1
-                            else None
+                            speech_seg["t"][n + 1]["tx"] if n != len(speech_seg["t"]) - 1 else None
                         )
                         ws = insert_whitespace(
                             token["tx"],
@@ -168,10 +164,18 @@ def rebuild_audio_text_passim(
 def recompose_ci_from_audio_solr(
     solr_ci: dict[str, Any], content_item: dict[str, Any]
 ) -> dict[str, Any]:
+    """_summary_
+    TODO
+
+    Args:
+        solr_ci (dict[str, Any]): _description_
+        content_item (dict[str, Any]): _description_
+
+    Returns:
+        dict[str, Any]: _description_
+    """
     issue_id = "-".join(solr_ci["id"].split("-")[:-1])
-    audio_file_names = {
-        r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]
-    }
+    audio_file_names = {r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]}
 
     fulltext = ""
     speechsegsbreaks = []
@@ -212,11 +216,19 @@ def recompose_ci_from_audio_solr(
 def recompose_ci_from_audio_passim(
     content_item: dict[str, Any], passim_document: dict[str, Any]
 ) -> dict[str, Any]:
+    """_summary_
+    TODO
+
+    Args:
+        content_item (dict[str, Any]): _description_
+        passim_document (dict[str, Any]): _description_
+
+    Returns:
+        dict[str, Any]: _description_
+    """
     issue_id = "-".join(passim_document["id"].split("-")[:-1])
 
-    audio_file_names = {
-        r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]
-    }
+    audio_file_names = {r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]}
 
     fulltext = ""
     # TODO, ensure that ["rr"] is present in i['m']
@@ -227,9 +239,7 @@ def recompose_ci_from_audio_passim(
         if fulltext == "":
             fulltext, sections = rebuild_audio_text_passim(audio, passim_document["lg"])
         else:
-            fulltext, sections = rebuild_audio_text_passim(
-                audio, passim_document["lg"], fulltext
-            )
+            fulltext, sections = rebuild_audio_text_passim(audio, passim_document["lg"], fulltext)
 
         page_doc = {
             "id": audio_file_names[audio_no].replace(".json", ""),
@@ -246,7 +256,17 @@ def recompose_ci_from_audio_passim(
 def reconstruct_audios(
     issue_json: dict[str, Any], ci: dict[str, Any], cis: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    # TODO finsih to adapt to radio data!!! (eg start time etc etc)
+    """_summary_
+    TODO
+
+    Args:
+        issue_json (dict[str, Any]): _description_
+        ci (dict[str, Any]): _description_
+        cis (list[dict[str, Any]]): _description_
+
+    Returns:
+        list[dict[str, Any]]: _description_
+    """
     audios = []
     audio_ids = [audio["id"] for audio in issue_json["rr"]]
     # there should only be one record, but keeping the same approach
