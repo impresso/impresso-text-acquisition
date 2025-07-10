@@ -1,6 +1,5 @@
 """This module contains functions to detect Olive OCR data to be imported."""
 
-import json
 from collections import namedtuple
 from typing import Any
 

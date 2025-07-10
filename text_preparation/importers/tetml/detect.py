@@ -1,4 +1,5 @@
-import json
+"""This module contains functions to detect Tetml OCR data to be imported."""
+
 from collections import namedtuple
 from typing import List
 

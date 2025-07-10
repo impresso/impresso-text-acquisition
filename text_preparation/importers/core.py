@@ -180,6 +180,19 @@ def dirs2issues(
 
 
 def is_audio_issue(issue: CanonicalIssue) -> bool:
+    """Checks whether the given canonical issue corresponds to audio data.
+
+    This is done by checking the "sm" (ie. "source medium") property.
+
+    Args:
+        issue (CanonicalIssue): Canonical Issue for which to identify the medium
+
+    Raises:
+        NotImplementedError: If the source medium found is invalid.
+
+    Returns:
+        bool: True if the issue corresponds to audio data, False otherwise.
+    """
     # if "sm" is not in issue.issue_data, then it's a newspaper
     if "sm" not in issue.issue_data or (
         "sm" in issue.issue_data and issue.issue_data["sm"] in ["print", "typescript"]
@@ -188,9 +201,7 @@ def is_audio_issue(issue: CanonicalIssue) -> bool:
     elif issue.issue_data["sm"] == "audio":
         return True
     else:
-        msg = (
-            f"{issue.id} - Source medium for this issue is not valid! {issue.issue_data['sm']}"
-        )
+        msg = f"{issue.id} - Source medium for this issue is not valid! {issue.issue_data['sm']}"
         print(msg)
         raise NotImplementedError(msg)
 
@@ -341,6 +352,9 @@ def import_issues(
         temp_dir (str | None): Temporary directory for extracting archives
             (applies only to importers make use of ``ZipArchive``).
         chunk_size (int | None): Chunk size in years used to process issues.
+        manifest (DataManifest): Data manifest instance, tracking the stats on the imported data.
+        client (Client | None, optional): Dask client. Defaults to None.
+        is_audio (bool | None, optional): The if the data being imported is audio. Defaults to False.
     """
     supports_name = "audios" if is_audio else "pages"
     print(f"supports_name: {supports_name}")
@@ -357,20 +371,19 @@ def import_issues(
 
         chunks = [(year, list(issues)) for year, issues in chunks]
         msg = (
-            f"Dividing issues into chunks of {chunk_size} years "
-            f"({len(chunks)} chunks in total)"
+            f"Dividing issues into chunks of {chunk_size} years " f"({len(chunks)} chunks in total)"
         )
         logger.info(msg)
         for year, issue_chunk in chunks:
             msg = (
-                f"Chunk of period {year} - {year + csize - 1} covers "
-                f"{len(issue_chunk)} issues"
+                f"Chunk of period {year} - {year + csize - 1} covers " f"{len(issue_chunk)} issues"
             )
             logger.info(msg)
     else:
         chunks = [(None, issues)]
 
-    print(f"chunks: {chunks}")
+    if logger.level == logging.DEBUG:
+        print(f"chunks: {chunks}")
 
     for year, issue_chunk in chunks:
         if year is None:
@@ -497,11 +510,7 @@ def import_issues(
     remove_filelocks(out_dir)
 
     # finalize and compute the manifest
-    if (
-        s3_bucket is not None
-        and "sandbox" in s3_bucket
-        or "sandbox" in manifest.output_bucket_name
-    ):
+    if s3_bucket is not None and "sandbox" in s3_bucket or "sandbox" in manifest.output_bucket_name:
         # don't push to git if output bucket is sandbox
         manifest.compute(export_to_git_and_s3=False)
         manifest.validate_and_export_manifest(push_to_git=False)
@@ -710,9 +719,7 @@ def upload_supports(
     # create connection with bucket
     # copy contents to s3 key
     alias, year, _, _, _ = sort_key.split("-")
-    key_name = os.path.join(
-        alias, supports_name, f"{alias}-{year}", os.path.basename(filepath)
-    )
+    key_name = os.path.join(alias, supports_name, f"{alias}-{year}", os.path.basename(filepath))
     # key_name = "{}/pages/{}/{}".format(alias, f"{alias}-{year}", os.path.basename(filepath))
     # or key_name = "{}/audios/{}/{}".format(alias, f"{alias}-{year}", os.path.basename(filepath))
     s3 = get_s3_resource()

@@ -215,29 +215,3 @@ def detect_issues(
                         except ValueError:
                             print("Path %s is not a valid issue directory", day_path)
     return detected_issues
-
-
-def get_access_right(alias: str, _date: date, access_rights: dict[str, dict[str, str]]) -> str:
-    """Fetch the access rights for a specific alias and publication date.
-
-    Note:
-        With the new approach to access rights management, the access rights
-        won't be in the canonical data anymore.
-
-    Args:
-        alias (str): Journal or media alias.
-        _date (date): Publication date of the issue
-        access_rights (dict[str, dict[str, str]]): Access rights for various
-            journals.
-
-    Returns:
-        str: Access rights for specific issue.
-    """
-    rights = access_rights[alias]
-    if rights["time"] == "all":
-        return rights["access-right"].replace("-", "_")
-
-    # TODO: this should rather be a custom exception
-    logger.warning("Access right not defined for %s-%s", alias, _date)
-
-    return "undefined"
