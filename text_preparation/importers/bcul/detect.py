@@ -45,6 +45,7 @@ Args:
 # issues that lead to HTTP response 404. Skipping them altogether.
 # These issues are often dublicates of issues for which the API works
 # In addition, it was found that some issues were listed with wrong dates.
+ALIASES_FILEPATH = "../data/sample_data/BCUL/access_rights_and_aliases.json"
 FAULTY_ISSUES = [
     "127626",
     "127627",
@@ -123,21 +124,20 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
     )
 
 
-def detect_issues(base_dir: str, aliases_json: str = None) -> list[BculIssueDir]:
+def detect_issues(base_dir: str) -> list[BculIssueDir]:
     """Detect BCUL newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BCUL used to
     organize the dump of Abbyy files.
-    TODO: remove "access_right" from ar_and_alias json (& rename json).
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        aliases_json (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
         list[BculIssueDir]: List of `BCULIssueDir` instances, to be imported.
     """
-    with open(aliases_json, "rb") as f:
+    # open and read bcul_alias.json file
+    with open(ALIASES_FILEPATH, "rb") as f:
         alias_mapping = json.load(f)
 
     dir_path, dirs, files = next(os.walk(base_dir))
@@ -174,21 +174,17 @@ def detect_issues(base_dir: str, aliases_json: str = None) -> list[BculIssueDir]
     return issue_dirs
 
 
-def select_issues(
-    base_dir: str, config: dict, aliases_json: str = None
-) -> list[BculIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[BculIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
-    TODO: remove "access_right" from ar_and_alias json (& rename json).
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        aliases_json (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
         list[BculIssueDir] | None: List of `BculIssueDir` to import.
@@ -206,7 +202,7 @@ def select_issues(
         )
         return
 
-    issues = detect_issues(base_dir, aliases_json)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
