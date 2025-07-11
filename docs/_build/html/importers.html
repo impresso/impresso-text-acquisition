@@ -162,6 +162,66 @@ used to parse the <a class="reference external" href="https://www.admin.ch/gov/d
 <p>All importers share the same command-line interface; only a few options
 are import-specific (see documentation below).</p>
 </div>
+<p id="module-text_preparation.importers.generic_importer">Functions and CLI script to convert any OCR data into Impresso’s format.</p>
+<dl>
+<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –chunk-size=&lt;cs&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –git-repo=&lt;gr&gt; –num-workers=&lt;nw&gt; –dont-push-manifest –is-audio]
+&lt;importer-name&gt;importer.py –version</p>
+</dd>
+<dt>Options:</dt><dd><dl class="option-list">
+<dt><kbd><span class="option">--input-dir=<var>&lt;id&gt;</var></span></kbd></dt>
+<dd><p>Base directory containing one sub-directory for each media alias</p>
+</dd>
+<dt><kbd><span class="option">--image-dirs=<var>&lt;imd&gt;</var></span></kbd></dt>
+<dd><p>Directory containing (canonical) images and their metadata (use <cite>,</cite> to separate multiple dirs)</p>
+</dd>
+<dt><kbd><span class="option">--output-dir=<var>&lt;od&gt;</var></span></kbd></dt>
+<dd><p>Base directory where to write the output files</p>
+</dd>
+<dt><kbd><span class="option">--temp-dir=<var>&lt;td&gt;</var></span></kbd></dt>
+<dd><p>Temporary directory to extract .zip archives</p>
+</dd>
+<dt><kbd><span class="option">--config-file=<var>&lt;cf&gt;</var></span></kbd></dt>
+<dd><p>Configuration file for selective import</p>
+</dd>
+<dt><kbd><span class="option">--s3-bucket=<var>&lt;b&gt;</var></span></kbd></dt>
+<dd><p>If provided, writes output to an S3 drive, in the specified bucket</p>
+</dd>
+<dt><kbd><span class="option">--scheduler=<var>&lt;sch&gt;</var></span></kbd></dt>
+<dd><p>Tell dask to use an existing scheduler (otherwise it’ll create one)</p>
+</dd>
+<dt><kbd><span class="option">--log-file=<var>&lt;f&gt;</var></span></kbd></dt>
+<dd><p>Log file; when missing print log to stdout</p>
+</dd>
+<dt><kbd><span class="option">--chunk-size=<var>&lt;cs&gt;</var></span></kbd></dt>
+<dd><p>Chunk size in years used to group issues when importing</p>
+</dd>
+<dt><kbd><span class="option">--git-repo=<var>&lt;gr&gt;</var></span></kbd></dt>
+<dd><p>Local path to the “impresso-text-acquisition” git directory (including it).</p>
+</dd>
+<dt><kbd><span class="option">--num-workers=<var>&lt;nw&gt;</var></span></kbd></dt>
+<dd><p>Number of workers to use for local dask cluster</p>
+</dd>
+<dt><kbd><span class="option">--dont-push-manifest</span></kbd></dt>
+<dd><p>Whether to push the generated manifest to github (will push if not specified)</p>
+</dd>
+<dt><kbd><span class="option">--is-audio</span></kbd></dt>
+<dd><p>Whether the data to import is audio data (source medium)</p>
+</dd>
+<dt><kbd><span class="option">--verbose</span></kbd></dt>
+<dd><p>Verbose log messages (good for debugging)</p>
+</dd>
+<dt><kbd><span class="option">--clear</span></kbd></dt>
+<dd><p>Removes the output folder (if already existing)</p>
+</dd>
+<dt><kbd><span class="option">--incremental</span></kbd></dt>
+<dd><p>Skips issues already present in output directory</p>
+</dd>
+<dt><kbd><span class="option">--version</span></kbd></dt>
+<dd><p>Prints version and exits.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 <section id="configuration-file">
 <h2>Configuration file<a class="headerlink" href="#configuration-file" title="Link to this heading"></a></h2>
@@ -209,7 +269,7 @@ pieces of code:</p>
 <li><p>implementing <strong>functions to detect the data</strong> to import;</p></li>
 <li><p>implementing from scratch <strong>classes that handle the conversion into JSON</strong> of your OCR format or adapt one of the existing importers.</p></li>
 </ol>
-<p>Once these two pieces of code are in place, they can be plugged into the functions defined in <code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer</span></code> so as to create a dedicated CLI script for your specific format.</p>
+<p>Once these two pieces of code are in place, they can be plugged into the functions defined in <a class="reference internal" href="#module-text_preparation.importers.generic_importer" title="text_preparation.importers.generic_importer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer</span></code></a> so as to create a dedicated CLI script for your specific format.</p>
 <p>For example, this is the content of <code class="docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">text_preparation.importers</span> <span class="kn">import</span> <span class="n">generic_importer</span>
 <span class="kn">from</span> <span class="nn">text_preparation.importers.olive.classes</span> <span class="kn">import</span> <span class="n">OliveCanonicalIssue</span>

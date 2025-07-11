@@ -1,6 +1,5 @@
 """This module contains helper functions to find RERO OCR data to be imported."""
 
-import json
 import logging
 import os
 from collections import namedtuple
@@ -8,7 +7,7 @@ from datetime import datetime
 
 from dask import bag as db
 
-from text_preparation.importers.detect import get_access_right, _apply_datefilter
+from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 

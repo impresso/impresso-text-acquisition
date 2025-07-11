@@ -85,6 +85,7 @@
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -126,6 +127,8 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.add_issue">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage method)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.add_issue">(text_preparation.importers.olive.classes.OliveNewspaperPage method)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperPage.add_issue">(text_preparation.importers.rero.classes.ReroNewspaperPage method)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperPage.add_issue">(text_preparation.importers.swa.classes.SWANewspaperPage method)</a>
@@ -154,6 +157,8 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.alias">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue attribute)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.alias">(text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue.alias">(text_preparation.importers.rero.classes.ReroNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue.alias">(text_preparation.importers.swa.classes.SWANewspaperIssue attribute)</a>
@@ -163,8 +168,14 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue.archive">archive (text_preparation.importers.swa.classes.SWANewspaperIssue attribute)</a>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.archive">archive (text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+
+      <ul>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.archive">(text_preparation.importers.olive.classes.OliveNewspaperPage attribute)</a>
 </li>
+        <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue.archive">(text_preparation.importers.swa.classes.SWANewspaperIssue attribute)</a>
+</li>
+      </ul></li>
       <li><a href="importers/bl.html#text_preparation.importers.bl.classes.BlNewspaperIssue.ark_id">ark_id (text_preparation.importers.bl.classes.BlNewspaperIssue attribute)</a>
 
       <ul>
@@ -219,10 +230,10 @@
 </li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.classes.BculNewspaperIssue">BculNewspaperIssue (class in text_preparation.importers.bcul.classes)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.classes.BculNewspaperPage">BculNewspaperPage (class in text_preparation.importers.bcul.classes)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="importers/bl.html#text_preparation.importers.bl.detect.BlIssueDir">BlIssueDir (in module text_preparation.importers.bl.detect)</a>
 </li>
       <li><a href="importers/bl.html#text_preparation.importers.bl.classes.BlNewspaperIssue">BlNewspaperIssue (class in text_preparation.importers.bl.classes)</a>
@@ -240,6 +251,8 @@
       <li><a href="importers/bnf.html#text_preparation.importers.bnf.classes.BnfNewspaperIssue">BnfNewspaperIssue (class in text_preparation.importers.bnf.classes)</a>
 </li>
       <li><a href="importers/bnf.html#text_preparation.importers.bnf.classes.BnfNewspaperPage">BnfNewspaperPage (class in text_preparation.importers.bnf.classes)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.BoxStrategy">BoxStrategy (class in text_preparation.importers.olive.helpers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -263,32 +276,60 @@
       </ul></li>
       <li><a href="rebuilders.html#text_preparation.rebuilders.helpers.ci_without_problem">ci_without_problem() (in module text_preparation.rebuilders.helpers)</a>
 </li>
-      <li><a href="rebuilders.html#text_preparation.rebuilders.rebuilder.cleanup">cleanup() (in module text_preparation.rebuilders.rebuilder)</a>
+      <li><a href="architecture.html#text_preparation.importers.core.cleanup">cleanup() (in module text_preparation.importers.core)</a>
+
+      <ul>
+        <li><a href="rebuilders.html#text_preparation.rebuilders.rebuilder.cleanup">(in module text_preparation.rebuilders.rebuilder)</a>
+</li>
+      </ul></li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.clusters">clusters (text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.combine_article_parts">combine_article_parts() (in module text_preparation.importers.olive.helpers)</a>
 </li>
       <li><a href="rebuilders.html#text_preparation.rebuilders.rebuilder.compress">compress() (in module text_preparation.rebuilders.rebuilder)</a>
 </li>
+      <li><a href="architecture.html#text_preparation.importers.core.compress_issues">compress_issues() (in module text_preparation.importers.core)</a>
+</li>
+      <li><a href="architecture.html#text_preparation.importers.core.compress_supports">compress_supports() (in module text_preparation.importers.core)</a>
+</li>
       <li><a href="importers/swissinfo.html#text_preparation.importers.swissinfo.helpers.compute_agg_coords">compute_agg_coords() (in module text_preparation.importers.swissinfo.helpers)</a>
+</li>
+      <li><a href="importers/tetml.html#text_preparation.importers.tetml.helpers.compute_bb">compute_bb() (in module text_preparation.importers.tetml.helpers)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="importers/tetml.html#text_preparation.importers.tetml.helpers.compute_bb">compute_bb() (in module text_preparation.importers.tetml.helpers)</a>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.compute_box">compute_box() (in module text_preparation.importers.olive.helpers)</a>
+
+      <ul>
+        <li><a href="importers/tetml.html#text_preparation.importers.tetml.helpers.compute_box">(in module text_preparation.importers.tetml.helpers)</a>
 </li>
-      <li><a href="importers/tetml.html#text_preparation.importers.tetml.helpers.compute_box">compute_box() (in module text_preparation.importers.tetml.helpers)</a>
+      </ul></li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.compute_scale_factor">compute_scale_factor() (in module text_preparation.importers.olive.helpers)</a>
 </li>
       <li><a href="importers/bnf-en.html#text_preparation.importers.bnf_en.detect.construct_iiif_arks">construct_iiif_arks() (in module text_preparation.importers.bnf_en.detect)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.content_elements">content_elements (text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
 </li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.classes.BculNewspaperIssue.content_items">content_items (text_preparation.importers.bcul.classes.BculNewspaperIssue attribute)</a>
 
       <ul>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.content_items">(text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+</li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue.content_items">(text_preparation.importers.swa.classes.SWANewspaperIssue attribute)</a>
 </li>
       </ul></li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.convert_box">convert_box() (in module text_preparation.importers.olive.helpers)</a>
+</li>
       <li><a href="importers/lux.html#text_preparation.importers.lux.helpers.convert_coordinates">convert_coordinates() (in module text_preparation.importers.lux.helpers)</a>
 
       <ul>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.convert_coordinates">(in module text_preparation.importers.rero.classes)</a>
 </li>
       </ul></li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.convert_image_coordinates">convert_image_coordinates() (in module text_preparation.importers.olive.helpers)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.convert_page_coordinates">convert_page_coordinates() (in module text_preparation.importers.olive.helpers)</a>
+</li>
       <li><a href="utils.html#text_preparation.utils.coords_to_xy">coords_to_xy() (in module text_preparation.utils)</a>
 </li>
       <li><a href="utils.html#text_preparation.utils.coords_to_xywh">coords_to_xywh() (in module text_preparation.utils)</a>
@@ -318,6 +359,8 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.date">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue attribute)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.date">(text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue.date">(text_preparation.importers.rero.classes.ReroNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue.date">(text_preparation.importers.swa.classes.SWANewspaperIssue attribute)</a>
@@ -338,6 +381,8 @@
 </li>
         <li><a href="importers/lux.html#text_preparation.importers.lux.detect.detect_issues">(in module text_preparation.importers.lux.detect)</a>
 </li>
+        <li><a href="importers/rero.html#text_preparation.importers.rero.detect.detect_issues">(in module text_preparation.importers.rero.detect)</a>
+</li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.detect.detect_issues">(in module text_preparation.importers.swa.detect)</a>
 </li>
         <li><a href="importers/swissinfo.html#text_preparation.importers.swissinfo.detect.detect_issues">(in module text_preparation.importers.swissinfo.detect)</a>
@@ -354,16 +399,20 @@
 </li>
         <li><a href="importers/bnf-en.html#text_preparation.importers.bnf_en.detect.dir2issue">(in module text_preparation.importers.bnf_en.detect)</a>
 </li>
+        <li><a href="architecture.html#text_preparation.importers.core.dir2issue">(in module text_preparation.importers.core)</a>
+</li>
         <li><a href="importers/ina.html#text_preparation.importers.ina.detect.dir2issue">(in module text_preparation.importers.ina.detect)</a>
 </li>
         <li><a href="importers/lux.html#text_preparation.importers.lux.detect.dir2issue">(in module text_preparation.importers.lux.detect)</a>
+</li>
+        <li><a href="importers/rero.html#text_preparation.importers.rero.detect.dir2issue">(in module text_preparation.importers.rero.detect)</a>
 </li>
         <li><a href="importers/swissinfo.html#text_preparation.importers.swissinfo.detect.dir2issue">(in module text_preparation.importers.swissinfo.detect)</a>
 </li>
       </ul></li>
       <li><a href="importers/olive.html#text_preparation.importers.olive.detect.dir2olivedir">dir2olivedir() (in module text_preparation.importers.olive.detect)</a>
 </li>
-      <li><a href="importers/tetml.html#text_preparation.importers.tetml.detect.dir2tetmldir">dir2tetmldir() (in module text_preparation.importers.tetml.detect)</a>
+      <li><a href="architecture.html#text_preparation.importers.core.dirs2issues">dirs2issues() (in module text_preparation.importers.core)</a>
 </li>
       <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.alto.distill_coordinates">distill_coordinates() (in module text_preparation.importers.mets_alto.alto)</a>
 </li>
@@ -393,6 +442,8 @@
         <li><a href="importers/lux.html#text_preparation.importers.lux.classes.LuxNewspaperIssue.edition">(text_preparation.importers.lux.classes.LuxNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.edition">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue attribute)</a>
+</li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.edition">(text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue.edition">(text_preparation.importers.rero.classes.ReroNewspaperIssue attribute)</a>
 </li>
@@ -477,6 +528,8 @@
 </li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.classes.BculNewspaperPage.get_ci_divs">get_ci_divs() (text_preparation.importers.bcul.classes.BculNewspaperPage method)</a>
 </li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.get_clusters">get_clusters() (in module text_preparation.importers.olive.helpers)</a>
+</li>
       <li><a href="importers/bnf.html#text_preparation.importers.bnf.helpers.get_dates">get_dates() (in module text_preparation.importers.bnf.helpers)</a>
 </li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.helpers.get_div_coords">get_div_coords() (in module text_preparation.importers.bcul.helpers)</a>
@@ -512,6 +565,8 @@
       <li><a href="importers/tetml.html#text_preparation.importers.tetml.helpers.get_placed_image">get_placed_image() (in module text_preparation.importers.tetml.helpers)</a>
 </li>
       <li><a href="utils.html#text_preparation.utils.get_reading_order">get_reading_order() (in module text_preparation.utils)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.get_scale_factor">get_scale_factor() (in module text_preparation.importers.olive.helpers)</a>
 </li>
       <li><a href="importers/tetml.html#text_preparation.importers.tetml.helpers.get_tif_shape">get_tif_shape() (in module text_preparation.importers.tetml.helpers)</a>
 </li>
@@ -558,6 +613,10 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.id">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage attribute)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.id">(text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+</li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.id">(text_preparation.importers.olive.classes.OliveNewspaperPage attribute)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue.id">(text_preparation.importers.rero.classes.ReroNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperPage.id">(text_preparation.importers.rero.classes.ReroNewspaperPage attribute)</a>
@@ -577,6 +636,10 @@
 </li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.classes.BculNewspaperIssue.iiif_manifest">iiif_manifest (text_preparation.importers.bcul.classes.BculNewspaperIssue attribute)</a>
 </li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.image_dirs">image_dirs (text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.image_info">image_info (text_preparation.importers.olive.classes.OliveNewspaperPage attribute)</a>
+</li>
       <li><a href="importers/bl.html#text_preparation.importers.bl.classes.BlNewspaperIssue.image_properties">image_properties (text_preparation.importers.bl.classes.BlNewspaperIssue attribute)</a>
 
       <ul>
@@ -591,15 +654,19 @@
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue.image_properties">(text_preparation.importers.rero.classes.ReroNewspaperIssue attribute)</a>
 </li>
       </ul></li>
-      <li><a href="importers/ina.html#text_preparation.importers.ina.classes.INABroadcastAudioRecord">INABroadcastAudioRecord (class in text_preparation.importers.ina.classes)</a>
+      <li><a href="architecture.html#text_preparation.importers.core.import_issues">import_issues() (in module text_preparation.importers.core)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/ina.html#text_preparation.importers.ina.classes.INABroadcastAudioRecord">INABroadcastAudioRecord (class in text_preparation.importers.ina.classes)</a>
+</li>
       <li><a href="importers/ina.html#text_preparation.importers.ina.classes.INABroadcastIssue">INABroadcastIssue (class in text_preparation.importers.ina.classes)</a>
 </li>
       <li><a href="importers/ina.html#text_preparation.importers.ina.detect.INAIssueDir">INAIssueDir (in module text_preparation.importers.ina.detect)</a>
 </li>
       <li><a href="utils.html#text_preparation.tokenization.insert_whitespace">insert_whitespace() (in module text_preparation.tokenization)</a>
+</li>
+      <li><a href="architecture.html#text_preparation.importers.core.is_audio_issue">is_audio_issue() (in module text_preparation.importers.core)</a>
 </li>
       <li><a href="importers/bnf.html#text_preparation.importers.bnf.classes.BnfNewspaperPage.is_gzip">is_gzip (text_preparation.importers.bnf.classes.BnfNewspaperPage attribute)</a>
 
@@ -632,6 +699,8 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.issue">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage attribute)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.issue">(text_preparation.importers.olive.classes.OliveNewspaperPage attribute)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperPage.issue">(text_preparation.importers.rero.classes.ReroNewspaperPage attribute)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperPage.issue">(text_preparation.importers.swa.classes.SWANewspaperPage attribute)</a>
@@ -639,6 +708,8 @@
         <li><a href="importers/swissinfo.html#text_preparation.importers.swissinfo.classes.SwissInfoRadioBulletinPage.issue">(text_preparation.importers.swissinfo.classes.SwissInfoRadioBulletinPage attribute)</a>
 </li>
       </ul></li>
+      <li><a href="architecture.html#text_preparation.importers.core.issue2supports">issue2supports() (in module text_preparation.importers.core)</a>
+</li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.classes.BculNewspaperIssue.issue_data">issue_data (text_preparation.importers.bcul.classes.BculNewspaperIssue attribute)</a>
 
       <ul>
@@ -656,6 +727,8 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.issue_data">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue attribute)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.issue_data">(text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue.issue_data">(text_preparation.importers.rero.classes.ReroNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue.issue_data">(text_preparation.importers.swa.classes.SWANewspaperIssue attribute)</a>
@@ -666,6 +739,14 @@
       <li><a href="importers/bnf.html#text_preparation.importers.bnf.classes.BnfNewspaperIssue.issue_uid">issue_uid (text_preparation.importers.bnf.classes.BnfNewspaperIssue attribute)</a>
 </li>
       <li><a href="importers.html#text_preparation.importers.classes.CanonicalIssue.issuedir">issuedir (text_preparation.importers.classes.CanonicalIssue property)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.keep_title">keep_title() (in module text_preparation.importers.olive.helpers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -688,6 +769,10 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rebuilders.html#text_preparation.rebuilders.rebuilder.main">main() (in module text_preparation.rebuilders.rebuilder)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.merge_pseudo_tokens">merge_pseudo_tokens() (in module text_preparation.importers.olive.helpers)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.merge_tokens">merge_tokens() (in module text_preparation.importers.olive.helpers)</a>
 </li>
       <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue">MetsAltoCanonicalIssue (class in text_preparation.importers.mets_alto.classes)</a>
 </li>
@@ -721,7 +806,11 @@
 </li>
         <li><a href="importers/bnf-en.html#module-text_preparation.importers.bnf_en.detect">text_preparation.importers.bnf_en.detect</a>
 </li>
+        <li><a href="architecture.html#module-text_preparation.importers.core">text_preparation.importers.core</a>
+</li>
         <li><a href="importers/fedgaz.html#module-text_preparation.importers.fedgaz.classes">text_preparation.importers.fedgaz.classes</a>
+</li>
+        <li><a href="importers.html#module-text_preparation.importers.generic_importer">text_preparation.importers.generic_importer</a>
 </li>
         <li><a href="importers/ina.html#module-text_preparation.importers.ina.classes">text_preparation.importers.ina.classes</a>
 </li>
@@ -741,9 +830,17 @@
 </li>
         <li><a href="importers/mets-alto.html#module-text_preparation.importers.mets_alto.mets">text_preparation.importers.mets_alto.mets</a>
 </li>
+        <li><a href="importers/olive.html#module-text_preparation.importers.olive.classes">text_preparation.importers.olive.classes</a>
+</li>
         <li><a href="importers/olive.html#module-text_preparation.importers.olive.detect">text_preparation.importers.olive.detect</a>
 </li>
+        <li><a href="importers/olive.html#module-text_preparation.importers.olive.helpers">text_preparation.importers.olive.helpers</a>
+</li>
+        <li><a href="importers/olive.html#module-text_preparation.importers.olive.parsers">text_preparation.importers.olive.parsers</a>
+</li>
         <li><a href="importers/rero.html#module-text_preparation.importers.rero.classes">text_preparation.importers.rero.classes</a>
+</li>
+        <li><a href="importers/rero.html#module-text_preparation.importers.rero.detect">text_preparation.importers.rero.detect</a>
 </li>
         <li><a href="importers/swa.html#module-text_preparation.importers.swa.classes">text_preparation.importers.swa.classes</a>
 </li>
@@ -778,6 +875,12 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.normalize_hyphenation">normalize_hyphenation() (in module text_preparation.importers.olive.helpers)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.normalize_language">normalize_language() (in module text_preparation.importers.olive.helpers)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.normalize_line">normalize_line() (in module text_preparation.importers.olive.helpers)</a>
+</li>
       <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue.notes">notes (text_preparation.importers.swa.classes.SWANewspaperIssue attribute)</a>
 </li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.classes.BculNewspaperPage.number">number (text_preparation.importers.bcul.classes.BculNewspaperPage attribute)</a>
@@ -799,6 +902,8 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.number">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage attribute)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.number">(text_preparation.importers.olive.classes.OliveNewspaperPage attribute)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperPage.number">(text_preparation.importers.rero.classes.ReroNewspaperPage attribute)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperPage.number">(text_preparation.importers.swa.classes.SWANewspaperPage attribute)</a>
@@ -814,11 +919,21 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="importers/olive.html#text_preparation.importers.olive.detect.olive_detect_issues">olive_detect_issues() (in module text_preparation.importers.olive.detect)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.parsers.olive_image_parser">olive_image_parser() (in module text_preparation.importers.olive.parsers)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.parsers.olive_parser">olive_parser() (in module text_preparation.importers.olive.parsers)</a>
+</li>
       <li><a href="importers/olive.html#text_preparation.importers.olive.detect.olive_select_issues">olive_select_issues() (in module text_preparation.importers.olive.detect)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.parsers.olive_toc_parser">olive_toc_parser() (in module text_preparation.importers.olive.parsers)</a>
+</li>
       <li><a href="importers/olive.html#text_preparation.importers.olive.detect.OliveIssueDir">OliveIssueDir (in module text_preparation.importers.olive.detect)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue">OliveNewspaperIssue (class in text_preparation.importers.olive.classes)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage">OliveNewspaperPage (class in text_preparation.importers.olive.classes)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -841,6 +956,8 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.page_data">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage attribute)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.page_data">(text_preparation.importers.olive.classes.OliveNewspaperPage attribute)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperPage.page_data">(text_preparation.importers.rero.classes.ReroNewspaperPage attribute)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperPage.page_data">(text_preparation.importers.swa.classes.SWANewspaperPage attribute)</a>
@@ -849,6 +966,8 @@
 </li>
       </ul></li>
       <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperPage.page_width">page_width (text_preparation.importers.rero.classes.ReroNewspaperPage attribute)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.page_xml">page_xml (text_preparation.importers.olive.classes.OliveNewspaperPage attribute)</a>
 </li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.classes.BculNewspaperIssue.pages">pages (text_preparation.importers.bcul.classes.BculNewspaperIssue attribute)</a>
 
@@ -864,6 +983,8 @@
         <li><a href="importers/lux.html#text_preparation.importers.lux.classes.LuxNewspaperIssue.pages">(text_preparation.importers.lux.classes.LuxNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.pages">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue attribute)</a>
+</li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.pages">(text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue.pages">(text_preparation.importers.rero.classes.ReroNewspaperIssue attribute)</a>
 </li>
@@ -888,6 +1009,8 @@
         <li><a href="importers/ina.html#text_preparation.importers.ina.classes.INABroadcastAudioRecord.parse">(text_preparation.importers.ina.classes.INABroadcastAudioRecord method)</a>
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.parse">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage method)</a>
+</li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.parse">(text_preparation.importers.olive.classes.OliveNewspaperPage method)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperPage.parse">(text_preparation.importers.swa.classes.SWANewspaperPage method)</a>
 </li>
@@ -932,6 +1055,8 @@
       </ul></li>
       <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.alto.parse_style">parse_style() (in module text_preparation.importers.mets_alto.alto)</a>
 </li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.parsers.parse_styles">parse_styles() (in module text_preparation.importers.olive.parsers)</a>
+</li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.helpers.parse_textblock">parse_textblock() (in module text_preparation.importers.bcul.helpers)</a>
 </li>
       <li><a href="importers/bcul.html#text_preparation.importers.bcul.helpers.parse_textline">parse_textline() (in module text_preparation.importers.bcul.helpers)</a>
@@ -959,6 +1084,8 @@
 </li>
         <li><a href="importers/mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.path">(text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue attribute)</a>
 </li>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.path">(text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+</li>
         <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue.path">(text_preparation.importers.rero.classes.ReroNewspaperIssue attribute)</a>
 </li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue.path">(text_preparation.importers.swa.classes.SWANewspaperIssue attribute)</a>
@@ -968,6 +1095,8 @@
         <li><a href="importers/swissinfo.html#text_preparation.importers.swissinfo.classes.SwissInfoRadioBulletinPage.path">(text_preparation.importers.swissinfo.classes.SwissInfoRadioBulletinPage attribute)</a>
 </li>
       </ul></li>
+      <li><a href="architecture.html#text_preparation.importers.core.process_supports">process_supports() (in module text_preparation.importers.core)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -996,6 +1125,10 @@
 </li>
       <li><a href="rebuilders.html#text_preparation.rebuilders.rebuilder.rebuild_issues">rebuild_issues() (in module text_preparation.rebuilders.rebuilder)</a>
 </li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.recompose_page">recompose_page() (in module text_preparation.importers.olive.helpers)</a>
+</li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.helpers.recompose_ToC">recompose_ToC() (in module text_preparation.importers.olive.helpers)</a>
+</li>
       <li><a href="rebuilders.html#text_preparation.rebuilders.helpers.reconstruct_iiif_link">reconstruct_iiif_link() (in module text_preparation.rebuilders.helpers)</a>
 </li>
   </ul></td>
@@ -1008,9 +1141,13 @@
       </ul></li>
       <li><a href="rebuilders.html#text_preparation.rebuilders.helpers.rejoin_cis">rejoin_cis() (in module text_preparation.rebuilders.helpers)</a>
 </li>
+      <li><a href="architecture.html#text_preparation.importers.core.remove_filelocks">remove_filelocks() (in module text_preparation.importers.core)</a>
+</li>
       <li><a href="importers/tetml.html#text_preparation.importers.tetml.helpers.remove_page_number">remove_page_number() (in module text_preparation.importers.tetml.helpers)</a>
 </li>
       <li><a href="importers/lux.html#text_preparation.importers.lux.helpers.remove_section_cis">remove_section_cis() (in module text_preparation.importers.lux.helpers)</a>
+</li>
+      <li><a href="importers/rero.html#text_preparation.importers.rero.detect.Rero2IssueDir">Rero2IssueDir (in module text_preparation.importers.rero.detect)</a>
 </li>
       <li><a href="importers/rero.html#text_preparation.importers.rero.classes.ReroNewspaperIssue">ReroNewspaperIssue (class in text_preparation.importers.rero.classes)</a>
 </li>
@@ -1043,6 +1180,8 @@
 </li>
         <li><a href="importers/lux.html#text_preparation.importers.lux.detect.select_issues">(in module text_preparation.importers.lux.detect)</a>
 </li>
+        <li><a href="importers/rero.html#text_preparation.importers.rero.detect.select_issues">(in module text_preparation.importers.rero.detect)</a>
+</li>
         <li><a href="importers/swa.html#text_preparation.importers.swa.detect.select_issues">(in module text_preparation.importers.swa.detect)</a>
 </li>
         <li><a href="importers/swissinfo.html#text_preparation.importers.swissinfo.detect.select_issues">(in module text_preparation.importers.swissinfo.detect)</a>
@@ -1050,6 +1189,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="architecture.html#text_preparation.importers.core.serialize_supports">serialize_supports() (in module text_preparation.importers.core)</a>
+</li>
       <li><a href="importers/swa.html#text_preparation.importers.swa.detect.SwaIssueDir">SwaIssueDir (in module text_preparation.importers.swa.detect)</a>
 </li>
       <li><a href="importers/swa.html#text_preparation.importers.swa.classes.SWANewspaperIssue">SWANewspaperIssue (class in text_preparation.importers.swa.classes)</a>
@@ -1162,10 +1303,24 @@
 </li>
       </ul></li>
       <li>
+    text_preparation.importers.core
+
+      <ul>
+        <li><a href="architecture.html#module-text_preparation.importers.core">module</a>
+</li>
+      </ul></li>
+      <li>
     text_preparation.importers.fedgaz.classes
 
       <ul>
         <li><a href="importers/fedgaz.html#module-text_preparation.importers.fedgaz.classes">module</a>
+</li>
+      </ul></li>
+      <li>
+    text_preparation.importers.generic_importer
+
+      <ul>
+        <li><a href="importers.html#module-text_preparation.importers.generic_importer">module</a>
 </li>
       </ul></li>
       <li>
@@ -1196,8 +1351,6 @@
         <li><a href="importers/lux.html#module-text_preparation.importers.lux.classes">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     text_preparation.importers.lux.detect
 
@@ -1212,6 +1365,8 @@
         <li><a href="importers/lux.html#module-text_preparation.importers.lux.helpers">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     text_preparation.importers.mets_alto.alto
 
@@ -1234,6 +1389,13 @@
 </li>
       </ul></li>
       <li>
+    text_preparation.importers.olive.classes
+
+      <ul>
+        <li><a href="importers/olive.html#module-text_preparation.importers.olive.classes">module</a>
+</li>
+      </ul></li>
+      <li>
     text_preparation.importers.olive.detect
 
       <ul>
@@ -1241,10 +1403,31 @@
 </li>
       </ul></li>
       <li>
+    text_preparation.importers.olive.helpers
+
+      <ul>
+        <li><a href="importers/olive.html#module-text_preparation.importers.olive.helpers">module</a>
+</li>
+      </ul></li>
+      <li>
+    text_preparation.importers.olive.parsers
+
+      <ul>
+        <li><a href="importers/olive.html#module-text_preparation.importers.olive.parsers">module</a>
+</li>
+      </ul></li>
+      <li>
     text_preparation.importers.rero.classes
 
       <ul>
         <li><a href="importers/rero.html#module-text_preparation.importers.rero.classes">module</a>
+</li>
+      </ul></li>
+      <li>
+    text_preparation.importers.rero.detect
+
+      <ul>
+        <li><a href="importers/rero.html#module-text_preparation.importers.rero.detect">module</a>
 </li>
       </ul></li>
       <li>
@@ -1338,6 +1521,12 @@
         <li><a href="utils.html#module-text_preparation.utils">module</a>
 </li>
       </ul></li>
+      <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperIssue.toc_data">toc_data (text_preparation.importers.olive.classes.OliveNewspaperIssue attribute)</a>
+
+      <ul>
+        <li><a href="importers/olive.html#text_preparation.importers.olive.classes.OliveNewspaperPage.toc_data">(text_preparation.importers.olive.classes.OliveNewspaperPage attribute)</a>
+</li>
+      </ul></li>
       <li><a href="importers/fedgaz.html#text_preparation.importers.fedgaz.classes.TokPosition">TokPosition (class in text_preparation.importers.fedgaz.classes)</a>
 </li>
   </ul></td>
@@ -1347,6 +1536,12 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="rebuilders.html#text_preparation.rebuilders.rebuilder.upload">upload() (in module text_preparation.rebuilders.rebuilder)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="architecture.html#text_preparation.importers.core.upload_issues">upload_issues() (in module text_preparation.importers.core)</a>
+</li>
+      <li><a href="architecture.html#text_preparation.importers.core.upload_supports">upload_supports() (in module text_preparation.importers.core)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1382,10 +1577,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="importers/tetml.html#text_preparation.importers.tetml.helpers.word2json">word2json() (in module text_preparation.importers.tetml.helpers)</a>
 </li>
+      <li><a href="architecture.html#text_preparation.importers.core.write_error">write_error() (in module text_preparation.importers.core)</a>
+
+      <ul>
+        <li><a href="utils.html#text_preparation.utils.write_error">(in module text_preparation.utils)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="utils.html#text_preparation.utils.write_error">write_error() (in module text_preparation.utils)</a>
-</li>
       <li><a href="utils.html#text_preparation.utils.write_jsonlines_file">write_jsonlines_file() (in module text_preparation.utils)</a>
 </li>
   </ul></td>

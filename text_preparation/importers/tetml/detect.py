@@ -34,20 +34,6 @@ canonical identifiers for the issue and its pages.
 """
 
 
-def dir2tetmldir(issue_dir: IssueDir) -> TetmlIssueDir:
-    """Helper function that injects access rights info into an ``IssueDir``.
-
-    TODO remove
-    .. note ::
-        This function is called internally by :func:`tetml_detect_issues`.
-
-    :param IssueDir issue_dir: Input ``IssueDir`` object.
-    :return: New ``TetmlIssueDir`` object.
-    """
-
-    return TetmlIssueDir(issue_dir.alias, issue_dir.date, issue_dir.edition, issue_dir.path)
-
-
 def tetml_detect_issues(
     base_dir: str, alias_filter: set = None, exclude: bool = False
 ) -> List[TetmlIssueDir]:
