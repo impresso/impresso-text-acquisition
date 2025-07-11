@@ -15,15 +15,19 @@ The following importer CLI scripts are already available:
   to encode and deliver part of its data.
 - :py:mod:`text_preparation.scripts.luximporter`: importer for the *Mets/ALTO flavor* used by the `Bibliothèque nationale de Luxembourg (BNL)
   <https://bnl.public.lu/>`_ to encode and deliver its newspaper data.
+- :py:mod:`text_preparation.scripts.swaimporter`: *ALTO flavor* of the `Basel University Library`.
+- :py:mod:`text_preparation.scripts.blimporter`: importer for the *Mets/ALTO flavor* used by the `British Library (BL) <https://www.bl.uk/>`_
+  to encode and deliver its newspaper data.
 - :py:mod:`text_preparation.scripts.bnfimporter`: importer for the *Mets/ALTO flavor* used by the `Bibliothèque nationale de France (BNF)
   <https://www.bnf.fr/en/>`_ to encode and deliver its newspaper data.
 - :py:mod:`text_preparation.scripts.bnfen_importer`: importer for the *Mets/ALTO flavor* used by the `Bibliothèque nationale de France (BNF)
   <https://www.bnf.fr/en/>`_  to encode and deliver its newspaper data for the Europeana collection.
 - :py:mod:`text_preparation.scripts.bcul_importer`: importer for the *ABBYY format* used by the `Bibliothèque Cantonale Universitaire de Lausanne (BCUL)
   <https://www.bcu-lausanne.ch/en/>`_  to encode and deliver the newspaper data which is on the `Scriptorium interface <https://scriptorium.bcu-lausanne.ch/page/home>`_.
-- :py:mod:`text_preparation.scripts.swaimporter`: *ALTO flavor* of the `Basel University Library`.
-- :py:mod:`text_preparation.scripts.blimporter`: importer for the *Mets/ALTO flavor* used by the `British Library (BL) <https://www.bl.uk/>`_
-  to encode and deliver its newspaper data.
+- :py:mod:`text_preparation.scripts.swissinfoimporter`: importer for the *JSON format extracted from PDF embedded OCR* used by Memoriav of the `Swissingo <https://www.swissinfo.ch/eng/>`_
+  collection to encore and deliver its radio-bulletin data.
+  - :py:mod:`text_preparation.scripts.inaimporter`: importer for the *AudioDoc ASR format* used by the `Institut National de L'audiovisuel (INA) <https://www.ina.fr/>`_
+  to encode and deliver its radio data.
 - :py:mod:`text_preparation.scripts.tetml`: generic importer for the *TETML format*, produced by `PDFlib TET <https://www.pdflib.com/products/tet/overview/>`_.
 - :py:mod:`text_preparation.scripts.fedgaz`: importer for the *TETML format* with separate metadata file and a heuristic article segmentation,
   used to parse the `Federal Gazette <https://www.admin.ch/gov/de/start/bundesrecht/bundesblatt.html>`_.
@@ -43,6 +47,8 @@ For further details on any of these implementations, please do refer to its docu
    importers/bnf
    importers/bnf-en
    importers/bcul
+   importers/swissinfo
+   importers/ina
    importers/tetml
    importers/fedgaz
 
@@ -64,8 +70,8 @@ CLI parameter.
 
 This JSON file contains three properties:
 
-- ``newspapers``: a dictionary containing the newspaper IDs to be imported (e.g. GDL);
-- ``exclude_newspapers``: a list of the newspaper IDs to be excluded;
+- ``aliases``: a dictionary containing the media aliases to be imported (e.g. GDL);
+- ``exclude_aliases``: a list of the media aliases to be excluded;
 - ``year_only``: a boolean flag indicating whether date ranges are expressed by using years
   or more granular dates (in the format ``YYYY/MM/DD``).
 
@@ -79,10 +85,10 @@ Here is a simple configuration file:
 .. code-block:: python
 
   {
-    "newspapers": {
+    "aliases": {
         "GDL": []
       },
-    "exclude_newspapers": [],
+    "exclude_aliases": [],
     "year_only": false
   }
 
@@ -92,10 +98,10 @@ This is what a more complex config file looks like (only contents for the decade
 .. code-block:: python
 
   {
-    "newspapers": {
+    "aliases": {
         "GDL": "1950/01/01-1960/12/31"
       },
-    "exclude_newspapers": [],
+    "exclude_aliases": [],
     "year_only": false
   }
 
@@ -116,13 +122,13 @@ For example, this is the content of ``oliveimporter.py``:
 .. code-block:: python
 
   from text_preparation.importers import generic_importer
-  from text_preparation.importers.olive.classes import OliveNewspaperIssue
+  from text_preparation.importers.olive.classes import OliveCanonicalIssue
   from text_preparation.importers.olive.detect import (olive_detect_issues,
                                                     olive_select_issues)
 
   if __name__ == '__main__':
       generic_importer.main(
-          OliveNewspaperIssue,
+          OliveCanonicalIssue,
           olive_detect_issues,
           olive_select_issues
       )
@@ -138,7 +144,7 @@ Detect data to import
 ~~~~~~~~~~~~~~~~~~~~~
 
 - the importer needs to know which data should be imported
-- information about the newspaper contents is often encoded as part of
+- information about the newspaper/radio-bulletin/audio-broadcast contents is often encoded as part of
   folder names etc., thus it needs to be extracted and made explicit, by means
   of :ref:`Canonical identifiers`
 - add some sample data to ``text_preparation/data/sample/<new_format>``
@@ -154,17 +160,22 @@ These two classes are passed to the the importer's generic command-line interfac
 see :py:func:`text_preparation.importers.generic_importer.main`
 
 
-.. autoclass:: text_preparation.importers.classes.NewspaperIssue
+.. autoclass:: text_preparation.importers.classes.CanonicalIssue
   :members:
 
-.. autoclass:: text_preparation.importers.classes.NewspaperPage
+And one the two types of physical supports: Pages and Audio Records:
+
+.. autoclass:: text_preparation.importers.classes.CanonicalPage
+  :members:
+
+.. autoclass:: text_preparation.importers.classes.CanonicalAudioRecord
   :members:
 
 
 Write an importer CLI script
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This script imports passes the new :class:`NewspaperIssue` class, together with the-newly
+This script imports passes the new :class:`CanonicalIssue` class, together with the-newly
 defined *detect* functions, to the ``main()`` function of the generic importer CLI
 :func:`text_preparation.importers.generic_importer.main`.
 

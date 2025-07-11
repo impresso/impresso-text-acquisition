@@ -22,7 +22,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="FedGaz TETML importer" href="fedgaz.html" />
-    <link rel="prev" title="BCUL ABBYY importer" href="bcul.html" /> 
+    <link rel="prev" title="INA AudioDoc importer" href="ina.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,6 +59,8 @@
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Generic TETML importer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.tetml.classes">Tetml Custom classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.tetml.detect">Tetml Detect functions</a></li>
@@ -148,13 +150,13 @@ produced by PDFlib TET.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="text_preparation.importers.tetml.classes.TetmlNewspaperPage.add_issue">
-<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.tetml.classes.TetmlNewspaperPage.add_issue" title="Link to this definition"></a></dt>
-<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.tetml.classes.TetmlNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
 <p>This allows each page to preserve contextual information coming from
-the newspaper issue.</p>
+the canonical issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -176,6 +178,7 @@ method is called.</p>
 </section>
 <section id="module-text_preparation.importers.tetml.detect">
 <span id="tetml-detect-functions"></span><h2>Tetml Detect functions<a class="headerlink" href="#module-text_preparation.importers.tetml.detect" title="Link to this heading"></a></h2>
+<p>This module contains functions to detect Tetml OCR data to be imported.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="text_preparation.importers.tetml.detect.TetmlIssueDir">
 <span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">TetmlIssueDir</span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.TetmlIssueDir" title="Link to this definition"></a></dt>
@@ -192,34 +195,31 @@ second, etc.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>journal</strong> (<em>str</em>) – Newspaper ID</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – Newspaper alias</p></li>
 <li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date</p></li>
 <li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.)</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing OCR data</p></li>
-<li><p><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.)</p></li>
 </ul>
 </dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">TetmlIssueDir</span><span class="p">(</span><span class="s1">&#39;GDL&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./GDL-1900-01-01/&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">TetmlIssueDir</span><span class="p">(</span><span class="s1">&#39;GDL&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./GDL-1900-01-01/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.tetml.detect.dir2tetmldir">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">dir2tetmldir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TetmlIssueDirectory</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.dir2tetmldir" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">dir2tetmldir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TetmlIssueDirectory</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.dir2tetmldir" title="Link to this definition"></a></dt>
 <dd><p>Helper function that injects access rights info into an <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function is called internally by <a class="reference internal" href="#text_preparation.importers.tetml.detect.tetml_detect_issues" title="text_preparation.importers.tetml.detect.tetml_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">tetml_detect_issues()</span></code></a>.</p>
+<p>TODO remove
+.. note</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>This function is called internally by :func:`tetml_detect_issues`.
+</pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Input <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code> object.</p></li>
-<li><p><strong>access_rights</strong> (<em>dict</em>) – Access rights information.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Input <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code> object.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>New <code class="docutils literal notranslate"><span class="pre">TetmlIssueDir</span></code> object.</p>
@@ -229,7 +229,7 @@ second, etc.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.tetml.detect.tetml_detect_issues">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">tetml_detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">journal_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TetmlIssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.tetml_detect_issues" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">tetml_detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TetmlIssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.tetml_detect_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect newspaper issues to import within the filesystem.</p>
 <p>This function expects the directory structure that RERO used to
 organize the dump of Tetml OCR data.</p>
@@ -237,9 +237,8 @@ organize the dump of Tetml OCR data.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
-<li><p><strong>journal_filter</strong> (<em>set</em>) – IDs of newspapers to consider.</p></li>
-<li><p><strong>exclude</strong> (<em>bool</em>) – Whether <code class="docutils literal notranslate"><span class="pre">journal_filter</span></code> should determine exclusion.</p></li>
+<li><p><strong>alias_filter</strong> (<em>set</em>) – IDs of newspapers to consider.</p></li>
+<li><p><strong>exclude</strong> (<em>bool</em>) – Whether <code class="docutils literal notranslate"><span class="pre">alias_filter</span></code> should determine exclusion.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -250,7 +249,7 @@ organize the dump of Tetml OCR data.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.tetml.detect.tetml_select_issues">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">tetml_select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TetmlIssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.tetml_select_issues" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">tetml_select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TetmlIssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.tetml_select_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
 <p>The behavior is very similar to <a class="reference internal" href="#text_preparation.importers.tetml.detect.tetml_detect_issues" title="text_preparation.importers.tetml.detect.tetml_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">tetml_detect_issues()</span></code></a> with the only
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
@@ -261,7 +260,6 @@ further details on how to configure filtering.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
 <li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -488,7 +486,7 @@ of the first line and is not longer than 3 digits.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="bcul.html" class="btn btn-neutral float-left" title="BCUL ABBYY importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ina.html" class="btn btn-neutral float-left" title="INA AudioDoc importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="fedgaz.html" class="btn btn-neutral float-right" title="FedGaz TETML importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

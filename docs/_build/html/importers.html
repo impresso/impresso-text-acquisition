@@ -59,6 +59,8 @@
 <li class="toctree-l3"><a class="reference internal" href="importers/bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
@@ -68,8 +70,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#writing-a-new-importer">Writing a new importer</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#detect-data-to-import">Detect data to import</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#implement-abstract-classes">Implement abstract classes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importers.classes.NewspaperIssue"><code class="docutils literal notranslate"><span class="pre">NewspaperIssue</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importers.classes.NewspaperPage"><code class="docutils literal notranslate"><span class="pre">NewspaperPage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue"><code class="docutils literal notranslate"><span class="pre">CanonicalIssue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalPage"><code class="docutils literal notranslate"><span class="pre">CanonicalPage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalAudioRecord"><code class="docutils literal notranslate"><span class="pre">CanonicalAudioRecord</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#write-an-importer-cli-script">Write an importer CLI script</a></li>
@@ -119,12 +122,16 @@ are currently being developed.</p>
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.reroimporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by <a class="reference external" href="https://www.rero.ch/">RERO</a>
 to encode and deliver part of its data.</p></li>
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.luximporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://bnl.public.lu/">Bibliothèque nationale de Luxembourg (BNL)</a> to encode and deliver its newspaper data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bnfimporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a> to encode and deliver its newspaper data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bnfen_importer</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a>  to encode and deliver its newspaper data for the Europeana collection.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bcul_importer</span></code>: importer for the <em>ABBYY format</em> used by the <a class="reference external" href="https://www.bcu-lausanne.ch/en/">Bibliothèque Cantonale Universitaire de Lausanne (BCUL)</a>  to encode and deliver the newspaper data which is on the <a class="reference external" href="https://scriptorium.bcu-lausanne.ch/page/home">Scriptorium interface</a>.</p></li>
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.swaimporter</span></code>: <em>ALTO flavor</em> of the <cite>Basel University Library</cite>.</p></li>
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.blimporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://www.bl.uk/">British Library (BL)</a>
 to encode and deliver its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bnfimporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a> to encode and deliver its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bnfen_importer</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a>  to encode and deliver its newspaper data for the Europeana collection.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bcul_importer</span></code>: importer for the <em>ABBYY format</em> used by the <a class="reference external" href="https://www.bcu-lausanne.ch/en/">Bibliothèque Cantonale Universitaire de Lausanne (BCUL)</a>  to encode and deliver the newspaper data which is on the <a class="reference external" href="https://scriptorium.bcu-lausanne.ch/page/home">Scriptorium interface</a>.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.swissinfoimporter</span></code>: importer for the <em>JSON format extracted from PDF embedded OCR</em> used by Memoriav of the <a class="reference external" href="https://www.swissinfo.ch/eng/">Swissingo</a>
+collection to encore and deliver its radio-bulletin data.
+- <code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.inaimporter</span></code>: importer for the <em>AudioDoc ASR format</em> used by the <a class="reference external" href="https://www.ina.fr/">Institut National de L’audiovisuel (INA)</a>
+to encode and deliver its radio data.</p></li>
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.tetml</span></code>: generic importer for the <em>TETML format</em>, produced by <a class="reference external" href="https://www.pdflib.com/products/tet/overview/">PDFlib TET</a>.</p></li>
 <li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.fedgaz</span></code>: importer for the <em>TETML format</em> with separate metadata file and a heuristic article segmentation,
 used to parse the <a class="reference external" href="https://www.admin.ch/gov/de/start/bundesrecht/bundesblatt.html">Federal Gazette</a>.</p></li>
@@ -141,6 +148,8 @@ used to parse the <a class="reference external" href="https://www.admin.ch/gov/d
 <li class="toctree-l1"><a class="reference internal" href="importers/bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
@@ -153,63 +162,6 @@ used to parse the <a class="reference external" href="https://www.admin.ch/gov/d
 <p>All importers share the same command-line interface; only a few options
 are import-specific (see documentation below).</p>
 </div>
-<p id="module-text_preparation.importers.generic_importer">Functions and CLI script to convert any OCR data into Impresso’s format.</p>
-<dl>
-<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –chunk-size=&lt;cs&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –access-rights=&lt;ar&gt; –git-repo=&lt;gr&gt; –num-workers=&lt;nw&gt;]
-&lt;importer-name&gt;importer.py –version</p>
-</dd>
-<dt>Options:</dt><dd><dl class="option-list">
-<dt><kbd><span class="option">--input-dir=<var>&lt;id&gt;</var></span></kbd></dt>
-<dd><p>Base directory containing one sub-directory for each journal</p>
-</dd>
-<dt><kbd><span class="option">--image-dirs=<var>&lt;imd&gt;</var></span></kbd></dt>
-<dd><p>Directory containing (canonical) images and their metadata (use <cite>,</cite> to separate multiple dirs)</p>
-</dd>
-<dt><kbd><span class="option">--output-dir=<var>&lt;od&gt;</var></span></kbd></dt>
-<dd><p>Base directory where to write the output files</p>
-</dd>
-<dt><kbd><span class="option">--temp-dir=<var>&lt;td&gt;</var></span></kbd></dt>
-<dd><p>Temporary directory to extract .zip archives</p>
-</dd>
-<dt><kbd><span class="option">--config-file=<var>&lt;cf&gt;</var></span></kbd></dt>
-<dd><p>Configuration file for selective import</p>
-</dd>
-<dt><kbd><span class="option">--s3-bucket=<var>&lt;b&gt;</var></span></kbd></dt>
-<dd><p>If provided, writes output to an S3 drive, in the specified bucket</p>
-</dd>
-<dt><kbd><span class="option">--scheduler=<var>&lt;sch&gt;</var></span></kbd></dt>
-<dd><p>Tell dask to use an existing scheduler (otherwise it’ll create one)</p>
-</dd>
-<dt><kbd><span class="option">--log-file=<var>&lt;f&gt;</var></span></kbd></dt>
-<dd><p>Log file; when missing print log to stdout</p>
-</dd>
-<dt><kbd><span class="option">--access-rights=<var>&lt;ar&gt;</var></span></kbd></dt>
-<dd><p>Access right file if relevant (only for <cite>olive</cite> and <cite>rero</cite> importers)</p>
-</dd>
-<dt><kbd><span class="option">--chunk-size=<var>&lt;cs&gt;</var></span></kbd></dt>
-<dd><p>Chunk size in years used to group issues when importing</p>
-</dd>
-<dt><kbd><span class="option">--git-repo=<var>&lt;gr&gt;</var></span></kbd></dt>
-<dd><p>Local path to the “impresso-text-acquisition” git directory (including it).</p>
-</dd>
-<dt><kbd><span class="option">--num-workers=<var>&lt;nw&gt;</var></span></kbd></dt>
-<dd><p>Number of workers to use for local dask cluster</p>
-</dd>
-<dt><kbd><span class="option">--verbose</span></kbd></dt>
-<dd><p>Verbose log messages (good for debugging)</p>
-</dd>
-<dt><kbd><span class="option">--clear</span></kbd></dt>
-<dd><p>Removes the output folder (if already existing)</p>
-</dd>
-<dt><kbd><span class="option">--incremental</span></kbd></dt>
-<dd><p>Skips issues already present in output directory</p>
-</dd>
-<dt><kbd><span class="option">--version</span></kbd></dt>
-<dd><p>Prints version and exits.</p>
-</dd>
-</dl>
-</dd>
-</dl>
 </section>
 <section id="configuration-file">
 <h2>Configuration file<a class="headerlink" href="#configuration-file" title="Link to this heading"></a></h2>
@@ -218,8 +170,8 @@ means of a configuration file (JSON format). The path to this file is passed via
 CLI parameter.</p>
 <p>This JSON file contains three properties:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">newspapers</span></code>: a dictionary containing the newspaper IDs to be imported (e.g. GDL);</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">exclude_newspapers</span></code>: a list of the newspaper IDs to be excluded;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aliases</span></code>: a dictionary containing the media aliases to be imported (e.g. GDL);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_aliases</span></code>: a list of the media aliases to be excluded;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">year_only</span></code>: a boolean flag indicating whether date ranges are expressed by using years
 or more granular dates (in the format <code class="docutils literal notranslate"><span class="pre">YYYY/MM/DD</span></code>).</p></li>
 </ul>
@@ -230,20 +182,20 @@ your data imports into batches or homogeneous collections.</p>
 </div>
 <p>Here is a simple configuration file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;newspapers&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="p">[]</span>
     <span class="p">},</span>
-  <span class="s2">&quot;exclude_newspapers&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;exclude_aliases&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="s2">&quot;year_only&quot;</span><span class="p">:</span> <span class="n">false</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>This is what a more complex config file looks like (only contents for the decade 1950-1960 of GDL are processed):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;newspapers&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="s2">&quot;1950/01/01-1960/12/31&quot;</span>
     <span class="p">},</span>
-  <span class="s2">&quot;exclude_newspapers&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;exclude_aliases&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="s2">&quot;year_only&quot;</span><span class="p">:</span> <span class="n">false</span>
 <span class="p">}</span>
 </pre></div>
@@ -257,16 +209,16 @@ pieces of code:</p>
 <li><p>implementing <strong>functions to detect the data</strong> to import;</p></li>
 <li><p>implementing from scratch <strong>classes that handle the conversion into JSON</strong> of your OCR format or adapt one of the existing importers.</p></li>
 </ol>
-<p>Once these two pieces of code are in place, they can be plugged into the functions defined in <a class="reference internal" href="#module-text_preparation.importers.generic_importer" title="text_preparation.importers.generic_importer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer</span></code></a> so as to create a dedicated CLI script for your specific format.</p>
+<p>Once these two pieces of code are in place, they can be plugged into the functions defined in <code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer</span></code> so as to create a dedicated CLI script for your specific format.</p>
 <p>For example, this is the content of <code class="docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">text_preparation.importers</span> <span class="kn">import</span> <span class="n">generic_importer</span>
-<span class="kn">from</span> <span class="nn">text_preparation.importers.olive.classes</span> <span class="kn">import</span> <span class="n">OliveNewspaperIssue</span>
+<span class="kn">from</span> <span class="nn">text_preparation.importers.olive.classes</span> <span class="kn">import</span> <span class="n">OliveCanonicalIssue</span>
 <span class="kn">from</span> <span class="nn">text_preparation.importers.olive.detect</span> <span class="kn">import</span> <span class="p">(</span><span class="n">olive_detect_issues</span><span class="p">,</span>
                                                   <span class="n">olive_select_issues</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">generic_importer</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
-        <span class="n">OliveNewspaperIssue</span><span class="p">,</span>
+        <span class="n">OliveCanonicalIssue</span><span class="p">,</span>
         <span class="n">olive_detect_issues</span><span class="p">,</span>
         <span class="n">olive_select_issues</span>
     <span class="p">)</span>
@@ -283,7 +235,7 @@ pieces of code:</p>
 <h3>Detect data to import<a class="headerlink" href="#detect-data-to-import" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>the importer needs to know which data should be imported</p></li>
-<li><p>information about the newspaper contents is often encoded as part of
+<li><p>information about the newspaper/radio-bulletin/audio-broadcast contents is often encoded as part of
 folder names etc., thus it needs to be extracted and made explicit, by means
 of <a class="reference internal" href="architecture.html#canonical-identifiers"><span class="std std-ref">Canonical identifiers</span></a></p></li>
 <li><p>add some sample data to <code class="docutils literal notranslate"><span class="pre">text_preparation/data/sample/&lt;new_format&gt;</span></code></p></li>
@@ -295,10 +247,10 @@ of <a class="reference internal" href="architecture.html#canonical-identifiers">
 <p>These two classes are passed to the the importer’s generic command-line interface,
 see <code class="xref py py-func docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer.main()</span></code></p>
 <dl class="py class">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">NewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue" title="Link to this definition"></a></dt>
-<dd><p>Abstract class representing a newspaper issue.</p>
-<p>Each text importer needs to define a subclass of <cite>NewspaperIssue</cite> which
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue" title="Link to this definition"></a></dt>
+<dd><p>Abstract class representing a canonical issue.</p>
+<p>Each text importer needs to define a subclass of <cite>CanonicalIssue</cite> which
 specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -306,8 +258,8 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.id" title="Link to this definition"></a></dt>
 <dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -317,8 +269,8 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.edition">
-<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.edition" title="Link to this definition"></a></dt>
 <dd><p>Lower case letter ordering issues of the same day.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -328,9 +280,9 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.journal">
-<span class="sig-name descname"><span class="pre">journal</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.journal" title="Link to this definition"></a></dt>
-<dd><p>Newspaper unique identifier or name.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.alias" title="Link to this definition"></a></dt>
+<dd><p>Media unique alias (identifier or name).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -339,8 +291,8 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.path">
-<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.path" title="Link to this definition"></a></dt>
 <dd><p>Path to directory containing the issue’s OCR data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -350,8 +302,8 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.date">
-<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.date" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.date" title="Link to this definition"></a></dt>
 <dd><p>Publication date of issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -361,8 +313,8 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.issue_data">
-<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.issue_data" title="Link to this definition"></a></dt>
 <dd><p>Issue data according to canonical format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -372,9 +324,9 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.pages">
-<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.pages" title="Link to this definition"></a></dt>
-<dd><p>List of <a class="reference internal" href="#text_preparation.importers.classes.NewspaperPage" title="text_preparation.importers.classes.NewspaperPage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NewspaperPage</span></code></a> instances from this issue.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.pages" title="Link to this definition"></a></dt>
+<dd><p>List of <a class="reference internal" href="#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CanonicalPage</span></code></a> instances from this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
@@ -383,19 +335,19 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.rights">
-<span class="sig-name descname"><span class="pre">rights</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.rights" title="Link to this definition"></a></dt>
-<dd><p>Access rights applicable to this issue.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.audio_records">
+<span class="sig-name descname"><span class="pre">audio_records</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.audio_records" title="Link to this definition"></a></dt>
+<dd><p>List of <a class="reference internal" href="#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CanonicalAudioRecord</span></code></a> instances from this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>list</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.issuedir">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">issuedir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IssueDir</span></em><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.issuedir" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.issuedir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">issuedir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IssueDir</span></em><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.issuedir" title="Link to this definition"></a></dt>
 <dd><p>IssueDirectory corresponding to this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -405,9 +357,9 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperIssue.to_json">
-<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperIssue.to_json" title="Link to this definition"></a></dt>
-<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.issue_data</span></code> &amp; serialize it to string.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.issue_data</span></code> against the issue canonical schema.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Validation adds a substantial overhead to computing time. For
@@ -418,11 +370,12 @@ bypass schema validation.</p>
 
 </dd></dl>
 
+<p>And one the two types of physical supports: Pages and Audio Records:</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperPage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">NewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperPage" title="Link to this definition"></a></dt>
-<dd><p>Abstract class representing a newspaper page.</p>
-<p>Each text importer needs to define a subclass of <code class="docutils literal notranslate"><span class="pre">NewspaperPage</span></code> which
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage" title="Link to this definition"></a></dt>
+<dd><p>Abstract class representing a printed or typescripted page.</p>
+<p>Each text importer needs to define a subclass of <code class="docutils literal notranslate"><span class="pre">CanonicalPage</span></code> which
 specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -433,8 +386,8 @@ specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperPage.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperPage.id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.id" title="Link to this definition"></a></dt>
 <dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -444,8 +397,8 @@ specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperPage.number">
-<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperPage.number" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.number" title="Link to this definition"></a></dt>
 <dd><p>Page number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -455,8 +408,8 @@ specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperPage.page_data">
-<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.page_data" title="Link to this definition"></a></dt>
 <dd><p>Page data according to canonical format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -466,32 +419,32 @@ specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperPage.issue">
-<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperPage.issue" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.issue" title="Link to this definition"></a></dt>
 <dd><p>Issue this page is from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue">NewspaperIssue</a> | None</p>
+<dd class="field-odd"><p><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a> | None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperPage.add_issue">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperPage.add_issue" title="Link to this definition"></a></dt>
-<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.add_issue">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
 <p>This allows each page to preserve contextual information coming from
-the newspaper issue.</p>
+the canonical issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperPage.parse">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperPage.parse" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.parse">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.parse" title="Link to this definition"></a></dt>
 <dd><p>Process the page XML file and transform into canonical Page format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -502,15 +455,109 @@ method is called.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.NewspaperPage.to_json">
-<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.NewspaperPage.to_json" title="Link to this definition"></a></dt>
-<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.page.data</span></code> &amp; serialize it to string.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.page_data</span></code> against the page canonical schema.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalAudioRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord" title="Link to this definition"></a></dt>
+<dd><p>Abstract class representing an radio audio record.</p>
+<p>Each text importer for radio records needs to define a subclass of
+<code class="docutils literal notranslate"><span class="pre">CanonicalAudioRecord</span></code> which specifies the logic to handle ASR data
+in a given format (e.g. AudioDoc).
+The concept and abstraction of Canonical Audio Record is a mirror of the
+Canonical Page (for print - newspapers or typescript - radio bulletins) and
+is meant to provide a data structure representing the digitization of an archival
+content’s physical support through automated techniques (ie. ASR or OCR/OLR).
+As a result, this class aims to mimic as closely as possible the CanonicalPage and
+might include attributes or methods that make sense only to maintain the logic of
+our processings and data structures through our pipeline (eg. number as we only have
+1 recording per radio audio program, while a print/typescript can have several pages).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical Audio Record ID (e.g. <code class="docutils literal notranslate"><span class="pre">-1900-01-02-a-r0001</span></code>).</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Record number (for compatibility with other source mediums).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Audio Record ID (e.g. <code class="docutils literal notranslate"><span class="pre">INA-1900-01-02-a-r0001</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.number" title="Link to this definition"></a></dt>
+<dd><p>Record number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.record_data">
+<span class="sig-name descname"><span class="pre">record_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.record_data" title="Link to this definition"></a></dt>
+<dd><p>Audio record data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.add_issue">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to an audio record object its parent, i.e. the canonical issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the canonical issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.parse">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.parse" title="Link to this definition"></a></dt>
+<dd><p>Process the audio record XML file and transform into canonical AudioRecord format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Validation adds a substantial overhead to computing time. For
-serialization of large amounts of pages it is recommendable to
-bypass schema validation.</p>
+<p>This lazy behavior means that the record contents are not processed
+upon creation of the audio record object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
+method is called.</p>
 </div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.record_data</span></code> against the audio record canonical schema.</p>
 </dd></dl>
 
 </dd></dl>
@@ -518,7 +565,7 @@ bypass schema validation.</p>
 </section>
 <section id="write-an-importer-cli-script">
 <h3>Write an importer CLI script<a class="headerlink" href="#write-an-importer-cli-script" title="Link to this heading"></a></h3>
-<p>This script imports passes the new <code class="xref py py-class docutils literal notranslate"><span class="pre">NewspaperIssue</span></code> class, together with the-newly
+<p>This script imports passes the new <code class="xref py py-class docutils literal notranslate"><span class="pre">CanonicalIssue</span></code> class, together with the-newly
 defined <em>detect</em> functions, to the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function of the generic importer CLI
 <code class="xref py py-func docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer.main()</span></code>.</p>
 </section>
