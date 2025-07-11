@@ -93,9 +93,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         self._heuristic_article_segmentation(candidates_only=True)
 
         # using canonical ('m') and additional non-canonical ('meta') metadata
-        self.content_items = [
-            {"m": art["m"], "meta": art["meta"]} for art in self.article_data
-        ]
+        self.content_items = [{"m": art["m"], "meta": art["meta"]} for art in self.article_data]
 
         # instantiate the individual pages
         self._find_pages()
@@ -104,7 +102,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
-            "s": None,  # TODO: ignore style for the time being
+            # "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
         }
@@ -165,9 +163,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             for can_page, page_content in zip(can_pages, art["pages"]):
                 can_id = f"{self.id}-p{can_page:04}"
                 self.pages.append(
-                    TetmlNewspaperPage(
-                        can_id, can_page, page_content, art["meta"]["tetml_path"]
-                    )
+                    TetmlNewspaperPage(can_id, can_page, page_content, art["meta"]["tetml_path"])
                 )
 
     def _parse_metadata(self, fname="metadata.tsv"):
@@ -295,9 +291,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             max_cost_total = max(2, int(0.2 * len(title)))
             max_insert = int(0.3 * len(title))
             # scaled by 3 to make insertions very cheap to account for bad OCR
-            fuzzy_cost = (
-                "{i<=" + str(max_insert) + ",1i+3d+3s<=" + str(max_cost_total * 3) + r"}"
-            )
+            fuzzy_cost = "{i<=" + str(max_insert) + ",1i+3d+3s<=" + str(max_cost_total * 3) + r"}"
             # fuzzy match article headline to locate (bestmatch flag)
             pattern = r"(?b)(" + title + r")" + fuzzy_cost
 

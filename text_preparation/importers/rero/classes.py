@@ -120,9 +120,7 @@ class ReroNewspaperPage(MetsAltoCanonicalPage):
         success = False
         try:
             for region in page_regions:
-                region["c"] = convert_coordinates(
-                    region["c"], image_properties, self.page_width
-                )
+                region["c"] = convert_coordinates(region["c"], image_properties, self.page_width)
                 for paragraph in region["p"]:
                     paragraph["c"] = convert_coordinates(
                         paragraph["c"], image_properties, self.page_width
@@ -186,9 +184,7 @@ class ReroNewspaperIssue(MetsAltoCanonicalIssue):
         ]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
                 self.pages.append(ReroNewspaperPage(page_id, page_no, filename, alto_path))
             except Exception as e:
@@ -327,7 +323,7 @@ class ReroNewspaperIssue(MetsAltoCanonicalIssue):
             logger.warning("Found new content item type: %s", div_type)
 
         metadata = {
-            "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+            "id": f"{self.id}-i{str(counter).zfill(4)}",
             "tp": div_type,
             "pp": [],
             "t": item_div.get("LABEL"),
@@ -351,9 +347,7 @@ class ReroNewspaperIssue(MetsAltoCanonicalIssue):
                 content_item["m"]["pp"].append(pge_no)
 
         if content_item["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
-            (content_item["c"], content_item["m"]["iiif_link"]) = self._get_image_info(
-                content_item
-            )
+            (content_item["c"], content_item["m"]["iiif_link"]) = self._get_image_info(content_item)
         return content_item
 
     def _decompose_section(self, div: Tag) -> list[Tag]:
@@ -508,9 +502,7 @@ class ReroNewspaperIssue(MetsAltoCanonicalIssue):
                     int(float(height)),
                 ]
 
-        coords = convert_coordinates(
-            coords, self.image_properties[page.number], page.page_width
-        )
+        coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
 
         iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.id, IIIF_SUFFIX)
 

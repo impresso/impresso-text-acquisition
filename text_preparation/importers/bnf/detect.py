@@ -1,5 +1,4 @@
-"""This module contains helper functions to find BNF OCR data to import.
-"""
+"""This module contains helper functions to find BNF OCR data to import."""
 
 import json
 import logging
@@ -13,13 +12,11 @@ from bs4 import BeautifulSoup
 from dask import bag as db
 from text_preparation.importers.bnf.helpers import get_journal_name, parse_date
 from text_preparation.importers.mets_alto.mets import get_dmd_sec
-from text_preparation.importers.detect import get_access_right, _apply_datefilter
+from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 
-BnfIssueDir = namedtuple(
-    "IssueDirectory", ["alias", "date", "edition", "path", "rights", "secondary_date"]
-)
+BnfIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path", "secondary_date"])
 """A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -41,7 +38,6 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
     secondary_date (datetime.date): Secondary publication date or issue.
 
 >>> from datetime import date
@@ -50,7 +46,6 @@ Args:
     date=datetime.date(1938, 3, 11), 
     edition='a', 
     path='./BNF/files/4701034.zip', 
-    rights='open_public',
     secondary_date = None
 )
 """
@@ -106,14 +101,13 @@ def assign_editions(issues: list[BnfIssueDir]) -> list[BnfIssueDir]:
             date=i.date,
             edition=string.ascii_lowercase[index],
             path=i.path,
-            rights=i.rights,
             secondary_date=i.secondary_date,
         )
         new_issues.append((i, n))
     return new_issues
 
 
-def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
+def dir2issue(issue_path: str) -> BnfIssueDir:
     """Create a `BnfIssueDir` object from an archive path.
 
     Note:
@@ -121,7 +115,6 @@ def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
 
     Args:
         issue_path (str): The path of the issue within the archive.
-        access_rights_dict (dict): Access rights for this issue.
 
     Returns:
         BnfIssueDir: New `BnfIssueDir` object
@@ -141,13 +134,11 @@ def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
                 issue_info.find("date").contents[0], DATE_FORMATS, DATE_SEPARATORS
             )
             edition = "a"
-            rights = get_access_right(alias, np_date, access_rights_dict)
             issue = BnfIssueDir(
                 alias=alias,
                 date=np_date,
                 edition=edition,
                 path=issue_path,
-                rights=rights,
                 secondary_date=secondary_date,
             )
         except ValueError as e:
@@ -158,42 +149,30 @@ def dir2issue(issue_path: str, access_rights_dict: dict) -> BnfIssueDir:
     return issue
 
 
-def detect_issues(base_dir: str, access_rights: str = None) -> list[BnfIssueDir]:
+def detect_issues(base_dir: str) -> list[BnfIssueDir]:
     """Detect BNF issues to import within the filesystem
 
     This function the directory structure used by BNF (one subdir by journal).
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str, optional): Not used for this importer, but argument
-            is kept for normality. Defaults to None.
 
     Returns:
         list[BnfIssueDir]: List of `BnfIssueDir` instances, to be imported.
     """
     dir_path, dirs, _ = next(os.walk(base_dir))
-    journal_dirs = [
-        os.path.join(dir_path, _dir) for _dir in dirs if not _dir.startswith("2")
-    ]
+    journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs if not _dir.startswith("2")]
     issue_dirs = [
-        os.path.join(journal, _dir)
-        for journal in journal_dirs
-        for _dir in os.listdir(journal)
+        os.path.join(journal, _dir) for journal in journal_dirs for _dir in os.listdir(journal)
     ]
 
-    with open(access_rights, "r", encoding="utf-8") as f:
-        access_rights_dict = json.load(f)
-    issue_dirs = [dir2issue(_dir, access_rights_dict) for _dir in issue_dirs]
+    issue_dirs = [dir2issue(_dir) for _dir in issue_dirs]
     initial_length = len(issue_dirs)
     issue_dirs = [i for i in issue_dirs if i is not None]
 
-    df = pd.DataFrame(
-        [{"issue": i, "id": get_id(i), "number": get_number(i)} for i in issue_dirs]
-    )
-    vals = (
-        df.groupby("id").apply(lambda x: x[["issue", "number"]].values.tolist()).values
-    )
-
+    df = pd.DataFrame([{"issue": i, "id": get_id(i), "number": get_number(i)} for i in issue_dirs])
+    vals = df.groupby("id").apply(lambda x: x[["issue", "number"]].values.tolist()).values
+    # TODO -> keep info of number in issue for legacy
     issue_dirs = [i if len(i) == 1 else assign_editions(i) for i in vals]
     issue_dirs = [j[0] for i in issue_dirs for j in i]
 
@@ -201,9 +180,7 @@ def detect_issues(base_dir: str, access_rights: str = None) -> list[BnfIssueDir]
     return [i for i in issue_dirs if i is not None]
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> Optional[List[BnfIssueDir]]:
+def select_issues(base_dir: str, config: dict) -> Optional[List[BnfIssueDir]]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -214,8 +191,6 @@ def select_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Not used for this imported, but argument is kept
-            for normality.
 
     Returns:
         Optional[List[BnfIssueDir]]: List of `BnfIssueDir` instances, to be imported.
@@ -229,12 +204,11 @@ def select_issues(
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())

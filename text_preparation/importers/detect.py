@@ -33,15 +33,11 @@ def _apply_datefilter(
 
             if year_only:
                 filtered_issues += [
-                    i
-                    for i in issues
-                    if i.alias == title and start.year <= i.date.year <= end.year
+                    i for i in issues if i.alias == title and start.year <= i.date.year <= end.year
                 ]
             else:
                 filtered_issues += [
-                    i
-                    for i in issues
-                    if i.alias == title and start <= i.date <= end
+                    i for i in issues if i.alias == title and start <= i.date <= end
                 ]
 
         # date filter is not a range
@@ -60,15 +56,11 @@ def _apply_datefilter(
 
                 if year_only:
                     filtered_issues += [
-                        i
-                        for i in issues
-                        if i.alias == title and i.date.year in filter_date
+                        i for i in issues if i.alias == title and i.date.year in filter_date
                     ]
                 else:
                     filtered_issues += [
-                        i
-                        for i in issues
-                        if i.alias == title and i.date in filter_date
+                        i for i in issues if i.alias == title and i.date in filter_date
                     ]
 
     return filtered_issues
@@ -78,6 +70,7 @@ def select_issues(config_dict, inp_dir):
     """Reads a configuration file and select titles/issues to consider
     See config.example.md for explanations.
 
+    TODO remove and move to olive/Tetml or keep here and use a basis for all
     Usage example:
         if config_file and os.path.isfile(config_file):
             with open(config_file, 'r') as f:
@@ -97,9 +90,7 @@ def select_issues(config_dict, inp_dir):
         exclude_list = config_dict["exclude_titles"]
         year_flag = config_dict["year_only"]
     except KeyError:
-        logger.critical(
-            "The key [titles|exclude_titles|year_only] is missing in the config file."
-        )
+        logger.critical("The key [titles|exclude_titles|year_only] is missing in the config file.")
         return
     exclude_flag = False if not exclude_list else True
     msg = (
@@ -116,17 +107,13 @@ def select_issues(config_dict, inp_dir):
         logger.error(msg)
         raise AttributeError(msg)
     else:
-        filter_titles = (
-            set(filter_dict.keys()) if not exclude_list else set(exclude_list)
-        )
+        filter_titles = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
         logger.debug(
             "got filter_titles: %s, with exclude flag: %s",
             filter_titles,
             exclude_flag,
         )
-        issues = detect_issues(
-            inp_dir, alias_filter=filter_titles, exclude=exclude_flag
-        )
+        issues = detect_issues(inp_dir, alias_filter=filter_titles, exclude=exclude_flag)
 
         # apply date filter if not exclusion mode
         filtered_issues = (
@@ -181,7 +168,7 @@ def detect_issues(
     for alias in media_title_dirs:
         alias_path = os.path.join(base_dir, alias)
         # for SWISSINFOr, '_' is part of the alias
-        alias = alias.split("_")[-1] if "_" in alias and 'SOC' not in alias else alias
+        alias = alias.split("_")[-1] if "_" in alias and "SOC" not in alias else alias
         _, year_dirs, _ = next(os.walk(alias_path))
 
         for year in year_dirs:
@@ -210,9 +197,7 @@ def detect_issues(
                                 print("Found an issue: %s", str(detected_issue))
                                 detected_issues.append(detected_issue)
                             except ValueError:
-                                print(
-                                    "Path %s is not a valid issue directory", day_path
-                                )
+                                print("Path %s is not a valid issue directory", day_path)
                     else:
                         try:
                             # concerning `edition="a"`: for now, no cases of newspapers
@@ -230,31 +215,3 @@ def detect_issues(
                         except ValueError:
                             print("Path %s is not a valid issue directory", day_path)
     return detected_issues
-
-
-def get_access_right(
-    alias: str, _date: date, access_rights: dict[str, dict[str, str]]
-) -> str:
-    """Fetch the access rights for a specific alias and publication date.
-
-    Note:
-        With the new approach to access rights management, the access rights
-        won't be in the canonical data anymore.
-
-    Args:
-        alias (str): Journal or media alias.
-        _date (date): Publication date of the issue
-        access_rights (dict[str, dict[str, str]]): Access rights for various
-            journals.
-
-    Returns:
-        str: Access rights for specific issue.
-    """
-    rights = access_rights[alias]
-    if rights["time"] == "all":
-        return rights["access-right"].replace("-", "_")
-
-    # TODO: this should rather be a custom exception
-    logger.warning("Access right not defined for %s-%s", alias, _date)
-
-    return "undefined"

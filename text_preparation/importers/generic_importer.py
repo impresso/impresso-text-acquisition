@@ -2,7 +2,7 @@
 Functions and CLI script to convert any OCR data into Impresso's format.
 
 Usage:
-    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --access-rights=<ar> --git-repo=<gr> --num-workers=<nw> --dont-push-manifest --is-audio]
+    <importer-name>importer.py --input-dir=<id> (--clear | --incremental) [--output-dir=<od> --image-dirs=<imd> --temp-dir=<td> --chunk-size=<cs> --s3-bucket=<b> --config-file=<cf> --log-file=<f> --verbose --scheduler=<sch> --git-repo=<gr> --num-workers=<nw> --dont-push-manifest --is-audio]
     <importer-name>importer.py --version
 
 Options:
@@ -14,7 +14,6 @@ Options:
     --s3-bucket=<b>     If provided, writes output to an S3 drive, in the specified bucket
     --scheduler=<sch>   Tell dask to use an existing scheduler (otherwise it'll create one)
     --log-file=<f>      Log file; when missing print log to stdout
-    --access-rights=<ar>  Access right file if relevant (only for `olive` and `rero` importers)
     --chunk-size=<cs>   Chunk size in years used to group issues when importing
     --git-repo=<gr>   Local path to the "impresso-text-acquisition" git directory (including it).
     --num-workers=<nw>  Number of workers to use for local dask cluster
@@ -113,7 +112,6 @@ def get_dask_client(
 def apply_detect_func(
     issue_class: Type[CanonicalIssue],
     input_dir: str,
-    access_rights: str,
     detect_func: Callable[[str, str], list[IssueDir]],
     tmp_dir: str,
 ) -> list[IssueDir]:
@@ -122,7 +120,6 @@ def apply_detect_func(
     Args:
         issue_class (Type[CanonicalIssue]): Type of issue importer in use.
         input_dir (str): Directory containing this importer's original data.
-        access_rights (str): Path to the access rights file for this importer.
         detect_func (Callable[[str, str], list[IssueDir]]): Function detecting
             the issues present in `input_dir` to import.
         tmp_dir (str): Temporary directory used to unpack zip archives.
@@ -131,16 +128,15 @@ def apply_detect_func(
         list[IssueDir]: List of detected issues for this importer.
     """
     if issue_class is BlNewspaperIssue:
-        return detect_func(input_dir, access_rights=access_rights, tmp_dir=tmp_dir)
+        return detect_func(input_dir, tmp_dir=tmp_dir)
     else:
-        return detect_func(input_dir, access_rights=access_rights)
+        return detect_func(input_dir)
 
 
 def apply_select_func(
     issue_class: Type[CanonicalIssue],
     config: dict[str, Any],
     input_dir: str,
-    access_rights: str,
     select_func: Callable[[str, str, str], list[IssueDir]],
     tmp_dir: str,
 ) -> list[IssueDir]:
@@ -150,7 +146,6 @@ def apply_select_func(
         issue_class (Type[CanonicalIssue]): Type of issue importer in use.
         config (dict[str, Any]): Configuration to filter issues to import.
         input_dir (str): Directory containing this importer's original data.
-        access_rights (str): Path to the access rights file for this importer.
         select_func (Callable[[str, str, str], list[IssueDir]]): Function
             detecting and selecting the issues to import using `config`.
         tmp_dir (str): Temporary directory used to unpack zip archives.
@@ -159,11 +154,9 @@ def apply_select_func(
         list[IssueDir]: List of selected issues for this importer and config.
     """
     if issue_class is BlNewspaperIssue:
-        return select_func(
-            input_dir, config=config, access_rights=access_rights, tmp_dir=tmp_dir
-        )
+        return select_func(input_dir, config=config, tmp_dir=tmp_dir)
 
-    return select_func(input_dir, config=config, access_rights=access_rights)
+    return select_func(input_dir, config=config)
 
 
 def main(
@@ -194,7 +187,6 @@ def main(
     image_dirs = args["--image-dirs"]
     out_bucket = args["--s3-bucket"]
     log_file = args["--log-file"]
-    access_rights_file = args["--access-rights"]
     chunk_size = args["--chunk-size"]
     scheduler = args["--scheduler"]
     clear_output = args["--clear"]
@@ -231,19 +223,15 @@ def main(
             issue_class,
             config,
             input_dir=inp_dir,
-            access_rights=access_rights_file,
             select_func=select_func,
             tmp_dir=temp_dir,
         )
-        logger.info(
-            "%s issues remained to import after applying filter: %s", len(issues), issues
-        )
+        logger.info("%s issues remained to import after applying filter: %s", len(issues), issues)
     else:
         logger.info("No config file found.")
         issues = apply_detect_func(
             issue_class,
             inp_dir,
-            access_rights_file,
             detect_func=detect_func,
             tmp_dir=temp_dir,
         )
@@ -256,9 +244,7 @@ def main(
         ]
         logger.debug("Issues to skip: %s", issues_to_skip)
         logger.info("%s issues to skip", len(issues_to_skip))
-        issues = list(
-            filter(lambda x: (x.alias, x.date, x.edition) not in issues_to_skip, issues)
-        )
+        issues = list(filter(lambda x: (x.alias, x.date, x.edition) not in issues_to_skip, issues))
         logger.debug("Remaining issues: %s", issues)
         logger.info("%s remaining issues", len(issues))
 

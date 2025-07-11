@@ -1,5 +1,4 @@
-"""This module contains helper functions to find SWA OCR data to be imported.
-"""
+"""This module contains helper functions to find SWA OCR data to be imported."""
 
 import json
 import logging
@@ -11,7 +10,7 @@ from typing import Optional
 import dask.bag as db
 import pandas as pd
 
-from text_preparation.importers.detect import get_access_right, _apply_datefilter
+from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,6 @@ SwaIssueDir = namedtuple(
         "date",
         "edition",
         "path",
-        "rights",
         "pages",
     ],
 )
@@ -42,7 +40,6 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
     pages (list): list of tuples (page_canonical_id, alto_path), alto_path is
         the path from within the archive.
 
@@ -52,7 +49,6 @@ Args:
         date=datetime.date(1908, 7, 4), 
         edition='a', 
         path='./SWA/impresso_ocr/schwar_000059110_DSV01_1908.zip',
-        rights='open_public', 
         pages=[(
             'arbeitgeber-1908-07-04-a-p0001', 
             'schwar_000059110_DSV01_1908/ocr/schwar_000059110_DSV01_1908_alto/BAU_1_000059110_1908_0001.xml'
@@ -110,9 +106,7 @@ def _parse_csv_apply(part: pd.DataFrame) -> pd.Series:
     return pd.Series({"pages": res, "archives": archives})
 
 
-def _get_issuedir(
-    row: pd.Series, journal_root: str, access_rights: dict
-) -> Optional[SwaIssueDir]:
+def _get_issuedir(row: pd.Series, journal_root: str) -> Optional[SwaIssueDir]:
     """Create a ``SwaIssueDir`` from a row of the CSV file.
 
     Each row of the CSV file contains the issue manifest ID, used to derive
@@ -130,9 +124,7 @@ def _get_issuedir(
         Optional[SwaIssueDir]: New `SwaIssueDir` object for the issue.
     """
     if len(row.archives) > 1:
-        logger.debug(
-            "Issue %s has more than one archive %s", row.manifest_id, row.archives
-        )
+        logger.debug("Issue %s has more than one archive %s", row.manifest_id, row.archives)
 
     archive = os.path.join(journal_root, list(row.archives)[0])
 
@@ -142,19 +134,15 @@ def _get_issuedir(
             try:
                 alias, year, mo, day, edition = split
                 pub_date = date(int(year), int(mo), int(day))
-                rights = get_access_right(alias, pub_date, access_rights)
                 return SwaIssueDir(
                     alias,
                     pub_date,
                     edition,
                     path=archive,
-                    rights=rights,
                     pages=row.pages,
                 )
             except ValueError as e:
-                logger.debug(
-                    "Issue %s does not have a regular name: %s", row.manifest_id, e
-                )
+                logger.debug("Issue %s does not have a regular name: %s", row.manifest_id, e)
         else:
             logger.debug("Issue %s does not have regular name", row.manifest_id)
     else:
@@ -162,7 +150,7 @@ def _get_issuedir(
     return None
 
 
-def detect_issues(base_dir: str, access_rights: str) -> list[SwaIssueDir]:
+def detect_issues(base_dir: str) -> list[SwaIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that SWA used to
@@ -175,7 +163,6 @@ def detect_issues(base_dir: str, access_rights: str) -> list[SwaIssueDir]:
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): Path to ``access_rights.json`` file.
 
     Returns:
         list[SwaIssueDir]: list of ``SwaIssueDir`` instances, to be imported.
@@ -184,19 +171,11 @@ def detect_issues(base_dir: str, access_rights: str) -> list[SwaIssueDir]:
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
     journal_dirs = [(d, _get_csv_file(d)) for d in journal_dirs]
 
-    with open(access_rights, "r", encoding="utf-8") as f:
-        ar_dict = json.load(f)
-
     results = []
     for journal_root, csv_file in journal_dirs:
         if os.path.isfile(csv_file):
-            df = (
-                pd.read_csv(csv_file)
-                .groupby("manifest_id")
-                .apply(_parse_csv_apply)
-                .reset_index()
-            )
-            result = df.apply(lambda r: _get_issuedir(r, journal_root, ar_dict), axis=1)
+            df = pd.read_csv(csv_file).groupby("manifest_id").apply(_parse_csv_apply).reset_index()
+            result = df.apply(lambda r: _get_issuedir(r, journal_root), axis=1)
             result = result[~result.isna()].values.tolist()
             results += result
         else:
@@ -205,7 +184,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[SwaIssueDir]:
     return results
 
 
-def select_issues(base_dir: str, config: dict, access_rights: str) -> list[SwaIssueDir]:
+def select_issues(base_dir: str, config: dict) -> list[SwaIssueDir]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -230,8 +209,7 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[SwaIs
         year_flag = config["year_only"]
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return []
 
@@ -244,16 +222,14 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[SwaIs
     )
     logger.debug(msg)
 
-    filter_titles = (
-        set(filter_dict.keys()) if not exclude_list else set(exclude_list)
-    )
+    filter_titles = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
     logger.debug(
         "got filter_titles: %s, with exclude flag: %s",
         filter_titles,
         exclude_flag,
     )
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
 
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(

@@ -1,5 +1,4 @@
-"""This module contains helper functions to find BL OCR data to import.
-"""
+"""This module contains helper functions to find BL OCR data to import."""
 
 import logging
 import os
@@ -17,9 +16,7 @@ logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
-BlIssueDir = namedtuple(
-    "IssueDirectory", ["alias", "date", "edition", "path", "rights"]
-)
+BlIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
 
 # TODO add NLP?
@@ -38,7 +35,6 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
 
 >>> from datetime import date
 >>> i = BlIssueDir(
@@ -46,11 +42,8 @@ Args:
     date=datetime.date(1832, 11, 23), 
     edition='a', 
     path='./BL/BLIP_20190920_01.zip', 
-    rights='open_public'
 )
 """
-
-BL_ACCESS_RIGHTS = "closed"
 
 
 def _get_single_subdir(_dir: str) -> str | None:
@@ -88,9 +81,7 @@ def _get_journal_name(issue_path: str, blip_id: str) -> str | None:
         str | None: The name of the journal, or None if not found.
     """
     mets_file = [
-        os.path.join(issue_path, f)
-        for f in os.listdir(issue_path)
-        if "mets.xml" in f.lower()
+        os.path.join(issue_path, f) for f in os.listdir(issue_path) if "mets.xml" in f.lower()
     ]
     if len(mets_file) == 0:
         logger.critical("Could not find METS file in %s", issue_path)
@@ -103,9 +94,7 @@ def _get_journal_name(issue_path: str, blip_id: str) -> str | None:
 
     mets_doc = BeautifulSoup(raw_xml, "xml")
 
-    dmd_sec = [
-        x for x in mets_doc.findAll("dmdSec") if x.get("ID") and blip_id in x.get("ID")
-    ]
+    dmd_sec = [x for x in mets_doc.findAll("dmdSec") if x.get("ID") and blip_id in x.get("ID")]
     if len(dmd_sec) != 1:
         logger.critical("Could not get journal name for %s", issue_path)
         return None
@@ -140,7 +129,7 @@ def _extract_all(archive_dir: str, destination: str) -> None:
 def dir2issue(path: str) -> BlIssueDir | None:
     """Given the BLIP directory of an issue, create the `BlIssueDir` object.
 
-    TODO: update handling of rights and edition with full data.
+    TODO: add NLP?
 
     Args:
         path (str): The BLIP directory path
@@ -157,21 +146,20 @@ def dir2issue(path: str) -> BlIssueDir | None:
         date=date(year, month, day),
         edition="a",
         path=path,
-        rights=BL_ACCESS_RIGHTS,
     )
 
 
-def detect_issues(base_dir: str, access_rights: str, tmp_dir: str) -> list[BlIssueDir]:
+def detect_issues(base_dir: str, tmp_dir: str) -> list[BlIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that the BL used to
     organize the dump of Mets/Alto OCR data.
+    TODO add NLP
+    TODO update to match new structure
 
     Args:
         base_dir (str): Path to the base directory of newspaper data,
             this directory should contain `zip` files.
-        access_rights (str): Not used for this importer, but argument is
-            kept for uniformity.
         tmp_dir (str): Temporary directory to unzip archives.
 
     Returns:
@@ -184,9 +172,7 @@ def detect_issues(base_dir: str, access_rights: str, tmp_dir: str) -> list[BlIss
     base_dir = tmp_dir
 
     # Get all BLIP dirs (named with NLP ID)
-    blip_dirs = [
-        x for x in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, x))
-    ]
+    blip_dirs = [x for x in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, x))]
     issues = []
 
     for blip in blip_dirs:
@@ -210,20 +196,18 @@ def detect_issues(base_dir: str, access_rights: str, tmp_dir: str) -> list[BlIss
     return issues
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str, tmp_dir: str
-) -> list[BlIssueDir] | None:
+def select_issues(base_dir: str, config: dict, tmp_dir: str) -> list[BlIssueDir] | None:
     """SDetect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
+    TODO add NLP
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Path to ``access_rights.json`` file.
         tmp_dir (str): Temporary directory to unzip archives.
 
     Returns:
@@ -238,12 +222,11 @@ def select_issues(
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return None
 
-    issues = detect_issues(base_dir, access_rights, tmp_dir)
+    issues = detect_issues(base_dir, tmp_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())

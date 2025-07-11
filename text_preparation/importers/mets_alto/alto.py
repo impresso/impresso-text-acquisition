@@ -48,7 +48,6 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
             continue
 
         if child.name == "String":
-
             # Here we do this in case coordinates are not found for this String
             try:
                 coords = distill_coordinates(child)
@@ -72,9 +71,7 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     return line, notes
 
 
-def parse_printspace(
-    element: Tag, mappings: dict[str, str]
-) -> tuple[list[dict], list[str]]:
+def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict], list[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
     This element contains all the OCR information about the content items of
@@ -109,10 +106,7 @@ def parse_printspace(
 
             coordinates = distill_coordinates(block)
 
-            tmp = [
-                parse_textline(line_element)
-                for line_element in block.findAll("TextLine")
-            ]
+            tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
 
             if len(tmp) > 0:
                 lines, new_notes = list(zip(*tmp))

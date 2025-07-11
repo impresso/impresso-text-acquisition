@@ -1,5 +1,4 @@
-"""This module contains helper functions to find BNF-EN OCR data to import.
-"""
+"""This module contains helper functions to find BNF-EN OCR data to import."""
 
 import logging
 import os
@@ -18,9 +17,7 @@ logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
-BnfEnIssueDir = namedtuple(
-    "IssueDirectory", ["alias", "date", "edition", "path", "rights", "ark_link"]
-)
+BnfEnIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path", "ark_link"])
 """A light-weight data structure to represent a newspaper issue in BNF Europeana
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -37,11 +34,10 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
     ark_link (str): Unique IIIF identifier associated with this issue.
 
 >>> from datetime import date
->>> i = BnfEnIssueDir('BLB', date(1845,12,28), 'a', './Le-Gaulois/18820208_1', 'open')
+>>> i = BnfEnIssueDir('BLB', date(1845,12,28), 'a', './Le-Gaulois/18820208_1')
 """
 
 API_JOURNAL_URL = "https://gallica.bnf.fr/services/Issues?ark={ark}/date"
@@ -98,6 +94,8 @@ def fix_api_year_mismatch(
             issue(s) if the error was present again, None otherwise.
     """
     curr_last_i = last_i
+    # TODO check if correct
+    next_last_i = curr_last_i
 
     # if there is indeed a mismatch in the year
     if str(year - 1) in api_issues[-1].getText():
@@ -227,9 +225,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
             next_year_last_i = [None]
 
         # Parse dates and editions
-        api_issues = [
-            (i.get("ark"), get_date(i.get("dayofyear"), year)) for i in api_issues
-        ]
+        api_issues = [(i.get("ark"), get_date(i.get("dayofyear"), year)) for i in api_issues]
 
         editions = []
         for i, issue in enumerate(api_issues):
@@ -243,8 +239,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
                     editions.append(0)
 
         api_issues = [
-            (get_api_id(alias, i, edition), i[0])
-            for i, edition in zip(api_issues, editions)
+            (get_api_id(alias, i, edition), i[0]) for i, edition in zip(api_issues, editions)
         ]
         links += api_issues[::-1]
     # flip the resulting links since they were fetched from end to start
@@ -277,9 +272,7 @@ def get_id(alias: str, date: datetime.date, edition: str) -> str:
     Returns:
         str: Resulting issue canonical Id.
     """
-    return "{}-{}-{:02}-{:02}-{}".format(
-        alias, date.year, date.month, date.day, edition
-    )
+    return "{}-{}-{:02}-{:02}-{}".format(alias, date.year, date.month, date.day, edition)
 
 
 def parse_dir(_dir: str, alias: str) -> str:
@@ -303,9 +296,7 @@ def parse_dir(_dir: str, alias: str) -> str:
     return "{}-{}-{}-{}-{}".format(alias, year, month, day, edition)
 
 
-def dir2issue(
-    path: str, access_rights: dict, iiif_arks: dict[str, str]
-) -> BnfEnIssueDir | None:
+def dir2issue(path: str, iiif_arks: dict[str, str]) -> BnfEnIssueDir | None:
     """Create a `BnfEnIssueDir` object from a directory path.
 
     Note:
@@ -337,12 +328,11 @@ def dir2issue(
         date=date,
         edition=edition,
         path=path,
-        rights="open-public",
         ark_link=iiif_arks[id_],
     )
 
 
-def detect_issues(base_dir: str, access_rights: str) -> list[BnfEnIssueDir]:
+def detect_issues(base_dir: str) -> list[BnfEnIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNF-EN used to
@@ -350,21 +340,16 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BnfEnIssueDir]:
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): Not used for this importer (kept for conformity).
 
     Returns:
         list[BnfEnIssueDir]: List of `BnfEnIssueDir` instances to import.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
-    issue_dirs = [
-        os.path.join(alias, _dir)
-        for alias in journal_dirs
-        for _dir in os.listdir(alias)
-    ]
+    issue_dirs = [os.path.join(alias, _dir) for alias in journal_dirs for _dir in os.listdir(alias)]
 
     iiif_arks = construct_iiif_arks()
-    issue_dirs = [dir2issue(_dir, None, iiif_arks) for _dir in issue_dirs]
+    issue_dirs = [dir2issue(_dir, iiif_arks) for _dir in issue_dirs]
 
     initial_length = len(issue_dirs)
     issue_dirs = [i for i in issue_dirs if i is not None]
@@ -373,9 +358,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BnfEnIssueDir]:
     return issue_dirs
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> list[BnfEnIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[BnfEnIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -386,7 +369,6 @@ def select_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Not used for this importer (kept for conformity).
 
     Returns:
         list[BnfEnIssueDir] | None: `BnfEnIssueDir` instances to import.
@@ -398,12 +380,11 @@ def select_issues(
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return None
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())

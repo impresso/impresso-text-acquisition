@@ -15,7 +15,16 @@ logger = logging.getLogger(__name__)
 def parse_lines(
     blocks_with_lines: dict, pg_id: str, pg_notes: list[str]
 ) -> tuple[list[list[int]], list[dict]]:
+    """Parse the blocks from the OCR to extract the lines of text.
 
+    Args:
+        blocks_with_lines (dict): All blcoks with text lines extracted from the PDF OCR.
+        pg_id (str): Canonical ID of the page the text is on.
+        pg_notes (list[str]): Notes of the page, to store potential issues found.
+
+    Returns:
+        tuple[list[list[int]], list[dict]]: Parsed text line corresponding to canonical format.
+    """
     all_blocks_xy_coords = []
     paragraphs = []
     hyphen_at_last = False
@@ -51,31 +60,39 @@ def parse_lines(
                         print(msg)
                         # saving in the notes
                         pg_notes.append(
-                            f"block {block_id} ('number' {block['number']}), line {line_id}, token {t_id} - problem with hyphenation: hyphen_at_last is true but no 'hy' in previous token."
+                            (
+                                f"block {block_id} ('number' {block['number']}), line {line_id}, "
+                                f"token {t_id} - problem with hyphenation: "
+                                "hyphen_at_last is true but no 'hy' in previous token."
+                            )
                         )
                     elif (
                         block_id != 0
                         and line_id == 0
                         and not ("hy" in paragraphs[-1]["l"][-1]["t"][-1])
                     ):
-                        msg = f"{pg_id} - Warning! problem 2 with hyphen_at_last!: curr_token: {curr_token}, all_lines[-1]['l'][-1]['t'][-1]: {paragraphs[-1]['l'][-1]['t'][-1]}"
-                        # logger.info(msg)
+                        msg = (
+                            f"{pg_id} - Warning! problem 2 with hyphen_at_last!: "
+                            f"curr_token: {curr_token}, "
+                            f"all_lines[-1]['l'][-1]['t'][-1]: {paragraphs[-1]['l'][-1]['t'][-1]}"
+                        )
                         print(msg)
                         # saving in the notes
                         pg_notes.append(
-                            f"block {block_id} ('number' {block['number']}), line {line_id}, token {t_id} - problem with hyphenation: hyphen_at_last is true but no 'hy' in previous token."
+                            (
+                                f"block {block_id} ('number' {block['number']}), line {line_id}, "
+                                f"token {t_id} - problem with hyphenation: "
+                                "hyphen_at_last is true but no 'hy' in previous token."
+                            )
                         )
 
                     # if the first token of the line is a the second part of a hyphen,
                     # we need to merge it with the last token (after removing the hyphen)
                     if len(paragraphs) == 0:
-                        full_word = (
-                            block_lines[-1]["t"][-1]["tx"].split("-")[0] + token["text"]
-                        )
+                        full_word = block_lines[-1]["t"][-1]["tx"].split("-")[0] + token["text"]
                     else:
                         full_word = (
-                            paragraphs[-1]["l"][-1]["t"][-1]["tx"].split("-")[0]
-                            + token["text"]
+                            paragraphs[-1]["l"][-1]["t"][-1]["tx"].split("-")[0] + token["text"]
                         )
                     curr_token["nf"] = full_word
 
@@ -99,8 +116,13 @@ def parse_lines(
 
 
 def compute_agg_coords(all_coords: list[list[int]]) -> list[int]:
-    """
-    Compute the coordinates of a paragraph from the coordinates of its lines.
+    """Compute the coordinates of a paragraph from the coordinates of its lines.
+
+    Args:
+        all_coords (list[list[int]]): All line coordinates to merge into one block.
+
+    Returns:
+        list[int]: Line coordinates merged into one region block.
     """
     x1 = min([l[0] for l in all_coords])
     y1 = min([l[1] for l in all_coords])

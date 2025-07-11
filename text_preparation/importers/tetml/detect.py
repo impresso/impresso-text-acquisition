@@ -1,18 +1,16 @@
-import json
+"""This module contains functions to detect Tetml OCR data to be imported."""
+
 from collections import namedtuple
 from typing import List
 
 from impresso_essentials.utils import IssueDir
 
 from text_preparation.importers.detect import (
-    get_access_right,
     detect_issues,
     select_issues,
 )
 
-TetmlIssueDir = namedtuple(
-    "TetmlIssueDirectory", ["alias", "date", "edition", "path", "rights"]
-)
+TetmlIssueDir = namedtuple("TetmlIssueDirectory", ["alias", "date", "edition", "path"])
 
 """A light-weight data structure to represent a newspaper issue.
 
@@ -30,32 +28,28 @@ canonical identifiers for the issue and its pages.
 :param datetime.date date: Publication date
 :param str edition: Edition of the newspaper issue ('a', 'b', 'c', etc.)
 :param str path: Path to the directory containing OCR data
-:param str rights: Access rights on the data (open, closed, etc.)
 
 >>> from datetime import date
->>> i = TetmlIssueDir('GDL', date(1900,1,1), 'a', './GDL-1900-01-01/', 'open')
+>>> i = TetmlIssueDir('GDL', date(1900,1,1), 'a', './GDL-1900-01-01/')
 """
 
 
-def dir2tetmldir(issue_dir: IssueDir, access_rights: dict) -> TetmlIssueDir:
+def dir2tetmldir(issue_dir: IssueDir) -> TetmlIssueDir:
     """Helper function that injects access rights info into an ``IssueDir``.
 
+    TODO remove
     .. note ::
         This function is called internally by :func:`tetml_detect_issues`.
 
     :param IssueDir issue_dir: Input ``IssueDir`` object.
-    :param dict access_rights: Access rights information.
     :return: New ``TetmlIssueDir`` object.
     """
-    ar = get_access_right(issue_dir.alias, issue_dir.date, access_rights)
 
-    return TetmlIssueDir(
-        issue_dir.alias, issue_dir.date, issue_dir.edition, issue_dir.path, rights=ar
-    )
+    return TetmlIssueDir(issue_dir.alias, issue_dir.date, issue_dir.edition, issue_dir.path)
 
 
 def tetml_detect_issues(
-    base_dir: str, access_rights: str, journal_filter: set = None, exclude: bool = False
+    base_dir: str, alias_filter: set = None, exclude: bool = False
 ) -> List[TetmlIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
@@ -63,23 +57,17 @@ def tetml_detect_issues(
     organize the dump of Tetml OCR data.
 
     :param str base_dir: Path to the base directory of newspaper data.
-    :param str access_rights: Path to ``access_rights.json`` file.
-    :param set journal_filter: IDs of newspapers to consider.
-    :param bool exclude: Whether ``journal_filter`` should determine exclusion.
+    :param set alias_filter: IDs of newspapers to consider.
+    :param bool exclude: Whether ``alias_filter`` should determine exclusion.
     :return: List of `TetmlIssueDir` instances, to be imported.
     """
 
-    with open(access_rights, "r", encoding="utf-8") as f:
-        access_rights_dict = json.load(f)
+    issues = detect_issues(base_dir, alias_filter=alias_filter, exclude=exclude)
 
-    issues = detect_issues(base_dir, journal_filter=journal_filter, exclude=exclude)
-
-    return [dir2tetmldir(x, access_rights_dict) for x in issues]
+    return [TetmlIssueDir(x.alias, x.date, x.edition, x.path) for x in issues]
 
 
-def tetml_select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> List[TetmlIssueDir]:
+def tetml_select_issues(base_dir: str, config: dict) -> List[TetmlIssueDir]:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`tetml_detect_issues` with the only
@@ -89,12 +77,8 @@ def tetml_select_issues(
 
     :param str base_dir: Path to the base directory of newspaper data.
     :param dict config: Config dictionary for filtering.
-    :param str access_rights: Path to ``access_rights.json`` file.
     :return: List of `TetmlIssueDir` instances, to be imported.
     """
-    with open(access_rights, "r") as f:
-        access_rights_dict = json.load(f)
-
     issues = select_issues(config, base_dir)
 
-    return [dir2tetmldir(x, access_rights_dict) for x in issues]
+    return [TetmlIssueDir(x.alias, x.date, x.edition, x.path) for x in issues]

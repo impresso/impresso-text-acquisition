@@ -1,22 +1,20 @@
+"""This module contains helper functions to find INA ASR data to import."""
+
 import logging
 import os
 import json
-import string
-from datetime import date, datetime
+from datetime import datetime
 from collections import namedtuple
 
 from dask import bag as db
 
 from text_preparation.importers.detect import _apply_datefilter
-from text_preparation.importers.ina.classes import INABroadcastIssue, INABroadcastAudioRecord
 
 logger = logging.getLogger(__name__)
 
 METADATA_FILENAME = "ina_metadata.json"
 
-INAIssueDir = namedtuple(
-    "IssueDirectory", ["alias", "date", "edition", "path", "metadata_file"]
-)
+INAIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path", "metadata_file"])
 """A light-weight data structure to represent a radio audio broadcast issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -78,14 +76,13 @@ def dir2issue(path: str, metadata_file_path: str) -> INAIssueDir | None:
     )
 
 
-def detect_issues(base_dir: str, access_rights: str | None = None) -> list[INAIssueDir]:
+def detect_issues(base_dir: str) -> list[INAIssueDir]:
     """Detect INA Radio broadcasts to import within the filesystem.
 
     This function expects the directory structure that we created for Swissinfo.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): unused argument kept for conformity for now.
 
     Returns:
         list[INAIssueDir]: List of `INAIssueDir` instances, to be imported.
@@ -119,7 +116,7 @@ def detect_issues(base_dir: str, access_rights: str | None = None) -> list[INAIs
     return [dir2issue(_dir, metadata_file_path) for _dir in journal_dirs]
 
 
-def select_issues(base_dir: str, config: dict, access_rights: str) -> list[INAIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[INAIssueDir] | None:
     """Detect selectively issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -130,7 +127,6 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[INAIs
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
         list[INAIssueDir] | None: List of `INAIssueDir` to import.
@@ -148,7 +144,7 @@ def select_issues(base_dir: str, config: dict, access_rights: str) -> list[INAIs
         )
         return
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
