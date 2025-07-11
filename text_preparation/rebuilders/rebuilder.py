@@ -1,6 +1,7 @@
 """Functions and CLI to rebuild text from impresso's canonical format.
 For EPFL members, this script can be scaled by running it using Runai,
 as documented on https://github.com/impresso/impresso-infrastructure/blob/main/howtos/runai.md.
+TODO update the runai functionalities.
 
 Usage:
     rebuilder.py rebuild_articles --input-bucket=<b> --log-file=<f> --output-dir=<od> --filter-config=<fc> [--format=<fo> --scheduler=<sch> --output-bucket=<ob> --verbose --clear --languages=<lgs> --nworkers=<nw> --git-repo=<gr> --temp-dir=<tp> --prev-manifest=<pm>]
@@ -39,7 +40,7 @@ from docopt import docopt
 from smart_open import smart_open
 
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import SourceMedium, SourceType, init_logger
+from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, init_logger
 
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
@@ -56,22 +57,16 @@ from text_preparation.rebuilders.helpers import (
 logger = logging.getLogger(__name__)
 
 
-def compress(key, json_files, output_dir):
-    """Merges a set of JSON line files into a single compressed archive.
+def compress(key: str, json_files: list, output_dir: str) -> tuple[str, str]:
+    """Merge a set of JSON line files into a single compressed archive.
 
-    :param key: signature of the newspaper issue (e.g. GDL-1900)
-    :type key: str
-    :param json_files: input JSON line files
-    :type json_files: list
-    :param output_dir: directory where to write the output file
-    :type outp_dir: str
-    :return: a tuple with: sorting key [0] and path to serialized file [1].
-    :rytpe: tuple
+    Args:
+        key (str): alias-year "key" of a given issue (e.g. GDL-1900).
+        json_files (list): Input JSON line files.
+        output_dir (str): Directory where to write the output file.
 
-    .. note::
-
-        `sort_key` is expected to be the concatenation of newspaper ID and year
-        (e.g. GDL-1900).
+    Returns:
+        tuple[str, str]: sorting key [0] and path to serialized file [1].
     """
 
     alias, year = key.split("-")
@@ -102,22 +97,18 @@ def compress(key, json_files, output_dir):
     return (key, filepath)
 
 
-def upload(sort_key, filepath, bucket_name=None):
-    """Uploads a file to a given S3 bucket.
+def upload(sort_key: str, filepath: str, bucket_name: str | None = None) -> tuple[bool, str]:
+    """Upload a file to a given S3 bucket.
 
-    :param sort_key: the key used to group articles (e.g. "GDL-1900")
-    :type sort_key: str
-    :param filepath: path of the file to upload to S3
-    :type filepath: str
-    :param bucket_name: name of S3 bucket where to upload the file
-    :type bucket_name: str
-    :return: a tuple with [0] whether the upload was successful (boolean) and
-        [1] the path of the uploaded file (string)
+    Args:
+        sort_key (str): alias-year key used to group CIs (e.g. "GDL-1900").
+        filepath (str): Path of the file to upload to S3.
+        bucket_name (str | None, optional): Name of S3 bucket where to upload the file.
+            Defaults to None.
 
-    .. note::
-
-        `sort_key` is expected to be the concatenation of media title alias and year
-        (e.g. GDL-1900).
+    Returns:
+        tuple[bool, str]:  a tuple with [0] whether the upload was successful (boolean) and
+            [1] the path of the uploaded file (string)
     """
     # create connection with bucket
     # copy contents to s3 key
@@ -142,12 +133,12 @@ def upload(sort_key, filepath, bucket_name=None):
         return False, filepath
 
 
-def cleanup(upload_success, filepath):
-    """Removes a file if it has been successfully uploaded to S3.
-    :param upload_success: whether the upload was successful
-    :type upload_success: bool
-    :param filepath: path to the uploaded file
-    :type filepath: str
+def cleanup(upload_success: bool, filepath: str) -> None:
+    """Remove a file from local fs if it has been successfully uploaded to S3.
+
+    Args:
+        upload_success (bool): Whether the upload was successful
+        filepath (str): Oath to the uploaded file
     """
     if upload_success and os.path.exists(filepath):
         try:
@@ -161,8 +152,21 @@ def cleanup(upload_success, filepath):
         logger.info("Not removing %s as upload has failed", filepath)
 
 
-def filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format):
-    # Process the issues into rebuilt CIs
+def filter_and_process_cis(issues_bag, input_bucket: str, issue_medium: str, _format: str):
+    """Process the issues into rebuilt CIs
+
+    Args:
+        issues_bag (Dask Bag): Dask Bag containing all the issues to filter and rebuild.
+        input_bucket (str): Input bucket where to find the supports (pages or audios).
+        issue_medium (str): Source medium of the given issue.
+        _format (str): Target rebuilt format (should be one of "solr" and "passim").
+
+    Raises:
+        NotImplementedError: The format is not valid
+
+    Returns:
+        Dask Bag: Resulting rebuilt CIs.
+    """
 
     is_audio = issue_medium == "audio" if SourceMedium.has_value(issue_medium) else None
 
@@ -211,18 +215,26 @@ def filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format):
 
 
 def rebuild_issues(
-    issues, input_bucket, output_dir, dask_client, _format="solr", filter_language=None
-):
+    issues: list[IssueDir],
+    input_bucket: str,
+    output_dir: str,
+    dask_client: Client,
+    _format: str = "solr",
+    filter_language: list[str] = None,
+) -> tuple[str, list, list[dict[str, int | str]]]:
     """Rebuild a set of newspaper issues into a given format.
 
-    :param issues: issues to rebuild
-    :type issues: list of `IssueDir` objects
-    :param input_bucket: name of input s3 bucket
-    :type input_bucket: str
-    :param outp_dir: local directory where to store the rebuilt files
-    :type outp_dir: str
-    :return: a list of tuples (see return type of `upload`)
-    :rtype: list of tuples
+    Args:
+        issues (list[IssueDir]): Issues to rebuild.
+        input_bucket (str): Name of input s3 bucket.
+        output_dir (str): Local directory where to store the rebuilt files.
+        dask_client (Client): Dask client object.
+        _format (str, optional): Format in which to rebuild the CIs. Defaults to "solr".
+        filter_language (list[str], optional): List of languages to filter. Defaults to None.
+
+    Returns:
+        tuple[str, list, list[dict[str, int | str]]]: alias-year key for the issues, resulting
+            files dumped and startistics computed on them for the manifest.
     """
 
     def mkdir(path):
@@ -263,9 +275,7 @@ def rebuild_issues(
         filtered_cis = cis_bag.filter(has_language).persist()
         print(f"filtered_cis.count().compute(): {filtered_cis.count().compute()}")
         # TODO provide sm and st to manifest
-        stats_for_issues = compute_stats_in_rebuilt_bag(
-            filtered_cis, key, title=issue_dir.alias
-        )
+        stats_for_issues = compute_stats_in_rebuilt_bag(filtered_cis, key, title=issue_dir.alias)
         result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
     else:
         # TODO provide sm and st to manifest
@@ -280,38 +290,6 @@ def rebuild_issues(
     print("done.")
 
     return (key, result, stats_for_issues)
-
-
-def init_logging(level, file):
-    """Initialises the root logger.
-
-    :param level: desired level of logging (default: logging.INFO)
-    :type level: int
-    :param file:
-    :type file: str
-    :return: the initialised logger
-    :rtype: `logging.RootLogger`
-
-    .. note::
-
-        It's basically a duplicate of `impresso_commons.utils.init_logger` but
-        I could not get it to work properly, so keeping this duplicate.
-    """
-    # Initialise the logger
-    root_logger = logging.getLogger("")
-    root_logger.setLevel(level)
-
-    if file is not None:
-        handler = logging.FileHandler(filename=file, mode="w")
-    else:
-        handler = logging.StreamHandler()
-
-    formatter = logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
-    handler.setFormatter(formatter)
-    root_logger.addHandler(handler)
-    root_logger.info("Logger successfully initialised")
-
-    return root_logger
 
 
 def main() -> None:
@@ -425,8 +403,7 @@ def main() -> None:
                     titles.add(alias)
 
                 msg = (
-                    f"Uploading {len(rebuilt_issues)} rebuilt bz2files "
-                    f"to {output_bucket_name}"
+                    f"Uploading {len(rebuilt_issues)} rebuilt bz2files " f"to {output_bucket_name}"
                 )
                 logger.info(msg)
                 print(msg)

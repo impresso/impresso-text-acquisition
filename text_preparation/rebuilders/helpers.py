@@ -339,10 +339,14 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
             if "rr" in issue_json:
                 # TODO update in the case we can have >1 record per CI or vice-versa
                 if len(ci["m"]["rr"]) > 1:
-                    msg = f"{ci['if']} - PROBLEM - there is more than one record for this CI! Only tkeing the first"
+                    msg = (
+                        f"{ci['if']} - PROBLEM - more than one record for this CI! "
+                        "Taking only the first one."
+                    )
                     print(msg)
                     logger.warning(msg)
-                # taking the start time and duration of the first record for this CI (numbering starts at 1)
+                # taking the start time and duration of the first record for this CI
+                # (numbering starts at 1)
                 ci["stt"] = issue_json["rr"][ci["m"]["rr"][0] - 1]["stt"]
                 ci["dur"] = issue_json["rr"][ci["m"]["rr"][0] - 1]["dur"]
 
@@ -358,7 +362,15 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
 
 
 def pages_to_article(article: dict[str, Any], pages: list[dict[str, Any]]) -> dict[str, Any]:
-    """Return all text regions belonging to a given article."""
+    """Return all text regions belonging to a given article."
+
+    Args:
+        article (dict[str, Any]): Article/CI for which to fetch the regions.
+        pages (list[dict[str, Any]]): Pages from which to fetch the regions.
+
+    Returns:
+        dict[str, Any]: Article completed with the regions extracted from the page.
+    """
     try:
         art_id = article["m"]["id"]
         print("Extracting text regions for article %s", art_id)

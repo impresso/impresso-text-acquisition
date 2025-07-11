@@ -74,9 +74,7 @@ def rebuild_paper_text(
 
                     # don't add the tokens corresponding to the first part of a hyphenated word
                     if "hy" not in token:
-                        next_token = (
-                            line["t"][n + 1]["tx"] if n != len(line["t"]) - 1 else None
-                        )
+                        next_token = line["t"][n + 1]["tx"] if n != len(line["t"]) - 1 else None
                         ws = insert_whitespace(
                             token["tx"],
                             next_t=next_token,
@@ -179,10 +177,22 @@ def rebuild_paper_text_passim(
 def recompose_ci_from_page_solr(
     solr_ci: dict[str, Any], content_item: dict[str, Any]
 ) -> dict[str, Any]:
+    """Given a partly constructed solr rebuilt CI, reconstruct the page elements.
+
+    The parts added are the components of the `rebuilt pages`, `ppreb` composed of regions,
+    paragraphs, lines and tokens.
+    Then the fulltext and the offsets of the breaks separating each element are also added
+    to the Solr representation.
+
+    Args:
+        solr_ci (dict[str, Any]): Solr/rebuilt representation of the CI to complete.
+        content_item (dict[str, Any]): Temporary version of the canonical CI used to reconstruct.
+
+    Returns:
+        dict[str, Any]: Rebuilt CI with the recomposed audio elements added to it.
+    """
     issue_id = "-".join(solr_ci["id"].split("-")[:-1])
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
-    }
+    page_file_names = {p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]}
 
     fulltext = ""
     linebreaks = []
@@ -220,13 +230,22 @@ def recompose_ci_from_page_solr(
     return solr_ci
 
 
-def recompose_ci_from_page_passim(content_item, passim_doc):
+def recompose_ci_from_page_passim(
+    content_item: dict[str, Any], passim_doc: dict[str, Any]
+) -> dict[str, Any]:
+    """_summary_
+    TODO documentation and ensuring the code works for our needs.
 
+    Args:
+        content_item (dict[str, Any]): _description_
+        passim_doc (dict[str, Any]): _description_
+
+    Returns:
+        dict[str, Any]: _description_
+    """
     issue_id = "-".join(passim_doc["id"].split("-")[:-1])
 
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
-    }
+    page_file_names = {p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]}
 
     fulltext = ""
     for n, page_no in enumerate(content_item["m"]["pp"]):
@@ -250,13 +269,24 @@ def recompose_ci_from_page_passim(content_item, passim_doc):
     return passim_doc
 
 
-def reconstruct_pages(issue_json, ci, cis):
+def reconstruct_pages(
+    issue_json: dict[str, Any], ci: dict[str, Any], cis: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Reconstruct the pages of a given issue to prepare for the rebuilt CI composition.
+
+    Args:
+        issue_json (dict[str, Any]): Issue for which to rebuild the page regions.
+        ci (dict[str, Any]): Current CI for which to rebuild the regions.
+        cis (list[dict[str, Any]]): Current list of previously processed CIs from this issue.
+
+    Returns:
+        list[dict[str, Any]]: List of processed CIs with this new CI added to it.
+    """
     pages = []
     page_ids = [page["id"] for page in issue_json["pp"]]
     for page_no in ci["m"]["pp"]:
         # given a page  number (from issue.json) and its canonical ID
-        # find the position of that page in the array of pages (with text
-        # regions)
+        # find the position of that page in the array of pages (with text regions)
         page_no_string = f"p{str(page_no).zfill(4)}"
         try:
             page_idx = [
@@ -278,11 +308,7 @@ def reconstruct_pages(issue_json, ci, cis):
     regions_by_page = []
     for page in pages:
         regions_by_page.append(
-            [
-                region
-                for region in page["r"]
-                if "pOf" in region and region["pOf"] == ci["m"]["id"]
-            ]
+            [region for region in page["r"] if "pOf" in region and region["pOf"] == ci["m"]["id"]]
         )
     ci["pprr"] = regions_by_page
     try:

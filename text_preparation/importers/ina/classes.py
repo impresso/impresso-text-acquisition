@@ -13,9 +13,10 @@ from collections import Counter
 from bs4 import BeautifulSoup
 from mutagen.mp3 import MP3
 
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
+
 from text_preparation.importers.classes import CanonicalIssue, CanonicalAudioRecord
 from text_preparation.importers.ina.helpers import get_utterances
-from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
 logger = logging.getLogger(__name__)
 

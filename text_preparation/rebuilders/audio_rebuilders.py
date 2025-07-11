@@ -164,15 +164,19 @@ def rebuild_audio_text_passim(
 def recompose_ci_from_audio_solr(
     solr_ci: dict[str, Any], content_item: dict[str, Any]
 ) -> dict[str, Any]:
-    """_summary_
-    TODO
+    """Given a partly constructed solr rebuilt CI, reconstruct the audio elements.
+
+    The parts added are the components of the `rebuilt record`, `rreb` composed of sections,
+    utterances, speechsegments and tokens.
+    Then the fulltext and the offsets of the breaks separating each element are also added
+    to the Solr representation.
 
     Args:
-        solr_ci (dict[str, Any]): _description_
-        content_item (dict[str, Any]): _description_
+        solr_ci (dict[str, Any]): Solr/rebuilt representation of the CI to complete.
+        content_item (dict[str, Any]): Temporary version of the canonical CI used to reconstruct.
 
     Returns:
-        dict[str, Any]: _description_
+        dict[str, Any]: Rebuilt CI with the recomposed audio elements added to it.
     """
     issue_id = "-".join(solr_ci["id"].split("-")[:-1])
     audio_file_names = {r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]}
@@ -217,7 +221,7 @@ def recompose_ci_from_audio_passim(
     content_item: dict[str, Any], passim_document: dict[str, Any]
 ) -> dict[str, Any]:
     """_summary_
-    TODO
+    TODO documentation and ensuring the code works for our needs.
 
     Args:
         content_item (dict[str, Any]): _description_
@@ -256,24 +260,22 @@ def recompose_ci_from_audio_passim(
 def reconstruct_audios(
     issue_json: dict[str, Any], ci: dict[str, Any], cis: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
-    """_summary_
-    TODO
+    """Reconstruct the audios of a given issue to prepare for the rebuilt CI composition.
 
     Args:
-        issue_json (dict[str, Any]): _description_
-        ci (dict[str, Any]): _description_
-        cis (list[dict[str, Any]]): _description_
+        issue_json (dict[str, Any]): Issue for which to rebuild the audio sections.
+        ci (dict[str, Any]): Current CI for which to rebuild the sections.
+        cis (list[dict[str, Any]]): Current list of previously processed CIs from this issue.
 
     Returns:
-        list[dict[str, Any]]: _description_
+        list[dict[str, Any]]: List of processed CIs with this new CI added to it.
     """
     audios = []
     audio_ids = [audio["id"] for audio in issue_json["rr"]]
     # there should only be one record, but keeping the same approach
     for audio_no in ci["m"]["rr"]:
         # given a page  number (from issue.json) and its canonical ID
-        # find the position of that page in the array of pages (with text
-        # regions)
+        # find the position of that page in the array of pages (with text sections)
         audio_no_string = f"r{str(audio_no).zfill(4)}"
         try:
             audio_idx = [
