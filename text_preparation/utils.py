@@ -68,21 +68,21 @@ def get_issue_schema(
     return ns
 
 
-def validate_page_schema(page_json: dict, page_schema: str = CANONICAL_PAGE_SCHEMA):
+def validate_page_schema(page_json: dict, page_schema: str = CANONICAL_PAGE_SCHEMA) -> None:
     # msg = f"{page_json['id']} - Validating against page schema"
     # print(msg)
     # logger.info(msg)
     return validate_against_schema(page_json, page_schema)
 
 
-def validate_audio_schema(audio_json: dict, audio_schema: str = CANONICAL_RECORD_SCHEMA):
+def validate_audio_schema(audio_json: dict, audio_schema: str = CANONICAL_RECORD_SCHEMA) -> None:
     # msg = f"{page_json['id']} - Validating against page schema"
     # print(msg)
     # logger.info(msg)
     return validate_against_schema(audio_json, audio_schema)
 
 
-def validate_issue_schema(issue_json: dict, issue_schema: str = CANONICAL_ISSUE_SCHEMA):
+def validate_issue_schema(issue_json: dict, issue_schema: str = CANONICAL_ISSUE_SCHEMA) -> None:
     # msg = f"{issue_json['id']} - Validating against issue schema"
     # print(msg)
     # logger.info(msg)
@@ -197,9 +197,7 @@ def empty_folder(dir_path: str) -> None:
     os.mkdir(dir_path)
 
 
-def write_error(
-    thing_id: str, origin_function: str, error: Exception, failed_log: str
-) -> None:
+def write_error(thing_id: str, origin_function: str, error: Exception, failed_log: str) -> None:
     """Write the given error of a failed import to the `failed_log` file.
 
     Adapted from `impresso-text-acquisition/text_preparation/importers/core.py` to allow
@@ -255,26 +253,70 @@ def write_jsonlines_file(
             write_error(os.path.basename(filepath), "write_jsonlines_file()", e, failed_log)
 
 
-def coords_to_xy(coords, as_int=False):
+def coords_to_xy(coords: list[int | Any], as_int: bool = False) -> list[int | Any]:
+    """Convert coordinates from xywh format to x1y1x2y2 format.
+
+    Args:
+        coords (list): Coords in xywh format to convert.
+        as_int (bool, optional): Whether to cast elements to int before conversion.
+            Defaults to False.
+
+    Returns:
+        list[int | Any]: Resulting converted coordinates, now in x1y1x2y2 format.
+    """
     if as_int:
         coords = [int(c) for c in coords]
     return [coords[0], coords[1], coords[0] + coords[2], coords[1] + coords[3]]
 
 
-def coords_to_xywh(coords, as_int=True):
+def coords_to_xywh(coords: list[int | Any], as_int: bool = True) -> list[int | Any]:
+    """Convert coordinates from x1y1x2y2 format to xywh format.
+
+    Args:
+        coords (list): Coords in x1y1x2y2 format to convert.
+        as_int (bool, optional): Whether to cast elements to int before conversion.
+            Defaults to False.
+
+    Returns:
+        list[int | Any]: Resulting converted coordinates, now in xywh format.
+    """
     if as_int:
         coords = [int(c) for c in coords]
-    return [int(coords[0]), coords[1], coords[2] - coords[0], coords[3] - coords[1]]
+    return [coords[0], coords[1], coords[2] - coords[0], coords[3] - coords[1]]
 
 
-def draw_box_on_img(base_img_path, coords_xy, img=None, width=10):
+def draw_box_on_img(
+    base_img_path: str, coords_xy: list, img: Image = None, width: int = 10
+) -> Image:
+    """Draw a bounding box on an image given coordinates in x1y1x2y2 format.
+
+    The image can either be provided through its path, or as a PIL.Image object (specifically
+    if other bboxes have already been drawn on it.)
+
+    Args:
+        base_img_path (str): Path to the image to open as a PIL Image.
+        coords_xy (list): Coordinates of the bbox to draw.
+        img (Image, optional): PIL image if already loaded. Defaults to None.
+        width (int, optional): Stroke width for the bbox. Defaults to 10.
+
+    Returns:
+        Image: Resulting PIL Image with the bbox drawn on it.
+    """
     if not img:
         img = Image.open(base_img_path)
     ImageDraw.Draw(img).rectangle(coords_xy, outline="red", width=width)
     return img
 
 
-def read_xml(file_path):
+def read_xml(file_path: str) -> BeautifulSoup:
+    """Read the content of an XML file to a BeautifulSoup object.
+
+    Args:
+        file_path (str): Path to the XML object.
+
+    Returns:
+        BeautifulSoup: Resulting BeautifulSoup object.
+    """
     with open(file_path, "rb") as f:
         raw_xml = f.read()
 
@@ -349,14 +391,10 @@ def rescale_coords(
     # Compute scaling factors
     if xy_format:
         x_scale = (
-            int(dest_size[0]) / int(curr_size[0])
-            if int_sc_factor
-            else dest_size[0] / curr_size[0]
+            int(dest_size[0]) / int(curr_size[0]) if int_sc_factor else dest_size[0] / curr_size[0]
         )
         y_scale = (
-            int(dest_size[1]) / int(curr_size[1])
-            if int_sc_factor
-            else dest_size[1] / curr_size[1]
+            int(dest_size[1]) / int(curr_size[1]) if int_sc_factor else dest_size[1] / curr_size[1]
         )
 
         return [c * (x_scale if i % 2 == 0 else y_scale) for i, c in enumerate(coords)]
