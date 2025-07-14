@@ -24,7 +24,7 @@ The following importer CLI scripts are already available:
   <https://www.bnf.fr/en/>`_  to encode and deliver its newspaper data for the Europeana collection.
 - :py:mod:`text_preparation.scripts.bcul_importer`: importer for the *ABBYY format* used by the `Bibliothèque Cantonale Universitaire de Lausanne (BCUL)
   <https://www.bcu-lausanne.ch/en/>`_  to encode and deliver the newspaper data which is on the `Scriptorium interface <https://scriptorium.bcu-lausanne.ch/page/home>`_.
-- :py:mod:`text_preparation.scripts.swissinfoimporter`: importer for the *JSON format extracted from PDF embedded OCR* used by Memoriav of the `Swissingo <https://www.swissinfo.ch/eng/>`_
+- :py:mod:`text_preparation.scripts.swissinfoimporter`: importer for the *JSON format extracted from PDF embedded OCR* used by Memoriav of the `Swissinfo <https://www.swissinfo.ch/eng/>`_
   collection to encore and deliver its radio-bulletin data.
   - :py:mod:`text_preparation.scripts.inaimporter`: importer for the *AudioDoc ASR format* used by the `Institut National de L'audiovisuel (INA) <https://www.ina.fr/>`_
   to encode and deliver its radio data.
