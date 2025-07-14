@@ -53,7 +53,9 @@ def extract_date(root_path: str) -> tuple[bool, str, str, str]:
     if ".backup" in root_path:
         # remove the '.backup' and everything after to parse the date
         root_path = root_path.split(".backup")[0]
-        msg = f"{root_path}: found an unexpected component to the path, removing all after '.backup'!"
+        msg = (
+            f"{root_path}: found an unexpected component to the path, removing all after '.backup'!"
+        )
         print(msg)
         logger.error(msg)
 
@@ -177,7 +179,9 @@ def copy_files_for_NLP(
     """
     problem_input_dirs = []
     failed_copies = []
-    nlp_dest_dir_path = os.path.join(dest_dir, alias, nlp) if file_ext == '.xml' else os.path.join(dest_dir, alias)
+    nlp_dest_dir_path = (
+        os.path.join(dest_dir, alias, nlp) if file_ext == ".xml" else os.path.join(dest_dir, alias)
+    )
 
     # Create the NLP subdirectory inside the alias directory if it does not exist
     os.makedirs(nlp_dest_dir_path, exist_ok=True)
@@ -197,18 +201,22 @@ def copy_files_for_NLP(
 
                 if valid_date:
                     # Define output directory for the issue
-                    issue_out_dir = os.path.join(nlp_dest_dir_path, y, m, d) if file_ext == '.xml' else os.path.join(nlp_dest_dir_path, y, m, d, 'a') 
+                    issue_out_dir = (
+                        os.path.join(nlp_dest_dir_path, y, m, d)
+                        if file_ext == ".xml"
+                        else os.path.join(nlp_dest_dir_path, y, m, d, "a")
+                    )
                     # Generate possible date formats for file matching
                     date_formats = [c.join([y, m, d]) for c in date_fmt_chars]
                     # Determine files to copy and whether a copy is needed
                     copy_to_do, src_files_to_copy = check_if_to_be_copied(
                         files, issue_out_dir, date_formats, file_ext
                     )
-                    
+
                     # Handle special cases for specific NLPs
-                    if file_ext == '.jp2' and nlp == "0002425" and copy_to_do:
+                    if file_ext == ".jp2" and nlp == "0002425" and copy_to_do:
                         # For "0002424" and "0002425", we have a special case with sometimes two editions
-                        issue_out_dir_ed_b = os.path.join(nlp_dest_dir_path, y, m, d, 'b') 
+                        issue_out_dir_ed_b = os.path.join(nlp_dest_dir_path, y, m, d, "b")
                         copy_to_do_2, _ = check_if_to_be_copied(
                             files, issue_out_dir_ed_b, date_formats, file_ext
                         )
@@ -216,7 +224,6 @@ def copy_files_for_NLP(
                         print(msg)
                         logger.info(msg)
                         copy_to_do = copy_to_do and copy_to_do_2
-
 
                     if copy_to_do:
                         # Ensure dest issue dir exists
@@ -307,26 +314,18 @@ def main(
     ), f"The file extension provided was {file_type_ext}. It should be in {POSSIBLE_EXTENTIONS}."
 
     # read the csv containing the mapping from alias-NLP mapping
-    nlp_alias_df = pd.read_csv(
-        os.path.join(sample_data_dir, title_alias_mapping_file), index_col=0
-    )
+    nlp_alias_df = pd.read_csv(os.path.join(sample_data_dir, title_alias_mapping_file), index_col=0)
     alias_to_nlps = nlp_alias_df[["Alias", "NLPs"]].to_dict(orient="records")
 
     nlp_to_alias = {
-        nlp: record["Alias"]
-        for record in alias_to_nlps
-        for nlp in literal_eval(record["NLPs"])
+        nlp: record["Alias"] for record in alias_to_nlps for nlp in literal_eval(record["NLPs"])
     }
 
     # create the dict tracking the problems encountered
     all_problem_input_dirs = {}
     all_failed_copies = {}
-    problem_dir_json = os.path.join(
-        sample_data_dir, f"problem_dirs_chunk_{chunk_idx}.json"
-    )
-    failed_copies_json = os.path.join(
-        sample_data_dir, f"failed_copied_chunk_{chunk_idx}.json"
-    )
+    problem_dir_json = os.path.join(sample_data_dir, f"problem_dirs_chunk_{chunk_idx}.json")
+    failed_copies_json = os.path.join(sample_data_dir, f"failed_copied_chunk_{chunk_idx}.json")
 
     # list all NLPs and identify the ones that will be processed now
     all_dirs = sorted(os.listdir(source_base_dir))
@@ -343,8 +342,8 @@ def main(
     logger.info(msg)
 
     for nlp_idx, nlp in tqdm(enumerate(nlps_chunk)):
-        
-        if nlp in ['0003056', '0003057', '0004683', '0000071', '0000191']:
+
+        if nlp in ["0003056", "0003057", "0004683", "0000071", "0000191"]:
             print(f"Skipping {nlp} as it is still under work.")
             continue
 
