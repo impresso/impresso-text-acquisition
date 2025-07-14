@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -5,19 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Importers &mdash; Impresso Text Preparation  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -271,9 +269,9 @@ pieces of code:</p>
 </ol>
 <p>Once these two pieces of code are in place, they can be plugged into the functions defined in <a class="reference internal" href="#module-text_preparation.importers.generic_importer" title="text_preparation.importers.generic_importer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer</span></code></a> so as to create a dedicated CLI script for your specific format.</p>
 <p>For example, this is the content of <code class="docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">text_preparation.importers</span> <span class="kn">import</span> <span class="n">generic_importer</span>
-<span class="kn">from</span> <span class="nn">text_preparation.importers.olive.classes</span> <span class="kn">import</span> <span class="n">OliveCanonicalIssue</span>
-<span class="kn">from</span> <span class="nn">text_preparation.importers.olive.detect</span> <span class="kn">import</span> <span class="p">(</span><span class="n">olive_detect_issues</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">text_preparation.importers</span><span class="w"> </span><span class="kn">import</span> <span class="n">generic_importer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">text_preparation.importers.olive.classes</span><span class="w"> </span><span class="kn">import</span> <span class="n">OliveCanonicalIssue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">text_preparation.importers.olive.detect</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">olive_detect_issues</span><span class="p">,</span>
                                                   <span class="n">olive_select_issues</span><span class="p">)</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
@@ -308,7 +306,7 @@ of <a class="reference internal" href="architecture.html#canonical-identifiers">
 see <code class="xref py py-func docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer.main()</span></code></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue" title="Link to this definition"></a></dt>
 <dd><p>Abstract class representing a canonical issue.</p>
 <p>Each text importer needs to define a subclass of <cite>CanonicalIssue</cite> which
 specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
@@ -407,7 +405,7 @@ specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.issuedir">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">issuedir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IssueDir</span></em><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.issuedir" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">issuedir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IssueDir</span></em><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.issuedir" title="Link to this definition"></a></dt>
 <dd><p>IssueDirectory corresponding to this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -433,7 +431,7 @@ bypass schema validation.</p>
 <p>And one the two types of physical supports: Pages and Audio Records:</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage" title="Link to this definition"></a></dt>
 <dd><p>Abstract class representing a printed or typescripted page.</p>
 <p>Each text importer needs to define a subclass of <code class="docutils literal notranslate"><span class="pre">CanonicalPage</span></code> which
 specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
@@ -491,7 +489,7 @@ specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.add_issue">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.add_issue" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.add_issue" title="Link to this definition"></a></dt>
 <dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the canonical issue.</p>
@@ -504,7 +502,7 @@ the canonical issue.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.parse">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.parse" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.parse" title="Link to this definition"></a></dt>
 <dd><p>Process the page XML file and transform into canonical Page format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -524,7 +522,7 @@ method is called.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalAudioRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalAudioRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord" title="Link to this definition"></a></dt>
 <dd><p>Abstract class representing an radio audio record.</p>
 <p>Each text importer for radio records needs to define a subclass of
 <code class="docutils literal notranslate"><span class="pre">CanonicalAudioRecord</span></code> which specifies the logic to handle ASR data
@@ -591,7 +589,7 @@ our processings and data structures through our pipeline (eg. number as we only 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.add_issue">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.add_issue" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.add_issue" title="Link to this definition"></a></dt>
 <dd><p>Add to an audio record object its parent, i.e. the canonical issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the canonical issue.</p>
@@ -604,7 +602,7 @@ the canonical issue.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.parse">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.parse" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.parse" title="Link to this definition"></a></dt>
 <dd><p>Process the audio record XML file and transform into canonical AudioRecord format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
