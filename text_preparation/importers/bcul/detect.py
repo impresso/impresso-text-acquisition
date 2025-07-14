@@ -1,5 +1,4 @@
-"""This module contains helper functions to find BCUL OCR data to import.
-"""
+"""This module contains helper functions to find BCUL OCR data to import."""
 
 import logging
 import os
@@ -14,9 +13,7 @@ from text_preparation.importers.bcul.helpers import parse_date, find_mit_file
 
 logger = logging.getLogger(__name__)
 
-BculIssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights", "mit_file_type"]
-)
+BculIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path", "mit_file_type"])
 """A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -29,20 +26,18 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
-    rights (str): Type of mit file for this issue (json or xml).
+    mit_file_type (str): Type of mit file for this issue (json or xml).
 
 >>> from datetime import date
 >>> i = BculIssueDir(
-    journal='FAL', 
+    alias='FAL', 
     date=datetime.date(1762, 12, 07), 
     edition='a', 
     path='./BCUL/46165', 
-    rights='open_public',
     mit_file_type:'json'
 )
 """
@@ -50,6 +45,7 @@ Args:
 # issues that lead to HTTP response 404. Skipping them altogether.
 # These issues are often dublicates of issues for which the API works
 # In addition, it was found that some issues were listed with wrong dates.
+ALIASES_FILEPATH = "../data/sample_data/BCUL/access_rights_and_aliases.json"
 FAULTY_ISSUES = [
     "127626",
     "127627",
@@ -120,16 +116,15 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
         edition = "a"
 
     return BculIssueDir(
-        journal=journal_info["alias"],
+        alias=journal_info["alias"],
         date=date,
         edition=edition,
         path=path,
-        rights=journal_info["access_right"],
         mit_file_type=journal_info["file_type"],
     )
 
 
-def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
+def detect_issues(base_dir: str) -> list[BculIssueDir]:
     """Detect BCUL newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BCUL used to
@@ -137,20 +132,20 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
         list[BculIssueDir]: List of `BCULIssueDir` instances, to be imported.
     """
-    with open(access_rights, "rb") as f:
-        ar_and_alias = json.load(f)
+    # open and read bcul_alias.json file
+    with open(ALIASES_FILEPATH, "rb") as f:
+        alias_mapping = json.load(f)
 
     dir_path, dirs, files = next(os.walk(base_dir))
 
     journal_dirs = [
         os.path.join(dir_path, _dir)
         for _dir in dirs
-        if _dir not in ["OLD", "wrong_BCUL", ".DS_Store"] and _dir in ar_and_alias
+        if _dir not in ["OLD", "wrong_BCUL", ".DS_Store"] and _dir in alias_mapping
     ]
 
     if "La_Veveysanne__La_Patrie" in os.listdir(dir_path):
@@ -159,7 +154,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
         vvs_pat_dirs = [
             os.path.join(vvs_pat_base_dir, _dir)
             for _dir in os.listdir(vvs_pat_base_dir)
-            if ".DS_Store" not in _dir and _dir in ar_and_alias
+            if ".DS_Store" not in _dir and _dir in alias_mapping
         ]
         journal_dirs.extend(vvs_pat_dirs)
 
@@ -174,14 +169,12 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BculIssueDir]:
                 and "solr" not in dir_path
                 and os.path.basename(dir_path) not in FAULTY_ISSUES
             ):
-                issue_dirs.append(dir2issue(dir_path, ar_and_alias[title]))
+                issue_dirs.append(dir2issue(dir_path, alias_mapping[title]))
 
     return issue_dirs
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> list[BculIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[BculIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -192,7 +185,6 @@ def select_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Path to `access_rights_and_aliases.json` file.
 
     Returns:
         list[BculIssueDir] | None: List of `BculIssueDir` to import.
@@ -200,22 +192,21 @@ def select_issues(
 
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["newspapers"]
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     exclude_flag = False if not exclude_list else True

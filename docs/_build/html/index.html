@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -5,19 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to Impresso Text Preparation’s documentation! &mdash; Impresso Text Preparation  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -47,6 +45,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers.html">Importers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rebuilders.html">Rebuilders</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
@@ -92,6 +91,11 @@ The goal for this merge was to regroup in one place all the code that was used a
 <li class="toctree-l2"><a class="reference internal" href="architecture.html#module-text_preparation.importers.core">Processing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preprocessing.html#existing-preprocessing-scripts">Existing Preprocessing Scripts</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="importers.html">Importers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="importers.html#available-importers">Available importers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="importers.html#command-line-interface">Command-line interface</a></li>
@@ -108,10 +112,18 @@ The goal for this merge was to regroup in one place all the code that was used a
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.add_property"><code class="docutils literal notranslate"><span class="pre">add_property()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.coords_to_xy"><code class="docutils literal notranslate"><span class="pre">coords_to_xy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.coords_to_xywh"><code class="docutils literal notranslate"><span class="pre">coords_to_xywh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.draw_box_on_img"><code class="docutils literal notranslate"><span class="pre">draw_box_on_img()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.empty_folder"><code class="docutils literal notranslate"><span class="pre">empty_folder()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.get_issue_schema"><code class="docutils literal notranslate"><span class="pre">get_issue_schema()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.get_page_schema"><code class="docutils literal notranslate"><span class="pre">get_page_schema()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.get_reading_order"><code class="docutils literal notranslate"><span class="pre">get_reading_order()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.read_xml"><code class="docutils literal notranslate"><span class="pre">read_xml()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.rescale_coords"><code class="docutils literal notranslate"><span class="pre">rescale_coords()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.validate_audio_schema"><code class="docutils literal notranslate"><span class="pre">validate_audio_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.validate_issue_schema"><code class="docutils literal notranslate"><span class="pre">validate_issue_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.validate_page_schema"><code class="docutils literal notranslate"><span class="pre">validate_page_schema()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.verify_imported_issues"><code class="docutils literal notranslate"><span class="pre">verify_imported_issues()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.write_error"><code class="docutils literal notranslate"><span class="pre">write_error()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#text_preparation.utils.write_jsonlines_file"><code class="docutils literal notranslate"><span class="pre">write_jsonlines_file()</span></code></a></li>

@@ -1,0 +1,41 @@
+Preprocessing
+=============
+
+Motivation
+----------
+
+Unfortunately, not all data arrives ready for ingestion. 
+In several cases, some preprocessing steps are necessary to prepare the data in order to reduce the complexity of the importers.
+
+This preprocessing can include any of the following steps:
+
+- Identification of the exact contents of the data which was dumped, and of the OCR formats present.
+- Reorganization of the files to follow our prefered directory structure: `alias > year > month > day > edition > issue files`.
+- Copying of image files into the IIIF server location, often also requiring reorganization, renaming and conversion of the files.
+- Extraction of the OCR from PDFs in the case the OCR is embedded in PDFs.
+
+Other preprocessing steps might also be necessary and depend on each provider.
+
+Since these steps are so case-specific, we currently handle each situation with individual scripts, which are tailored to each provider.
+
+Existing Preprocessing Scripts
+------------------------------
+
+British Library
+***************
+
+- Reorganizes and copies exiting data into the desired directory structure, separating images and OCR files for each issue.
+- Logs all copies made and optionally skips issues if the copy was already done, after verification that all the desired files exist in the destination 
+
+.. automodule:: text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data
+  :members:
+
+
+SWISSINFO
+*********
+
+- Extract the OCR from PDF files, creating JSON files and convert the images to JP2 format.
+- Reorganize and rename the files accordingly.
+
+.. automodule:: text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs
+  :members:

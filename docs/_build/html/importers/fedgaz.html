@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -5,19 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>FedGaz TETML importer &mdash; Impresso Text Preparation  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -48,6 +46,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">Preprocessing</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../importers.html">Importers</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
@@ -59,6 +58,8 @@
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">FedGaz TETML importer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.fedgaz.classes">FedGaz Custom classes</a></li>
@@ -112,7 +113,7 @@ Unless the attribute is set to <cite>True</cite>, the content of the shared page
 <p>Classes to handle the TETML OCR format.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.fedgaz.classes.FedgazNewspaperIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">FedgazNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.fedgaz.classes.FedgazNewspaperIssue" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">FedgazNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.fedgaz.classes.FedgazNewspaperIssue" title="Link to this definition"></a></dt>
 <dd><p>Class representing a issue in FedGaz TETML format.</p>
 <p>All functions defined in this child class are used to parse additional
 information specific for FedGaz and extend the generic TETML importer.</p>
@@ -139,7 +140,7 @@ information specific for FedGaz and extend the generic TETML importer.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.fedgaz.classes.FedgazNewspaperPage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">FedgazNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_xml</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.fedgaz.classes.FedgazNewspaperPage" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">FedgazNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_xml</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.fedgaz.classes.FedgazNewspaperPage" title="Link to this definition"></a></dt>
 <dd><p>Class representing a page in FedGaz TETML format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -166,7 +167,7 @@ method is called.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.fedgaz.classes.TokPosition">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">TokPosition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">art</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">para</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tok</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.fedgaz.classes.TokPosition" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.fedgaz.classes.</span></span><span class="sig-name descname"><span class="pre">TokPosition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">art</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reg</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">para</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tok</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.fedgaz.classes.TokPosition" title="Link to this definition"></a></dt>
 <dd><p>Create a an identifier to store the position of the fuzzy match.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

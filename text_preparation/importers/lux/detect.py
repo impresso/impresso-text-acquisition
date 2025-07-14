@@ -1,5 +1,4 @@
-"""This module contains helper functions to find BNL OCR data to be imported.
-"""
+"""This module contains helper functions to find BNL OCR data to be imported."""
 
 import logging
 import os
@@ -13,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
-LuxIssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights"]
-)
+LuxIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -28,14 +25,13 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
 
 >>> from datetime import date
->>> i = LuxIssueDir('armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/', 'protected')
+>>> i = LuxIssueDir('armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/')
 """
 
 
@@ -54,7 +50,6 @@ def dir2issue(path: str) -> LuxIssueDir:
     local_id = issue_dir.split("_")[2]
     issue_date = issue_dir.split("_")[3]
     year, month, day = issue_date.split("-")
-    rights = "open_public" if "public_domain" in path else "closed"
 
     if len(issue_dir.split("_")) == 4:
         edition = "a"
@@ -62,12 +57,10 @@ def dir2issue(path: str) -> LuxIssueDir:
         edition = issue_dir.split("_")[4]
         edition = EDITIONS_MAPPINGS[int(edition)]
 
-    return LuxIssueDir(
-        local_id, date(int(year), int(month), int(day)), edition, path, rights
-    )
+    return LuxIssueDir(local_id, date(int(year), int(month), int(day)), edition, path)
 
 
-def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
+def detect_issues(base_dir: str) -> list[LuxIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNL used to
@@ -75,8 +68,6 @@ def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        ar (str, optional): Access rights, not used for this imported, but
-            argument is kept for uniformity. Defaults to None.
 
     Returns:
         list[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
@@ -92,9 +83,7 @@ def detect_issues(base_dir: str, ar: str = None) -> list[LuxIssueDir]:
     return [dir2issue(_dir) for _dir in issue_dirs]
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> list[LuxIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -105,29 +94,26 @@ def select_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Not used for this imported, but argument is kept
-            for uniformity.
 
     Returns:
         list[LuxIssueDir] | None: List of `LuxIssueDir` instances to import.
     """
     try:
-        filter_dict = config["newspapers"]
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     exclude_flag = False if not exclude_list else True

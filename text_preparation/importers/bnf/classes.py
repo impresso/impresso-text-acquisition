@@ -12,7 +12,7 @@ from glob import glob
 from time import strftime
 
 from bs4 import BeautifulSoup
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.bnf.helpers import (
@@ -26,14 +26,11 @@ from text_preparation.importers.bnf.parsers import (
     parse_printspace,
 )
 from text_preparation.importers.mets_alto import (
-    MetsAltoNewspaperIssue,
-    MetsAltoNewspaperPage,
+    MetsAltoCanonicalIssue,
+    MetsAltoCanonicalPage,
 )
 from text_preparation.importers.mets_alto.alto import distill_coordinates, parse_style
-from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +39,7 @@ IIIF_MANIFEST_SUFFIX = "manifest.json"
 IIIF_SUFFIX = "info.json"
 
 
-class BnfNewspaperPage(MetsAltoNewspaperPage):
+class BnfNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in BNF (Mets/Alto) format.
 
     Args:
@@ -55,7 +52,7 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
@@ -79,11 +76,9 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
 
         self.page_data["s"] = styles
 
-    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+    def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
-        self.page_data["iiif_img_base_uri"] = os.path.join(
-            IIIF_ENDPOINT_URI, self.ark_link
-        )
+        self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.ark_link)
         self._parse_font_styles()
 
     def parse(self) -> None:
@@ -122,7 +117,7 @@ class BnfNewspaperPage(MetsAltoNewspaperPage):
             return alto_doc
 
 
-class BnfNewspaperIssue(MetsAltoNewspaperIssue):
+class BnfNewspaperIssue(MetsAltoCanonicalIssue):
     """Newspaper Issue in BNF (Mets/Alto) format.
 
     All functions defined in this child class are specific to parsing BNF
@@ -134,12 +129,11 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict[str, Any]): metadata allowing to convert region
             OCR/OLR coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
@@ -151,6 +145,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         self.issue_uid = os.path.basename(issue_dir.path)
         self.secondary_date = issue_dir.secondary_date
         super().__init__(issue_dir)
+        # TODO add page width & height
 
     @property
     def xml(self) -> BeautifulSoup:
@@ -174,7 +169,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
-        Created :obj:`BnfNewspaperPage` instances are added to :attr:`pages`.
+        Created :obj:`BnfCanonicalPage` instances are added to :attr:`pages`.
 
         Raises:
             e: Instantiation of a page or adding it to :attr:`pages` failed.
@@ -194,13 +189,9 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         ]
 
         self.pages = {}
-        for filename, page_no, page_id in zip(
-            page_filenames, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_filenames, page_numbers, page_canonical_names):
             try:
-                self.pages[page_no] = BnfNewspaperPage(
-                    page_id, page_no, filename, ocr_path
-                )
+                self.pages[page_no] = BnfNewspaperPage(page_id, page_no, filename, ocr_path)
             except Exception as e:
                 logger.error(
                     "Adding page %s %s %s raised following exception: %s",
@@ -211,9 +202,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
                 )
                 raise e
 
-    def _get_divs_by_type(
-        self, mets: BeautifulSoup
-    ) -> dict[str, list[tuple[str, str]]]:
+    def _get_divs_by_type(self, mets: BeautifulSoup) -> dict[str, list[tuple[str, str]]]:
         """Parse `div` tags, flatten them and sort them by type.
 
         First, parse the `dmdSec` tags, and sort them by type.
@@ -264,9 +253,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
 
         return by_type
 
-    def _flatten_sections(
-        self, by_type: dict, struct_content
-    ) -> dict[str, list[tuple[str, str]]]:
+    def _flatten_sections(self, by_type: dict, struct_content) -> dict[str, list[tuple[str, str]]]:
         """Flatten the sections of the issue.
 
         This means making the children parts standalone CIs.
@@ -378,9 +365,7 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
             page = self.pages[image_part[0]["comp_page_no"]]
             block = page.xml.find("Illustration", {"ID": image_part_id})
             if block is None:
-                logger.warning(
-                    "Could not find image %s for CI %s", image_part_id, ci_id
-                )
+                logger.warning("Could not find image %s for CI %s", image_part_id, ci_id)
             else:
                 coords = distill_coordinates(block)
                 iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.ark_link, IIIF_SUFFIX)
@@ -433,10 +418,12 @@ class BnfNewspaperIssue(MetsAltoNewspaperIssue):
         )
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": content_items,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,
         }

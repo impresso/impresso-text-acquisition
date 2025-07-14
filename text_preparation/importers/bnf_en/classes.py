@@ -12,7 +12,7 @@ from typing import Any, Optional
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, timestamp
 
 from text_preparation.importers import (
     CONTENTITEM_TYPES,
@@ -22,13 +22,10 @@ from text_preparation.importers import (
 )
 from text_preparation.importers.bnf.helpers import BNF_CONTENT_TYPES
 from text_preparation.importers.mets_alto import (
-    MetsAltoNewspaperIssue,
-    MetsAltoNewspaperPage,
+    MetsAltoCanonicalIssue,
+    MetsAltoCanonicalPage,
 )
-from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +40,7 @@ type_translation = {
 }
 
 
-class BnfEnNewspaperPage(MetsAltoNewspaperPage):
+class BnfEnNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in BNF-EN (Mets/Alto) format.
 
     Args:
@@ -56,7 +53,7 @@ class BnfEnNewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
@@ -69,16 +66,17 @@ class BnfEnNewspaperPage(MetsAltoNewspaperPage):
 
         page_tag = self.xml.find("Page")
         self.page_width = float(page_tag.get("WIDTH"))
+        # TODO add page width & heigh
 
-    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+    def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
         ark = issue.ark_link
         self.page_data["iiif_img_base_uri"] = os.path.join(
-            IIIF_ENDPOINT_URI, ark, "f{}".format(self.number)
+            IIIF_ENDPOINT_URI, ark, f"f{self.number}"
         )
 
 
-class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
+class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
     """Newspaper Issue in BNF-EN (Mets/Alto) format.
 
     All functions defined in this child class are specific to parsing
@@ -90,12 +88,11 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict[str, Any]): metadata allowing to convert region
             OCR/OLR coordinates to iiif format compliant ones.
         ark_link (str): IIIF Ark Id for this issue fetched on the Gallica API.
@@ -108,7 +105,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
-        Created NewspaperPage instances are added to pages.
+        Created CanonicalPage instances are added to pages.
 
         Raises:
             e: Creating a BnfEnlNewspaperPage` raised an exception.
@@ -121,9 +118,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             raise ValueError(msg)
 
         page_file_names = [
-            file
-            for file in os.listdir(alto_path)
-            if not file.startswith(".") and ".xml" in file
+            file for file in os.listdir(alto_path) if not file.startswith(".") and ".xml" in file
         ]
 
         page_numbers = []
@@ -132,18 +127,12 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             page_no = fname.split(".")[0].split("-")[1]
             page_numbers.append(int(page_no))
 
-        page_canonical_names = [
-            "{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers
-        ]
+        page_canonical_names = [f"{self.id}-p{str(page_n).zfill(4)}" for page_n in page_numbers]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
-                self.pages.append(
-                    BnfEnNewspaperPage(page_id, page_no, filename, alto_path)
-                )
+                self.pages.append(BnfEnNewspaperPage(page_id, page_no, filename, alto_path))
             except Exception as e:
                 msg = f"Adding page {page_no} {page_id} {filename} raised following exception: {e}"
                 logger.error(msg)
@@ -229,7 +218,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             logger.warning("Found new content item type: %s", div_type)
 
         metadata = {
-            "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+            "id": f"{self.id}-i{str(counter).zfill(4)}",
             "tp": div_type,
             "pp": [],
             "t": item_div.get("LABEL"),
@@ -238,7 +227,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
         # Get CI language
         language = self._get_ci_language(item_div.get("DMDID"), mets_doc)
         if language is not None:
-            metadata["l"] = language
+            metadata["lg"] = language
 
         content_item = {
             "m": metadata,
@@ -253,9 +242,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                 content_item["m"]["pp"].append(pge_no)
 
         if div_type in [CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE]:
-            content_item["c"], content_item["m"]["iiif_link"] = self._get_image_info(
-                content_item
-            )
+            content_item["c"], content_item["m"]["iiif_link"] = self._get_image_info(content_item)
 
         return content_item
 
@@ -272,9 +259,7 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
             list[Tag]: List of all children divs not of type `Section`.
         """
         logger.info("Decomposing section type")
-        section_divs = [
-            d for d in div.findAll("div") if d.get("TYPE").lower() in BNF_CONTENT_TYPES
-        ]
+        section_divs = [d for d in div.findAll("div") if d.get("TYPE").lower() in BNF_CONTENT_TYPES]
         # Sort to get same IDS
         section_divs = sorted(section_divs, key=lambda x: x.get("ID").lower())
 
@@ -393,24 +378,22 @@ class BnfEnNewspaperIssue(MetsAltoNewspaperIssue):
                 ]
 
         # coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
-        iiif_link = os.path.join(
-            IIIF_ENDPOINT_URI, self.ark_link, f"f{page.number}", IIIF_SUFFIX
-        )
+        iiif_link = os.path.join(IIIF_ENDPOINT_URI, self.ark_link, f"f{page.number}", IIIF_SUFFIX)
 
         return coords, iiif_link
 
     def _parse_mets(self) -> None:
         content_items = self._parse_content_items()
 
-        iiif_manifest = os.path.join(
-            IIIF_ENDPOINT_URI, self.ark_link, IIIF_MANIFEST_SUFFIX
-        )
+        iiif_manifest = os.path.join(IIIF_ENDPOINT_URI, self.ark_link, IIIF_MANIFEST_SUFFIX)
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": content_items,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,
         }

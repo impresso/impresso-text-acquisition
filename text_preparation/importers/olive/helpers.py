@@ -17,8 +17,8 @@ import numpy as np
 from bs4 import BeautifulSoup
 import cv2 as cv
 
-from impresso_essentials.utils import IssueDir
-from text_preparation.importers.classes import NewspaperIssue, ZipArchive
+from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, timestamp
+from text_preparation.importers.classes import CanonicalIssue, ZipArchive
 from text_preparation.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
@@ -142,9 +142,7 @@ def combine_article_parts(article_parts: list[dict[str, Any]]) -> dict[str, Any]
         # from the first item in the list
         article_dict = {"meta": {}, "fulltext": "", "stats": {}, "legacy": {}}
         article_dict["legacy"]["id"] = [ar["legacy"]["id"] for ar in article_parts]
-        article_dict["legacy"]["source"] = [
-            ar["legacy"]["source"] for ar in article_parts
-        ]
+        article_dict["legacy"]["source"] = [ar["legacy"]["source"] for ar in article_parts]
         article_dict["meta"]["type"] = {}
         article_dict["meta"]["type"]["raw"] = article_parts[0]["meta"]["type"]["raw"]
 
@@ -198,17 +196,13 @@ def normalize_line(line: dict[str, list[Any]], lang: str) -> dict[str, list[Any]
             del token["qid"]
 
         if i == 0 and i != len(line["t"]) - 1:
-            insert_ws = insert_whitespace(
-                token["tx"], line["t"][i + 1]["tx"], None, lang
-            )
+            insert_ws = insert_whitespace(token["tx"], line["t"][i + 1]["tx"], None, lang)
 
         elif i == 0 and i == len(line["t"]) - 1:
             insert_ws = insert_whitespace(token["tx"], None, None, lang)
 
         elif i == len(line["t"]) - 1:
-            insert_ws = insert_whitespace(
-                token["tx"], None, line["t"][i - 1]["tx"], lang
-            )
+            insert_ws = insert_whitespace(token["tx"], None, line["t"][i - 1]["tx"], lang)
 
         else:
             insert_ws = insert_whitespace(
@@ -260,9 +254,7 @@ def recompose_ToC(
     # Added deep copy because function changes toc_data
     toc_data = copy.deepcopy(original_toc_data)
     # concate content items from all pages into a single flat list
-    content_items = [
-        toc_data[pn][elid] for pn in toc_data.keys() for elid in toc_data[pn].keys()
-    ]
+    content_items = [toc_data[pn][elid] for pn in toc_data.keys() for elid in toc_data[pn].keys()]
 
     # filter out those items that are part of a multipart article
     contents = []
@@ -295,7 +287,7 @@ def recompose_ToC(
 
             item["m"]["id"] = item["id"]
             item["m"]["pp"] = article["meta"]["page_no"]
-            item["m"]["l"] = article["meta"]["language"]
+            item["m"]["lg"] = article["meta"]["language"]
             item["m"]["tp"] = article["meta"]["type"]["raw"].lower()
 
             if keep_title(article["meta"]["title"]):
@@ -307,11 +299,7 @@ def recompose_ToC(
         elif item["type"] == "Picture":
 
             # find in which page the image is
-            page_no = [
-                page_no
-                for page_no in toc_data
-                if item["legacy_id"] in toc_data[page_no]
-            ]
+            page_no = [page_no for page_no in toc_data if item["legacy_id"] in toc_data[page_no]]
 
             # get the new canonical id via the legacy id
             item["m"]["id"] = item["id"]
@@ -319,9 +307,7 @@ def recompose_ToC(
             item["m"]["pp"] = page_no
 
             try:
-                image = [image for image in images if image["id"] == item["legacy_id"]][
-                    0
-                ]
+                image = [image for image in images if image["id"] == item["legacy_id"]][0]
             except IndexError:
                 # if the image XML was faulty (e.g. because of missing
                 # coords, it won't find a corresping image item
@@ -346,10 +332,7 @@ def recompose_ToC(
                     # content item entries exists in different shapes within
                     # the `toc_data` dict, depending on whether they have
                     # already been processed in this `for` loop or not
-                    if (
-                        "m" in containing_article
-                        and len(containing_article["m"].keys()) > 0
-                    ):
+                    if "m" in containing_article and len(containing_article["m"].keys()) > 0:
                         item["pOf"] = containing_article["m"]["id"]
                     else:
                         item["pOf"] = containing_article["id"]
@@ -396,12 +379,10 @@ def recompose_page(
     Returns:
         dict[str, Any]: Page data according to impresso canonical format.
     """
-    page = {"r": [], "cdt": strftime("%Y-%m-%d %H:%M:%S")}
+    page = {"r": []}
     ordered_elements = sorted(list(info_from_toc.values()), key=itemgetter("seq"))
 
-    id_mappings = {
-        legacy_id: info_from_toc[legacy_id]["id"] for legacy_id in info_from_toc
-    }
+    id_mappings = {legacy_id: info_from_toc[legacy_id]["id"] for legacy_id in info_from_toc}
 
     # put together the regions while keeping the order in the page
     for el in ordered_elements:
@@ -424,9 +405,7 @@ def recompose_page(
         if el["legacy_id"] in page_elements:
             element = page_elements[el["legacy_id"]]
         else:
-            logger.error(
-                "%s: %s not found in page %s", el["id"], el["legacy_id"], page_id
-            )
+            logger.error("%s: %s not found in page %s", el["id"], el["legacy_id"], page_id)
             continue
         mapped_id = id_mappings[part_of] if part_of in id_mappings else None
 
@@ -629,7 +608,7 @@ def convert_page_coordinates(
     page_image_name: str,
     zip_archive: ZipArchive,
     box_strategy: str,
-    issue: NewspaperIssue,
+    issue: CanonicalIssue,
 ) -> bool:
     """Convert coordinates of all elements in a page that have coordinates.
 
@@ -644,7 +623,7 @@ def convert_page_coordinates(
         page_image_name (str): Name of page image file.
         zip_archive (ZipArchive): Olive Zip archive.
         box_strategy (str): Conversion strategy to apply.
-        issue (NewspaperIssue): Newspaper issue the page belongs to.
+        issue (CanonicalIssue): Newspaper issue the page belongs to.
 
     Returns:
         bool: Whether the coordinate conversion was successful or not.
@@ -663,9 +642,7 @@ def convert_page_coordinates(
                         token["c"] = convert_box(token["c"], scale_factor)
         end_t = time.time()
         t = end_t - start_t
-        logger.debug(
-            "Converted coordinates %s in %s (took %ss)", page_image_name, issue.id, t
-        )
+        logger.debug("Converted coordinates %s in %s (took %ss)", page_image_name, issue.id, t)
         return True
 
     logger.info("Could not find scale factor for %s", page["id"])

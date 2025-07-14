@@ -1,5 +1,4 @@
-"""This module contains helper functions to find BNF-EN OCR data to import.
-"""
+"""This module contains helper functions to find BNF-EN OCR data to import."""
 
 import logging
 import os
@@ -18,9 +17,7 @@ logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
-BnfEnIssueDir = namedtuple(
-    "IssueDirectory", ["journal", "date", "edition", "path", "rights", "ark_link"]
-)
+BnfEnIssueDir = namedtuple("IssueDirectory", ["alias", "date", "edition", "path", "ark_link"])
 """A light-weight data structure to represent a newspaper issue in BNF Europeana
 
 This named tuple contains basic metadata about a newspaper issue. They
@@ -33,15 +30,14 @@ Note:
     second, etc.
 
 Args:
-    journal (str): Newspaper ID.
+    alias (str): Newspaper alias.
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
-    rights (str): Access rights on the data (open, closed, etc.).
     ark_link (str): Unique IIIF identifier associated with this issue.
 
 >>> from datetime import date
->>> i = BnfEnIssueDir('BLB', date(1845,12,28), 'a', './Le-Gaulois/18820208_1', 'open')
+>>> i = BnfEnIssueDir('BLB', date(1845,12,28), 'a', './Le-Gaulois/18820208_1')
 """
 
 API_JOURNAL_URL = "https://gallica.bnf.fr/services/Issues?ark={ark}/date"
@@ -59,26 +55,26 @@ API_MAPPING = {
 }
 
 
-def get_api_id(journal: str, api_issue: tuple[str, datetime.date], edition: str) -> str:
-    """Construct an ID given a journal name, date and edition.
+def get_api_id(alias: str, api_issue: tuple[str, datetime.date], edition: str) -> str:
+    """Construct an ID given a journal alias, date and edition.
 
     Args:
-        journal (str): Journal name
+        alias (str): Journal alias
         api_issue (tuple[str, datetime.date]): Tuple of information fetched
             from the Gallica API.
         edition (str): Edition of the issue.
 
     Returns:
-        str: Canonical issue Id composed of journal name, date and edition.
+        str: Canonical issue Id composed of alias, date and edition.
     """
     date = api_issue[1]
     return "{}-{}-{:02}-{:02}-{}".format(
-        journal, date.year, date.month, date.day, ascii_lowercase[edition]
+        alias, date.year, date.month, date.day, ascii_lowercase[edition]
     )
 
 
 def fix_api_year_mismatch(
-    journal: str, year: int, api_issues: list[Tag], last_i: list[Tag | None]
+    alias: str, year: int, api_issues: list[Tag], last_i: list[Tag | None]
 ) -> tuple[list[Tag], list[Tag | None]]:
     """Modify proivded list of issues fetched from the API to fix some issues present.
 
@@ -88,7 +84,7 @@ def fix_api_year_mismatch(
     This function aims to rectify this issue and fetch the correct IIIF ark IDs.
 
     Args:
-        journal (str): Alias of the journal currently under processing.
+        alias (str): Alias of the journal currently under processing.
         year (int): Year for which the API was queried.
         api_issues (list[Tag]): List of issues as returned from the API.
         last_i (list[Tag | None]): Last december 31st issue entry, returned for the wrong year.
@@ -98,13 +94,15 @@ def fix_api_year_mismatch(
             issue(s) if the error was present again, None otherwise.
     """
     curr_last_i = last_i
+    # TODO check if correct
+    next_last_i = curr_last_i
 
     # if there is indeed a mismatch in the year
     if str(year - 1) in api_issues[-1].getText():
         if "31 décembre" not in api_issues[-1].getText():
             logger.warning(
                 "%s-%s: Mismatch in year for another day!!: %s",
-                journal,
+                alias,
                 year,
                 api_issues[-1],
             )
@@ -113,7 +111,7 @@ def fix_api_year_mismatch(
             # it can happen that there are 2 issues on Dec 31st:
             if str(year - 1) in api_issues[-2].getText():
                 # save the last 2 issues
-                msg = f"{journal}-{year}: Saving 2 editions for Dec 31st {curr_last_i}"
+                msg = f"{alias}-{year}: Saving 2 editions for Dec 31st {curr_last_i}"
                 logger.info(msg)
                 num_to_replace = 2
                 next_last_i = api_issues[-num_to_replace:]
@@ -124,7 +122,7 @@ def fix_api_year_mismatch(
             # sanity check that the previously stored value corresponds to the correct year
             if curr_last_i[0] is None:
                 msg = (
-                    f"{journal}-{year}: No previously stored Dec 31s value since "
+                    f"{alias}-{year}: No previously stored Dec 31s value since "
                     f"it's the last available year, removing the {num_to_replace} incorrect issue."
                 )
                 logger.info(msg)
@@ -135,11 +133,11 @@ def fix_api_year_mismatch(
                 api_issues = api_issues[:-num_to_replace]
                 # replace the final issue by the one with the correct year
                 api_issues.extend(curr_last_i)
-                msg = f"{journal}-{year}: Setting the value of api_issues[:-{num_to_replace}] to {curr_last_i}"
+                msg = f"{alias}-{year}: Setting the value of api_issues[:-{num_to_replace}] to {curr_last_i}"
                 logger.debug(msg)
             else:
                 msg = (
-                    f"{journal}-{year}: The previously stored dec 31st issue does "
+                    f"{alias}-{year}: The previously stored dec 31st issue does "
                     f"not correspond to this year {curr_last_i}"
                 )
                 logger.info(msg)
@@ -150,19 +148,19 @@ def fix_api_year_mismatch(
             and "31 décembre" not in api_issues[-1].getText()
         ):
             api_issues.extend(curr_last_i)
-            msg = f"{journal}-{year}: Appending {curr_last_i} to api_issues."
+            msg = f"{alias}-{year}: Appending {curr_last_i} to api_issues."
             logger.info(msg)
             next_last_i = [None]
         # if it's not missing but corresponds to another day, log it
         else:
-            msg = f"{journal}-{year}: api_issues[-1] corresponding to another day than the previous one: {api_issues[-1].getText()}"
+            msg = f"{alias}-{year}: api_issues[-1] corresponding to another day than the previous one: {api_issues[-1].getText()}"
             logger.warning(msg)
 
     return api_issues, next_last_i
 
 
 def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
-    """Given a journal name and Ark, fetch its issues' Ark in the Gallica API.
+    """Given a journal alias and Ark, fetch its issues' Ark in the Gallica API.
 
     Each fo the Europeana journals have a journal-level Ark id, as well as
     issue-level IIIF Ark ids that can be fetched from the Gallica API using
@@ -172,12 +170,12 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
     for each collection and maps them to their respective issue IIIF Ark ids.
 
     Args:
-        journal_ark (tuple[str, str]): Pair of journal and associated Ark id.
+        journal_ark (tuple[str, str]): Pair of journal alias and associated Ark id.
 
     Returns:
         list[tuple[str, str]]: Pairs of issue canonical Ids and IIIF Ark Ids.
     """
-    journal, ark = journal_ark
+    alias, ark = journal_ark
 
     def get_date(dayofyear: str, year: int) -> datetime.date:
         """Return the date corresponding to a day of year.
@@ -192,7 +190,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
         start_date = datetime(year=year, month=1, day=1)
         return start_date + timedelta(days=int(dayofyear) - 1)
 
-    print(f"Fetching for {journal}")
+    print(f"Fetching for {alias}")
     r = requests.get(API_JOURNAL_URL.format(ark=ark), timeout=60)
     years = BeautifulSoup(r.content, "lxml").findAll("year")
     years = [int(x.contents[0]) for x in years]
@@ -203,7 +201,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
     # start with the last year
     for year in tqdm(years[::-1]):
         # API requrest
-        url = API_ISSUE_URL.format(ark=API_MAPPING[journal], year=year)
+        url = API_ISSUE_URL.format(ark=API_MAPPING[alias], year=year)
         r = requests.get(url, timeout=60)
         api_issues = BeautifulSoup(r.content, "lxml").findAll("issue")
 
@@ -214,22 +212,20 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
         ):
             logger.debug(
                 "%s-%s: api_issues[-1].getText(): %s, next_year_last_i: %s",
-                journal,
+                alias,
                 year,
                 api_issues[-1].getText(),
                 next_year_last_i,
             )
             api_issues, next_year_last_i = fix_api_year_mismatch(
-                journal, year, api_issues, next_year_last_i
+                alias, year, api_issues, next_year_last_i
             )
         else:
             # reset the value since it won't be valid anymore
             next_year_last_i = [None]
 
         # Parse dates and editions
-        api_issues = [
-            (i.get("ark"), get_date(i.get("dayofyear"), year)) for i in api_issues
-        ]
+        api_issues = [(i.get("ark"), get_date(i.get("dayofyear"), year)) for i in api_issues]
 
         editions = []
         for i, issue in enumerate(api_issues):
@@ -243,8 +239,7 @@ def get_issues_iiif_arks(journal_ark: tuple[str, str]) -> list[tuple[str, str]]:
                     editions.append(0)
 
         api_issues = [
-            (get_api_id(journal, i, edition), i[0])
-            for i, edition in zip(api_issues, editions)
+            (get_api_id(alias, i, edition), i[0]) for i, edition in zip(api_issues, editions)
         ]
         links += api_issues[::-1]
     # flip the resulting links since they were fetched from end to start
@@ -266,28 +261,26 @@ def construct_iiif_arks() -> dict[str, str]:
     return dict(iiif_arks)
 
 
-def get_id(journal: str, date: datetime.date, edition: str) -> str:
+def get_id(alias: str, date: datetime.date, edition: str) -> str:
     """Construct the canonical issue ID given the necessary information.
 
     Args:
-        journal (str): Journal name.
+        alias (str): Journal alias.
         date (datetime.date): Publication date.
         edition (str): Edition of the issue.
 
     Returns:
         str: Resulting issue canonical Id.
     """
-    return "{}-{}-{:02}-{:02}-{}".format(
-        journal, date.year, date.month, date.day, edition
-    )
+    return "{}-{}-{:02}-{:02}-{}".format(alias, date.year, date.month, date.day, edition)
 
 
-def parse_dir(_dir: str, journal: str) -> str:
+def parse_dir(_dir: str, alias: str) -> str:
     """Parse a directory and return the corresponding ID.
 
     Args:
         _dir (str): The directory (in Windows FS).
-        journal (str): Journal name to construct ID.
+        alias (str): Journal alias to construct ID.
 
     Returns:
         str: Issue canonical id.
@@ -300,12 +293,10 @@ def parse_dir(_dir: str, journal: str) -> str:
         date = date_edition[0]
         edition = EDITIONS_MAPPINGS[int(date_edition[1])]
     year, month, day = date[:4], date[4:6], date[6:8]
-    return "{}-{}-{}-{}-{}".format(journal, year, month, day, edition)
+    return "{}-{}-{}-{}-{}".format(alias, year, month, day, edition)
 
 
-def dir2issue(
-    path: str, access_rights: dict, iiif_arks: dict[str, str]
-) -> BnfEnIssueDir | None:
+def dir2issue(path: str, iiif_arks: dict[str, str]) -> BnfEnIssueDir | None:
     """Create a `BnfEnIssueDir` object from a directory path.
 
     Note:
@@ -320,29 +311,28 @@ def dir2issue(
         BnfEnIssueDir | None: `BnfEnIssueDir` for given issue if the ark id
             was found on the Gallica API, None otherwise.
     """
-    journal, issue = path.split("/")[-2:]
+    alias, issue = path.split("/")[-2:]
 
     date, edition = issue.split("_")[:2]
     date = datetime.strptime(date, "%Y%m%d").date()
-    journal = journal.lower().replace("-", "").strip()
+    alias = alias.lower().replace("-", "").strip()
     edition = EDITIONS_MAPPINGS[int(edition)]
 
-    id_ = get_id(journal, date, edition)
+    id_ = get_id(alias, date, edition)
 
     if id_ not in iiif_arks:
         return None
 
     return BnfEnIssueDir(
-        journal=journal,
+        alias=alias,
         date=date,
         edition=edition,
         path=path,
-        rights="open-public",
         ark_link=iiif_arks[id_],
     )
 
 
-def detect_issues(base_dir: str, access_rights: str) -> list[BnfEnIssueDir]:
+def detect_issues(base_dir: str) -> list[BnfEnIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNF-EN used to
@@ -350,21 +340,16 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BnfEnIssueDir]:
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
-        access_rights (str): Not used for this importer (kept for conformity).
 
     Returns:
         list[BnfEnIssueDir]: List of `BnfEnIssueDir` instances to import.
     """
     dir_path, dirs, files = next(os.walk(base_dir))
     journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs]
-    issue_dirs = [
-        os.path.join(journal, _dir)
-        for journal in journal_dirs
-        for _dir in os.listdir(journal)
-    ]
+    issue_dirs = [os.path.join(alias, _dir) for alias in journal_dirs for _dir in os.listdir(alias)]
 
     iiif_arks = construct_iiif_arks()
-    issue_dirs = [dir2issue(_dir, None, iiif_arks) for _dir in issue_dirs]
+    issue_dirs = [dir2issue(_dir, iiif_arks) for _dir in issue_dirs]
 
     initial_length = len(issue_dirs)
     issue_dirs = [i for i in issue_dirs if i is not None]
@@ -373,9 +358,7 @@ def detect_issues(base_dir: str, access_rights: str) -> list[BnfEnIssueDir]:
     return issue_dirs
 
 
-def select_issues(
-    base_dir: str, config: dict, access_rights: str
-) -> list[BnfEnIssueDir] | None:
+def select_issues(base_dir: str, config: dict) -> list[BnfEnIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
@@ -386,28 +369,26 @@ def select_issues(
     Args:
         base_dir (str): Path to the base directory of newspaper data.
         config (dict): Config dictionary for filtering.
-        access_rights (str): Not used for this importer (kept for conformity).
 
     Returns:
         list[BnfEnIssueDir] | None: `BnfEnIssueDir` instances to import.
     """
     try:
-        filter_dict = config["newspapers"]
-        exclude_list = config["exclude_newspapers"]
+        filter_dict = config["titles"]
+        exclude_list = config["exclude_titles"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] "
-            "is missing in the config file."
+            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return None
 
-    issues = detect_issues(base_dir, access_rights)
+    issues = detect_issues(base_dir)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.journal in filter_dict.keys())
-        and i.journal not in exclude_list
+        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
+        and i.alias not in exclude_list
     ).compute()
 
     exclude_flag = False if not exclude_list else True

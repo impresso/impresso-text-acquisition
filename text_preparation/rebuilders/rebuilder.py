@@ -1,6 +1,7 @@
 """Functions and CLI to rebuild text from impresso's canonical format.
-For EPFL members, this script can be scaled by running it using Runai, 
+For EPFL members, this script can be scaled by running it using Runai,
 as documented on https://github.com/impresso/impresso-infrastructure/blob/main/howtos/runai.md.
+TODO update the runai functionalities.
 
 Usage:
     rebuilder.py rebuild_articles --input-bucket=<b> --log-file=<f> --output-dir=<od> --filter-config=<fc> [--format=<fo> --scheduler=<sch> --output-bucket=<ob> --verbose --clear --languages=<lgs> --nworkers=<nw> --git-repo=<gr> --temp-dir=<tp> --prev-manifest=<pm>]
@@ -24,14 +25,12 @@ Options:
 
 import sys
 import traceback
-import datetime
 import json
 import pathlib
 import logging
 import os
 import shutil
 import signal
-from typing import Any, Optional
 import git
 
 import dask.bag as db
@@ -40,379 +39,38 @@ from dask.distributed import Client, progress
 from docopt import docopt
 from smart_open import smart_open
 
-from impresso_essentials.io.fs_utils import parse_canonical_filename
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import Timer, timestamp
+from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, init_logger
 
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
 
 from text_preparation.rebuilders.helpers import (
-    read_issue_pages,
-    rejoin_articles,
-    reconstruct_iiif_link,
-    insert_whitespace,
+    read_issue_supports,
+    rejoin_cis,
+    ci_has_problem,
+    ci_without_problem,
+    rebuild_for_solr,
+    rebuild_for_passim,
 )
 
 logger = logging.getLogger(__name__)
 
 
-TYPE_MAPPINGS = {
-    "article": "ar",
-    "ar": "ar",
-    "advertisement": "ad",
-    "ad": "ad",
-    "pg": None,
-    "image": "img",
-    "table": "tb",
-    "death_notice": "ob",
-    "weather": "w",
-}
-# TODO KB data: add familial announcement?
-
-
-def rebuild_text(
-    page: list[dict], language: Optional[str], string: Optional[str] = None
-) -> tuple[str, dict[list], dict[list]]:
-    """Rebuild the text of an article for Solr ingestion.
-
-    If `string` is not `None`, then the rebuilt text is appended to it.
+def compress(key: str, json_files: list, output_dir: str) -> tuple[str, str]:
+    """Merge a set of JSON line files into a single compressed archive.
 
     Args:
-        page (list[dict]): Newspaper page conforming to the impresso JSON pages schema.
-        language (str | None): Language of the article being rebuilt
-        string (str | None, optional): Rebuilt text of previous page. Defaults to None.
+        key (str): alias-year "key" of a given issue (e.g. GDL-1900).
+        json_files (list): Input JSON line files.
+        output_dir (str): Directory where to write the output file.
 
     Returns:
-        tuple[str, dict[list], dict[list]]: [0] Article fulltext, [1] offsets and
-            [2] coordinates of token regions.
+        tuple[str, str]: sorting key [0] and path to serialized file [1].
     """
 
-    coordinates = {"regions": [], "tokens": []}
-
-    offsets = {"line": [], "para": [], "region": []}
-
-    if string is None:
-        string = ""
-
-    # in order to be able to keep line break information
-    # we iterate over a list of lists (lines of tokens)
-    for region in page:
-
-        if len(string) > 0:
-            offsets["region"].append(len(string))
-
-        coordinates["regions"].append(region["c"])
-
-        for para in region["p"]:
-
-            if len(string) > 0:
-                offsets["para"].append(len(string))
-
-            for line in para["l"]:
-
-                for n, token in enumerate(line["t"]):
-                    region = {}
-                    if "c" not in token:
-                        print(f"'c' was not present in token: {token}, line: {line}")
-                        continue
-                    region["c"] = token["c"]
-                    region["s"] = len(string)
-
-                    if "hy" in token:
-                        region["l"] = len(token["tx"][:-1]) - 1
-                        region["hy1"] = True
-                    elif "nf" in token:
-                        region["l"] = len(token["nf"])
-                        region["hy2"] = True
-
-                        token_text = token["nf"] if token["nf"] is not None else ""
-                    else:
-                        if token["tx"]:
-                            region["l"] = len(token["tx"])
-                        else:
-                            region["l"] = 0
-
-                        token_text = token["tx"] if token["tx"] is not None else ""
-
-                    # don't add the tokens corresponding to the first part of a hyphenated word
-                    if "hy" not in token:
-                        next_token = (
-                            line["t"][n + 1]["tx"] if n != len(line["t"]) - 1 else None
-                        )
-                        ws = insert_whitespace(
-                            token["tx"],
-                            next_t=next_token,
-                            prev_t=line["t"][n - 1]["tx"] if n != 0 else None,
-                            lang=language,
-                        )
-                        string += f"{token_text} " if ws else f"{token_text}"
-
-                    # if token is the last in a line
-                    if n == len(line["t"]) - 1:
-                        if "hy" in token:
-                            offsets["line"].append(region["s"])
-                        else:
-                            token_length = len(token["tx"]) if token["tx"] else 0
-                            offsets["line"].append(region["s"] + token_length)
-
-                    coordinates["tokens"].append(region)
-
-    return (string, coordinates, offsets)
-
-
-def rebuild_text_passim(
-    page: list[dict], language: Optional[str], string: Optional[str] = None
-) -> tuple[str, list[dict]]:
-    """The text rebuilding function from pages for passim.
-
-    If `string` is not `None`, then the rebuilt text is appended to it.
-
-    Args:
-        page (list[dict]): Newspaper page conforming to the impresso JSON pages schema.
-        language (str | None): Language of the article being rebuilt
-        string (str | None, optional): Rebuilt text of previous page. Defaults to None.
-
-    Returns:
-        tuple[str, list[dict]]: [0] article fulltext, [1] coordinates of token regions.
-    """
-
-    regions = []
-
-    if string is None:
-        string = ""
-
-    # in order to be able to keep line break information
-    # we iterate over a list of lists (lines of tokens)
-
-    for region in page:
-
-        for para in region["p"]:
-
-            for line in para["l"]:
-
-                for n, token in enumerate(line["t"]):
-
-                    region_string = ""
-
-                    if "c" not in token:
-                        # if the coordniates are missing, they should be skipped
-                        logger.debug("Missing 'c' in token %s", token)
-                        print(f"Missing 'c' in token {token}")
-                        continue
-
-                    # each page region is a token
-                    output_region = {
-                        "start": None,
-                        "length": None,
-                        "coords": {
-                            "x": token["c"][0],
-                            "y": token["c"][1],
-                            "w": token["c"][2],
-                            "h": token["c"][3],
-                        },
-                    }
-
-                    if len(string) == 0:
-                        output_region["start"] = 0
-                    else:
-                        output_region["start"] = len(string)
-
-                    # if token is the last in a line
-                    if n == len(line["t"]) - 1:
-                        tmp = f"{token['tx']}\n"
-                        region_string += tmp
-                    else:
-                        ws = insert_whitespace(
-                            token["tx"],
-                            next_t=line["t"][n + 1]["tx"],
-                            prev_t=line["t"][n - 1]["tx"] if n != 0 else None,
-                            lang=language,
-                        )
-                        region_string += f"{token['tx']} " if ws else f"{token['tx']}"
-
-                    string += region_string
-                    output_region["length"] = len(region_string)
-                    regions.append(output_region)
-
-    return (string, regions)
-
-
-def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
-    """Rebuilds the text of an article content-item given its metadata as input.
-
-    Note:
-        This rebuild function is thought especially for ingesting the newspaper
-        data into our Solr index.
-
-    Args:
-        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
-
-    Returns:
-        dict[str, Any]: The rebuilt content-item following the Impresso JSON Schema.
-    """
-    t = Timer()
-
-    article_id = content_item["m"]["id"]
-    logger.debug("Started rebuilding article %s", article_id)
-
-    issue_id = "-".join(article_id.split("-")[:-1])
-
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
-    }
-
-    year, month, day, _, ci_num = article_id.split("-")[1:]
-    d = datetime.date(int(year), int(month), int(day))
-
-    if content_item["m"]["tp"] in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
-    else:
-        mapped_type = content_item["m"]["tp"]
-
-    fulltext = ""
-    linebreaks = []
-    parabreaks = []
-    regionbreaks = []
-
-    article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
-
-    # if the reading order is not defined, use the number associated to each CI
-    reading_order = (
-        content_item["m"]["ro"] if "ro" in content_item["m"] else int(ci_num[1:])
-    )
-
-    article = {
-        "id": article_id,
-        "pp": content_item["m"]["pp"],
-        "d": d.isoformat(),
-        "olr": False if mapped_type is None else True,
-        "ts": timestamp(),
-        "lg": article_lang,
-        "tp": mapped_type,
-        "ro": reading_order,
-        "ppreb": [],
-        "lb": [],
-        "cc": content_item["m"]["cc"],
-    }
-
-    if mapped_type == "img":
-        article["iiif_link"] = reconstruct_iiif_link(content_item)
-
-    if "t" in content_item["m"]:
-        article["t"] = content_item["m"]["t"]
-
-    if mapped_type != "img":
-        for n, page_no in enumerate(article["pp"]):
-
-            page = content_item["pprr"][n]
-
-            if fulltext == "":
-                fulltext, coords, offsets = rebuild_text(page, article_lang)
-            else:
-                fulltext, coords, offsets = rebuild_text(page, article_lang, fulltext)
-
-            linebreaks += offsets["line"]
-            parabreaks += offsets["para"]
-            regionbreaks += offsets["region"]
-
-            page_doc = {
-                "id": page_file_names[page_no].replace(".json", ""),
-                "n": page_no,
-                "t": coords["tokens"],
-                "r": coords["regions"],
-            }
-            article["ppreb"].append(page_doc)
-        article["lb"] = linebreaks
-        article["pb"] = parabreaks
-        article["rb"] = regionbreaks
-        logger.debug("Done rebuilding article %s (Took %s)", article_id, t.stop())
-        article["ft"] = fulltext
-
-    return article
-
-
-def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
-    """Rebuilds the text of an article content-item to be used with passim.
-
-    Args:
-        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
-
-    Returns:
-        dict[str, Any]: The rebuilt content-item built for passim.
-    """
-    np, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
-
-    article_id = content_item["m"]["id"]
-    logger.debug("Started rebuilding article %s", article_id)
-    issue_id = "-".join(article_id.split("-")[:-1])
-
-    page_file_names = {
-        p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]
-    }
-
-    article_lang = content_item["m"]["l"] if "l" in content_item["m"] else None
-
-    if content_item["m"]["tp"] in TYPE_MAPPINGS:
-        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
-    else:
-        mapped_type = content_item["m"]["tp"]
-
-    passim_document = {
-        "series": np,
-        "date": f"{date[0]}-{date[1]}-{date[2]}",
-        "id": content_item["m"]["id"],
-        "cc": content_item["m"]["cc"],
-        "tp": mapped_type,
-        "lg": article_lang,
-        "pages": [],
-    }
-
-    if "t" in content_item["m"]:
-        passim_document["title"] = content_item["m"]["t"]
-
-    fulltext = ""
-    for n, page_no in enumerate(content_item["m"]["pp"]):
-
-        page = content_item["pprr"][n]
-
-        if fulltext == "":
-            fulltext, regions = rebuild_text_passim(page, article_lang)
-        else:
-            fulltext, regions = rebuild_text_passim(page, article_lang, fulltext)
-
-        page_doc = {
-            "id": page_file_names[page_no].replace(".json", ""),
-            "seq": page_no,
-            "regions": regions,
-        }
-        passim_document["pages"].append(page_doc)
-
-    passim_document["text"] = fulltext
-
-    return passim_document
-
-
-def compress(key, json_files, output_dir):
-    """Merges a set of JSON line files into a single compressed archive.
-
-    :param key: signature of the newspaper issue (e.g. GDL-1900)
-    :type key: str
-    :param json_files: input JSON line files
-    :type json_files: list
-    :param output_dir: directory where to write the output file
-    :type outp_dir: str
-    :return: a tuple with: sorting key [0] and path to serialized file [1].
-    :rytpe: tuple
-
-    .. note::
-
-        `sort_key` is expected to be the concatenation of newspaper ID and year
-        (e.g. GDL-1900).
-    """
-
-    newspaper, year = key.split("-")
-    filename = f"{newspaper}-{year}.jsonl.bz2"
+    alias, year = key.split("-")
+    filename = f"{alias}-{year}.jsonl.bz2"
     filepath = os.path.join(output_dir, filename)
     logger.info("Compressing %s JSON files into %s", len(json_files), filepath)
     print(f"Compressing {len(json_files)} JSON files into {filepath}")
@@ -423,11 +81,9 @@ def compress(key, json_files, output_dir):
         for json_file in json_files:
             with open(json_file, "r", encoding="utf-8") as inpf:
                 reader = jsonlines.Reader(inpf)
-                articles = list(reader)
-                writer.write_all(articles)
-            logger.info(
-                "Written %s docs from %s to %s", len(articles), json_file, filepath
-            )
+                cis = list(reader)
+                writer.write_all(cis)
+            logger.info("Written %s docs from %s to %s", len(cis), json_file, filepath)
 
         writer.close()
 
@@ -441,27 +97,23 @@ def compress(key, json_files, output_dir):
     return (key, filepath)
 
 
-def upload(sort_key, filepath, bucket_name=None):
-    """Uploads a file to a given S3 bucket.
+def upload(sort_key: str, filepath: str, bucket_name: str | None = None) -> tuple[bool, str]:
+    """Upload a file to a given S3 bucket.
 
-    :param sort_key: the key used to group articles (e.g. "GDL-1900")
-    :type sort_key: str
-    :param filepath: path of the file to upload to S3
-    :type filepath: str
-    :param bucket_name: name of S3 bucket where to upload the file
-    :type bucket_name: str
-    :return: a tuple with [0] whether the upload was successful (boolean) and
-        [1] the path of the uploaded file (string)
+    Args:
+        sort_key (str): alias-year key used to group CIs (e.g. "GDL-1900").
+        filepath (str): Path of the file to upload to S3.
+        bucket_name (str | None, optional): Name of S3 bucket where to upload the file.
+            Defaults to None.
 
-    .. note::
-
-        `sort_key` is expected to be the concatenation of newspaper ID and year
-        (e.g. GDL-1900).
+    Returns:
+        tuple[bool, str]:  a tuple with [0] whether the upload was successful (boolean) and
+            [1] the path of the uploaded file (string)
     """
     # create connection with bucket
     # copy contents to s3 key
-    newspaper, _ = sort_key.split("-")
-    key_name = f"{newspaper}/{os.path.basename(filepath)}"
+    alias, _ = sort_key.split("-")
+    key_name = f"{alias}/{os.path.basename(filepath)}"
     if "/" in bucket_name:
         # if the provided bucket also contains a partition, add it to the key name
         bucket_name, partition = bucket_name.split("/")
@@ -470,76 +122,53 @@ def upload(sort_key, filepath, bucket_name=None):
     try:
         bucket = s3.Bucket(bucket_name)
         bucket.upload_file(filepath, key_name)
-        logger.info("Uploaded %s to %s", filepath, key_name)
+        msg = f"Uploaded {filepath} to {key_name}"
+        print(msg)
+        logger.info(msg)
         return True, filepath
     except Exception as e:
-        logger.error(e)
-        logger.error("The upload of %s failed with error %s", filepath, e)
+        err_msg = f"The upload of {filepath} failed with error {e}"
+        logger.error(err_msg)
+        print(err_msg)
         return False, filepath
 
 
-def cleanup(upload_success, filepath):
-    """Removes a file if it has been successfully uploaded to S3.
-    :param upload_success: whether the upload was successful
-    :type upload_success: bool
-    :param filepath: path to the uploaded file
-    :type filepath: str
+def cleanup(upload_success: bool, filepath: str) -> None:
+    """Remove a file from local fs if it has been successfully uploaded to S3.
+
+    Args:
+        upload_success (bool): Whether the upload was successful
+        filepath (str): Oath to the uploaded file
     """
     if upload_success and os.path.exists(filepath):
         try:
             os.remove(filepath)
             logger.info("Removed temporary file %s", filepath)
         except Exception as e:
-            logger.warning("Error %s occurred when removing %s", e, filepath)
+            msg = f"Error {e} occurred when removing {filepath}"
+            print(msg)
+            logger.warning(msg)
     else:
         logger.info("Not removing %s as upload has failed", filepath)
 
 
-def _article_has_problem(article):
-    """Helper function to keep articles with problems.
+def filter_and_process_cis(issues_bag, input_bucket: str, issue_medium: str, _format: str):
+    """Process the issues into rebuilt CIs
 
-    :param article: input article
-    :type article: dict
-    :return: `True` or `False`
-    :rtype: boolean
-    """
-    return article["has_problem"]
+    Args:
+        issues_bag (Dask Bag): Dask Bag containing all the issues to filter and rebuild.
+        input_bucket (str): Input bucket where to find the supports (pages or audios).
+        issue_medium (str): Source medium of the given issue.
+        _format (str): Target rebuilt format (should be one of "solr" and "passim").
 
+    Raises:
+        NotImplementedError: The format is not valid
 
-def _article_without_problem(article):
-    """Helper function to keep articles without problems.
-
-    :param article: input article
-    :type article: dict
-    :return: `True` or `False`
-    :rtype: boolean
-    """
-    if article["has_problem"]:
-        logger.warning("Article %s won't be rebuilt.", article["m"]["id"])
-    return not article["has_problem"]
-
-
-def rebuild_issues(
-    issues, input_bucket, output_dir, dask_client, _format="solr", filter_language=None
-):
-    """Rebuild a set of newspaper issues into a given format.
-
-    :param issues: issues to rebuild
-    :type issues: list of `IssueDir` objects
-    :param input_bucket: name of input s3 bucket
-    :type input_bucket: str
-    :param outp_dir: local directory where to store the rebuilt files
-    :type outp_dir: str
-    :return: a list of tuples (see return type of `upload`)
-    :rtype: list of tuples
+    Returns:
+        Dask Bag: Resulting rebuilt CIs.
     """
 
-    def mkdir(path):
-        if not os.path.exists(path):
-            pathlib.Path(path).mkdir(parents=True, exist_ok=True)
-        else:
-            for f in os.listdir(path):
-                os.remove(os.path.join(path, f))
+    is_audio = issue_medium == "audio" if SourceMedium.has_value(issue_medium) else None
 
     # determine which rebuild function to apply
     if _format == "solr":
@@ -549,24 +178,16 @@ def rebuild_issues(
     else:
         raise NotImplementedError
 
-    # create a temporary output directory named after newspaper and year
-    # e.g. IMP-1994
-    issue, _ = issues[0]
-    key = f"{issue.journal}-{issue.date.year}"
-    issue_dir = os.path.join(output_dir, key)
-    mkdir(issue_dir)
-
-    # warning about large graph comes here
-    print("Fleshing out articles by issue...")
-    issues_bag = db.from_sequence(issues, partition_size=3)
-
+    support_property = "rr" if is_audio else "pp"
     faulty_issues = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) == 0)
+        issues_bag.filter(lambda i: len(i[1][support_property]) == 0)
         .map(lambda i: i[1])
         .pluck("id")
         .compute()
     )
-    msg = f"Issues with no pages (will be skipped): {faulty_issues}"
+
+    val_to_print = "audio record" if is_audio else "pages"
+    msg = f"{len(faulty_issues)} Issues with no {val_to_print} (will be skipped): {faulty_issues}"
     logger.debug(msg)
     print(msg)
     del faulty_issues
@@ -574,25 +195,76 @@ def rebuild_issues(
     logger.debug(msg)
     print(msg)
 
-    articles_bag = (
-        issues_bag.filter(lambda i: len(i[1]["pp"]) > 0)
-        .starmap(read_issue_pages, bucket=input_bucket)
-        .starmap(rejoin_articles)
+    cis_bag = (
+        issues_bag.filter(lambda i: len(i[1][support_property]) > 0)
+        .starmap(read_issue_supports, is_audio=is_audio, bucket=input_bucket)
+        .starmap(rejoin_cis)
         .flatten()
         .persist()
     )
 
-    faulty_articles_n = (
-        articles_bag.filter(_article_has_problem).pluck("m").pluck("id").compute()
-    )
-    msg = f"Skipped articles: {faulty_articles_n}"
+    faulty_cis_n = cis_bag.filter(ci_has_problem).pluck("m").pluck("id").compute()
+    msg = f"Skipped content-items: {faulty_cis_n}"
     logger.debug(msg)
     print(msg)
-    del faulty_articles_n
+    del faulty_cis_n
 
-    articles_bag = (
-        articles_bag.filter(_article_without_problem).map(rebuild_function).persist()
-    )
+    cis_bag = cis_bag.filter(ci_without_problem).map(rebuild_function).persist()
+
+    return cis_bag
+
+
+def rebuild_issues(
+    issues: list[IssueDir],
+    input_bucket: str,
+    output_dir: str,
+    dask_client: Client,
+    _format: str = "solr",
+    filter_language: list[str] = None,
+) -> tuple[str, list, list[dict[str, int | str]]]:
+    """Rebuild a set of newspaper issues into a given format.
+
+    Args:
+        issues (list[IssueDir]): Issues to rebuild.
+        input_bucket (str): Name of input s3 bucket.
+        output_dir (str): Local directory where to store the rebuilt files.
+        dask_client (Client): Dask client object.
+        _format (str, optional): Format in which to rebuild the CIs. Defaults to "solr".
+        filter_language (list[str], optional): List of languages to filter. Defaults to None.
+
+    Returns:
+        tuple[str, list, list[dict[str, int | str]]]: alias-year key for the issues, resulting
+            files dumped and startistics computed on them for the manifest.
+    """
+
+    def mkdir(path):
+        if not os.path.exists(path):
+            pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+        else:
+            for f in os.listdir(path):
+                os.remove(os.path.join(path, f))
+
+    # create a temporary output directory named after media title and year
+    # e.g. IMP-1994
+    issue_dir, issue_json = issues[0]
+    key = f"{issue_dir.alias}-{issue_dir.date.year}"
+    issue_out_dir = os.path.join(output_dir, key)
+    mkdir(issue_out_dir)
+
+    # identify the source type and medium of the issue (and thus media title)
+    if "st" not in issue_json or "sm" not in issue_json:
+        # when the source type and medium are not in the issue,
+        # we know it's a newspaper (old format), add them
+        issue_json["st"] = SourceType.NP.value
+        issue_json["sm"] = SourceMedium.PT.value
+
+    issue_medium = issue_json["sm"]
+
+    # warning about large graph comes here
+    print("Fleshing out articles by issue...")
+    issues_bag = db.from_sequence(issues, partition_size=3)
+
+    cis_bag = filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format)
 
     def has_language(ci):
         if "lg" not in ci:
@@ -600,51 +272,24 @@ def rebuild_issues(
         return ci["lg"] in filter_language
 
     if filter_language:
-        filtered_articles = articles_bag.filter(has_language).persist()
-        print(f"filtered_articles.count().compute(): {filtered_articles.count().compute()}")
-        stats_for_issues = compute_stats_in_rebuilt_bag(filtered_articles, key)
-        result = filtered_articles.map(json.dumps).to_textfiles(f"{issue_dir}/*.json")
+        filtered_cis = cis_bag.filter(has_language).persist()
+        print(f"filtered_cis.count().compute(): {filtered_cis.count().compute()}")
+        # TODO provide sm and st to manifest
+        stats_for_issues = compute_stats_in_rebuilt_bag(filtered_cis, key, title=issue_dir.alias)
+        result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
     else:
-        stats_for_issues = compute_stats_in_rebuilt_bag(articles_bag, key)
-        result = articles_bag.map(json.dumps).to_textfiles(f"{issue_dir}/*.json")
+        # TODO provide sm and st to manifest
+        print(
+            f"cis_bag.count().compute(): {cis_bag.count().compute()}, out_dirs: {issue_out_dir}/*.json, cis_bag.take(3): {cis_bag.take(3)}"
+        )
+        stats_for_issues = compute_stats_in_rebuilt_bag(cis_bag, key, title=issue_dir.alias)
+        result = cis_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
 
     dask_client.cancel(issues_bag)
     logger.info("done.")
     print("done.")
 
     return (key, result, stats_for_issues)
-
-
-def init_logging(level, file):
-    """Initialises the root logger.
-
-    :param level: desired level of logging (default: logging.INFO)
-    :type level: int
-    :param file:
-    :type file: str
-    :return: the initialised logger
-    :rtype: `logging.RootLogger`
-
-    .. note::
-
-        It's basically a duplicate of `impresso_commons.utils.init_logger` but
-        I could not get it to work properly, so keeping this duplicate.
-    """
-    # Initialise the logger
-    root_logger = logging.getLogger("")
-    root_logger.setLevel(level)
-
-    if file is not None:
-        handler = logging.FileHandler(filename=file, mode="w")
-    else:
-        handler = logging.StreamHandler()
-
-    formatter = logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
-    handler.setFormatter(formatter)
-    root_logger.addHandler(handler)
-    root_logger.info("Logger successfully initialised")
-
-    return root_logger
 
 
 def main() -> None:
@@ -660,7 +305,7 @@ def main() -> None:
 
     arguments = docopt(__doc__)
     clear_output = arguments["--clear"]
-    bucket_name = f's3://{arguments["--input-bucket"]}'
+    input_bucket_name = arguments["--input-bucket"]
     output_bucket_name = arguments["--output-bucket"]
     outp_dir = arguments["--output-dir"]
     filter_config_file = arguments["--filter-config"]
@@ -672,16 +317,16 @@ def main() -> None:
     languages = arguments["--languages"]
     repo_path = arguments["--git-repo"]
     temp_dir = arguments["--temp-dir"]
-    prev_manifest_path = (
-        arguments["--prev-manifest"] if arguments["--prev-manifest"] else None
-    )
+    prev_manifest_path = arguments["--prev-manifest"] if arguments["--prev-manifest"] else None
+
+    # bucket_name = f"s3://{input_bucket_name}"
 
     signal.signal(signal.SIGINT, signal_handler)
 
     if languages:
         languages = languages.split(",")
 
-    init_logging(log_level, log_file)
+    init_logger(logger, log_level, log_file)
 
     # clean output directory if existing
     if outp_dir is not None and os.path.exists(outp_dir):
@@ -709,7 +354,7 @@ def main() -> None:
     manifest = DataManifest(
         data_stage=data_stage,
         s3_output_bucket=output_bucket_name,
-        s3_input_bucket=bucket_name,
+        s3_input_bucket=input_bucket_name,
         git_repo=git.Repo(repo_path),
         temp_dir=temp_dir,
         previous_mft_path=prev_manifest_path if prev_manifest_path != "" else None,
@@ -724,25 +369,25 @@ def main() -> None:
                 proc_b_msg = f"Processing batch {n + 1}/{len(config)} [{batch}]"
                 logger.info(proc_b_msg)
                 print(proc_b_msg)
-                newspaper = list(batch.keys())[0]
-                start_year, end_year = batch[newspaper]
+                alias = list(batch.keys())[0]
+                start_year, end_year = batch[alias]
 
                 for year in range(start_year, end_year):
                     proc_year_msg = f"Processing year {year} \nRetrieving issues..."
                     logger.info(proc_year_msg)
                     print(proc_year_msg)
 
-                    try:
-                        input_issues = read_s3_issues(newspaper, year, bucket_name)
-                    except FileNotFoundError:
-                        fnf_msg = f"{newspaper}-{year} not found in {bucket_name}"
+                    input_issues = read_s3_issues(alias, year, input_bucket_name)
+                    if len(input_issues) == 0:
+                        # read_s3_issues does not raise an exception anymore
+                        fnf_msg = f"{alias}-{year} not found in {input_bucket_name}"
                         logger.info(fnf_msg)
                         print(fnf_msg)
                         continue
 
                     issue_key, json_files, year_stats = rebuild_issues(
                         issues=input_issues,
-                        input_bucket=bucket_name,
+                        input_bucket=input_bucket_name,
                         output_dir=outp_dir,
                         dask_client=client,
                         _format=output_format,
@@ -751,24 +396,25 @@ def main() -> None:
                     rebuilt_issues.append((issue_key, json_files))
                     del input_issues
 
-                    logger.debug("year_stats: %s", year_stats)
-                    manifest.add_by_title_year(newspaper, year, year_stats[0])
-                    titles.add(newspaper)
+                    msg = f"{issue_key} - year_stats: {year_stats}"
+                    print(msg)
+                    logger.debug(msg)
+                    manifest.add_by_title_year(alias, year, year_stats[0])
+                    titles.add(alias)
 
                 msg = (
-                    f"Uploading {len(rebuilt_issues)} rebuilt bz2files "
-                    f"to {output_bucket_name}"
+                    f"Uploading {len(rebuilt_issues)} rebuilt bz2files " f"to {output_bucket_name}"
                 )
                 logger.info(msg)
                 print(msg)
 
-                b = (
+                future = (
                     db.from_sequence(rebuilt_issues)
                     .starmap(compress, output_dir=outp_dir)
                     .starmap(upload, bucket_name=output_bucket_name)
                     .starmap(cleanup)
-                )
-                future = b.persist()
+                ).persist()
+
                 progress(future)
                 # clear memory of objects once computations are done
                 client.restart()

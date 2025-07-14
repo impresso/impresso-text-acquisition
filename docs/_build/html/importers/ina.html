@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>INA AudioDoc importer &mdash; Impresso Text Preparation  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Generic TETML importer" href="tetml.html" />
+    <link rel="prev" title="SWISSINFO PDF-embedded importer" href="swissinfo.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Impresso Text Preparation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">Importers</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">INA AudioDoc importer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.ina.classes">INA Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.ina.detect">INA Detect functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.ina.helpers">INA helper functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#writing-a-new-importer">Writing a new importer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../rebuilders.html">Rebuilders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Impresso Text Preparation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../importers.html">Importers</a></li>
+      <li class="breadcrumb-item active">INA AudioDoc importer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/importers/ina.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ina-audiodoc-importer">
+<h1>INA AudioDoc importer<a class="headerlink" href="#ina-audiodoc-importer" title="Link to this heading"></a></h1>
+<p>This importer is a special case of AudioDoc format which is an output of the Whisper Algorithm.
+It was developed to handle ASR radio data provided by the <a class="reference external" href="https://www.ina.fr/">Institut National de l’Audiovisuel (INA)</a> of France.</p>
+<section id="module-text_preparation.importers.ina.classes">
+<span id="ina-custom-classes"></span><h2>INA Custom classes<a class="headerlink" href="#module-text_preparation.importers.ina.classes" title="Link to this heading"></a></h2>
+<p>This module contains the definition of INA importer classes.</p>
+<p>The classes define Issues and Audio record objects which convert ASR data
+to a unified canoncial format.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.classes.</span></span><span class="sig-name descname"><span class="pre">INABroadcastAudioRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord" title="Link to this definition"></a></dt>
+<dd><p>Radio-Broadcast Audio Record for INA’s ASR format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical Audio Record ID (e.g. <code class="docutils literal notranslate"><span class="pre">CFCE-1900-01-02-a-r0001</span></code>).</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Record number (for compatibility with other source mediums).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Audio Record ID (e.g. <code class="docutils literal notranslate"><span class="pre">CFCE-1900-01-02-a-r0001</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.number" title="Link to this definition"></a></dt>
+<dd><p>Record number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.record_data">
+<span class="sig-name descname"><span class="pre">record_data</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.record_data" title="Link to this definition"></a></dt>
+<dd><p>Audio record data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.add_issue">
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to an audio record object its parent, i.e. the canonical issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the canonical issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.create_iiif">
+<span class="sig-name descname"><span class="pre">create_iiif</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.create_iiif" title="Link to this definition"></a></dt>
+<dd><p>Create the IIIF URI for this audio record from all its parts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Created IIIF URI for this audio record.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.parse" title="Link to this definition"></a></dt>
+<dd><p>Process the audio record XML file and transform into canonical AudioRecord format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This lazy behavior means that the record contents are not processed
+upon creation of the audio record object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
+method is called.</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.xml">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.xml" title="Link to this definition"></a></dt>
+<dd><p>Read XML file of the audio record and create a BeautifulSoup object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BeautifulSoup object with XML of the audio record.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>BeautifulSoup</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastIssue">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.classes.</span></span><span class="sig-name descname"><span class="pre">INABroadcastIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastIssue" title="Link to this definition"></a></dt>
+<dd><p>Radio-Broadcast Issue for INA’s OCR format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Identifying information about the issue.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastIssue.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">[alias]-1940-01-05-a</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastIssue.edition" title="Link to this definition"></a></dt>
+<dd><p>Lower case letter ordering issues of the same day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastIssue.alias" title="Link to this definition"></a></dt>
+<dd><p>Media title unique alias (identifier or name).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastIssue.path" title="Link to this definition"></a></dt>
+<dd><p>Path to directory containing the issue’s OCR data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastIssue.date" title="Link to this definition"></a></dt>
+<dd><p>Publication date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastIssue.issue_data" title="Link to this definition"></a></dt>
+<dd><p>Issue data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastIssue.audio_records">
+<span class="sig-name descname"><span class="pre">audio_records</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastIssue.audio_records" title="Link to this definition"></a></dt>
+<dd><p>list of :obj: <cite>INABroadcastAudioRecord</cite> instances from this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-text_preparation.importers.ina.detect">
+<span id="ina-detect-functions"></span><h2>INA Detect functions<a class="headerlink" href="#module-text_preparation.importers.ina.detect" title="Link to this heading"></a></h2>
+<p>This module contains helper functions to find INA ASR data to import.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.detect.INAIssueDir">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.detect.</span></span><span class="sig-name descname"><span class="pre">INAIssueDir</span></span><a class="headerlink" href="#text_preparation.importers.ina.detect.INAIssueDir" title="Link to this definition"></a></dt>
+<dd><p>A light-weight data structure to represent a radio audio broadcast issue.</p>
+<p>This named tuple contains basic metadata about a newspaper issue. They
+can then be used to locate the relevant data in the filesystem or to create
+canonical identifiers for the issue and its pages.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case of bulletins published multiple times per day, a lowercase letter
+is used to indicate the edition number: ‘a’ for the first, ‘b’ for the
+second, etc.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alias</strong> (<em>str</em>) – Bulletin alias.</p></li>
+<li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date or issue.</p></li>
+<li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.).</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing the issue’s OCR data.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">INAIssueDir</span><span class="p">(</span>
+<span class="go">    alias=&#39;SOC_CJ&#39;,</span>
+<span class="go">    date=datetime.date(1940, 07, 22),</span>
+<span class="go">    edition=&#39;a&#39;,</span>
+<span class="go">    path=&#39;./SOC_CJ/1940/07/22/a&#39;,</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.detect.detect_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.ina.detect.detect_issues" title="Link to this definition"></a></dt>
+<dd><p>Detect INA Radio broadcasts to import within the filesystem.</p>
+<p>This function expects the directory structure that we created for Swissinfo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of <cite>INAIssueDir</cite> instances, to be imported.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[INAIssueDir]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.detect.dir2issue">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.detect.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.detect.dir2issue" title="Link to this definition"></a></dt>
+<dd><p>Create a <cite>INAIssueDir</cite> object from a directory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is called internally by <cite>detect_issues</cite></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – The path of the issue.</p></li>
+<li><p><strong>access_rights</strong> (<em>dict</em>) – Dictionary for access rights.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New <cite>INAIssueDir</cite> object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>INAIssueDir | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.detect.select_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.detect.select_issues" title="Link to this definition"></a></dt>
+<dd><p>Detect selectively issues to import.</p>
+<p>The behavior is very similar to <a class="reference internal" href="#text_preparation.importers.ina.detect.detect_issues" title="text_preparation.importers.ina.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
+difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
+import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
+further details on how to configure filtering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of <cite>INAIssueDir</cite> to import.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[INAIssueDir] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-text_preparation.importers.ina.helpers">
+<span id="ina-helper-functions"></span><h2>INA helper functions<a class="headerlink" href="#module-text_preparation.importers.ina.helpers" title="Link to this heading"></a></h2>
+<p>Helper functions used by the INA Importer.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.helpers.extract_time_coords_from_elem">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.helpers.</span></span><span class="sig-name descname"><span class="pre">extract_time_coords_from_elem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.helpers.extract_time_coords_from_elem" title="Link to this definition"></a></dt>
+<dd><p>Extract the time coordinates from a given speech element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>elem</strong> (<em>Tag</em>) – Element from the beautifulsoup object extracted from the ASR.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – The element did not have one of the expected names.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The time coordinates for the given ASR element.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list[float] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.helpers.get_utterances">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.helpers.</span></span><span class="sig-name descname"><span class="pre">get_utterances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BeautifulSoup</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.ina.helpers.get_utterances" title="Link to this definition"></a></dt>
+<dd><p>Construct the utterances composed of speech segments for a given record.</p>
+<p>An utterance is a list of consecutive speechsegments with the same speaker ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>xml_doc</strong> (<em>BeautifulSoup</em>) – Contents of the ASR xml document of the record.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of utterances, composed of speechsegments for the record.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[dict]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="swissinfo.html" class="btn btn-neutral float-left" title="SWISSINFO PDF-embedded importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tetml.html" class="btn btn-neutral float-right" title="Generic TETML importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -5,19 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Utilities &mdash; Impresso Text Preparation  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -47,14 +45,23 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers.html">Importers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rebuilders.html">Rebuilders</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Utilities</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.add_property"><code class="docutils literal notranslate"><span class="pre">add_property()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.coords_to_xy"><code class="docutils literal notranslate"><span class="pre">coords_to_xy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.coords_to_xywh"><code class="docutils literal notranslate"><span class="pre">coords_to_xywh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.draw_box_on_img"><code class="docutils literal notranslate"><span class="pre">draw_box_on_img()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.empty_folder"><code class="docutils literal notranslate"><span class="pre">empty_folder()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.get_issue_schema"><code class="docutils literal notranslate"><span class="pre">get_issue_schema()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.get_page_schema"><code class="docutils literal notranslate"><span class="pre">get_page_schema()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.get_reading_order"><code class="docutils literal notranslate"><span class="pre">get_reading_order()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.read_xml"><code class="docutils literal notranslate"><span class="pre">read_xml()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.rescale_coords"><code class="docutils literal notranslate"><span class="pre">rescale_coords()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.validate_audio_schema"><code class="docutils literal notranslate"><span class="pre">validate_audio_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.validate_issue_schema"><code class="docutils literal notranslate"><span class="pre">validate_issue_schema()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.validate_page_schema"><code class="docutils literal notranslate"><span class="pre">validate_page_schema()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.verify_imported_issues"><code class="docutils literal notranslate"><span class="pre">verify_imported_issues()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.write_error"><code class="docutils literal notranslate"><span class="pre">write_error()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.write_jsonlines_file"><code class="docutils literal notranslate"><span class="pre">write_jsonlines_file()</span></code></a></li>
@@ -114,6 +121,72 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.coords_to_xy">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">coords_to_xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_int</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.utils.coords_to_xy" title="Link to this definition"></a></dt>
+<dd><p>Convert coordinates from xywh format to x1y1x2y2 format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coords</strong> (<em>list</em>) – Coords in xywh format to convert.</p></li>
+<li><p><strong>as_int</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to cast elements to int before conversion.
+Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Resulting converted coordinates, now in x1y1x2y2 format.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int | Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.coords_to_xywh">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">coords_to_xywh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_int</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.utils.coords_to_xywh" title="Link to this definition"></a></dt>
+<dd><p>Convert coordinates from x1y1x2y2 format to xywh format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coords</strong> (<em>list</em>) – Coords in x1y1x2y2 format to convert.</p></li>
+<li><p><strong>as_int</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to cast elements to int before conversion.
+Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Resulting converted coordinates, now in xywh format.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int | Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.draw_box_on_img">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">draw_box_on_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_img_path:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_xy:</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img:</span> <span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/scratch/piconti/.conda/envs/text_prep_build/lib/python3.13/site-packages/PIL/Image.py'&gt;</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/scratch/piconti/.conda/envs/text_prep_build/lib/python3.13/site-packages/PIL/Image.py'&gt;</span></span></span><a class="headerlink" href="#text_preparation.utils.draw_box_on_img" title="Link to this definition"></a></dt>
+<dd><p>Draw a bounding box on an image given coordinates in x1y1x2y2 format.</p>
+<p>The image can either be provided through its path, or as a PIL.Image object (specifically
+if other bboxes have already been drawn on it.)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_img_path</strong> (<em>str</em>) – Path to the image to open as a PIL Image.</p></li>
+<li><p><strong>coords_xy</strong> (<em>list</em>) – Coordinates of the bbox to draw.</p></li>
+<li><p><strong>img</strong> (<em>Image</em><em>, </em><em>optional</em>) – PIL image if already loaded. Defaults to None.</p></li>
+<li><p><strong>width</strong> (<em>int</em><em>, </em><em>optional</em>) – Stroke width for the bbox. Defaults to 10.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Resulting PIL Image with the bbox drawn on it.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.utils.empty_folder">
 <span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">empty_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.utils.empty_folder" title="Link to this definition"></a></dt>
 <dd><p>Empty a directoy given its path if it exists.</p>
@@ -126,15 +199,15 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.utils.get_issue_schema">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">get_issue_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'impresso-schemas/json/newspaper/issue.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Namespace</span></span></span><a class="headerlink" href="#text_preparation.utils.get_issue_schema" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">get_issue_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'impresso-schemas/json/canonical/issue.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Namespace</span></span></span><a class="headerlink" href="#text_preparation.utils.get_issue_schema" title="Link to this definition"></a></dt>
 <dd><p>Generate a list of python classes starting from a JSON schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>schema_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the schema folder. Defaults to
-“impresso-schemas/json/newspaper/issue.schema.json”.</p>
+“impresso-schemas/json/canonical/issue.schema.json”.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Newspaper issue schema based on canonical format.</p>
+<dd class="field-even"><p>Issue schema based on canonical format.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pjs.util.Namespace</p>
@@ -144,15 +217,15 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.utils.get_page_schema">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">get_page_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'impresso-schemas/json/newspaper/page.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Namespace</span></span></span><a class="headerlink" href="#text_preparation.utils.get_page_schema" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">get_page_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'impresso-schemas/json/canonical/page.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Namespace</span></span></span><a class="headerlink" href="#text_preparation.utils.get_page_schema" title="Link to this definition"></a></dt>
 <dd><p>Generate a list of python classes starting from a JSON schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>schema_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the schema folder. Defaults to
-“impresso-schemas/json/newspaper/page.schema.json”.</p>
+“impresso-schemas/json/canonical/page.schema.json”.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Newspaper page schema based on canonical format.</p>
+<dd class="field-even"><p>Printed page schema based on canonical format.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pjs.util.Namespace</p>
@@ -178,6 +251,85 @@ of contents without skipping form page to page.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.read_xml">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">read_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BeautifulSoup</span></span></span><a class="headerlink" href="#text_preparation.utils.read_xml" title="Link to this definition"></a></dt>
+<dd><p>Read the content of an XML file to a BeautifulSoup object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – Path to the XML object.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Resulting BeautifulSoup object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BeautifulSoup</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.rescale_coords">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">rescale_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_res</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">int_sc_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.utils.rescale_coords" title="Link to this definition"></a></dt>
+<dd><p>Scales image or bounding box coordinates based on image size or resolution.</p>
+<p>This function rescales a set of coordinates (<cite>coords</cite>) based on either:
+- The current and target image sizes (<cite>curr_size</cite> and <cite>dest_size</cite>).
+- The current and target resolutions (<cite>curr_res</cite> and <cite>dest_res</cite>).</p>
+<p>If <cite>xy_format</cite> is False and <cite>curr_res</cite>/<cite>dest_res</cite> are not provided, the function
+estimates a resolution-based scaling factor using image sizes (<cite>width * height</cite>).</p>
+<p>When <cite>xy_format</cite> is True, the function assumes coordinates are in “x1, y1, x2, y2” format.
+Otherwise, it assumes “x, y, width, height” format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coords</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – List of coordinates to be scaled.</p></li>
+<li><p><strong>curr_size</strong> (<em>tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Current image size (width, height).
+Required if <cite>xy_format=True</cite>. Defaults to None.</p></li>
+<li><p><strong>dest_size</strong> (<em>tuple</em><em>[</em><em>float</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Target image size (width, height).
+Required if <cite>xy_format=True</cite>. Defaults to None.</p></li>
+<li><p><strong>curr_res</strong> (<em>float</em><em>, </em><em>optional</em>) – Current image resolution (optional for <cite>xy_format=False</cite>).</p></li>
+<li><p><strong>dest_res</strong> (<em>float</em><em>, </em><em>optional</em>) – Target image resolution (optional for <cite>xy_format=False</cite>).</p></li>
+<li><p><strong>xy_format</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, treats coordinates as “x1, y1, x2, y2”.
+If False, treats coordinates as “x, y, width, height”. Defaults to True.</p></li>
+<li><p><strong>int_sc_factor</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, scales using integer division for factor calculation.
+Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Scaled coordinates.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If required parameters (size or resolution) are missing.</p></li>
+<li><p><strong>ValueError</strong> – If <cite>curr_size</cite> or <cite>curr_res</cite> contain zero.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">scale_coords</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">],</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">),</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">))</span>
+<span class="go">[20.0, 40.0, 60.0, 80.0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.validate_audio_schema">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">validate_audio_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">audio_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'schemas/json/canonical/audio_record.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.utils.validate_audio_schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.validate_issue_schema">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">validate_issue_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'schemas/json/canonical/issue.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.utils.validate_issue_schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.validate_page_schema">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">validate_page_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'schemas/json/canonical/page.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.utils.validate_page_schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.utils.verify_imported_issues">

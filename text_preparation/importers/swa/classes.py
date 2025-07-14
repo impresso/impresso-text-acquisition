@@ -10,9 +10,10 @@ import os
 from time import strftime
 from zipfile import ZipFile
 
-from text_preparation.importers.classes import NewspaperIssue, ZipArchive
+from impresso_essentials.utils import SourceType, SourceMedium, timestamp
+from text_preparation.importers.classes import CanonicalIssue, ZipArchive
 from text_preparation.importers.mets_alto.alto import parse_printspace
-from text_preparation.importers.mets_alto.classes import MetsAltoNewspaperPage
+from text_preparation.importers.mets_alto.classes import MetsAltoCanonicalPage
 from text_preparation.importers.swa.detect import SwaIssueDir
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,7 @@ IIIF_MANIFEST_SUFFIX = "manifest"
 SWA_XML_ENCODING = "utf-8-sig"
 
 
-class SWANewspaperPage(MetsAltoNewspaperPage):
+class SWANewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in SWA (Mets/Alto) format.
 
     Args:
@@ -34,7 +35,7 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file.
@@ -47,8 +48,9 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         super().__init__(_id, number, filename, basedir, encoding=SWA_XML_ENCODING)
         self.iiif = os.path.join(IIIF_IMG_BASE_URI, filename.split(".")[0])
         self.page_data["iiif_img_base_uri"] = self.iiif
+        # TODO add page width & height
 
-    def add_issue(self, issue: NewspaperIssue) -> None:
+    def add_issue(self, issue: CanonicalIssue) -> None:
         self.issue = issue
 
     @property
@@ -100,7 +102,7 @@ class SWANewspaperPage(MetsAltoNewspaperPage):
         return os.path.join(self.iiif, "full/full/0/default.jpg")
 
 
-class SWANewspaperIssue(NewspaperIssue):
+class SWANewspaperIssue(CanonicalIssue):
     """Newspaper issue in SWA Mets/Alto format.
 
     Note:
@@ -114,12 +116,11 @@ class SWANewspaperIssue(NewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj:`CanonicalPage` instances from this issue.
         archive (ZipArchive): Archive containing all the Alto XML files for the
             issue's pages.
         temp_pages (list[tuple[str, str]]): Temporary list of pages found for
@@ -139,15 +140,15 @@ class SWANewspaperIssue(NewspaperIssue):
         self._find_pages()
         self._find_content_items()
 
-        iiif_manifest = os.path.join(
-            IIIF_PRES_BASE_URI, f"{self.id}-issue", IIIF_MANIFEST_SUFFIX
-        )
+        iiif_manifest = os.path.join(IIIF_PRES_BASE_URI, f"{self.id}-issue", IIIF_MANIFEST_SUFFIX)
 
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": self.content_items,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,
             "notes": self._notes,
@@ -169,9 +170,7 @@ class SWANewspaperIssue(NewspaperIssue):
         if os.path.isfile(self.path):
             try:
                 archive = ZipFile(self.path)
-                logger.debug(
-                    "Contents of archive for %s: %s", self.id, archive.namelist()
-                )
+                logger.debug("Contents of archive for %s: %s", self.id, archive.namelist())
                 return ZipArchive(archive, temp_dir)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"

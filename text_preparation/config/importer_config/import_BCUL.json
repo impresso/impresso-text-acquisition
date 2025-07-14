@@ -1,8 +1,8 @@
 {
-    "newspapers": {
+    "titles": {
         "CL": [],
-        "PDN": [], 
-        "PDL": [], 
+        "PDN": [],
+        "PDL": [],
         "TouSuIl": [],
         "GAVi": [],
         "JY2": [],
@@ -13,7 +13,7 @@
         "VVS1": [],
         "MESSAGER": [],
         "PS": []
-      },
-    "exclude_newspapers": [],
+    },
+    "exclude_titles": [],
     "year_only": false
 }

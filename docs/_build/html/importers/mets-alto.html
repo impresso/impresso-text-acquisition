@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -5,19 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Generic Mets/Alto importer &mdash; Impresso Text Preparation  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -48,6 +46,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">Preprocessing</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../importers.html">Importers</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
@@ -64,6 +63,8 @@
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
@@ -108,14 +109,14 @@
 <section id="module-text_preparation.importers.mets_alto.classes">
 <span id="abstract-classes"></span><h2>Abstract classes<a class="headerlink" href="#module-text_preparation.importers.mets_alto.classes" title="Link to this heading"></a></h2>
 <p>This module contains the definition of generic Mets/Alto importer classes.</p>
-<p>The classes define newspaper Issues and Pages objects which convert OCR data in
+<p>The classes define Issues and Pages objects which convert OCR data in
 Mets/Alto format to a unified canoncial format.
 The classes in this module are meant to be subclassed to handle independently
 the parsing for each version of the Mets/Atlo format and their specificities.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.mets_alto.classes.</span></span><span class="sig-name descname"><span class="pre">MetsAltoNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue" title="Link to this definition"></a></dt>
-<dd><p>Newspaper issue in generic Mets/Alto format.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.mets_alto.classes.</span></span><span class="sig-name descname"><span class="pre">MetsAltoCanonicalIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue" title="Link to this definition"></a></dt>
+<dd><p>Canonical issue in generic Mets/Alto format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>New Mets/Alto importers should sub-class this class and implement
@@ -127,8 +128,8 @@ its abstract methods (i.e. <code class="docutils literal notranslate"><span clas
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.id" title="Link to this definition"></a></dt>
 <dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -138,8 +139,8 @@ its abstract methods (i.e. <code class="docutils literal notranslate"><span clas
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.edition">
-<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.edition" title="Link to this definition"></a></dt>
 <dd><p>Lower case letter ordering issues of the same day.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -149,9 +150,9 @@ its abstract methods (i.e. <code class="docutils literal notranslate"><span clas
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.journal">
-<span class="sig-name descname"><span class="pre">journal</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.journal" title="Link to this definition"></a></dt>
-<dd><p>Newspaper unique identifier or name.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.alias" title="Link to this definition"></a></dt>
+<dd><p>Media unique alias (identifier or name).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -160,8 +161,8 @@ its abstract methods (i.e. <code class="docutils literal notranslate"><span clas
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.path">
-<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.path" title="Link to this definition"></a></dt>
 <dd><p>Path to directory containing the issue’s OCR data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -171,8 +172,8 @@ its abstract methods (i.e. <code class="docutils literal notranslate"><span clas
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.date">
-<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.date" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.date" title="Link to this definition"></a></dt>
 <dd><p>Publication date of issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -182,8 +183,8 @@ its abstract methods (i.e. <code class="docutils literal notranslate"><span clas
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.issue_data">
-<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.issue_data" title="Link to this definition"></a></dt>
 <dd><p>Issue data according to canonical format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -193,9 +194,9 @@ its abstract methods (i.e. <code class="docutils literal notranslate"><span clas
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.pages">
-<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.pages" title="Link to this definition"></a></dt>
-<dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">NewspaperPage</span></code> instances from this issue.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.pages" title="Link to this definition"></a></dt>
+<dd><p>list of :obj: <cite>CanonicalPage</cite> instances from this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
@@ -204,19 +205,8 @@ its abstract methods (i.e. <code class="docutils literal notranslate"><span clas
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.rights">
-<span class="sig-name descname"><span class="pre">rights</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.rights" title="Link to this definition"></a></dt>
-<dd><p>Access rights applicable to this issue.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.image_properties">
-<span class="sig-name descname"><span class="pre">image_properties</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.image_properties" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.image_properties">
+<span class="sig-name descname"><span class="pre">image_properties</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.image_properties" title="Link to this definition"></a></dt>
 <dd><p>metadata allowing to convert region
 OCR/OLR coordinates to iiif format compliant ones.</p>
 <dl class="field-list simple">
@@ -227,8 +217,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.ark_id">
-<span class="sig-name descname"><span class="pre">ark_id</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.ark_id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.ark_id">
+<span class="sig-name descname"><span class="pre">ark_id</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.ark_id" title="Link to this definition"></a></dt>
 <dd><p>Issue ARK identifier, for the issue’s pages’ iiif links.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -238,8 +228,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.xml">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue.xml" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.xml">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue.xml" title="Link to this definition"></a></dt>
 <dd><p>Read Mets XML file of the issue and create a BeautifulSoup object.</p>
 <p>During the processing, some IO errors can randomly happen when listing
 the contents of the directory, or opening files, preventing the correct
@@ -265,13 +255,13 @@ if necessary.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.mets_alto.classes.</span></span><span class="sig-name descname"><span class="pre">MetsAltoNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage" title="Link to this definition"></a></dt>
-<dd><p>Newspaper page in generic Alto format.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.mets_alto.classes.</span></span><span class="sig-name descname"><span class="pre">MetsAltoCanonicalPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage" title="Link to this definition"></a></dt>
+<dd><p>Canonical page in generic Alto format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>New Mets/Alto importers should sub-classes this class and implement
-its abstract methods (i.e. <a class="reference internal" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue" title="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_issue()</span></code></a>).</p>
+its abstract methods (i.e. <a class="reference internal" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.add_issue" title="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.add_issue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_issue()</span></code></a>).</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -285,8 +275,8 @@ its abstract methods (i.e. <a class="reference internal" href="#text_preparation
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.id" title="Link to this definition"></a></dt>
 <dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -296,8 +286,8 @@ its abstract methods (i.e. <a class="reference internal" href="#text_preparation
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.number">
-<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.number" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.number" title="Link to this definition"></a></dt>
 <dd><p>Page number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -307,8 +297,8 @@ its abstract methods (i.e. <a class="reference internal" href="#text_preparation
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.page_data">
-<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.page_data" title="Link to this definition"></a></dt>
 <dd><p>Page data according to canonical format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -318,19 +308,19 @@ its abstract methods (i.e. <a class="reference internal" href="#text_preparation
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.issue">
-<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.issue" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.issue" title="Link to this definition"></a></dt>
 <dd><p>Issue this page is from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue">NewspaperIssue</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.filename">
-<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.filename" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.filename" title="Link to this definition"></a></dt>
 <dd><p>Name of the Alto XML page file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -340,8 +330,8 @@ its abstract methods (i.e. <a class="reference internal" href="#text_preparation
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.basedir">
-<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.basedir" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.basedir">
+<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.basedir" title="Link to this definition"></a></dt>
 <dd><p>Base directory where Alto files are located.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -351,8 +341,8 @@ its abstract methods (i.e. <a class="reference internal" href="#text_preparation
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.encoding">
-<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.encoding" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.encoding" title="Link to this definition"></a></dt>
 <dd><p>Encoding of XML file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -362,21 +352,21 @@ its abstract methods (i.e. <a class="reference internal" href="#text_preparation
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.add_issue" title="Link to this definition"></a></dt>
-<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.add_issue">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
 <p>This allows each page to preserve contextual information coming from
-the newspaper issue.</p>
+the canonical issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.parse" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.parse" title="Link to this definition"></a></dt>
 <dd><p>Process the page XML file and transform into canonical Page format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -387,8 +377,8 @@ method is called.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.xml">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperPage.xml" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.xml">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xml</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></em><a class="headerlink" href="#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalPage.xml" title="Link to this definition"></a></dt>
 <dd><p>Read Alto XML file of the page and create a BeautifulSoup object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>

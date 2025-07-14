@@ -9,10 +9,10 @@ import pandas as pd
 
 import regex
 
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
-from text_preparation.importers.classes import NewspaperIssue
+from text_preparation.importers.classes import CanonicalIssue
 from text_preparation.importers.tetml import TetmlNewspaperIssue, TetmlNewspaperPage
 from text_preparation.importers.tetml.parsers import tetml_parser
 from text_preparation.importers.tetml.helpers import compute_bb
@@ -47,6 +47,9 @@ class FedgazNewspaperPage(TetmlNewspaperPage):
         self.page_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "cc": True,
             "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
@@ -54,6 +57,8 @@ class FedgazNewspaperPage(TetmlNewspaperPage):
 
         if not self.page_data["r"]:
             logger.warning("Page %s has no OCR text", self.id)
+
+        # TODO add img width & height
 
 
 class FedgazNewspaperIssue(TetmlNewspaperIssue):
@@ -75,7 +80,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
     """
 
     def __init__(self, issue_dir: IssueDir):
-        NewspaperIssue.__init__(self, issue_dir)
+        CanonicalIssue.__init__(self, issue_dir)
 
         logger.info("Starting to parse %s", self.id)
 
@@ -92,9 +97,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         self._heuristic_article_segmentation(candidates_only=True)
 
         # using canonical ('m') and additional non-canonical ('meta') metadata
-        self.content_items = [
-            {"m": art["m"], "meta": art["meta"]} for art in self.article_data
-        ]
+        self.content_items = [{"m": art["m"], "meta": art["meta"]} for art in self.article_data]
 
         # instantiate the individual pages
         self._find_pages()
@@ -102,10 +105,12 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "s": None,  # TODO: ignore style for the time being
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
+            # "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
-            "ar": self.rights,
         }
 
         logger.info("Finished parsing %s", self.id)
@@ -164,9 +169,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             for can_page, page_content in zip(can_pages, art["pages"]):
                 can_id = f"{self.id}-p{can_page:04}"
                 self.pages.append(
-                    TetmlNewspaperPage(
-                        can_id, can_page, page_content, art["meta"]["tetml_path"]
-                    )
+                    TetmlNewspaperPage(can_id, can_page, page_content, art["meta"]["tetml_path"])
                 )
 
     def _parse_metadata(self, fname="metadata.tsv"):
@@ -174,7 +177,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
         Parse file with additional metadata
         """
 
-        level_journal = self.path.split("/").index(self.journal)
+        level_journal = self.path.split("/").index(self.alias)
         basedir = "/".join(self.path.split("/")[0 : level_journal + 1])
         fpath = os.path.join(basedir, fname)
 
@@ -206,7 +209,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
 
         docid = data["meta"]["id"]
         data["m"]["t"] = self._lookup_article_title(docid)
-        data["m"]["l"] = self._lookup_article_language(docid)
+        data["m"]["lg"] = self._lookup_article_language(docid)
         data["m"]["pp"] = self._lookup_article_pages(docid)
 
         return data
@@ -294,13 +297,7 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             max_cost_total = max(2, int(0.2 * len(title)))
             max_insert = int(0.3 * len(title))
             # scaled by 3 to make insertions very cheap to account for bad OCR
-            fuzzy_cost = (
-                "{i<="
-                + str(max_insert)
-                + ",1i+3d+3s<="
-                + str(max_cost_total * 3)
-                + r"}"
-            )
+            fuzzy_cost = "{i<=" + str(max_insert) + ",1i+3d+3s<=" + str(max_cost_total * 3) + r"}"
             # fuzzy match article headline to locate (bestmatch flag)
             pattern = r"(?b)(" + title + r")" + fuzzy_cost
 

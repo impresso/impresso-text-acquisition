@@ -13,6 +13,7 @@ from typing import Any
 import requests
 from bs4 import BeautifulSoup, Tag
 
+from impresso_essentials.utils import SourceMedium, SourceType, timestamp
 from text_preparation.importers.bcul.helpers import (
     find_mit_file,
     get_page_number,
@@ -21,12 +22,9 @@ from text_preparation.importers.bcul.helpers import (
     verify_issue_has_ocr_files,
     find_page_file_in_dir,
 )
-from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE
-from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +41,7 @@ IIIF_SUFFIX = "info.json"
 IIIF_MANIFEST_SUFFIX = "manifest"
 
 
-class BculNewspaperPage(NewspaperPage):
+class BculNewspaperPage(CanonicalPage):
     """Newspaper page in BCUL (Abbyy) format.
 
     Args:
@@ -56,7 +54,7 @@ class BculNewspaperPage(NewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         path (str): Path to the Abby XML page file.
         iiif_base_uri (str): URI to image IIIF of this page.
     """
@@ -68,18 +66,28 @@ class BculNewspaperPage(NewspaperPage):
         self.page_data = {
             "id": _id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "r": [],  # here go the page regions
             "iiif_img_base_uri": iiif_uri,
         }
 
     @property
-    def xml(self) -> BeautifulSoup:
+    def xml(self) -> BeautifulSoup | None:
+        xml = None
         if self.path.endswith("bz2"):
             with codecs.open(self.path, encoding="bz2") as f:
                 xml = BeautifulSoup(f, "xml")
         elif self.path.endswith("xml"):
             with open(self.path, encoding="utf-8") as f:
                 xml = BeautifulSoup(f, "xml")
+        else:
+            msg = f"{self.id} - self.path ({self.path}) does not end with 'bz2' or 'xml'!"
+            logger.error(msg)
+            print(msg)
+            raise AttributeError(msg)
+
         return xml
 
     @property
@@ -98,7 +106,7 @@ class BculNewspaperPage(NewspaperPage):
         split[-1] = split[-1].replace("p", "i")
         return "-".join(split)
 
-    def add_issue(self, issue: NewspaperIssue) -> None:
+    def add_issue(self, issue: CanonicalIssue) -> None:
         self.issue = issue
 
     def get_ci_divs(self) -> list[Tag]:
@@ -121,7 +129,7 @@ class BculNewspaperPage(NewspaperPage):
         self.page_data["r"] = page_data
 
 
-class BculNewspaperIssue(NewspaperIssue):
+class BculNewspaperIssue(CanonicalIssue):
     """Newspaper Issue in BCUL (Abby) format.
 
     Args:
@@ -130,12 +138,11 @@ class BculNewspaperIssue(NewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj: `CanonicalPage` instances from this issue.
         mit_file (str): Path to the ABBY 'mit' file that contains the OLR.
         is_json (bool): Whether the `mit_file` has the `json` file extension.
         is_xml (bool): Whether the `mit_file` has the `xml` file extension.
@@ -170,8 +177,10 @@ class BculNewspaperIssue(NewspaperIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": self.content_items,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": self.iiif_manifest,
             "n": self._notes,
@@ -192,9 +201,7 @@ class BculNewspaperIssue(NewspaperIssue):
         page_identifier = os.path.basename(page_path).split(".")[0]
         return os.path.join(IIIF_IMG_BASE_URI, page_identifier)
 
-    def query_iiif_api(
-        self, num_tries: int = 0, max_retries: int = 3
-    ) -> dict[str, Any]:
+    def query_iiif_api(self, num_tries: int = 0, max_retries: int = 3) -> dict[str, Any]:
         """Query the Scriptorium IIIF API for the issue's manifest data.
 
         TODO: implement the retry approach with `celery` package or similar.
@@ -210,9 +217,7 @@ class BculNewspaperIssue(NewspaperIssue):
             Exception: If the maximum number of retry attempts is reached.
         """
         try:
-            logger.info(
-                "Submitting request to iiif API for %s: %s", self.id, self.iiif_manifest
-            )
+            logger.info("Submitting request to iiif API for %s: %s", self.id, self.iiif_manifest)
             response = requests.get(self.iiif_manifest, timeout=60)
             if response.status_code == 200:
                 return response.json()["sequences"][0]["canvases"]
@@ -237,9 +242,7 @@ class BculNewspaperIssue(NewspaperIssue):
         logger.error(msg)
         raise requests.exceptions.HTTPError(msg)
 
-    def _get_iiif_link_xml(
-        self, page_number: int, canvases: dict[str, Any]
-    ) -> str | None:
+    def _get_iiif_link_xml(self, page_number: int, canvases: dict[str, Any]) -> str | None:
         """Return iiif image base uri in case `mit` file is in XML.
 
         In this case, the iiif URI to images needs to be fetched from the iiif
@@ -308,9 +311,7 @@ class BculNewspaperIssue(NewspaperIssue):
                     found = True
             if not found:
                 logger.error("Page %s not found in %s", p, self.path)
-                self._notes.append(
-                    f"Page {p} missing: not found in {self.path} or on API."
-                )
+                self._notes.append(f"Page {p} missing: not found in {self.path} or on API.")
 
     def _find_pages_json(self) -> None:
         """Finds the pages when the format for the `mit_file` is JSON.
@@ -336,9 +337,7 @@ class BculNewspaperIssue(NewspaperIssue):
             if page_path is None:
                 # if the page does not exist, skip this page
                 self._notes.append(f"Couldn't find the page corresponding to {file_id}")
-                logger.info(
-                    "%s: Did not find the page for %s skipping.", self.id, file_id
-                )
+                logger.info("%s: Did not find the page for %s skipping.", self.id, file_id)
                 continue
             page_no = get_page_number(f)
             page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
@@ -349,7 +348,7 @@ class BculNewspaperIssue(NewspaperIssue):
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
-        Created NewspaperPage instances are added to pages. Since BCUL has two
+        Created CanonicalPage instances are added to pages. Since BCUL has two
         different formats for the issue level, both need to be handled.
         """
         if self.is_json:
@@ -376,13 +375,13 @@ class BculNewspaperIssue(NewspaperIssue):
             }
             self.content_items.append(ci)
 
+        # TODO - Add legacy!! (Scriptorium Issue # and page # inside legacy)
+
         n = len(self.content_items) + 1
         # Get all images and tables
         for p in sorted(self.pages, key=lambda x: x.number):
             # Get page
-            page_cis = [
-                (div.get("blockType"), get_div_coords(div)) for div in p.get_ci_divs()
-            ]
+            page_cis = [(div.get("blockType"), get_div_coords(div)) for div in p.get_ci_divs()]
             # Sort by coordinates
             for div_type, coords in sorted(page_cis, key=lambda x: x[1]):
                 ci_id = self.id + "-i" + str(n).zfill(4)
@@ -396,7 +395,6 @@ class BculNewspaperIssue(NewspaperIssue):
                 }
 
                 # Content item is an image
-                # TODO check this works with samples that have images
                 if ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
                     ci["m"]["iiif_link"] = os.path.join(p.iiif_base_uri, IIIF_SUFFIX)
                     ci["c"] = coords

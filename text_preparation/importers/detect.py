@@ -4,7 +4,7 @@ import os
 import logging
 from typing import Any
 from datetime import date, datetime
-from impresso_essentials.utils import IssueDir, KNOWN_JOURNALS
+from impresso_essentials.utils import IssueDir, ALL_MEDIA
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def _apply_datefilter(
     """
     filtered_issues = []
 
-    for newspaper, dates in filter_dict.items():
+    for title, dates in filter_dict.items():
         # date filter is a range
         if isinstance(dates, str):
             start, end = dates.split("-")
@@ -33,21 +33,17 @@ def _apply_datefilter(
 
             if year_only:
                 filtered_issues += [
-                    i
-                    for i in issues
-                    if i.journal == newspaper and start.year <= i.date.year <= end.year
+                    i for i in issues if i.alias == title and start.year <= i.date.year <= end.year
                 ]
             else:
                 filtered_issues += [
-                    i
-                    for i in issues
-                    if i.journal == newspaper and start <= i.date <= end
+                    i for i in issues if i.alias == title and start <= i.date <= end
                 ]
 
         # date filter is not a range
         elif isinstance(dates, list):
             if not dates:
-                filtered_issues += [i for i in issues if i.journal == newspaper]
+                filtered_issues += [i for i in issues if i.alias == title]
             else:
                 filter_date = [
                     (
@@ -60,24 +56,21 @@ def _apply_datefilter(
 
                 if year_only:
                     filtered_issues += [
-                        i
-                        for i in issues
-                        if i.journal == newspaper and i.date.year in filter_date
+                        i for i in issues if i.alias == title and i.date.year in filter_date
                     ]
                 else:
                     filtered_issues += [
-                        i
-                        for i in issues
-                        if i.journal == newspaper and i.date in filter_date
+                        i for i in issues if i.alias == title and i.date in filter_date
                     ]
 
     return filtered_issues
 
 
 def select_issues(config_dict, inp_dir):
-    """Reads a configuration file and select newspapers/issues to consider
+    """Reads a configuration file and select titles/issues to consider
     See config.example.md for explanations.
 
+    TODO remove and move to olive/Tetml or keep here and use a basis for all
     Usage example:
         if config_file and os.path.isfile(config_file):
             with open(config_file, 'r') as f:
@@ -86,20 +79,18 @@ def select_issues(config_dict, inp_dir):
             else:
                 issues = detect_issues(inp_dir)
 
-    :param config_dict: dict of newspaper filter parameters
+    :param config_dict: dict of title filter parameters
     :type config_dict: dict
     :param inp_dir: base dit where to get the issues from
     :type inp_dir: str
     """
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config_dict.get("newspapers")
-        exclude_list = config_dict["exclude_newspapers"]
+        filter_dict = config_dict.get("titles")
+        exclude_list = config_dict["exclude_titles"]
         year_flag = config_dict["year_only"]
     except KeyError:
-        logger.critical(
-            "The key [newspapers|exclude_newspapers|year_only] is missing in the config file."
-        )
+        logger.critical("The key [titles|exclude_titles|year_only] is missing in the config file.")
         return
     exclude_flag = False if not exclude_list else True
     msg = (
@@ -116,17 +107,13 @@ def select_issues(config_dict, inp_dir):
         logger.error(msg)
         raise AttributeError(msg)
     else:
-        filter_newspapers = (
-            set(filter_dict.keys()) if not exclude_list else set(exclude_list)
-        )
+        filter_titles = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
         logger.debug(
-            "got filter_newspapers: %s, with exclude flag: %s",
-            filter_newspapers,
+            "got filter_titles: %s, with exclude flag: %s",
+            filter_titles,
             exclude_flag,
         )
-        issues = detect_issues(
-            inp_dir, journal_filter=filter_newspapers, exclude=exclude_flag
-        )
+        issues = detect_issues(inp_dir, alias_filter=filter_titles, exclude=exclude_flag)
 
         # apply date filter if not exclusion mode
         filtered_issues = (
@@ -139,11 +126,11 @@ def select_issues(config_dict, inp_dir):
 
 def detect_issues(
     base_dir: str,
-    journal_filter: list[str] | None = None,
+    alias_filter: list[str] | None = None,
     exclude: bool = False,
     w_edition: bool = False,
 ) -> list[IssueDir]:
-    """Parse a directory structure and detect newspaper issues to be imported.
+    """Parse a directory structure and detect issues to be imported.
 
     Note:
         Invalid directories are skipped, and a warning message is logged.
@@ -151,14 +138,14 @@ def detect_issues(
     Note:
         This function can be used to identify issues to import within a directory and
         to identify already imported issues, based on the parameters.
-        When identifing already imported issues `journal_filter` and `exclude` don't
+        When identifing already imported issues `alias_filter` and `exclude` don't
         need to be specified but `w_edition` should be set to True.
 
     Args:
         base_dir (str): The root of the directory structure.
-        journal_filter (list[str] | None, optional): List of newspaper to filter
+        alias_filter (list[str] | None, optional): List of media aliases to filter
             (positive or negative). Defaults to None.
-        exclude (bool, optional): Whether journal_filter is positive or negative.
+        exclude (bool, optional): Whether alias_filter is positive or negative.
             Defaults to False.
         w_edition (bool, optional): Whether to include the editions in the search.
             Defaults to False.
@@ -168,23 +155,24 @@ def detect_issues(
     """
     detected_issues = []
     dir_path, dirs, files = next(os.walk(base_dir))
-    # workaround to deal with journal-level folders like: 01_GDL, 02_GDL
-    if journal_filter is None:
-        journal_dirs = [d for d in dirs if d.split("_")[-1] in KNOWN_JOURNALS]
+    # workaround to deal with title-level folders like: 01_GDL, 02_GDL
+    if alias_filter is None:
+        media_title_dirs = [d for d in dirs if d.split("_")[-1] in ALL_MEDIA]
     else:
         if not exclude:
-            filtrd_journals = list(set(KNOWN_JOURNALS).intersection(journal_filter))
+            filtrd_aliases = list(set(ALL_MEDIA).intersection(alias_filter))
         else:
-            filtrd_journals = list(set(KNOWN_JOURNALS).difference(journal_filter))
-        journal_dirs = [d for d in dirs if d.split("_")[-1] in filtrd_journals]
+            filtrd_aliases = list(set(ALL_MEDIA).difference(alias_filter))
+        media_title_dirs = [d for d in dirs if d.split("_")[-1] in filtrd_aliases]
 
-    for journal in journal_dirs:
-        journal_path = os.path.join(base_dir, journal)
-        journal = journal.split("_")[-1] if "_" in journal else journal
-        _, year_dirs, _ = next(os.walk(journal_path))
+    for alias in media_title_dirs:
+        alias_path = os.path.join(base_dir, alias)
+        # for SWISSINFOr, '_' is part of the alias
+        alias = alias.split("_")[-1] if "_" in alias and "SOC" not in alias else alias
+        _, year_dirs, _ = next(os.walk(alias_path))
 
         for year in year_dirs:
-            year_path = os.path.join(journal_path, year)
+            year_path = os.path.join(alias_path, year)
             _, month_dirs, _ = next(os.walk(year_path))
 
             for month in month_dirs:
@@ -201,7 +189,7 @@ def detect_issues(
                             edition_path = os.path.join(day_path, edition)
                             try:
                                 detected_issue = IssueDir(
-                                    journal,
+                                    alias,
                                     date(int(year), int(month), int(day)),
                                     edition,
                                     edition_path,
@@ -209,9 +197,7 @@ def detect_issues(
                                 print("Found an issue: %s", str(detected_issue))
                                 detected_issues.append(detected_issue)
                             except ValueError:
-                                print(
-                                    "Path %s is not a valid issue directory", day_path
-                                )
+                                print("Path %s is not a valid issue directory", day_path)
                     else:
                         try:
                             # concerning `edition="a"`: for now, no cases of newspapers
@@ -219,7 +205,7 @@ def detect_issues(
                             # may come later on)
                             # TODO correct in the future when working with dir structures like this
                             detected_issue = IssueDir(
-                                journal,
+                                alias,
                                 date(int(year), int(month), int(day)),
                                 "a",
                                 day_path,
@@ -229,31 +215,3 @@ def detect_issues(
                         except ValueError:
                             print("Path %s is not a valid issue directory", day_path)
     return detected_issues
-
-
-def get_access_right(
-    journal: str, _date: date, access_rights: dict[str, dict[str, str]]
-) -> str:
-    """Fetch the access rights for a specific journal and publication date.
-
-    Note:
-        With the new approach to access rights management, the access rights
-        won't be in the canonical data anymore.
-
-    Args:
-        journal (str): Journal name.
-        _date (date): Publication date of the journal
-        access_rights (dict[str, dict[str, str]]): Access rights for various
-            journals.
-
-    Returns:
-        str: Access rights for specific journal issue.
-    """
-    rights = access_rights[journal]
-    if rights["time"] == "all":
-        return rights["access-right"].replace("-", "_")
-
-    # TODO: this should rather be a custom exception
-    logger.warning("Access right not defined for %s-%s", journal, _date)
-
-    return "undefined"

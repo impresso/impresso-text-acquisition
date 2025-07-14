@@ -15,6 +15,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 
+from impresso_essentials.utils import SourceMedium, SourceType, timestamp
 from text_preparation.importers import (
     CONTENTITEM_TYPE_ADVERTISEMENT,
     CONTENTITEM_TYPE_ARTICLE,
@@ -33,21 +34,18 @@ from text_preparation.importers.lux.helpers import (
 )
 from text_preparation.importers.mets_alto.alto import parse_style
 from text_preparation.importers.mets_alto import (
-    MetsAltoNewspaperIssue,
-    MetsAltoNewspaperPage,
+    MetsAltoCanonicalIssue,
+    MetsAltoCanonicalPage,
     parse_mets_amdsec,
 )
-from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 IIIF_ENDPOINT_URI = "https://iiif.eluxemburgensia.lu/image/iiif/2"
 IIIF_SUFFIX = "info.json"
 
 
-class LuxNewspaperPage(MetsAltoNewspaperPage):
+class LuxNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in BNL (Mets/Alto) format.
 
     Args:
@@ -61,7 +59,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file.
@@ -77,7 +75,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
 
         self.page_data["s"] = styles
 
-    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+    def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
         encoded_ark_id = encode_ark(self.issue.ark_id)
         iiif_base_link = f"{IIIF_ENDPOINT_URI}/{encoded_ark_id}"
@@ -88,6 +86,7 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
     def _convert_coordinates(self, page_regions: list[dict]) -> tuple[bool, list[dict]]:
         success = False
         try:
+            # TODO add width & height
             img_props = self.issue.image_properties[self.number]
             x_res = img_props["x_resolution"]
             y_res = img_props["y_resolution"]
@@ -124,14 +123,12 @@ class LuxNewspaperPage(MetsAltoNewspaperPage):
                             logger.debug(msg)
             success = True
         except Exception as e:
-            logger.error(
-                "Error %s occurred when converting coordinates for %s", e, self.id
-            )
+            logger.error("Error %s occurred when converting coordinates for %s", e, self.id)
 
         return success, page_regions
 
 
-class LuxNewspaperIssue(MetsAltoNewspaperIssue):
+class LuxNewspaperIssue(MetsAltoCanonicalIssue):
     """Class representing an issue in BNL data.
 
     All functions defined in this child class are specific to parsing BNL
@@ -143,12 +140,11 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict): Issue data according to canonical Issue format.
-        pages (list): List of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): List of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict): metadata allowing to convert region OCR/OLR
             coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
@@ -166,9 +162,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         # visiting the `text` sub-folder with the alto XML files
         text_path = os.path.join(self.path, "text")
         page_file_names = [
-            file
-            for file in os.listdir(text_path)
-            if not file.startswith(".") and ".xml" in file
+            file for file in os.listdir(text_path) if not file.startswith(".") and ".xml" in file
         ]
 
         page_numbers = []
@@ -184,13 +178,9 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         ]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
-                self.pages.append(
-                    LuxNewspaperPage(page_id, page_no, filename, text_path)
-                )
+                self.pages.append(LuxNewspaperPage(page_id, page_no, filename, text_path))
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -236,9 +226,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     )
         return parts
 
-    def _parse_dmdsec(
-        self, mets_doc: BeautifulSoup
-    ) -> tuple[list[dict[str, Any]], int]:
+    def _parse_dmdsec(self, mets_doc: BeautifulSoup) -> tuple[list[dict[str, Any]], int]:
         """Parse `<dmdSec>` tags of Mets file to find some content items.
 
         Only articles and pictures are in this section and are identified
@@ -274,7 +262,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
 
                 # Prepare ci metadata
                 metadata = {
-                    "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+                    "id": f"{self.id}-i{str(counter).zfill(4)}",
                     "pp": [],
                     "tp": (
                         CONTENTITEM_TYPE_ARTICLE
@@ -301,10 +289,9 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 item = {"m": metadata, "l": {"id": section_id, "parts": parts}}
 
                 # TODO: keep language (there may be more than one)
-                # TODO: how to get language information for these CIs ?
                 if item["m"]["tp"] == CONTENTITEM_TYPE_ARTICLE:
                     lang = section.find_all("languageTerm")[0].getText()
-                    item["m"]["l"] = lang
+                    item["m"]["lg"] = lang
 
                 # This has been added to not consider ads as pictures
                 if not (
@@ -354,11 +341,10 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             else:
                 continue
 
-            # TODO: how to get language information for these CIs ?
             # The language of those CI should be in
             # the DMDSEC of their parent section.
             metadata = {
-                "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+                "id": f"{self.id}-i{str(counter).zfill(4)}",
                 "tp": content_item_type,
                 "pp": [],
                 "t": div.get("LABEL"),
@@ -403,9 +389,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             # filter content item part that is the actual image
             # the other part is the caption
             try:
-                part = [
-                    part for part in ci["l"]["parts"] if part["comp_role"] == "image"
-                ][0]
+                part = [part for part in ci["l"]["parts"] if part["comp_role"] == "image"][0]
             except IndexError as e:
                 err_msg = f"{legacy_id} without image subpart"
                 err_msg += f"; {legacy_id} has {ci['l']['parts']}"
@@ -457,15 +441,11 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                 )
                 encoded_ark_id = encode_ark(self.ark_id)
                 iiif_base_link = f"{IIIF_ENDPOINT_URI}/{encoded_ark_id}"
-                ci["m"][
-                    "iiif_link"
-                ] = f"{iiif_base_link}%2fpages%2f{curr_page.number}/info.json"
+                ci["m"]["iiif_link"] = f"{iiif_base_link}%2fpages%2f{curr_page.number}/info.json"
                 ci["c"] = list(coordinates)
                 del ci["l"]["parts"]
             except Exception as e:
-                err_msg = "An error occurred with {}".format(
-                    os.path.join(curr_page.basedir, curr_page.filename)
-                )
+                err_msg = f"An error occurred with {os.path.join(curr_page.basedir, curr_page.filename)}. "
                 err_msg += f"<ComposedBlock> @ID {part['comp_id']} not found"
                 logger.error(err_msg)
                 self._notes.append(err_msg)
@@ -502,7 +482,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
         )
 
         metadata = {
-            "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+            "id": f"{self.id}-i{str(counter).zfill(4)}",
             "pp": [],
             "tp": CONTENTITEM_TYPE_ARTICLE,
         }
@@ -554,9 +534,7 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
                     logger.error(err_msg)
                     continue
                 if div_has_body(div) and section_is_article(div):
-                    new_section = self._parse_section(
-                        section, div, content_items, counter
-                    )
+                    new_section = self._parse_section(section, div, content_items, counter)
                     new_sections.append(new_section)
                     counter += 1
         return new_sections
@@ -614,10 +592,12 @@ class LuxNewspaperIssue(MetsAltoNewspaperIssue):
             ci["m"]["ro"] = reading_order_dict[ci["m"]["id"]]
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": content_items,
-            "ar": self.rights,
             "pp": [p.id for p in self.pages],
         }
 

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -5,19 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RERO Mets/Alto importer &mdash; Impresso Text Preparation  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -48,6 +46,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">Preprocessing</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../importers.html">Importers</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
@@ -63,6 +62,8 @@
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
@@ -114,7 +115,7 @@ the RERO version of the Mets/Alto format to a unified canoncial format.
 Theses classes are subclasses of generic Mets/Alto importer classes.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.rero.classes.ReroNewspaperIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">ReroNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperIssue" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">ReroNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperIssue" title="Link to this definition"></a></dt>
 <dd><p>Newspaper Issue in RERO (Mets/Alto) format.</p>
 <p>All functions defined in this child class are specific to parsing RERO
 Mets/Alto format.</p>
@@ -146,9 +147,9 @@ Mets/Alto format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.rero.classes.ReroNewspaperIssue.journal">
-<span class="sig-name descname"><span class="pre">journal</span></span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperIssue.journal" title="Link to this definition"></a></dt>
-<dd><p>Newspaper unique identifier or name.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.rero.classes.ReroNewspaperIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperIssue.alias" title="Link to this definition"></a></dt>
+<dd><p>Newspaper unique alias (identifier or name).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -192,21 +193,10 @@ Mets/Alto format.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="text_preparation.importers.rero.classes.ReroNewspaperIssue.pages">
 <span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperIssue.pages" title="Link to this definition"></a></dt>
-<dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">NewspaperPage</span></code> instances from this issue.</p>
+<dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">CanonicalPage</span></code> instances from this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.rero.classes.ReroNewspaperIssue.rights">
-<span class="sig-name descname"><span class="pre">rights</span></span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperIssue.rights" title="Link to this definition"></a></dt>
-<dd><p>Access rights applicable to this issue.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -238,7 +228,7 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.rero.classes.ReroNewspaperPage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">ReroNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperPage" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.classes.</span></span><span class="sig-name descname"><span class="pre">ReroNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperPage" title="Link to this definition"></a></dt>
 <dd><p>Newspaper page in RERO (Mets/Alto) format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -289,7 +279,7 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 <dd><p>Issue this page is from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue">NewspaperIssue</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -340,13 +330,13 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="text_preparation.importers.rero.classes.ReroNewspaperPage.add_issue">
-<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue" title="text_preparation.importers.mets_alto.classes.MetsAltoNewspaperIssue"><span class="pre">MetsAltoNewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperPage.add_issue" title="Link to this definition"></a></dt>
-<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue" title="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue"><span class="pre">MetsAltoCanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.rero.classes.ReroNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
 <p>This allows each page to preserve contextual information coming from
-the newspaper issue.</p>
+the canonical issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.NewspaperIssue" title="text_preparation.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -399,23 +389,22 @@ second, etc.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>journal</strong> (<em>str</em>) – Newspaper ID.</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – Newspaper alias.</p></li>
 <li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date or issue.</p></li>
 <li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.).</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing the issue’s OCR data.</p></li>
-<li><p><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.).</p></li>
 </ul>
 </dd>
 </dl>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">Rero2IssueDir</span><span class="p">(</span><span class="s1">&#39;BLB&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1845</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">28</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./BLB/data/BLB/18451228_01&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">Rero2IssueDir</span><span class="p">(</span><span class="s1">&#39;BLB&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1845</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">28</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./BLB/data/BLB/18451228_01&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.rero.detect.detect_issues">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'data'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.rero.detect.detect_issues" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'data'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.rero.detect.detect_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect newspaper issues to import within the filesystem.</p>
 <p>This function expects the directory structure that RERO used to
 organize the dump of Mets/Alto OCR data.</p>
@@ -424,7 +413,6 @@ organize the dump of Mets/Alto OCR data.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
 <li><p><strong>data_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory where data is stored
 (usually <cite>data/</cite>). Defaults to ‘data’.</p></li>
 </ul>
@@ -440,7 +428,7 @@ organize the dump of Mets/Alto OCR data.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.rero.detect.dir2issue">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span></span></span><a class="headerlink" href="#text_preparation.importers.rero.detect.dir2issue" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span></span></span><a class="headerlink" href="#text_preparation.importers.rero.detect.dir2issue" title="Link to this definition"></a></dt>
 <dd><p>Create a <cite>Rero2IssueDir</cite> from a directory (RERO format).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -460,7 +448,7 @@ organize the dump of Mets/Alto OCR data.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.rero.detect.select_issues">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.rero.detect.select_issues" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rero.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.rero.detect.select_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
 <p>The behavior is very similar to <a class="reference internal" href="#text_preparation.importers.rero.detect.detect_issues" title="text_preparation.importers.rero.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
@@ -471,7 +459,6 @@ further details on how to configure filtering.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
 <li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
