@@ -1,6 +1,7 @@
 """This script processes PDF files by converting them to JPEG2000 images (JP2) and extracting OCR data.
 
 The main functionalities include:
+
 - Rescaling the bounding box coordinates.
 - Processing documents to define their canonical path and id.
 - Converting PDF images to JP2 format.

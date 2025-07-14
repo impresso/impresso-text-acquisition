@@ -6,7 +6,9 @@ Motivation
 
 Unfortunately, not all data arrives ready for ingestion. 
 In several cases, some preprocessing steps are necessary to prepare the data in order to reduce the complexity of the importers.
+
 This preprocessing can include any of the following steps:
+
 - Identification of the exact contents of the data which was dumped, and of the OCR formats present.
 - Reorganization of the files to follow our prefered directory structure: `alias > year > month > day > edition > issue files`.
 - Copying of image files into the IIIF server location, often also requiring reorganization, renaming and conversion of the files.

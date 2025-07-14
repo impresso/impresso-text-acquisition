@@ -103,12 +103,14 @@
 <section id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
 <p>Unfortunately, not all data arrives ready for ingestion.
-In several cases, some preprocessing steps are necessary to prepare the data in order to reduce the complexity of the importers.
-This preprocessing can include any of the following steps:
-- Identification of the exact contents of the data which was dumped, and of the OCR formats present.
-- Reorganization of the files to follow our prefered directory structure: <cite>alias &gt; year &gt; month &gt; day &gt; edition &gt; issue files</cite>.
-- Copying of image files into the IIIF server location, often also requiring reorganization, renaming and conversion of the files.
-- Extraction of the OCR from PDFs in the case the OCR is embedded in PDFs.</p>
+In several cases, some preprocessing steps are necessary to prepare the data in order to reduce the complexity of the importers.</p>
+<p>This preprocessing can include any of the following steps:</p>
+<ul class="simple">
+<li><p>Identification of the exact contents of the data which was dumped, and of the OCR formats present.</p></li>
+<li><p>Reorganization of the files to follow our prefered directory structure: <cite>alias &gt; year &gt; month &gt; day &gt; edition &gt; issue files</cite>.</p></li>
+<li><p>Copying of image files into the IIIF server location, often also requiring reorganization, renaming and conversion of the files.</p></li>
+<li><p>Extraction of the OCR from PDFs in the case the OCR is embedded in PDFs.</p></li>
+</ul>
 <p>Other preprocessing steps might also be necessary and depend on each provider.</p>
 <p>Since these steps are so case-specific, we currently handle each situation with individual scripts, which are tailored to each provider.</p>
 </section>
@@ -121,11 +123,19 @@ This preprocessing can include any of the following steps:
 <li><p>Logs all copies made and optionally skips issues if the copy was already done, after verification that all the desired files exist in the destination</p></li>
 </ul>
 <p id="module-text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data">Script copying BL’s original OCR data and Images into Impresso’s internal filestructure, according to the devised Alias-to-NLP mapping.</p>
-<p>Example usage:
-- To copy OCR files:
-$ python reorganize_original_data.bl.py –log_file=”ocr_logfile_2.log” –chunk_idx=2
-- To copy image files:
-$ python reorganize_original_data.bl.py –log_file=”img_logfile_2.log” –file_type_ext=”.jp2” –chunk_idx=2 –dest_base_dir=”/mnt/impresso_images_BL”</p>
+<p>Example usage:</p>
+<ul class="simple">
+<li><p>To copy OCR files:</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">$</span> <span class="pre">python</span> <span class="pre">reorganize_original_data.bl.py</span> <span class="pre">--log_file=&quot;ocr_logfile_2.log&quot;</span> <span class="pre">--chunk_idx=2</span>
+<span class="pre">`</span></code></p>
+<ul class="simple">
+<li><p>To copy image files:</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">$</span> <span class="pre">python</span> <span class="pre">reorganize_original_data.bl.py</span> <span class="pre">--log_file=&quot;img_logfile_2.log&quot;</span> <span class="pre">--file_type_ext=&quot;.jp2&quot;</span> <span class="pre">--chunk_idx=2</span> <span class="pre">--dest_base_dir=&quot;/mnt/impresso_images_BL&quot;</span>
+<span class="pre">`</span></code></p>
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.check_if_to_be_copied">
 <span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.</span></span><span class="sig-name descname"><span class="pre">check_if_to_be_copied</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_dir_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">possible_date_formats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.xml'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.check_if_to_be_copied" title="Link to this definition"></a></dt>
@@ -293,11 +303,13 @@ Defaults to False.</p></li>
 <li><p>Reorganize and rename the files accordingly.</p></li>
 </ul>
 <p id="module-text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs">This script processes PDF files by converting them to JPEG2000 images (JP2) and extracting OCR data.</p>
-<p>The main functionalities include:
-- Rescaling the bounding box coordinates.
-- Processing documents to define their canonical path and id.
-- Converting PDF images to JP2 format.
-- Extracting OCR text and saving it as a JSON file.</p>
+<p>The main functionalities include:</p>
+<ul class="simple">
+<li><p>Rescaling the bounding box coordinates.</p></li>
+<li><p>Processing documents to define their canonical path and id.</p></li>
+<li><p>Converting PDF images to JP2 format.</p></li>
+<li><p>Extracting OCR text and saving it as a JSON file.</p></li>
+</ul>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>python script.py –log_file log.txt –input_base_dir /path/to/pdf –out_base_dir /path/to/output</p>
 </dd>

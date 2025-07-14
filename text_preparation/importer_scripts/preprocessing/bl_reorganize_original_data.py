@@ -1,10 +1,18 @@
 """Script copying BL's original OCR data and Images into Impresso's internal filestructure, according to the devised Alias-to-NLP mapping.
 
 Example usage:
+
 - To copy OCR files:
+
+```
 $ python reorganize_original_data.bl.py --log_file="ocr_logfile_2.log" --chunk_idx=2
+```
+
 - To copy image files:
+
+```
 $ python reorganize_original_data.bl.py --log_file="img_logfile_2.log" --file_type_ext=".jp2" --chunk_idx=2 --dest_base_dir="/mnt/impresso_images_BL"
+```
 """
 
 import os
