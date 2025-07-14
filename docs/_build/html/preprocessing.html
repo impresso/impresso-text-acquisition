@@ -1,0 +1,527 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preprocessing &mdash; Impresso Text Preparation  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Importers" href="importers.html" />
+    <link rel="prev" title="Overview" href="architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Impresso Text Preparation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Preprocessing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#existing-preprocessing-scripts">Existing Preprocessing Scripts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#british-library">British Library</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.check_if_to_be_copied"><code class="docutils literal notranslate"><span class="pre">check_if_to_be_copied()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.copy_files_for_NLP"><code class="docutils literal notranslate"><span class="pre">copy_files_for_NLP()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.extract_date"><code class="docutils literal notranslate"><span class="pre">extract_date()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#swissinfo">SWISSINFO</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.get_canonical_path"><code class="docutils literal notranslate"><span class="pre">get_canonical_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.pdf_to_jp2_and_ocr_json"><code class="docutils literal notranslate"><span class="pre">pdf_to_jp2_and_ocr_json()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.process_blocks_of_page"><code class="docutils literal notranslate"><span class="pre">process_blocks_of_page()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.remove_key_from_block"><code class="docutils literal notranslate"><span class="pre">remove_key_from_block()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.rescale_block_coords"><code class="docutils literal notranslate"><span class="pre">rescale_block_coords()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.save_as_jp2"><code class="docutils literal notranslate"><span class="pre">save_as_jp2()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="importers.html">Importers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rebuilders.html">Rebuilders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Impresso Text Preparation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Preprocessing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/preprocessing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="preprocessing">
+<h1>Preprocessing<a class="headerlink" href="#preprocessing" title="Link to this heading"></a></h1>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
+<p>Unfortunately, not all data arrives ready for ingestion.
+In several cases, some preprocessing steps are necessary to prepare the data in order to reduce the complexity of the importers.
+This preprocessing can include any of the following steps:
+- Identification of the exact contents of the data which was dumped, and of the OCR formats present.
+- Reorganization of the files to follow our prefered directory structure: <cite>alias &gt; year &gt; month &gt; day &gt; edition &gt; issue files</cite>.
+- Copying of image files into the IIIF server location, often also requiring reorganization, renaming and conversion of the files.
+- Extraction of the OCR from PDFs in the case the OCR is embedded in PDFs.</p>
+<p>Other preprocessing steps might also be necessary and depend on each provider.</p>
+<p>Since these steps are so case-specific, we currently handle each situation with individual scripts, which are tailored to each provider.</p>
+</section>
+<section id="existing-preprocessing-scripts">
+<h2>Existing Preprocessing Scripts<a class="headerlink" href="#existing-preprocessing-scripts" title="Link to this heading"></a></h2>
+<section id="british-library">
+<h3>British Library<a class="headerlink" href="#british-library" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Reorganizes and copies exiting data into the desired directory structure, separating images and OCR files for each issue.</p></li>
+<li><p>Logs all copies made and optionally skips issues if the copy was already done, after verification that all the desired files exist in the destination</p></li>
+</ul>
+<p id="module-text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data">Script copying BL’s original OCR data and Images into Impresso’s internal filestructure, according to the devised Alias-to-NLP mapping.</p>
+<p>Example usage:
+- To copy OCR files:
+$ python reorganize_original_data.bl.py –log_file=”ocr_logfile_2.log” –chunk_idx=2
+- To copy image files:
+$ python reorganize_original_data.bl.py –log_file=”img_logfile_2.log” –file_type_ext=”.jp2” –chunk_idx=2 –dest_base_dir=”/mnt/impresso_images_BL”</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.check_if_to_be_copied">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.</span></span><span class="sig-name descname"><span class="pre">check_if_to_be_copied</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_dir_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">possible_date_formats</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'.xml'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.check_if_to_be_copied" title="Link to this definition"></a></dt>
+<dd><p>Determines whether files need to be copied to the destination issue directory.</p>
+<p>This function checks if a copy operation should be performed by verifying:
+- Whether the destination issue directory already contains the required files.
+- Whether the source dir contains files matching the expected date and file extension.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_dir_files</strong> (<em>str</em>) – A list of file names available in the source directory.</p></li>
+<li><p><strong>dest_issue_dir</strong> (<em>str</em>) – The destination issue directory where files should be copied.</p></li>
+<li><p><strong>possible_date_formats</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – A list of possible date formats that should be</p></li>
+<li><p><strong>names.</strong> (<em>present in the file</em>)</p></li>
+<li><p><strong>file_ext</strong> (<em>str</em><em>, </em><em>optional</em>) – The file extension to check for (default is “.xml”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>bool: True if the copy operation needs to be performed, False otherwise.</p></li>
+<li><p>list[str]: A list of source files that match the criteria for copying.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[bool, list[str]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AssertionError</strong> – If the provided file extension is not in <cite>POSSIBLE_EXTENTIONS</cite>.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check_if_to_be_copied</span><span class="p">([</span><span class="s2">&quot;18200317.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;18200317.jp2&quot;</span><span class="p">],</span> <span class="s2">&quot;/mnt/data/issues/18200317&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;18200317&quot;</span><span class="p">])</span>
+<span class="go">(True, [&quot;18200317.xml&quot;])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.copy_files_for_NLP">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.</span></span><span class="sig-name descname"><span class="pre">copy_files_for_NLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nlp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_fmt_chars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['-',</span> <span class="pre">'',</span> <span class="pre">'_']</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.copy_files_for_NLP" title="Link to this definition"></a></dt>
+<dd><p>Copies files for a given NLP (BL title ID) into a structured directory.</p>
+<p>This function processes all files in the specified source directory, extracts date
+information from issue directories, and organizes them into a structured destination
+directory following the format <cite>dest_dir/alias/nlp/YYYY/MM/DD</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nlp</strong> (<em>str</em>) – The name of the NLP process.</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – The alias under which the NLP process is categorized.</p></li>
+<li><p><strong>source_dir</strong> (<em>str</em>) – The root directory containing the source files.</p></li>
+<li><p><strong>dest_dir</strong> (<em>str</em>) – The destination root directory where files should be copied.</p></li>
+<li><p><strong>file_ext</strong> (<em>str</em>) – The file extension to be copied (e.g., “.xml”).</p></li>
+<li><p><strong>date_fmt_chars</strong> (<em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A list of characters to format date strings
+when matching files (default is [“-”, “”, “_”]).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>list[str]: A list of issue directories with invalid structures or date errors.</p></li>
+<li><p>list[str]: A list of files that failed to copy.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[list[str], list[str]]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>IOError</strong> – If file copying fails.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">copy_files_for_NLP</span><span class="p">(</span><span class="s2">&quot;NLP1&quot;</span><span class="p">,</span> <span class="s2">&quot;aliasX&quot;</span><span class="p">,</span> <span class="s2">&quot;/mnt/source&quot;</span><span class="p">,</span> <span class="s2">&quot;/mnt/dest&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">)</span>
+<span class="go">([], [])  # No issues or failed copies.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.extract_date">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.</span></span><span class="sig-name descname"><span class="pre">extract_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.extract_date" title="Link to this definition"></a></dt>
+<dd><p>Extracts the year, month, and day from a given root path.</p>
+<p>This function assumes the root path follows a specific format and attempts to
+extract date information (YYYY, MM, DD). It also handles cases where the path
+contains unexpected <cite>.backup</cite> components and logs relevant errors.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>root_path</strong> (<em>str</em>) – The file path from which to extract the date.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>bool: True if the date is valid, False otherwise.</p></li>
+<li><p>str: Extracted year (YYYY) as a string.</p></li>
+<li><p>str: Extracted month (MM) as a string.</p></li>
+<li><p>str: Extracted day (DD) as a string.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[bool, str, str, str]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the extracted date is not a valid calendar date.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">extract_date</span><span class="p">(</span><span class="s2">&quot;/mnt/project_impresso/original/BL_old/0002634/1820/0317/&quot;</span><span class="p">)</span>
+<span class="go">(True, &quot;1820&quot;, &quot;03&quot;, &quot;17&quot;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.main">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/mnt/project_impresso/original/BL_old'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/mnt/impresso_ocr_BL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_data_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BL'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_alias_mapping_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BL_title_alias_mapping.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_type_ext</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.xml'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data.main" title="Link to this definition"></a></dt>
+<dd><p>Main function to process and copy BL original data into a impresso structured directory.</p>
+<p>This function reads a CSV file containing NLP-to-alias mappings, processes a chunk
+of NLPs by copying files from the source to the destination directory, and logs any
+issues encountered. It also tracks problem directories and failed file copies.</p>
+<p>By default, performs the copy of OCR files, but can be paramtrized to copy images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>log_file</strong> (<em>str</em>) – Path to the log file.</p></li>
+<li><p><strong>source_base_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Root directory of the source NLP files.
+Defaults to “/mnt/project_impresso/original/BL_old”.</p></li>
+<li><p><strong>dest_base_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Root directory where processed files will be copied.
+Defaults to “/mnt/impresso_ocr_BL”.</p></li>
+<li><p><strong>sample_data_dir</strong> (<em>str</em><em>, </em><em>optional</em>) – Directory containing metadata files.
+Defaults to “/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BL”.</p></li>
+<li><p><strong>title_alias_mapping_file</strong> (<em>str</em><em>, </em><em>optional</em>) – CSV file mapping aliases to NLPs.
+Defaults to “BL_title_alias_mapping.csv”.</p></li>
+<li><p><strong>file_type_ext</strong> (<em>str</em><em>, </em><em>optional</em>) – File extension to be processed (e.g., “.xml”).
+Defaults to “.xml”.</p></li>
+<li><p><strong>chunk_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of NLP directories to process in each chunk.
+Defaults to 100.</p></li>
+<li><p><strong>chunk_idx</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the chunk to process. Defaults to 0.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, sets logging level to DEBUG; otherwise, INFO.
+Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>AssertionError</strong> – If the provided file extension is not in POSSIBLE_EXTENTIONS.</p></li>
+<li><p><strong>Exception</strong> – If an error occurs while processing an NLP directory.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="swissinfo">
+<h3>SWISSINFO<a class="headerlink" href="#swissinfo" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Extract the OCR from PDF files, creating JSON files and convert the images to JP2 format.</p></li>
+<li><p>Reorganize and rename the files accordingly.</p></li>
+</ul>
+<p id="module-text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs">This script processes PDF files by converting them to JPEG2000 images (JP2) and extracting OCR data.</p>
+<p>The main functionalities include:
+- Rescaling the bounding box coordinates.
+- Processing documents to define their canonical path and id.
+- Converting PDF images to JP2 format.
+- Extracting OCR text and saving it as a JSON file.</p>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>python script.py –log_file log.txt –input_base_dir /path/to/pdf –out_base_dir /path/to/output</p>
+</dd>
+</dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.get_canonical_path">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.</span></span><span class="sig-name descname"><span class="pre">get_canonical_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_img_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.get_canonical_path" title="Link to this definition"></a></dt>
+<dd><p>Generate a canonical path from a radio bulletin image file path.</p>
+<p>Extracts metadata from the file name (program, date, edition, language) and
+constructs a standardized (“canonical”) directory path in the format:
+<cite>SOC_&lt;program&gt;/&lt;year&gt;/&lt;month&gt;/&lt;day&gt;/&lt;edition&gt;</cite>. Also returns the language
+extracted from the filename in lowercase.</p>
+<p>The filename is expected to follow this structure:
+<cite>&lt;prefix&gt;_&lt;prefix&gt;_&lt;program&gt;_&lt;YYYYMMDD&gt;_&lt;LANG&gt;[_&lt;EDITION&gt;].&lt;ext&gt;</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>full_img_path</strong> (<em>str</em>) – The full file path to the image.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>The canonical path as a string.</p></li>
+<li><p>The language code as a lowercase string.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str, str]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the date string cannot be parsed or required elements are missing.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.pdf_to_jp2_and_ocr_json">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.</span></span><span class="sig-name descname"><span class="pre">pdf_to_jp2_and_ocr_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.pdf_to_jp2_and_ocr_json" title="Link to this definition"></a></dt>
+<dd><p>Convert a PDF to JPEG 2000 images and extracts OCR data into a JSON file.</p>
+<p>This function processes a given PDF file by:
+1. Determining its canonical path and ID.
+2. Converting its pages to JP2 (JPEG 2000) format.
+3. Extracting OCR text and bounding box data from each page.
+4. Saving the extracted OCR data into a JSON file.
+5. Returning the canonical ID and the success status of the operation.</p>
+<p>If the OCR JSON file already exists, the function skips processing and returns early.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>img_path</strong> (<em>str</em>) – The file path of the input PDF document.</p></li>
+<li><p><strong>out_base_dir</strong> (<em>str</em>) – The base directory where the processed images and JSON should be saved.</p></li>
+<li><p><strong>all_filenames</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – A list of all filenames in the dataset to determine the edition letter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple containing:</dt><dd><ul class="simple">
+<li><p>The canonical issue ID of the processed document.</p></li>
+<li><p>A boolean indicating whether processing was successful (<cite>True</cite>) or if an error occurred (<cite>False</cite>).</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[str, bool]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>OSError</strong> – If there is an issue with file I/O operations (e.g., saving JP2 images or writing the JSON).</p></li>
+<li><p><strong>Exception</strong> – If any other unexpected error occurs.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.process_blocks_of_page">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.</span></span><span class="sig-name descname"><span class="pre">process_blocks_of_page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">page_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_text_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_image_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.process_blocks_of_page" title="Link to this definition"></a></dt>
+<dd><p>Process OCR blocks from a page by cleaning, rescaling, and organizing them.</p>
+<p>Cleans and prepares OCR block data for a specific page by:
+- Removing unnecessary keys (like images and masks) from each block.
+- Rescaling all bounding box coordinates to match the provided image size.
+- Separating blocks that contain lines from those that do not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>page_num</strong> (<em>int</em>) – The number of the page being processed (used for logging and output).</p></li>
+<li><p><strong>page_text_dict</strong> (<em>dict</em>) – A dictionary representing the OCR data for the page.
+Must contain “width”, “height”, and a list of “blocks”.</p></li>
+<li><p><strong>page_image_size</strong> (<em>tuple</em><em>[</em><em>float</em><em>]</em>) – The target image size (width, height) for which
+bounding boxes should be rescaled.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A dictionary containing the processed information for the page, with keys:</dt><dd><ul class="simple">
+<li><p>”page_num”: The page number.</p></li>
+<li><p>”ocr_page_size”: The original OCR coordinate space (width, height).</p></li>
+<li><p>”jp2_img_size”: The target image size used for rescaling.</p></li>
+<li><p>”blocks_with_lines”: List of blocks that contain text lines.</p></li>
+<li><p>”blocks_without_lines”: List of blocks that do not contain text lines.</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.remove_key_from_block">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.</span></span><span class="sig-name descname"><span class="pre">remove_key_from_block</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.remove_key_from_block" title="Link to this definition"></a></dt>
+<dd><p>Remove a specified key from a block dictionary if it exists, and logs the action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block</strong> (<em>dict</em>) – The block dictionary from which the key should be removed.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – The key to remove from the block.</p></li>
+<li><p><strong>page_num</strong> (<em>int</em>) – The page number associated with the block (for logging purposes).</p></li>
+<li><p><strong>block_idx</strong> (<em>int</em>) – The index of the block on the page (for logging purposes).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated block dictionary with the key removed if it was present.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.rescale_block_coords">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.</span></span><span class="sig-name descname"><span class="pre">rescale_block_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curr_img_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_img_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.rescale_block_coords" title="Link to this definition"></a></dt>
+<dd><p>Rescale bounding box coordinates in a block and its nested lines and spans.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block</strong> (<em>dict</em>) – A dictionary representing a layout block that may contain a “bbox”,
+and optionally a list of “lines”, each of which may contain “spans”.</p></li>
+<li><p><strong>curr_img_size</strong> (<em>tuple</em><em>[</em><em>float</em><em>]</em>) – The current size of the image as (width, height).</p></li>
+<li><p><strong>dest_img_size</strong> (<em>tuple</em><em>[</em><em>float</em><em>]</em>) – The target size of the image as (width, height).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The updated block dictionary with rescaled bounding boxes added under
+the key “rescaled_bbox” at each relevant level (block, lines, spans).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.save_as_jp2">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.</span></span><span class="sig-name descname"><span class="pre">save_as_jp2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pil_imgs:</span> <span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/scratch/piconti/.conda/envs/text_prep_build/lib/python3.13/site-packages/PIL/Image.py'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">canonical_path:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_base_dir:</span> <span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs.save_as_jp2" title="Link to this definition"></a></dt>
+<dd><p>Save a list of PIL images as JPEG 2000 (<cite>.jp2</cite>) files in a structured directory.</p>
+<p>The function constructs output file paths using a canonical issue ID, derived from
+the given <cite>canonical_path</cite>. Each image is saved with a sequential page number in the
+format: <cite>“{canonical_issue_id}-pXXXX.jp2”</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pil_imgs</strong> (<em>list</em><em>[</em><em>Image.Image</em><em>]</em>) – A list of PIL images to be saved.</p></li>
+<li><p><strong>canonical_path</strong> (<em>str</em>) – The structured canonical path for the images.</p></li>
+<li><p><strong>out_base_dir</strong> (<em>str</em>) – The base output directory where the images should be saved.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>List of file paths where the images were saved and whether</dt><dd><p>all images were successfully saved (<cite>True</cite>) or if an error occurred (<cite>False</cite>).</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[list[str], bool]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>OSError</strong> – If there is an issue creating directories or saving images.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="architecture.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="importers.html" class="btn btn-neutral float-right" title="Importers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
