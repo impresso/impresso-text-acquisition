@@ -9,7 +9,7 @@ import pandas as pd
 
 import regex
 
-from impresso_essentials.utils import IssueDir, timestamp
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.importers.classes import CanonicalIssue
@@ -48,6 +48,8 @@ class FedgazNewspaperPage(TetmlNewspaperPage):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "cc": True,
             "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
@@ -55,6 +57,8 @@ class FedgazNewspaperPage(TetmlNewspaperPage):
 
         if not self.page_data["r"]:
             logger.warning("Page %s has no OCR text", self.id)
+
+        # TODO add img width & height
 
 
 class FedgazNewspaperIssue(TetmlNewspaperIssue):
@@ -102,6 +106,8 @@ class FedgazNewspaperIssue(TetmlNewspaperIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             # "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],

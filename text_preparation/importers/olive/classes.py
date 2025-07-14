@@ -12,7 +12,7 @@ from time import strftime
 from typing import Any
 from zipfile import ZipFile
 
-from impresso_essentials.utils import IssueDir, timestamp
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage, ZipArchive
@@ -87,10 +87,19 @@ class OliveNewspaperPage(CanonicalPage):
             if (el["legacy"]["id"] in element_ids)
         }
 
-        self.page_data = recompose_page(self.id, self.toc_data, elements, self.issue.clusters)
+        self.page_data = {
+            "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
+            "r": [],
+            "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
+        }
+        # TODO add page width & height
 
-        self.page_data["id"] = self.id
-        self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.id)
+        recomposed_page = recompose_page(self.id, self.toc_data, elements, self.issue.clusters)
+        self.page_data.update(recomposed_page)
 
         if len(self.page_data["r"]) == 0:
             logger.warning("Page %s has not OCR text", self.id)

@@ -15,7 +15,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 
-from impresso_essentials.utils import timestamp
+from impresso_essentials.utils import SourceMedium, SourceType, timestamp
 from text_preparation.importers import (
     CONTENTITEM_TYPE_ADVERTISEMENT,
     CONTENTITEM_TYPE_ARTICLE,
@@ -86,6 +86,7 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
     def _convert_coordinates(self, page_regions: list[dict]) -> tuple[bool, list[dict]]:
         success = False
         try:
+            # TODO add width & height
             img_props = self.issue.image_properties[self.number]
             x_res = img_props["x_resolution"]
             y_res = img_props["y_resolution"]
@@ -594,6 +595,8 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": content_items,
             "pp": [p.id for p in self.pages],
         }

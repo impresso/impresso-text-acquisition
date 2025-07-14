@@ -10,7 +10,7 @@ import os
 from time import strftime
 from zipfile import ZipFile
 
-from impresso_essentials.utils import timestamp
+from impresso_essentials.utils import SourceType, SourceMedium, timestamp
 from text_preparation.importers.classes import CanonicalIssue, ZipArchive
 from text_preparation.importers.mets_alto.alto import parse_printspace
 from text_preparation.importers.mets_alto.classes import MetsAltoCanonicalPage
@@ -48,6 +48,7 @@ class SWANewspaperPage(MetsAltoCanonicalPage):
         super().__init__(_id, number, filename, basedir, encoding=SWA_XML_ENCODING)
         self.iiif = os.path.join(IIIF_IMG_BASE_URI, filename.split(".")[0])
         self.page_data["iiif_img_base_uri"] = self.iiif
+        # TODO add page width & height
 
     def add_issue(self, issue: CanonicalIssue) -> None:
         self.issue = issue
@@ -139,14 +140,14 @@ class SWANewspaperIssue(CanonicalIssue):
         self._find_pages()
         self._find_content_items()
 
-        iiif_manifest = os.path.join(
-            IIIF_PRES_BASE_URI, f"{self.id}-issue", IIIF_MANIFEST_SUFFIX
-        )
+        iiif_manifest = os.path.join(IIIF_PRES_BASE_URI, f"{self.id}-issue", IIIF_MANIFEST_SUFFIX)
 
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,

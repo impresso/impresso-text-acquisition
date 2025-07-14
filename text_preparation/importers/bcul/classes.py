@@ -13,7 +13,7 @@ from typing import Any
 import requests
 from bs4 import BeautifulSoup, Tag
 
-from impresso_essentials.utils import timestamp
+from impresso_essentials.utils import SourceMedium, SourceType, timestamp
 from text_preparation.importers.bcul.helpers import (
     find_mit_file,
     get_page_number,
@@ -67,6 +67,8 @@ class BculNewspaperPage(CanonicalPage):
             "id": _id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "r": [],  # here go the page regions
             "iiif_img_base_uri": iiif_uri,
         }
@@ -176,6 +178,8 @@ class BculNewspaperIssue(CanonicalIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": self.iiif_manifest,

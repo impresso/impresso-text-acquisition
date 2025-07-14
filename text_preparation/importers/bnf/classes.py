@@ -12,7 +12,7 @@ from glob import glob
 from time import strftime
 
 from bs4 import BeautifulSoup
-from impresso_essentials.utils import IssueDir, timestamp
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.bnf.helpers import (
@@ -145,6 +145,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         self.issue_uid = os.path.basename(issue_dir.path)
         self.secondary_date = issue_dir.secondary_date
         super().__init__(issue_dir)
+        # TODO add page width & height
 
     @property
     def xml(self) -> BeautifulSoup:
@@ -188,9 +189,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         ]
 
         self.pages = {}
-        for filename, page_no, page_id in zip(
-            page_filenames, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_filenames, page_numbers, page_canonical_names):
             try:
                 self.pages[page_no] = BnfNewspaperPage(page_id, page_no, filename, ocr_path)
             except Exception as e:
@@ -254,9 +253,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
 
         return by_type
 
-    def _flatten_sections(
-        self, by_type: dict, struct_content
-    ) -> dict[str, list[tuple[str, str]]]:
+    def _flatten_sections(self, by_type: dict, struct_content) -> dict[str, list[tuple[str, str]]]:
         """Flatten the sections of the issue.
 
         This means making the children parts standalone CIs.
@@ -424,6 +421,8 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,

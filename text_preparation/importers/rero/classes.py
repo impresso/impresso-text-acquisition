@@ -13,7 +13,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 
-from impresso_essentials.utils import timestamp
+from impresso_essentials.utils import SourceMedium, SourceType, timestamp
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPES
 from text_preparation.importers.mets_alto import (
     MetsAltoCanonicalIssue,
@@ -84,6 +84,7 @@ class ReroNewspaperPage(MetsAltoCanonicalPage):
 
         page_tag = self.xml.find("Page")
         self.page_width = float(page_tag.get("WIDTH"))
+        # TODO add page with & height
 
     def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
@@ -440,10 +441,12 @@ class ReroNewspaperIssue(MetsAltoCanonicalIssue):
         content_items = self._parse_content_items(mets_doc)
 
         self.issue_data = {
+            "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": content_items,
-            "id": self.id,
             "pp": [p.id for p in self.pages],
         }
 

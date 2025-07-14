@@ -17,7 +17,7 @@ import numpy as np
 from bs4 import BeautifulSoup
 import cv2 as cv
 
-from impresso_essentials.utils import IssueDir, timestamp
+from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, timestamp
 from text_preparation.importers.classes import CanonicalIssue, ZipArchive
 from text_preparation.tokenization import insert_whitespace
 
@@ -254,9 +254,7 @@ def recompose_ToC(
     # Added deep copy because function changes toc_data
     toc_data = copy.deepcopy(original_toc_data)
     # concate content items from all pages into a single flat list
-    content_items = [
-        toc_data[pn][elid] for pn in toc_data.keys() for elid in toc_data[pn].keys()
-    ]
+    content_items = [toc_data[pn][elid] for pn in toc_data.keys() for elid in toc_data[pn].keys()]
 
     # filter out those items that are part of a multipart article
     contents = []
@@ -301,9 +299,7 @@ def recompose_ToC(
         elif item["type"] == "Picture":
 
             # find in which page the image is
-            page_no = [
-                page_no for page_no in toc_data if item["legacy_id"] in toc_data[page_no]
-            ]
+            page_no = [page_no for page_no in toc_data if item["legacy_id"] in toc_data[page_no]]
 
             # get the new canonical id via the legacy id
             item["m"]["id"] = item["id"]
@@ -383,7 +379,7 @@ def recompose_page(
     Returns:
         dict[str, Any]: Page data according to impresso canonical format.
     """
-    page = {"r": [], "cdt": strftime("%Y-%m-%d %H:%M:%S"), "ts": timestamp()}
+    page = {"r": []}
     ordered_elements = sorted(list(info_from_toc.values()), key=itemgetter("seq"))
 
     id_mappings = {legacy_id: info_from_toc[legacy_id]["id"] for legacy_id in info_from_toc}

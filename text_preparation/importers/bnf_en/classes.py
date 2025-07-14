@@ -12,7 +12,7 @@ from typing import Any, Optional
 
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
-from impresso_essentials.utils import IssueDir, timestamp
+from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, timestamp
 
 from text_preparation.importers import (
     CONTENTITEM_TYPES,
@@ -66,6 +66,7 @@ class BnfEnNewspaperPage(MetsAltoCanonicalPage):
 
         page_tag = self.xml.find("Page")
         self.page_width = float(page_tag.get("WIDTH"))
+        # TODO add page width & heigh
 
     def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
@@ -390,6 +391,8 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "i": content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,

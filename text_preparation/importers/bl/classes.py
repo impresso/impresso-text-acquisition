@@ -11,7 +11,7 @@ from time import strftime
 from typing import Any
 
 from bs4.element import Tag
-from impresso_essentials.utils import timestamp
+from impresso_essentials.utils import SourceType, SourceMedium, timestamp
 from text_preparation.importers import (
     CONTENTITEM_TYPES,
     CONTENTITEM_TYPE_IMAGE,
@@ -96,18 +96,14 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
             for file in os.listdir(self.path)
             if (not file.startswith(".") and ".xml" in file and "mets" not in file)
         ]
-        page_numbers = [
-            int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names
-        ]
+        page_numbers = [int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names]
 
         page_canonical_names = [
             "{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers
         ]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
                 self.pages.append(BlNewspaperPage(page_id, page_no, filename, self.path))
             except Exception as e:
@@ -293,9 +289,11 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
         content_items = self._parse_content_items()
 
         self.issue_data = {
-            "i": content_items,
+            "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
-            "id": self.id,
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
+            "i": content_items,
             "pp": [p.id for p in self.pages],
         }

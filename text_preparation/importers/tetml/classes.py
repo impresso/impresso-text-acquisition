@@ -5,7 +5,7 @@ import logging
 from pathlib import Path
 from time import strftime
 
-from impresso_essentials.utils import IssueDir, timestamp
+from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
@@ -37,10 +37,14 @@ class TetmlNewspaperPage(CanonicalPage):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "cc": True,
             "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
         }
+
+        # TODO add page width & height
 
         if not self.page_data["r"]:
             logger.warning("Page %s has no OCR text", self.id)
@@ -86,6 +90,8 @@ class TetmlNewspaperIssue(CanonicalIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             # "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
