@@ -31,6 +31,7 @@ Documentaton = "https://impresso-text-importer.readthedocs.io/en/latest/index.ht
 
 [tool.setuptools.dynamic]
 version = {attr = "text_preparation.__version__"}
+dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.packages.find]
 include = ["text_preparation*"]
