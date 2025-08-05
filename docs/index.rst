@@ -19,6 +19,7 @@ This grouping means that there are two main modules to this library:
 
    install
    architecture
+   preprocessing
    importers
    rebuilders
    utils

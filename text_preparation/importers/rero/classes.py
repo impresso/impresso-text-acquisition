@@ -13,16 +13,14 @@ from typing import Any
 from bs4 import BeautifulSoup
 from bs4.element import NavigableString, Tag
 
+from impresso_essentials.utils import SourceMedium, SourceType, timestamp
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPES
 from text_preparation.importers.mets_alto import (
-    MetsAltoNewspaperIssue,
-    MetsAltoNewspaperPage,
+    MetsAltoCanonicalIssue,
+    MetsAltoCanonicalPage,
     parse_mets_amdsec,
 )
-from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +59,7 @@ def convert_coordinates(
     return [int(c / factor) for c in coords]
 
 
-class ReroNewspaperPage(MetsAltoNewspaperPage):
+class ReroNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in RERO (Mets/Alto) format.
 
     Args:
@@ -74,7 +72,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
@@ -86,8 +84,9 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
 
         page_tag = self.xml.find("Page")
         self.page_width = float(page_tag.get("WIDTH"))
+        # TODO add page with & height
 
-    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+    def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
         self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.id)
 
@@ -122,9 +121,7 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
         success = False
         try:
             for region in page_regions:
-                region["c"] = convert_coordinates(
-                    region["c"], image_properties, self.page_width
-                )
+                region["c"] = convert_coordinates(region["c"], image_properties, self.page_width)
                 for paragraph in region["p"]:
                     paragraph["c"] = convert_coordinates(
                         paragraph["c"], image_properties, self.page_width
@@ -139,13 +136,11 @@ class ReroNewspaperPage(MetsAltoNewspaperPage):
                             )
             success = True
         except Exception as e:
-            logger.error(
-                "Error %s occurred when converting coordinates for %s", e, self.id
-            )
+            logger.error("Error %s occurred when converting coordinates for %s", e, self.id)
         return success, page_regions
 
 
-class ReroNewspaperIssue(MetsAltoNewspaperIssue):
+class ReroNewspaperIssue(MetsAltoCanonicalIssue):
     """Newspaper Issue in RERO (Mets/Alto) format.
 
     All functions defined in this child class are specific to parsing RERO
@@ -157,12 +152,11 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict[str, Any]): metadata allowing to convert region
             OCR/OLR coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
@@ -191,13 +185,9 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         ]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
-                self.pages.append(
-                    ReroNewspaperPage(page_id, page_no, filename, alto_path)
-                )
+                self.pages.append(ReroNewspaperPage(page_id, page_no, filename, alto_path))
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -334,7 +324,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
             logger.warning("Found new content item type: %s", div_type)
 
         metadata = {
-            "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+            "id": f"{self.id}-i{str(counter).zfill(4)}",
             "tp": div_type,
             "pp": [],
             "t": item_div.get("LABEL"),
@@ -343,7 +333,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         # Get CI language
         language = self._get_ci_language(item_div.get("DMDID"), mets_doc)
         if language is not None:
-            metadata["l"] = language
+            metadata["lg"] = language
 
         content_item = {
             "m": metadata,
@@ -358,9 +348,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                 content_item["m"]["pp"].append(pge_no)
 
         if content_item["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
-            (content_item["c"], content_item["m"]["iiif_link"]) = self._get_image_info(
-                content_item
-            )
+            (content_item["c"], content_item["m"]["iiif_link"]) = self._get_image_info(content_item)
         return content_item
 
     def _decompose_section(self, div: Tag) -> list[Tag]:
@@ -453,10 +441,12 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
         content_items = self._parse_content_items(mets_doc)
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "i": content_items,
             "id": self.id,
-            "ar": self.rights,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
+            "i": content_items,
             "pp": [p.id for p in self.pages],
         }
 
@@ -515,9 +505,7 @@ class ReroNewspaperIssue(MetsAltoNewspaperIssue):
                     int(float(height)),
                 ]
 
-        coords = convert_coordinates(
-            coords, self.image_properties[page.number], page.page_width
-        )
+        coords = convert_coordinates(coords, self.image_properties[page.number], page.page_width)
 
         iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.id, IIIF_SUFFIX)
 

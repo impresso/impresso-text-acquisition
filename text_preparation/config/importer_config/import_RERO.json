@@ -1,5 +1,5 @@
 {
-    "newspapers": {
+    "titles": {
         "BDC": [],
         "CDV": [],
         "DLE": [],
@@ -16,8 +16,7 @@
         "LSR": [],
         "LTF": [],
         "LVE": []
-      },
-    "exclude_newspapers": [],
+    },
+    "exclude_titles": [],
     "year_only": false
-  }
-  
+}

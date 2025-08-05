@@ -5,10 +5,10 @@ import logging
 from pathlib import Path
 from time import strftime
 
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
-from text_preparation.importers.classes import NewspaperIssue, NewspaperPage
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.tetml.parsers import tetml_parser
 
 logger = logging.getLogger(__name__)
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
-class TetmlNewspaperPage(NewspaperPage):
+class TetmlNewspaperPage(CanonicalPage):
     """Generic class representing a page in Tetml format.
 
     :param int number: Page number.
@@ -36,22 +36,27 @@ class TetmlNewspaperPage(NewspaperPage):
         self.page_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
             "cc": True,
             "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
             "r": self.page_content["r"],
         }
 
+        # TODO add page width & height
+
         if not self.page_data["r"]:
             logger.warning("Page %s has no OCR text", self.id)
 
-    def add_issue(self, issue: NewspaperIssue):
+    def add_issue(self, issue: CanonicalIssue):
         if issue is None:
-            raise ValueError(f"No NewspaperIssue for {self.id}")
+            raise ValueError(f"No CanonicalIssue for {self.id}")
 
         self.issue = issue
 
 
-class TetmlNewspaperIssue(NewspaperIssue):
+class TetmlNewspaperIssue(CanonicalIssue):
     """Class representing a newspaper issue in TETML format.
 
     Upon object initialization the following things happen:
@@ -76,9 +81,7 @@ class TetmlNewspaperIssue(NewspaperIssue):
         self.article_data = self.parse_articles()
 
         # using canonical ('m') and additional non-canonical ('meta') metadata
-        self.content_items = [
-            {"m": art["m"], "meta": art["meta"]} for art in self.article_data
-        ]
+        self.content_items = [{"m": art["m"], "meta": art["meta"]} for art in self.article_data]
 
         # instantiate the individual pages
         self._find_pages()
@@ -86,10 +89,12 @@ class TetmlNewspaperIssue(NewspaperIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "s": None,  # TODO: ignore style for the time being
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
+            # "s": None,  # TODO: ignore style for the time being
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
-            "ar": self.rights,
         }
 
         logger.info("Finished parsing %s", self.id)
@@ -147,7 +152,5 @@ class TetmlNewspaperIssue(NewspaperIssue):
             for can_page, page_content in zip(can_pages, art["pages"]):
                 can_id = f"{self.id}-p{can_page:04}"
                 self.pages.append(
-                    TetmlNewspaperPage(
-                        can_id, can_page, page_content, art["meta"]["tetml_path"]
-                    )
+                    TetmlNewspaperPage(can_id, can_page, page_content, art["meta"]["tetml_path"])
                 )

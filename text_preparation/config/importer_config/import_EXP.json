@@ -1,7 +1,7 @@
 {
-  "newspapers": {
-      "EXP": []
+    "titles": {
+        "EXP": []
     },
-  "exclude_newspapers": [],
-  "year_only": false
+    "exclude_titles": [],
+    "year_only": false
 }

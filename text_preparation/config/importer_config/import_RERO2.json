@@ -1,5 +1,5 @@
 {
-    "newspapers": {
+    "titles": {
         "FZG": "1899/01/01-1950/01/01",
         "LLE": "1899/01/01-1950/01/01",
         "BNN": [],
@@ -10,8 +10,7 @@
         "MGS": [],
         "NTS": [],
         "NZG": []
-      },
-    "exclude_newspapers": [],
+    },
+    "exclude_titles": [],
     "year_only": false
-  }
-  
+}

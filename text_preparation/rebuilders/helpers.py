@@ -3,6 +3,7 @@
 import json
 import logging
 import os
+import datetime
 from typing import Any, Optional
 
 from impresso_essentials.io.s3 import (
@@ -10,8 +11,18 @@ from impresso_essentials.io.s3 import (
     alternative_read_text,
     get_s3_resource,
 )
-
-from impresso_essentials.text_utils import WHITESPACE_RULES
+from impresso_essentials.io.fs_utils import parse_canonical_filename
+from impresso_essentials.utils import IssueDir, Timer, timestamp
+from text_preparation.rebuilders.audio_rebuilders import (
+    reconstruct_audios,
+    recompose_ci_from_audio_passim,
+    recompose_ci_from_audio_solr,
+)
+from text_preparation.rebuilders.paper_rebuilders import (
+    reconstruct_pages,
+    recompose_ci_from_page_passim,
+    recompose_ci_from_page_solr,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,18 +33,63 @@ IIIF_ENDPOINT_BASE_2_SUFFIX = {
     "https://scriptorium.bcu-lausanne.ch/api": "300,/0/default.jpg",
 }
 
+TYPE_MAPPINGS = {
+    "article": "ar",
+    "ar": "ar",
+    "advertisement": "ad",
+    "ad": "ad",
+    "pg": None,
+    "page": None,
+    "image": "img",
+    "table": "tb",
+    "death_notice": "ob",
+    "weather": "w",
+    "chronicle": "ch",
+}
+# TODO KB data: add familial announcement?
 
-def read_issue(issue, bucket_name, s3_client=None):
-    """Read the data from S3 for a given newspaper issue.
+
+def ci_has_problem(ci: dict[str, Any]) -> bool:
+    """Helper function to keep CIs with problems.
+
+    Args:
+        ci (dict[str, Any]): Input CI
+
+    Returns:
+        bool: Whether a problem was detected in the CI.
+    """
+    return ci["has_problem"]
 
 
-    :param issue: input issue
-    :type issue: `IssueDir`
-    :param bucket_name: bucket's name
-    :type bucket_name: str
-    :param s3_client: open connection to S3 storage
-    :type s3_client: `boto3.resources.factory.s3.ServiceResource`
-    :return: a JSON representation of the issue object
+def ci_without_problem(ci: dict[str, Any]) -> bool:
+    """Helper function to keep CIs without problems, and log others.
+
+    Args:
+        ci (dict[str, Any]): Input CI
+
+    Returns:
+        bool: Whether the CI ws problem-free.
+    """
+    if ci["has_problem"]:
+        msg = f"Content-item {ci['m']['id']} won't be rebuilt as a problem was found."
+        logger.warning(msg)
+        print(msg)
+    return not ci["has_problem"]
+
+
+def read_issue(
+    issue: IssueDir, bucket_name: str, s3_client=None
+) -> tuple[IssueDir, dict[str, Any]]:
+    """Read the data from S3 for a given canonical issue.
+
+    Args:
+        issue (IssueDir): Input issue to fetch form S3
+        bucket_name (str): S3 bucket's name
+        s3_client (`boto3.resources.factory.s3.ServiceResource`, optional): open connection
+            to S3 storage. Defaults to None.
+
+    Returns:
+        tuple[IssueDir, dict[str, Any]]: Input issue and its JSON canonical representation.
     """
     if s3_client is None:
         s3_client = get_s3_resource()
@@ -45,107 +101,282 @@ def read_issue(issue, bucket_name, s3_client=None):
     return (issue, issue_json)
 
 
-def read_page(page_key, bucket_name, s3_client):
-    """Read the data from S3 for a given newspaper pages."""
+def read_page(page_key: str, bucket_name: str, s3_client) -> dict[str, Any] | None:
+    """Read the data from S3 for a given canonical page
+
+    Args:
+        page_key (str): S3 key to the page
+        bucket_name (str): S3 bucket's name
+        s3_client (`boto3.resources.factory.s3.ServiceResource`): open connection to S3 storage.
+
+    Returns:
+        dict[str, Any] | None: The page's JSON representation or None if the page could not be read.
+    """
 
     try:
         content_object = s3_client.Object(bucket_name, page_key)
         file_content = content_object.get()["Body"].read().decode("utf-8")
         page_json = json.loads(file_content)
-        logger.info("Read page %s from bucket %s", page_key, bucket_name)
+        # logger.info("Read page %s from bucket %s", page_key, bucket_name)
         return page_json
-    except Exception as e:
-        logger.error("There was a problem reading %s: %s", page_key, e)
+    except Exception as e:  # Replace with specific exceptions
+        if isinstance(e, s3_client.meta.client.exceptions.NoSuchKey):
+            msg = f"Key {page_key} does not exist in bucket {bucket_name}."
+        elif isinstance(e, s3_client.meta.client.exceptions.ClientError):
+            msg = f"Client error occurred while accessing {page_key}: {e}"
+        elif isinstance(e, json.JSONDecodeError):
+            msg = f"Failed to decode JSON for {page_key}: {e}"
+        else:
+            msg = f"An unexpected error occurred while reading {page_key}: {e}"
+        print(msg)
+        logger.error(msg)
         return None
 
 
-def read_issue_pages(issue, issue_json, bucket=None):
-    """Read all pages of a given issue from S3 in parallel."""
-    newspaper = issue.journal
+def read_issue_supports(
+    issue: IssueDir, issue_json: dict[str, Any], is_audio: bool, bucket: str | None = None
+) -> tuple[IssueDir, dict[str, Any]]:
+    """Read all pages/audio records of a given issue from S3 in parallel, and add them to it.
+
+    The found and read files will then be added to the issue's canonical json representation
+    in the properties `rr` or `pp` based on `is_audio`.
+
+    Args:
+        issue (IssueDir): IssueDir object for which to read the pages/audios.
+        issue_json (dict[str, Any]): `issue_data` dict of the given issue.
+        is_audio (bool): Whether the issue corresponds to audio data.
+        bucket (str | None, optional): Bucket where to go fetch the pages/audios.
+            Defaults to None.
+
+    Returns:
+        tuple[IssueDir, dict[str, Any]]: The given issue, with the pages/audios data added.
+    """
+    support = "audios" if is_audio else "pages"
+    alias = issue.alias
     year = issue.date.year
 
-    filename = (
-        f"{bucket}/{newspaper}/pages/{newspaper}-{year}"
-        f"/{issue_json['id']}-pages.jsonl.bz2"
+    if "s3//" not in bucket:
+        bucket = f"s3://{bucket}"
+
+    # TODO add provider
+    filename = os.path.join(
+        bucket, alias, support, f"{alias}-{year}", f"{issue_json['id']}-{support}.jsonl.bz2"
     )
 
-    pages = [
-        json.loads(page)
-        for page in alternative_read_text(filename, IMPRESSO_STORAGEOPT)
-    ]
+    supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
 
-    print(filename)
-    issue_json["pp"] = pages
-    del pages
+    if is_audio:
+        issue_json["rr"] = supports
+    else:
+        issue_json["pp"] = supports
+    del supports
     return (issue, issue_json)
 
 
-def rejoin_articles(issue, issue_json):
-    print(f"Rejoining pages for issue {issue.path}")
-    articles = []
-    for article in issue_json["i"]:
+def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
+    """Rebuilds the text of an article content-item given its metadata as input.
 
-        art_id = article["m"]["id"]
-        article["has_problem"] = False
-        article["m"]["pp"] = sorted(list(set(article["m"]["pp"])))
+    Note:
+        This rebuild function is thought especially for ingesting the newspaper
+        data into our Solr index.
 
-        pages = []
-        page_ids = [page["id"] for page in issue_json["pp"]]
-        for page_no in article["m"]["pp"]:
-            # given a page  number (from issue.json) and its canonical ID
-            # find the position of that page in the array of pages (with text
-            # regions)
-            page_no_string = f"p{str(page_no).zfill(4)}"
-            try:
-                page_idx = [
-                    n
-                    for n, page in enumerate(issue_json["pp"])
-                    if page_no_string in page["id"]
-                ][0]
-                pages.append(issue_json["pp"][page_idx])
-            except IndexError:
-                article["has_problem"] = True
-                articles.append(article)
-                logger.error(
-                    "Page %s not found for item %s. Issue %s has pages %s",
-                    page_no_string,
-                    art_id,
-                    issue_json["id"],
-                    page_ids,
-                )
-                continue
+    Args:
+        content_item (dict[str, Any]): The content-item to rebuilt using its metadata.
 
-        regions_by_page = []
-        for page in pages:
-            regions_by_page.append(
-                [
-                    region
-                    for region in page["r"]
-                    if "pOf" in region and region["pOf"] == art_id
-                ]
-            )
-        article["pprr"] = regions_by_page
-        try:
-            convert_coords = [p["cc"] for p in pages]
-            article["m"]["cc"] = sum(convert_coords) / len(convert_coords) == 1.0
-        except Exception:
-            # it just means there was no CC field in the pages
-            article["m"]["cc"] = None
+    Returns:
+        dict[str, Any]: The rebuilt content-item following the Impresso JSON Schema.
+    """
+    t = Timer()
 
-        articles.append(article)
-    return articles
+    ci_id = content_item["m"]["id"]
+    logger.debug("Started rebuilding ci %s", ci_id)
+
+    year, month, day, _, ci_num = ci_id.split("-")[1:]
+    d = datetime.date(int(year), int(month), int(day))
+
+    if content_item["m"]["tp"] in TYPE_MAPPINGS:
+        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
+    else:
+        mapped_type = content_item["m"]["tp"]
+
+    if "lg" in content_item["m"]:
+        ci_lang = content_item["m"]["lg"]
+    elif "l" in content_item["m"]:
+        ci_lang = content_item["m"]["l"]
+    else:
+        ci_lang = None
+
+    # if the reading order is not defined, use the number associated to each CI
+    reading_order = content_item["m"]["ro"] if "ro" in content_item["m"] else int(ci_num[1:])
+    has_olr = False if mapped_type is None or content_item["st"] == "radio_broadcast" else True
+
+    support_field = "rr" if content_item["sm"] == "audio" else "pp"
+
+    solr_ci = {
+        "id": ci_id,
+        "ts": timestamp(),
+        support_field: content_item["m"][support_field],
+        "d": d.isoformat(),
+        # for audio, cc is true by default
+        "cc": True if content_item["sm"] == "audio" else content_item["m"]["cc"],
+        "olr": has_olr,
+        "st": content_item["st"],
+        "sm": content_item["sm"],
+        "lg": ci_lang,
+        "tp": mapped_type,
+        "ro": reading_order,
+    }
+
+    if mapped_type == "img":
+        solr_ci["iiif_link"] = reconstruct_iiif_link(content_item)
+
+    if content_item["sm"] == "audio":
+        solr_ci["stt"] = content_item["stt"]
+        solr_ci["dur"] = content_item["dur"]
+
+    # add the metadata on the content item if it's available
+    if "t" in content_item["m"]:
+        solr_ci["title"] = content_item["m"]["t"]
+    if "rc" in content_item:
+        solr_ci["rc"] = content_item["rc"]
+    if "rp" in content_item:
+        solr_ci["rp"] = content_item["rp"]
+
+    # special case for BL and SWISSINFO data - when there can be period-specific titles
+    if "var_t" in content_item["m"]:
+        solr_ci["var_t"] = content_item["m"]["var_t"]
+    # special case for INA data
+    if "archival_note" in content_item["m"]:
+        solr_ci["archival_note"] = content_item["m"]["archival_note"]
+
+    if mapped_type != "img":
+        if content_item["sm"] == "audio":
+            solr_ci = recompose_ci_from_audio_solr(solr_ci, content_item)
+        else:
+            solr_ci = recompose_ci_from_page_solr(solr_ci, content_item)
+        logger.debug("Done rebuilding CI %s (Took %s)", ci_id, t.stop())
+
+    return solr_ci
 
 
-def pages_to_article(article, pages):
-    """Return all text regions belonging to a given article."""
+def rebuild_for_passim(content_item: dict[str, Any]) -> dict[str, Any]:
+    """Rebuilds the text of an article content-item to be used with passim.
+
+    TODO Check that this works with passim!
+
+    Args:
+        content_item (dict[str, Any]): The content-item to rebuild using its metadata.
+
+    Returns:
+        dict[str, Any]: The rebuilt content-item built for passim.
+    """
+    alias, date, _, _, _, _ = parse_canonical_filename(content_item["m"]["id"])
+
+    ci_id = content_item["m"]["id"]
+    logger.debug("Started rebuilding article %s", ci_id)
+
+    # fetch the ci language, noting the deprecated "l" field
+    if "lg" in content_item["m"]:
+        ci_lang = content_item["m"]["lg"]
+    elif "l" in content_item["m"]:
+        ci_lang = content_item["m"]["l"]
+    else:
+        ci_lang = None
+
+    if content_item["m"]["tp"] in TYPE_MAPPINGS:
+        mapped_type = TYPE_MAPPINGS[content_item["m"]["tp"]]
+    else:
+        mapped_type = content_item["m"]["tp"]
+
+    passim_document = {
+        "series": alias,
+        "date": f"{date[0]}-{date[1]}-{date[2]}",
+        "id": content_item["m"]["id"],
+        "cc": content_item["m"]["cc"],
+        "tp": mapped_type,
+        "lg": ci_lang,
+    }
+
+    if content_item["sm"] == "audio":
+        passim_document["audios"] = []
+    else:
+        passim_document["pages"] = []
+
+    if "t" in content_item["m"]:
+        passim_document["title"] = content_item["m"]["t"]
+
+    if content_item["sm"] == "audio":
+        return recompose_ci_from_audio_passim(content_item, passim_document)
+    else:
+        return recompose_ci_from_page_passim(content_item, passim_document)
+
+
+def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, Any]]:
+    """Rejoin the CIs of a given issue using its pyhsical supports (pages or audio records).
+
+    Args:
+        issue (IssueDir): Issue directory of issue to be processed.
+        issue_json (dict[str, Any]): Issue canonical json wôf which to rejoin CIs.
+
+    Returns:
+        list[dict[str, Any]]: Processed content-items for the issue.
+    """
+    msg = f"Rejoining physical supports (pages or audios) for issue {issue_json['id']}"
+    logger.debug(msg)
+    cis = []
+    for ci in issue_json["i"]:
+
+        ci["has_problem"] = False
+        ci["sm"] = issue_json["sm"]
+        ci["st"] = issue_json["st"]
+
+        if issue_json["st"] == "radio_broadcast":
+            # if the radio channel and program are defined, add them to the content item
+            if "rc" in issue_json:
+                ci["rc"] = issue_json["rc"]
+            if "rp" in issue_json:
+                ci["rp"] = issue_json["rp"]
+            if "rr" in issue_json:
+                # TODO update in the case we can have >1 record per CI or vice-versa
+                if len(ci["m"]["rr"]) > 1:
+                    msg = (
+                        f"{ci['if']} - PROBLEM - more than one record for this CI! "
+                        "Taking only the first one."
+                    )
+                    print(msg)
+                    logger.warning(msg)
+                # taking the start time and duration of the first record for this CI
+                # (numbering starts at 1)
+                ci["stt"] = issue_json["rr"][ci["m"]["rr"][0] - 1]["stt"]
+                ci["dur"] = issue_json["rr"][ci["m"]["rr"][0] - 1]["dur"]
+
+        if issue_json["sm"] == "audio":
+            # for audio recordings there is only 1 per issue
+            ci["m"]["rr"] = sorted(list(set(ci["m"]["rr"])))
+            cis = reconstruct_audios(issue_json, ci, cis)
+        else:
+            ci["m"]["pp"] = sorted(list(set(ci["m"]["pp"])))
+            cis = reconstruct_pages(issue_json, ci, cis)
+
+    return cis
+
+
+def pages_to_article(article: dict[str, Any], pages: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return all text regions belonging to a given article."
+
+    Args:
+        article (dict[str, Any]): Article/CI for which to fetch the regions.
+        pages (list[dict[str, Any]]): Pages from which to fetch the regions.
+
+    Returns:
+        dict[str, Any]: Article completed with the regions extracted from the page.
+    """
     try:
         art_id = article["m"]["id"]
         print("Extracting text regions for article %s", art_id)
         regions_by_page = []
         for page in pages:
-            regions_by_page.append(
-                [region for region in page["r"] if region["pOf"] == art_id]
-            )
+            regions_by_page.append([region for region in page["r"] if region["pOf"] == art_id])
         convert_coords = [page["cc"] for page in pages]
         article["m"]["cc"] = sum(convert_coords) / len(convert_coords) == 1.0
         article["has_problem"] = False
@@ -252,60 +483,3 @@ def reconstruct_iiif_link(content_item: dict[str, Any]) -> str:
         # reconstruct the final image link
         return os.path.join(uri_base, coords, img_suffix)
     return None
-
-
-def insert_whitespace(
-    token: str,
-    next_t: Optional[str],
-    prev_t: Optional[str],
-    lang: Optional[str],
-) -> bool:
-    """Determine whether a whitespace should be inserted after a token.
-
-    Args:
-        token (str): Current token.
-        next_t (str): Following token.
-        prev_t (str): Previous token.
-        lang (str): Language of text.
-
-    Returns:
-        bool: Whether a whitespace should be inserted after the `token`.
-    """
-    # if current token text is None, previous token's whitespace rule applies
-    if token is None or len(token) == 0:
-        return False
-
-    wsrules = WHITESPACE_RULES[lang if lang in WHITESPACE_RULES else "other"]
-
-    insert_ws = True
-
-    if (
-        token in wsrules["pct_no_ws_before_after"]
-        or next_t in wsrules["pct_no_ws_before_after"]
-    ):
-        insert_ws = False
-
-    # the first char of the next token is punctuation.
-    elif next_t is not None and len(next_t) != 0 and (
-        next_t in wsrules["pct_no_ws_before"]
-        or next_t[0] in wsrules["pct_no_ws_before"]
-    ):
-        insert_ws = False
-
-    # the last char of current token is punctuation.
-    elif token in wsrules["pct_no_ws_after"] or token[-1] in wsrules["pct_no_ws_after"]:
-        insert_ws = False
-
-    elif token in wsrules["pct_number"] and prev_t is not None and next_t is not None:
-        if prev_t.isdigit() and next_t.isdigit():
-            return False
-        else:
-            return True
-
-    debug_msg = (
-        f"Insert whitespace: curr={token}, follow={next_t}, "
-        f"prev={prev_t} ({insert_ws})"
-    )
-    logger.debug(debug_msg)
-
-    return insert_ws

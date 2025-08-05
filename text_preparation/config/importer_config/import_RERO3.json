@@ -1,6 +1,11 @@
 {
-    "newspapers": {},
-    "exclude_newspapers": ["JDG", "GDL", "IMP", "EXP", "JDV"],
+    "titles": {},
+    "exclude_titles": [
+        "JDG",
+        "GDL",
+        "IMP",
+        "EXP",
+        "JDV"
+    ],
     "year_only": false
-  }
-  
+}

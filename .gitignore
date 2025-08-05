@@ -22,6 +22,7 @@ dask-worker-space/
 worker-*
 .idea/
 dist/*
+build/
 docs/node_modules
 old_text_importer/*
 text_preparation/data/sample_data/BCUL/257179/*

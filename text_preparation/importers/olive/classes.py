@@ -12,10 +12,10 @@ from time import strftime
 from typing import Any
 from zipfile import ZipFile
 
-from impresso_essentials.utils import IssueDir
+from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 from impresso_essentials.io.fs_utils import canonical_path
 
-from text_preparation.importers.classes import NewspaperIssue, NewspaperPage, ZipArchive
+from text_preparation.importers.classes import CanonicalIssue, CanonicalPage, ZipArchive
 from text_preparation.importers.olive.helpers import (
     combine_article_parts,
     convert_image_coordinates,
@@ -30,15 +30,12 @@ from text_preparation.importers.olive.parsers import (
     olive_toc_parser,
     parse_styles,
 )
-from text_preparation.utils import get_issue_schema, get_page_schema
 
 logger = logging.getLogger(__name__)
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 
 
-class OliveNewspaperPage(NewspaperPage):
+class OliveNewspaperPage(CanonicalPage):
     """Newspaper page in Olive format.
 
     Args:
@@ -52,7 +49,7 @@ class OliveNewspaperPage(NewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue | None): Issue this page is from.
+        issue (CanonicalIssue | None): Issue this page is from.
         toc_data (dict): Metadata about content items in the newspaper issue.
         image_info (dict): Metadata about the page image.
         page_xml (str): Path to the Olive XML file of the page.
@@ -81,7 +78,7 @@ class OliveNewspaperPage(NewspaperPage):
             ValueError: No Newspaper issue has been added to this page.
         """
         if self.issue is None:
-            raise ValueError(f"No NewspaperIssue for {self.id}")
+            raise ValueError(f"No CanonicalIssue for {self.id}")
 
         element_ids = self.toc_data.keys()
         elements = {
@@ -90,12 +87,19 @@ class OliveNewspaperPage(NewspaperPage):
             if (el["legacy"]["id"] in element_ids)
         }
 
-        self.page_data = recompose_page(
-            self.id, self.toc_data, elements, self.issue.clusters
-        )
+        self.page_data = {
+            "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
+            "r": [],
+            "iiif_img_base_uri": os.path.join(IIIF_ENDPOINT_URI, self.id),
+        }
+        # TODO add page width & height
 
-        self.page_data["id"] = self.id
-        self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.id)
+        recomposed_page = recompose_page(self.id, self.toc_data, elements, self.issue.clusters)
+        self.page_data.update(recomposed_page)
 
         if len(self.page_data["r"]) == 0:
             logger.warning("Page %s has not OCR text", self.id)
@@ -133,12 +137,12 @@ class OliveNewspaperPage(NewspaperPage):
         else:
             logger.debug("Image %s does not have image info", self.id)
 
-    def add_issue(self, issue: NewspaperIssue) -> None:
+    def add_issue(self, issue: CanonicalIssue) -> None:
         self.issue = issue
         self.archive = issue.archive
 
 
-class OliveNewspaperIssue(NewspaperIssue):
+class OliveNewspaperIssue(CanonicalIssue):
     """Newspaper Issue in Olive format.
 
     Upon object initialization the following things happen:
@@ -155,12 +159,11 @@ class OliveNewspaperIssue(NewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
         pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
         image_dirs (str): Path to the directory with the page images.
             Multiple paths should be separated by comma (",").
         archive (ZipArchive): ZipArchive for this issue.
@@ -200,10 +203,10 @@ class OliveNewspaperIssue(NewspaperIssue):
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
             "s": styles,
             "i": self.content_items,
             "pp": [p.id for p in self.pages],
-            "ar": self.rights,
         }
         logger.info("Finished parsing %s", self.id)
 
@@ -223,15 +226,11 @@ class OliveNewspaperIssue(NewspaperIssue):
         """
         archive_path = os.path.join(self.path, file)
         if os.path.isfile(archive_path):
-            archive_tmp_path = os.path.join(
-                temp_dir, canonical_path(self.issuedir, as_dir=True)
-            )
+            archive_tmp_path = os.path.join(temp_dir, canonical_path(self.issuedir, as_dir=True))
 
             try:
                 archive = ZipFile(archive_path)
-                logger.debug(
-                    "Contents of archive for %s: %s", self.id, archive.namelist()
-                )
+                logger.debug("Contents of archive for %s: %s", self.id, archive.namelist())
                 return ZipArchive(archive, archive_tmp_path)
             except Exception as e:
                 msg = f"Bad Zipfile for {self.id}, failed with error : {e}"
@@ -310,9 +309,7 @@ class OliveNewspaperIssue(NewspaperIssue):
                 logger.error(e)
         return images
 
-    def _parse_styles_gallery(
-        self, file: str = "styleGallery.txt"
-    ) -> list[dict[str, Any]]:
+    def _parse_styles_gallery(self, file: str = "styleGallery.txt") -> list[dict[str, Any]]:
         """Parse the style file (plain text).
 
         Args:
@@ -326,9 +323,7 @@ class OliveNewspaperIssue(NewspaperIssue):
             try:
                 styles = parse_styles(self.archive.read(file).decode())
             except Exception as e:
-                msg = (
-                    f"Parsing styles file {file} for {self.id}, failed with error: {e}"
-                )
+                msg = f"Parsing styles file {file} for {self.id}, failed with error: {e}"
                 logger.warning(msg)
         else:
             logger.warning("Could not find styles %s for %s", file, self.id)
@@ -352,9 +347,7 @@ class OliveNewspaperIssue(NewspaperIssue):
             [
                 item
                 for item in self.archive.namelist()
-                if ".xml" in item
-                and not item.startswith("._")
-                and ("/Ar" in item or "/Ad" in item)
+                if ".xml" in item and not item.startswith("._") and ("/Ar" in item or "/Ad" in item)
             ]
         )
 
@@ -417,19 +410,17 @@ class OliveNewspaperIssue(NewspaperIssue):
         json_data = []
         for im_dir in self.image_dirs.split(","):
             issue_dir = os.path.join(
-                im_dir, self.journal, str(self.date).replace("-", "/"), self.edition
+                im_dir, self.alias, str(self.date).replace("-", "/"), self.edition
             )
 
             issue_w_images = IssueDir(
-                journal=self.journal,
+                alias=self.alias,
                 date=self.date,
                 edition=self.edition,
                 path=issue_dir,
             )
 
-            image_info_name = canonical_path(
-                issue_w_images, suffix="image-info", extension=".json"
-            )
+            image_info_name = canonical_path(issue_w_images, suffix="image-info", extension=".json")
 
             image_info_path = os.path.join(issue_w_images.path, image_info_name)
 
@@ -443,9 +434,7 @@ class OliveNewspaperIssue(NewspaperIssue):
                         else:
                             return json_data
                     except Exception as e:
-                        logger.error(
-                            "Decoding file %s failed with '%s'", image_info_path, e
-                        )
+                        logger.error("Decoding file %s failed with '%s'", image_info_path, e)
                         raise e
         if len(json_data) == 0:
             raise ValueError(f"Could not find image info for {self.id}")
@@ -460,7 +449,7 @@ class OliveNewspaperIssue(NewspaperIssue):
             image_info = self._get_image_info()
             pages_xml = self._get_page_xml_files()
             for page_n, data in self.toc_data.items():
-                can_id = "{}-p{}".format(self.id, str(page_n).zfill(4))
+                can_id = f"{self.id}-p{str(page_n).zfill(4)}"
                 image_info_records = [p for p in image_info if int(p["pg"]) == page_n]
 
                 if len(image_info_records) == 0:
@@ -476,9 +465,7 @@ class OliveNewspaperIssue(NewspaperIssue):
                 self._convert_images(image_info_record, page_n, page_xml)
 
                 self.pages.append(
-                    OliveNewspaperPage(
-                        can_id, page_n, data, image_info_record, page_xml
-                    )
+                    OliveNewspaperPage(can_id, page_n, data, image_info_record, page_xml)
                 )
 
     def _convert_images(
@@ -499,8 +486,7 @@ class OliveNewspaperIssue(NewspaperIssue):
             images_in_page = [
                 content_item
                 for content_item in self.content_items
-                if content_item["m"]["tp"] == "picture"
-                and page_n in content_item["m"]["pp"]
+                if content_item["m"]["tp"] == "picture" and page_n in content_item["m"]["pp"]
             ]
 
             for image in images_in_page:

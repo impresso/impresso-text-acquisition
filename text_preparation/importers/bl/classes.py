@@ -11,19 +11,17 @@ from time import strftime
 from typing import Any
 
 from bs4.element import Tag
+from impresso_essentials.utils import SourceType, SourceMedium, timestamp
 from text_preparation.importers import (
     CONTENTITEM_TYPES,
     CONTENTITEM_TYPE_IMAGE,
     CONTENTITEM_TYPE_ADVERTISEMENT,
 )
 from text_preparation.importers.mets_alto import (
-    MetsAltoNewspaperIssue,
-    MetsAltoNewspaperPage,
+    MetsAltoCanonicalIssue,
+    MetsAltoCanonicalPage,
 )
-from text_preparation.utils import get_issue_schema, get_page_schema, get_reading_order
-
-IssueSchema = get_issue_schema()
-Pageschema = get_page_schema()
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +31,7 @@ BL_PICTURE_TYPE = "picture"
 BL_AD_TYPE = "advert"
 
 
-class BlNewspaperPage(MetsAltoNewspaperPage):
+class BlNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in BL (Mets/Alto) format.
 
     Args:
@@ -47,23 +45,23 @@ class BlNewspaperPage(MetsAltoNewspaperPage):
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
         number (int): Page number.
         page_data (dict[str, Any]): Page data according to canonical format.
-        issue (NewspaperIssue): Issue this page is from.
+        issue (CanonicalIssue): Issue this page is from.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
     """
 
-    def add_issue(self, issue: MetsAltoNewspaperIssue) -> None:
+    def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         """Add the given `BlNewspaperIssue` as an attribute for this class.
 
         Args:
-            issue (MetsAltoNewspaperIssue): Issue this page is from
+            issue (MetsAltoCanonicalIssue): Issue this page is from
         """
         self.issue = issue
         self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.id)
 
 
-class BlNewspaperIssue(MetsAltoNewspaperIssue):
+class BlNewspaperIssue(MetsAltoCanonicalIssue):
     """Newspaper Issue in BL (Mets/Alto) format.
 
     All functions defined in this child class are specific to parsing BL
@@ -75,12 +73,11 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
     Attributes:
         id (str): Canonical Issue ID (e.g. ``GDL-1900-01-02-a``).
         edition (str): Lower case letter ordering issues of the same day.
-        journal (str): Newspaper unique identifier or name.
+        alias (str): Newspaper unique alias (identifier or name).
         path (str): Path to directory containing the issue's OCR data.
         date (datetime.date): Publication date of issue.
         issue_data (dict[str, Any]): Issue data according to canonical format.
-        pages (list): list of :obj:`NewspaperPage` instances from this issue.
-        rights (str): Access rights applicable to this issue.
+        pages (list): list of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict[str, Any]): metadata allowing to convert region
             OCR/OLR coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
@@ -99,22 +96,16 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
             for file in os.listdir(self.path)
             if (not file.startswith(".") and ".xml" in file and "mets" not in file)
         ]
-        page_numbers = [
-            int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names
-        ]
+        page_numbers = [int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names]
 
         page_canonical_names = [
             "{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers
         ]
 
         self.pages = []
-        for filename, page_no, page_id in zip(
-            page_file_names, page_numbers, page_canonical_names
-        ):
+        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
-                self.pages.append(
-                    BlNewspaperPage(page_id, page_no, filename, self.path)
-                )
+                self.pages.append(BlNewspaperPage(page_id, page_no, filename, self.path))
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -228,16 +219,14 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         # Get content item's language
         lang = item_dmd_sec.findChild("languageTerm")
         if lang is not None:
-            metadata["l"] = lang.text
+            metadata["lg"] = lang.text
 
         # Load physical struct map, and find all parts in physical map
         content_item = {
             "m": metadata,
             "l": {
                 "id": item_div.get("ID"),
-                "parts": self._parse_content_parts(
-                    item_div, phys_structmap, structlink
-                ),
+                "parts": self._parse_content_parts(item_div, phys_structmap, structlink),
             },
         }
         for p in content_item["l"]["parts"]:
@@ -279,9 +268,7 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
             # Parse Each contentitem
             dmd_sec = mets_doc.find("dmdSec", {"ID": div.get("DMDID")})
             content_items.append(
-                self._parse_content_item(
-                    div, counter, phys_structmap, structlink, dmd_sec
-                )
+                self._parse_content_item(div, counter, phys_structmap, structlink, dmd_sec)
             )
             counter += 1
 
@@ -302,9 +289,11 @@ class BlNewspaperIssue(MetsAltoNewspaperIssue):
         content_items = self._parse_content_items()
 
         self.issue_data = {
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
-            "i": content_items,
             "id": self.id,
-            "ar": self.rights,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
+            "i": content_items,
             "pp": [p.id for p in self.pages],
         }
