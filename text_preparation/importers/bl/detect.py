@@ -15,6 +15,10 @@ from bs4 import BeautifulSoup
 logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
+# TODO remove since it's been copied to original/BL
+BL_SAMPLE_DIR = "../text_preparation/data/sample_data/BL/"
+BL_OCR_FILE = "BL_ocr_formats.json"
+# add here the file with the mapping from issue to working and alternative titles
 
 BlIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path", "nlp"])
 """A light-weight data structure to represent a newspaper issue.
@@ -129,50 +133,51 @@ def _extract_all(archive_dir: str, destination: str) -> None:
 
 
 def dir2issue(path: str) -> BlIssueDir | None:
-    """Given the BLIP directory of an issue, create the `BlIssueDir` object.
-
-    TODO: add NLP?
+    """Given the directory of an issue, create the `BlIssueDir` object.
 
     Args:
-        path (str): The BLIP directory path
+        path (str): The issue directory path
 
     Returns:
         Optional[BlIssueDir]: The corresponding Issue
     """
     split = path.split("/")
-    alias, year, month_day = split[-3], int(split[-2]), split[-1]
-    month, day = int(month_day[:2]), int(month_day[2:])
+    alias, nlp, year, month, day = (
+        split[-5],
+        split[-4],
+        int(split[-3]),
+        int(split[-2]),
+        int(split[-1]),
+    )
 
     return BlIssueDir(
-        provider="BL",
-        alias=alias,
-        date=date(year, month, day),
-        edition="a",
-        path=path,
+        provider="BL", alias=alias, date=date(year, month, day), edition="a", path=path, nlp=nlp
     )
 
 
-def detect_issues(base_dir: str, tmp_dir: str) -> list[BlIssueDir]:
+def detect_issues(
+    base_dir: str, bl_ocr_formats: str | None = BL_OCR_FILE, format: str = "OmniPage-NLP"
+) -> list[BlIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that the BL used to
     organize the dump of Mets/Alto OCR data.
-    TODO add NLP
-    TODO update to match new structure
 
     Args:
         base_dir (str): Path to the base directory of newspaper data,
-            this directory should contain `zip` files.
+            this directory should contain directories corresponding to the BL aliases.
         tmp_dir (str): Temporary directory to unzip archives.
 
     Returns:
         list[BlIssueDir]: List of `BlIssueDir` instances to import.
     """
     # Extract all zips to tmp_dir
-    _extract_all(base_dir, tmp_dir)
+    # TODO choose the BL format file corresponding to the correct format
+    # _extract_all(base_dir, tmp_dir)
 
+    # get the list of issues from the processed OCR formats file.
+    # This will substantially reduce the initial processing time for detecting issues.
     # base_dir becomes extracted archives dir
-    base_dir = tmp_dir
 
     # Get all BLIP dirs (named with NLP ID)
     blip_dirs = [x for x in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, x))]

@@ -21,6 +21,7 @@ from text_preparation.importers.mets_alto import (
     MetsAltoCanonicalIssue,
     MetsAltoCanonicalPage,
 )
+from text_preparation.importers.bl.detect import BlIssueDir
 from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
@@ -31,8 +32,8 @@ BL_PICTURE_TYPE = "picture"
 BL_AD_TYPE = "advert"
 
 
-class BlNewspaperPage(MetsAltoCanonicalPage):
-    """Newspaper page in BL (Mets/Alto) format.
+class BlOmniNewspaperPage(MetsAltoCanonicalPage):
+    """Newspaper page in BL (Mets/Alto) OmniPage-NLP format.
 
     Args:
         _id (str): Canonical page ID.
@@ -61,8 +62,8 @@ class BlNewspaperPage(MetsAltoCanonicalPage):
         self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.id)
 
 
-class BlNewspaperIssue(MetsAltoCanonicalIssue):
-    """Newspaper Issue in BL (Mets/Alto) format.
+class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
+    """Newspaper Issue in BL (Mets/Alto) OmniPage-NLP format.
 
     All functions defined in this child class are specific to parsing BL
     Mets/Alto format.
@@ -82,6 +83,15 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
             OCR/OLR coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
     """
+
+    def __init__(self, issue_dir: BlIssueDir) -> None:
+
+        # assign the NLP to the issue
+        self.nlp = issue_dir.nlp
+
+        # TODO create and read doc that finds the variant title
+
+        super().__init__(issue_dir)
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
@@ -105,7 +115,7 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
         self.pages = []
         for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
-                self.pages.append(BlNewspaperPage(page_id, page_no, filename, self.path))
+                self.pages.append(BlOmniNewspaperPage(page_id, page_no, filename, self.path))
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -283,7 +293,7 @@ class BlNewspaperIssue(MetsAltoCanonicalIssue):
 
     def _parse_mets(self) -> None:
 
-        # No image properties in BL data
+        # TODO add the images (illsutrations) No image properties in BL data
 
         # Parse all the content items
         content_items = self._parse_content_items()
