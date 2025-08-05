@@ -16,10 +16,8 @@ logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 
-BlIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
+BlIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path", "nlp"])
 """A light-weight data structure to represent a newspaper issue.
-
-# TODO add NLP?
 
 This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
@@ -36,14 +34,16 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
+    nlp (str): BL internal NLP for this issue (eg. '0002088')
 
 >>> from datetime import date
 >>> i = BlIssueDir(
     provider='BL',
-    alias='0002088', 
+    alias='LSGA', 
     date=datetime.date(1832, 11, 23), 
     edition='a', 
-    path='./BL/BLIP_20190920_01.zip', 
+    path='./BL/LSGA/0002088/1832/11/23', 
+    nlp='0002088'
 )
 """
 
