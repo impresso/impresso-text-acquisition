@@ -44,7 +44,7 @@ from impresso_essentials.utils import init_logger
 from text_preparation import __version__
 
 from text_preparation.importers.classes import CanonicalIssue
-from text_preparation.importers.bl.classes import BlOmniNewspaperIssue
+from text_preparation.importers.bl.omni.classes import BlOmniNewspaperIssue
 from text_preparation.importers.core import import_issues
 from text_preparation.importers.detect import detect_issues
 
@@ -155,7 +155,8 @@ def apply_select_func(
         list[IssueDir]: List of selected issues for this importer and config.
     """
     if issue_class is BlOmniNewspaperIssue:
-        return select_func(input_dir, config=config, format="OmniPage-NLP")
+        return select_func(input_dir, config=config, ocr_format="OmniPage-NLP")
+    # TODO add other BL importers
 
     return select_func(input_dir, config=config)
 

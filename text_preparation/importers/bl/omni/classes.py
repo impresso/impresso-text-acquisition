@@ -27,7 +27,7 @@ from text_preparation.utils import get_reading_order
 logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
-
+BL_TITLES_FILE = "BL_all_titles.json"
 BL_PICTURE_TYPE = "picture"
 BL_AD_TYPE = "advert"
 
@@ -108,9 +108,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         ]
         page_numbers = [int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names]
 
-        page_canonical_names = [
-            "{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers
-        ]
+        page_canonical_names = [f"{self.id}-p{str(page_n).zfill(4)}" for page_n in page_numbers]
 
         self.pages = []
         for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
@@ -222,7 +220,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             logger.warning("Found new content item type: %s", div_type)
 
         metadata = {
-            "id": "{}-i{}".format(self.id, str(counter).zfill(4)),
+            "id": f"{self.id}-i{str(counter).zfill(4)}",
             "tp": div_type,
             "pp": [],
         }

@@ -1,4 +1,4 @@
-from text_preparation.importers.bl.classes import BlOmniNewspaperIssue
+from text_preparation.importers.bl.omni.classes import BlOmniNewspaperIssue
 from text_preparation.importers.bl.detect import (
     detect_issues as bl_detect_issues,
     select_issues as bl_select_issues,
