@@ -5,10 +5,7 @@ import os
 import json
 from collections import namedtuple
 from datetime import date
-import zipfile
 
-from glob import glob
-from dask import bag as db
 from text_preparation.importers.detect import _apply_datefilter
 
 from bs4 import BeautifulSoup
@@ -203,11 +200,6 @@ def select_issues(
     selected_issues = detect_issues(
         base_dir, ocr_format, bl_issues_for_format, alias_filter, exclude_list
     )
-    # selected_issues = db.from_sequence(issues)
-    """selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
-        and i.alias not in exclude_list
-    ).compute()"""
 
     exclude_flag = False if not exclude_list else True
     filtered_issues = (

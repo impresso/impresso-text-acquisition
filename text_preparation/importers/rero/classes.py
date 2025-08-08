@@ -349,6 +349,7 @@ class ReroNewspaperIssue(MetsAltoCanonicalIssue):
 
         if content_item["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
             (content_item["c"], content_item["m"]["iiif_link"]) = self._get_image_info(content_item)
+
         return content_item
 
     def _decompose_section(self, div: Tag) -> list[Tag]:

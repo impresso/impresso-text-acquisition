@@ -15,6 +15,7 @@ from typing import Any
 from bs4 import BeautifulSoup
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
+from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.classes import CanonicalIssue, CanonicalPage
 from text_preparation.importers.mets_alto import alto
 
@@ -125,6 +126,11 @@ class MetsAltoCanonicalPage(CanonicalPage):
             ci_id = ci["m"]["id"]
             if "parts" in ci["l"]:
                 for part in ci["l"]["parts"]:
+                    # TODO check what needs to be done there
+                    # if part["comp_id"] in mappings and ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
+                    # we want to make sure to link the images to their original CI,
+                    # if it was already assigned for the rest of the CI
+                    # continue
                     mappings[part["comp_id"]] = ci_id
 
         pselement = doc.find("PrintSpace")

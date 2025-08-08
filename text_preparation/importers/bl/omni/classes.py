@@ -1,4 +1,4 @@
-"""This module contains the definition of BL importer classes.
+"""This module contains the definition of BL importer classes for the OmniPage format.
 
 The classes define newspaper Issues and Pages objects which convert OCR data in
 the BL version of the Mets/Alto format to a unified canoncial format.
@@ -7,6 +7,7 @@ Theses classes are subclasses of generic Mets/Alto importer classes.
 
 import logging
 import os
+import json
 from time import strftime
 from typing import Any
 
@@ -28,8 +29,11 @@ logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
 BL_TITLES_FILE = "BL_all_titles.json"
-BL_PICTURE_TYPE = "picture"
+BL_ISSUES_FILE = "BL_OmniPage-NLP_issues.json"
+RENAMING_INFO_FILE = "renaming_info.json"
+BL_IMG_TYPE = "illustration"
 BL_AD_TYPE = "advert"
+BL_CAPTION_TYPE = "caption"
 
 
 class BlOmniNewspaperPage(MetsAltoCanonicalPage):
@@ -51,6 +55,21 @@ class BlOmniNewspaperPage(MetsAltoCanonicalPage):
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
     """
+
+    def __init__(
+        self,
+        _id: str,
+        number: int,
+        filename: str,
+        basedir: str,
+        page_size: tuple[int, int],
+        encoding: str = "utf-8",
+    ) -> None:
+        super().__init__(_id, number, filename, basedir, encoding)
+
+        # add the facsimile height and width to the page data
+        self.page_data["fw"] = page_size[0]
+        self.page_data["fh"] = page_size[1]
 
     def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         """Add the given `BlNewspaperIssue` as an attribute for this class.
@@ -88,8 +107,11 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         # assign the NLP to the issue
         self.nlp = issue_dir.nlp
-
-        # TODO create and read doc that finds the variant title
+        # extract the BL base_dir from the issue_dir path
+        # the path is "[BL base_dir]/[alias]/[nlp]/[yyyy]/[mm]/[dd]
+        self.bl_base_dir = issue_dir.path.split(issue_dir.alias)[0].rstrip("/")
+        # initialize attributes to prevent errors
+        self.var_title, self.bl_work_title, self.norm_title = None, None, None
 
         super().__init__(issue_dir)
 
@@ -104,16 +126,28 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         page_file_names = [
             file
             for file in os.listdir(self.path)
-            if (not file.startswith(".") and ".xml" in file and "mets" not in file)
+            if (not file.startswith(".") and file.endswith(".xml") and "mets" not in file)
         ]
-        page_numbers = [int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names]
+        page_numbers = sorted(
+            int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names
+        )
 
         page_canonical_names = [f"{self.id}-p{str(page_n).zfill(4)}" for page_n in page_numbers]
+
+        # look for the renaming info file to get the images width and height
+        with open(os.path.join(self.path, RENAMING_INFO_FILE), "r", encoding="utf-8") as fin:
+            renaming_info = json.load(fin)
 
         self.pages = []
         for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
-                self.pages.append(BlOmniNewspaperPage(page_id, page_no, filename, self.path))
+                page_width = renaming_info[str(page_no)]["width"]
+                page_height = renaming_info[str(page_no)]["height"]
+                self.pages.append(
+                    BlOmniNewspaperPage(
+                        page_id, page_no, filename, self.path, (page_width, page_height)
+                    )
+                )
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -146,10 +180,14 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "comp_page_no": int(comp_page_no),
         }
 
-    def _parse_content_parts(
+    def _parse_content_parts_and_images(
         self, item_div: Tag, phys_map: Tag, structlink: Tag
     ) -> list[dict[str, Any]]:
         """Parse parts of issue's physical structure relating to the given item.
+
+        Also identify any illustrations that might be present in these parts,
+        along with their coordinates and potential captions.
+        Identifying them then allows to ensure that the image is linked to its article.
 
         Args:
             item_div (Tag): The div corresponding to the item
@@ -169,8 +207,12 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             for x in linkgrp.findAll("smLocatorLink")
             if x.get("xlink:href") != tag
         ]
+
         parts = []
-        for p in parts_ids:
+        image_parts = {}
+        last_img_part_id = None
+        last_img_part_idx = None
+        for idx, p in enumerate(parts_ids):
             # Get element in physical map
             div = phys_map.find("div", {"ID": p})
             type_attr = div.get("TYPE")
@@ -179,11 +221,32 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             # In that case, need to add all parts
             if comp_role == "page":
                 for x in div.findAll("div"):
-                    parts.append(self._get_part_dict(x, None))
+                    div_parts = self._get_part_dict(x, None)
             else:
-                parts.append(self._get_part_dict(div, comp_role))
+                div_parts = self._get_part_dict(div, comp_role)
 
-        return parts
+            # for each illustration, store its coordinates and any potential caption
+            if div.get("LABEL").lower() == BL_IMG_TYPE:
+                image_parts[p] = {
+                    "legacy_parts": div_parts,
+                    "coords": div.find("area", {"SHAPE": "RECT"}).get("COORDS"),
+                }
+                # keep track of which illustration it is to make sure we can connect them back after
+                last_img_part_id = p
+                last_img_part_idx = idx
+
+            # if the next element is a caption, attach it directly
+            if div.get("LABEL").lower() == BL_CAPTION_TYPE:
+                if idx - 1 == last_img_part_idx:
+                    image_parts[last_img_part_id]["caption_parts"] = div_parts
+                else:
+                    msg = f"self.id, {div_parts['comp_page_no']} - caption {div.get('ID')} does not follow an illustration!"
+                    print(msg)
+                    self._notes.append(msg)
+
+            parts.append(div_parts)
+
+        return parts, image_parts
 
     def _parse_content_item(
         self,
@@ -210,7 +273,8 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         """
         div_type = item_div.get("TYPE").lower()
 
-        if div_type == BL_PICTURE_TYPE:
+        # TODO --> when there are images, it not at this level that's it's given!
+        if div_type == BL_IMG_TYPE:
             div_type = CONTENTITEM_TYPE_IMAGE
         elif div_type == BL_AD_TYPE:
             div_type = CONTENTITEM_TYPE_ADVERTISEMENT
@@ -229,12 +293,17 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         if lang is not None:
             metadata["lg"] = lang.text
 
+        ci_parts, image_parts = self._parse_content_parts_and_images(
+            item_div, phys_structmap, structlink
+        )
+
         # Load physical struct map, and find all parts in physical map
         content_item = {
             "m": metadata,
             "l": {
+                "bl_nlp": self.nlp,
                 "id": item_div.get("ID"),
-                "parts": self._parse_content_parts(item_div, phys_structmap, structlink),
+                "parts": ci_parts,
             },
         }
         for p in content_item["l"]["parts"]:
@@ -278,6 +347,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             content_items.append(
                 self._parse_content_item(div, counter, phys_structmap, structlink, dmd_sec)
             )
+            # TODO here process the image parts found in CI and add as other CIs
             counter += 1
 
         # compute the reading order for the issue's items
@@ -289,7 +359,29 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return content_items
 
+    def _find_variant_title(self) -> None:
+
+        with open(os.path.join(self.bl_base_dir, BL_TITLES_FILE), "r", encoding="utf-8") as fin:
+            titles = json.load(fin)
+
+        titles_for_alias_nlp = titles["-".join([self.alias, self.nlp])]
+
+        for str_period, title_dict in titles_for_alias_nlp.items():
+            period = [int(y) for y in str_period.split("-")]
+            # ensure that this issue is indeed in the period listed for the given title
+            if self.date.year in range(period[0], period[1] + 1):
+                self.var_title = title_dict["Variant Title"]
+                self.bl_work_title = title_dict["Working title (BL)"]
+                # not used at the moment
+                self.norm_title = title_dict["Normalized Working Title"]
+            else:
+                msg = f"{self.id} ({self.nlp}) - Issue year doesn't match the period {period} for the variant title!"
+                print(msg)
+                logger.warning(msg)
+
     def _parse_mets(self) -> None:
+
+        self._find_variant_title()
 
         # TODO add the images (illsutrations) No image properties in BL data
 
@@ -302,6 +394,8 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "ts": timestamp(),
             "st": SourceType.NP.value,
             "sm": SourceMedium.PT.value,
+            "olr": True,
             "i": content_items,
-            "pp": [p.id for p in self.pages],
+            "pp": [p.id for p in sorted(self.pages, key=lambda x: x.number)],
+            "n": self._notes,
         }
