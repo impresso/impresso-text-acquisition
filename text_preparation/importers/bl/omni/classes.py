@@ -220,12 +220,13 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
             # In that case, need to add all parts
             if comp_role == "page":
+                div_parts = []
                 for x in div.findAll("div"):
                     div_parts = self._get_part_dict(x, None)
             else:
                 div_parts = self._get_part_dict(div, comp_role)
 
-            # for each illustration, store its coordinates and any potential caption
+            """# for each illustration, store its coordinates and any potential caption
             if div.get("LABEL").lower() == BL_IMG_TYPE:
                 image_parts[p] = {
                     "legacy_parts": div_parts,
@@ -242,7 +243,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                 else:
                     msg = f"self.id, {div_parts['comp_page_no']} - caption {div.get('ID')} does not follow an illustration!"
                     print(msg)
-                    self._notes.append(msg)
+                    self._notes.append(msg)"""
 
             parts.append(div_parts)
 
@@ -331,17 +332,17 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             .findChildren("div")
         )
 
-        # Sort to have same naming
-        sorted_divs = sorted(divs, key=lambda x: x.get("DMDID").lower())
+        # Sort to have same naming TODO remove because ordering is already fixed
+        # sorted_divs = sorted(divs, key=lambda x: x.get("DMDID").lower())
 
         # Get all CI types
-        found_types = set(x.get("TYPE") for x in sorted_divs)
+        found_types = set(x.get("TYPE") for x in divs)
 
         phys_structmap = mets_doc.find("structMap", {"TYPE": "PHYSICAL"})
         structlink = mets_doc.find("structLink")
 
         counter = 1
-        for div in sorted_divs:
+        for div in divs:
             # Parse Each contentitem
             dmd_sec = mets_doc.find("dmdSec", {"ID": div.get("DMDID")})
             content_items.append(
