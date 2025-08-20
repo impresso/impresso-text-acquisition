@@ -24,13 +24,20 @@ ALIAS_NLPS_TO_SKIP = {
 BL_OCR_BASE_PATH = "/mnt/project_impresso/original/BL"
 BL_OCR_W_BASE_PATH = "/mnt/impresso_ocr_BL"
 BL_IMG_BASE_PATH = "/mnt/impresso_images_BL"
+FORMAT_SPECIFIC_ISSUES = "BL_{format}_issues.json"
 ALIAS_TO_NLP_PATH = "../../data/sample_data/BL/BL_alias_to_NLP.json"
-REPROCESS_FILEPATH = "../../data/sample_data/BL/renaming_errors_or_to_reprocess.json"
-OCR_FORMATS_FILEPATH = "../../data/sample_data/BL/BL_ocr_formats.json"
+REPROCESS_FILEPATH = (
+    "../../data/sample_data/BL/renaming_errors_or_to_reprocess_{format}_{date}.json"
+)
+OCR_FORMATS_FILEPATH = "../../data/sample_data/BL/BL_ocr_formats_{format}_{date}.json"
 RENAMING_INFO_FILENAME = "renaming_info.json"
 
 KNOWN_OCR_FORMATS = ["OmniPage-NLP", "BL-ALIAS", "ABBYY-NLP", "ABBYY-ALIAS", "Nuance-NLP"]
-VALID_OCR_FORMATS = ["OmniPage-NLP"]
+# VALID_OCR_FORMATS = ["BL-ALIAS"]  # ["OmniPage-NLP"]
+VALID_OCR_FORMATS_dict = {
+    "omnipage": "OmniPage-NLP",
+    "bl_alias": "BL-ALIAS",
+}
 
 img_filename_pattern = "^d{7}_d{8}_d{4}.jp2$"
 
@@ -132,7 +139,9 @@ def rename_jp2_files_for_issue(input_dir, issue_id, nlp, orc_issue_dir, rename_f
 
         # if the file is .jp2 but does not have any of the expected formats, save it for future processings
         else:
-            msg = f"{input_dir} - file {og_filename} does not have the expected form - to reprocess."
+            msg = (
+                f"{input_dir} - file {og_filename} does not have the expected form - to reprocess."
+            )
             print(msg)
             logger.warning(msg)
             if issue_id in to_reprocess:
@@ -214,7 +223,9 @@ def id_bl_alias_format(alias, ocr_files, ocr_issue_dir, ocr_formats) -> dict[str
     return ocr_formats
 
 
-def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
+def id_mets_formats(
+    alias: str, ocr_files: list[str], mets_file: str, ocr_issue_dir: str, ocr_formats: dict
+):
     _, nlp, year, month, day = ocr_issue_dir.split(alias)[-1].split("/")
 
     # the alias present is not always the one chosen (although almost always)
@@ -242,16 +253,12 @@ def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
                 break
 
             # open a page to differentiate between the two possible formats
-            with open(
-                os.path.join(ocr_issue_dir, page_files[pg_idx]), "r", encoding="utf-8"
-            ) as f:
+            with open(os.path.join(ocr_issue_dir, page_files[pg_idx]), "r", encoding="utf-8") as f:
                 raw_xml_page = f.read()
 
             nlp_page_doc = BeautifulSoup(raw_xml_page, "xml")
 
-            software_names = [
-                e.get_text().lower() for e in nlp_page_doc.find_all("softwareName")
-            ]
+            software_names = [e.get_text().lower() for e in nlp_page_doc.find_all("softwareName")]
 
             # increase the page number for next iteration
             pg_idx += 1
@@ -276,9 +283,7 @@ def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
             raw_xml_page = f.read()
 
         alias_page_doc = BeautifulSoup(raw_xml_page, "xml")
-        software_names = [
-            e.get_text().lower() for e in alias_page_doc.find_all("softwareName")
-        ]
+        software_names = [e.get_text().lower() for e in alias_page_doc.find_all("softwareName")]
         software_creators = [
             e.get_text().lower() for e in alias_page_doc.find_all("softwareCreator")
         ]
@@ -301,7 +306,7 @@ def id_mets_formats(alias, ocr_files, mets_file, ocr_issue_dir, ocr_formats):
     return ocr_formats
 
 
-def id_ocr_format(ocr_issue_dir, alias):
+def id_ocr_format(ocr_issue_dir: str, alias: str) -> tuple[str, dict]:
     ocr_formats = {}
     ocr_files = os.listdir(ocr_issue_dir)
 
@@ -340,6 +345,7 @@ def id_ocr_format(ocr_issue_dir, alias):
 
 def main(
     log_file: str,
+    format_to_rename: str = "bl_alias",
     chunk_size: int = 93,
     chunk_idx: int = 0,
     verbose: bool = False,
@@ -354,16 +360,9 @@ def main(
 
     Args:
         log_file (str): Path to the log file.
-        source_base_dir (str, optional): Root directory of the source NLP files.
-            Defaults to "/mnt/project_impresso/original/BL_old".
-        dest_base_dir (str, optional): Root directory where processed files will be copied.
-            Defaults to "/mnt/impresso_ocr_BL".
-        sample_data_dir (str, optional): Directory containing metadata files.
-            Defaults to "/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BL".
-        title_alias_mapping_file (str, optional): CSV file mapping aliases to NLPs.
-            Defaults to "BL_title_alias_mapping.csv".
-        file_type_ext (str, optional): File extension to be processed (e.g., ".xml").
-            Defaults to ".xml".
+        format_to_rename (str, optional): The BL format for which to copy/rename images.
+            If the BL formats were already identified, will only consider aliases of this format.
+            Needs to be in the list of possible formats. Defaults to "bl_alias".
         chunk_size (int, optional): Number of NLP directories to process in each chunk.
             Defaults to 100.
         chunk_idx (int, optional): Index of the chunk to process. Defaults to 0.
@@ -377,26 +376,55 @@ def main(
 
     init_logger(logger, logging.INFO if not verbose else logging.DEBUG, log_file)
 
+    assert format_to_rename in VALID_OCR_FORMATS_dict, "PROVIDED OCR FORMAT TO RENAME INVALID!!"
+
+    VALID_OCR_FORMAT = VALID_OCR_FORMATS_dict[format_to_rename]
+    msg = f"OCR format chosen for which to rename images: {VALID_OCR_FORMAT}"
+    print(msg)
+    logger.info(msg)
+
     # read the alias-NLP mapping
     with open(ALIAS_TO_NLP_PATH, "r", encoding="utf-8") as fin:
         alias_to_nlp = json.load(fin)
 
-    if os.path.exists(OCR_FORMATS_FILEPATH):
-        with open(OCR_FORMATS_FILEPATH, "r", encoding="utf-8") as fin:
+    # In the case the OCR formats have already been identified,
+    # ensure the files containing the OCR_formats and files to reprocess are specific to this run
+    ocr_formats_filepath = OCR_FORMATS_FILEPATH.format(
+        format=format_to_rename, date=str(datetime.today().date())
+    )
+    reproc_filepath = REPROCESS_FILEPATH.format(
+        format=format_to_rename, date=str(datetime.today().date())
+    )
+
+    if os.path.exists(ocr_formats_filepath):
+        with open(ocr_formats_filepath, "r", encoding="utf-8") as fin:
             all_ocr_formats = json.load(fin)
     else:
         all_ocr_formats = {}
 
     # create the dict tracking the problems encountered
-    if os.path.exists(REPROCESS_FILEPATH):
-        with open(REPROCESS_FILEPATH, "r", encoding="utf-8") as fin:
+    if os.path.exists(reproc_filepath):
+        with open(reproc_filepath, "r", encoding="utf-8") as fin:
             all_errors_or_to_reprocess = json.load(fin)
     else:
         all_errors_or_to_reprocess = {}
-    # all_failed_copies = {}
 
-    # list all NLPs and identify the ones that will be processed now
-    all_bl_titles = sorted(os.listdir(BL_OCR_BASE_PATH))
+    # If the formats have already been identified, a JSON file will exist with all the format specific issues.
+    # in this case we can directly fetch this file instead, the prevent having to check all aliases
+    format_specific_issues = os.path.join(
+        BL_OCR_BASE_PATH, FORMAT_SPECIFIC_ISSUES.format(format=VALID_OCR_FORMAT)
+    )
+    if os.path.exists(format_specific_issues):
+        # read the file and collect the list of aliases that fit this format
+        with open(format_specific_issues, "r", encoding="utf-8") as f:
+            chosen_issues = json.load(f)
+
+        all_bl_titles = list(chosen_issues.keys())
+
+    else:
+        # list all NLPs and identify the ones that will be processed now
+        # and remove the json files form the listed dir
+        all_bl_titles = sorted(x for x in os.listdir(BL_OCR_BASE_PATH) if not x.endswith(".json"))
 
     alias_chunk = list(chunk(all_bl_titles, chunk_size))[chunk_idx]
 
@@ -418,13 +446,9 @@ def main(
         # initialize the dict of issues to reprocess for this alias
         to_reprocess_for_alias = {}
         edition_errors_for_alias = {}
-        ocr_formats_for_alias = (
-            {} if bl_alias not in all_ocr_formats else all_ocr_formats[bl_alias]
-        )
+        ocr_formats_for_alias = {} if bl_alias not in all_ocr_formats else all_ocr_formats[bl_alias]
 
-        msg = (
-            f"{'-'*10} Processing alias {bl_alias} - {alias_idx}/{len(all_bl_titles)} {'-'*10}"
-        )
+        msg = f"{'-'*10} Processing alias {bl_alias} - {alias_idx}/{len(all_bl_titles)} {'-'*10}"
         print(msg)
         logger.info(msg)
 
@@ -476,10 +500,7 @@ def main(
                                 ocr_formats_for_alias[year][root] = proc_formats
 
                             # only rename images for issues with an OCR format that we're ready to process
-                            if any(
-                                ocr_form in VALID_OCR_FORMATS
-                                for ocr_form in ocr_formats.keys()
-                            ):
+                            if any(ocr_form == VALID_OCR_FORMAT for ocr_form in ocr_formats.keys()):
                                 if first_day_of_year:
                                     msg = f"{root} - valid ocr format, will rename the image files: ocr_formats={ocr_formats}"
                                     print(msg)
@@ -572,11 +593,11 @@ def main(
             logger.info(msg)
 
         # save the information tracked about the failures and renamings to reprocess
-        with open(REPROCESS_FILEPATH, "w", encoding="utf-8") as f:
+        with open(reproc_filepath, "w", encoding="utf-8") as f:
             json.dump(all_errors_or_to_reprocess, f)
 
         # save the OCR formats which were already identified
-        with open(OCR_FORMATS_FILEPATH, "w", encoding="utf-8") as f:
+        with open(ocr_formats_filepath, "w", encoding="utf-8") as f:
             json.dump(all_ocr_formats, f, indent=2)
 
     msg = f"✅✅ Success! Done with all {len(alias_chunk)} in this chunk: {alias_chunk}!!"
