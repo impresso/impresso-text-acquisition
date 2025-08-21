@@ -23,7 +23,7 @@ from text_preparation.importers.mets_alto import (
     MetsAltoCanonicalPage,
 )
 from text_preparation.importers.bl.detect import BlIssueDir
-from text_preparation.utils import get_reading_order
+from text_preparation.utils import get_reading_order, coords_to_xywh
 
 logger = logging.getLogger(__name__)
 
@@ -180,6 +180,38 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "comp_page_no": int(comp_page_no),
         }
 
+    def _get_image_and_captions(
+        self, div, part_id, div_parts, curr_ci_parts, ci_image_parts, last_img_part_id
+    ):
+        # for each illustration, store its coordinates and any potential caption
+        if div.get("LABEL").lower() == BL_IMG_TYPE:
+            img_xy_coords = div.find("area", {"SHAPE": "RECT"}).get("COORDS")
+            # directly convert the coordinates to the wanted xywh format
+            div_parts["coords"] = coords_to_xywh([int(c) for c in img_xy_coords.split(",")])
+            if part_id not in ci_image_parts:
+                ci_image_parts[part_id] = [div_parts]
+            else:
+                ci_image_parts[part_id].append(div_parts)
+            # keep track of which illustration it is to make sure we can connect them back after
+            last_img_part_id = part_id
+
+        # if the next element is a caption, attach it directly
+        if div.get("LABEL").lower() == BL_CAPTION_TYPE:
+            if curr_ci_parts[-1]["comp_id"] == last_img_part_id:
+                cap_xy_coords = div.find("area", {"SHAPE": "RECT"}).get("COORDS")
+                # directly convert the coordinates to the wanted xywh format
+                div_parts["coords"] = coords_to_xywh([int(c) for c in cap_xy_coords.split(",")])
+                # add the div parts of the caption to the last image - normally the corresponding one
+                ci_image_parts[last_img_part_id].append(div_parts)
+                msg = (
+                    f"{self.id}, {div_parts['comp_page_no']} - caption {div.get('ID')} "
+                    "does not follow an illustration!"
+                )
+                print(msg)
+                self._notes.append(msg)
+
+        return ci_image_parts, last_img_part_id
+
     def _parse_content_parts_and_images(
         self, item_div: Tag, phys_map: Tag, structlink: Tag
     ) -> list[dict[str, Any]]:
@@ -208,46 +240,41 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             if x.get("xlink:href") != tag
         ]
 
-        parts = []
-        image_parts = {}
+        ci_parts = []
+        ci_image_parts = {}
         last_img_part_id = None
-        last_img_part_idx = None
         for idx, p in enumerate(parts_ids):
             # Get element in physical map
             div = phys_map.find("div", {"ID": p})
             type_attr = div.get("TYPE")
             comp_role = type_attr.lower() if type_attr else None
 
-            # In that case, need to add all parts
             if comp_role == "page":
-                div_parts = []
-                for x in div.findAll("div"):
-                    div_parts = self._get_part_dict(x, None)
+                # when the div is a page, need to add all parts
+                for sub_div in div.findAll("div"):
+                    subdiv_part_dict = self._get_part_dict(sub_div, None)
+                    subdiv_part_id = sub_div.get("ID")
+
+                    # verify if the div/sub_div is an image or its caption to keep track of them
+                    ci_image_parts, last_img_part_id = self._get_image_and_captions(
+                        sub_div,
+                        subdiv_part_id,
+                        subdiv_part_dict,
+                        ci_parts,
+                        ci_image_parts,
+                        last_img_part_id,
+                    )
+                    ci_parts.append(subdiv_part_dict)
+
             else:
-                div_parts = self._get_part_dict(div, comp_role)
+                div_part_dict = self._get_part_dict(div, comp_role)
+                # verify if the div/sub_div is an image or its caption to keep track of them
+                ci_image_parts, last_img_part_id = self._get_image_and_captions(
+                    div, p, div_part_dict, ci_parts, ci_image_parts, last_img_part_id
+                )
+                ci_parts.append(div_part_dict)
 
-            """# for each illustration, store its coordinates and any potential caption
-            if div.get("LABEL").lower() == BL_IMG_TYPE:
-                image_parts[p] = {
-                    "legacy_parts": div_parts,
-                    "coords": div.find("area", {"SHAPE": "RECT"}).get("COORDS"),
-                }
-                # keep track of which illustration it is to make sure we can connect them back after
-                last_img_part_id = p
-                last_img_part_idx = idx
-
-            # if the next element is a caption, attach it directly
-            if div.get("LABEL").lower() == BL_CAPTION_TYPE:
-                if idx - 1 == last_img_part_idx:
-                    image_parts[last_img_part_id]["caption_parts"] = div_parts
-                else:
-                    msg = f"self.id, {div_parts['comp_page_no']} - caption {div.get('ID')} does not follow an illustration!"
-                    print(msg)
-                    self._notes.append(msg)"""
-
-            parts.append(div_parts)
-
-        return parts, image_parts
+        return ci_parts, ci_image_parts
 
     def _parse_content_item(
         self,
@@ -277,6 +304,9 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         # TODO --> when there are images, it not at this level that's it's given!
         if div_type == BL_IMG_TYPE:
             div_type = CONTENTITEM_TYPE_IMAGE
+            msg = f"{self.id}-i{str(counter).zfill(4)} - Warning! The CI div type is image and not handled as such! item_div ID={item_div.get('ID')}"
+            print(msg)
+            self._notes.append(msg)
         elif div_type == BL_AD_TYPE:
             div_type = CONTENTITEM_TYPE_ADVERTISEMENT
 
@@ -314,7 +344,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         # TODO: add coordinates for images as well as iiif_link
         # + update approach for handling images
-        return content_item
+        return content_item, image_parts
 
     def _parse_content_items(self) -> list[dict[str, Any]]:
         """Extract content item elements from a Mets XML file.
@@ -345,9 +375,10 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         for div in divs:
             # Parse Each contentitem
             dmd_sec = mets_doc.find("dmdSec", {"ID": div.get("DMDID")})
-            content_items.append(
-                self._parse_content_item(div, counter, phys_structmap, structlink, dmd_sec)
+            parsed_ci, image_parts = self._parse_content_item(
+                div, counter, phys_structmap, structlink, dmd_sec
             )
+            content_items.append(parsed_ci)
             # TODO here process the image parts found in CI and add as other CIs
             counter += 1
 
