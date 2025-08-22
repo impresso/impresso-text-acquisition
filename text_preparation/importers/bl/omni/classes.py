@@ -28,6 +28,7 @@ from text_preparation.utils import get_reading_order, coords_to_xywh
 logger = logging.getLogger(__name__)
 
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/api/proxy/iiif/"
+IIIF_SUFFIX = "info.json"
 BL_TITLES_FILE = "BL_all_titles.json"
 BL_ISSUES_FILE = "BL_OmniPage-NLP_issues.json"
 RENAMING_INFO_FILE = "renaming_info.json"
@@ -318,6 +319,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "id": f"{self.id}-i{str(counter).zfill(4)}",
             "tp": div_type,
             "pp": [],
+            "var_t": self.var_title,
         }
         # Get content item's language
         lang = item_dmd_sec.findChild("languageTerm")
@@ -342,9 +344,42 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             if pge_no not in content_item["m"]["pp"]:
                 content_item["m"]["pp"].append(pge_no)
 
-        # TODO: add coordinates for images as well as iiif_link
-        # + update approach for handling images
         return content_item, image_parts
+
+    def _parse_image_cis(self, image_parts, corresp_ci, counter) -> list[dict[str, Any]]:
+        img_cis = []
+
+        for img_comp_id, parts in image_parts.items():
+            if parts[0]["comp_label"] == BL_IMG_TYPE and parts[0]["comp_id"] == img_comp_id:
+                # ensure that the element is indeed an illustration
+                pg_nums = list(set(p["comp_page_no"] for p in parts))
+                assert (
+                    len(pg_nums) == 1
+                ), f"{corresp_ci['m']['id']}, image with part_id {img_comp_id}, is on more than one page"
+                content_item = {
+                    "m": {
+                        "id": f"{self.id}-i{str(counter).zfill(4)}",
+                        "tp": CONTENTITEM_TYPE_IMAGE,
+                        "pp": [pg_nums[0]],
+                        "iiif_link": os.path.join(
+                            IIIF_ENDPOINT_URI, f"{self.id}-p{str(pg_nums[0]).zfill(4)}", IIIF_SUFFIX
+                        ),
+                        "var_t": self.var_title,
+                    },
+                    "l": {
+                        "bl_nlp": self.nlp,
+                        "id": img_comp_id,
+                        "parts": parts,
+                    },
+                    "c": parts[0]["coords"],
+                    # ensure to keep track of the CI this image is attached to
+                    "pOf": corresp_ci["m"]["id"],
+                }
+
+                img_cis.append(content_item)
+                counter += 1
+
+        return img_cis, counter
 
     def _parse_content_items(self) -> list[dict[str, Any]]:
         """Extract content item elements from a Mets XML file.
@@ -379,8 +414,12 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                 div, counter, phys_structmap, structlink, dmd_sec
             )
             content_items.append(parsed_ci)
-            # TODO here process the image parts found in CI and add as other CIs
             counter += 1
+
+            if len(image_parts) > 0:
+                # process any image parts found in CI and add as other CIs, increase counter accordingly
+                image_cis, counter = self._parse_image_cis(image_parts, parsed_ci, counter)
+                content_items.extend(image_cis)
 
         # compute the reading order for the issue's items
         reading_order_dict = get_reading_order(content_items)
