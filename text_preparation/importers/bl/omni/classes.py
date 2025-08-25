@@ -140,6 +140,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             renaming_info = json.load(fin)
 
         self.pages = []
+        self.page_filenames = {}
         for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             try:
                 page_width = renaming_info[str(page_no)]["width"]
@@ -149,6 +150,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                         page_id, page_no, filename, self.path, (page_width, page_height)
                     )
                 )
+                self.page_filenames[page_no] = renaming_info[str(page_no)]["original_filename"]
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -170,6 +172,8 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         comp_fileid = div.find("area", {"BETYPE": "IDREF"}).get("FILEID")
         comp_id = div.get("ID")
         comp_page_no = int(div.parent.get("ORDER"))
+        # This is where illustrations and captions will be identified
+        comp_label = div.get("LABEL").lower()
         if comp_role is None:
             type_attr = div.get("TYPE")
             comp_role = type_attr.lower() if type_attr else None
@@ -177,6 +181,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         return {
             "comp_role": comp_role,
             "comp_id": comp_id,
+            "comp_label": comp_label,
             "comp_fileid": comp_fileid,
             "comp_page_no": int(comp_page_no),
         }
@@ -204,6 +209,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                 div_parts["coords"] = coords_to_xywh([int(c) for c in cap_xy_coords.split(",")])
                 # add the div parts of the caption to the last image - normally the corresponding one
                 ci_image_parts[last_img_part_id].append(div_parts)
+            else:
                 msg = (
                     f"{self.id}, {div_parts['comp_page_no']} - caption {div.get('ID')} "
                     "does not follow an illustration!"
@@ -335,6 +341,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "m": metadata,
             "l": {
                 "bl_nlp": self.nlp,
+                "src_files": {"mets_xml": self.mets_file, "alto_xml": [], "page_image": []},
                 "id": item_div.get("ID"),
                 "parts": ci_parts,
             },
@@ -343,6 +350,10 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             pge_no = p["comp_page_no"]
             if pge_no not in content_item["m"]["pp"]:
                 content_item["m"]["pp"].append(pge_no)
+                content_item["l"]["src_files"]["alto_xml"].append(
+                    self.mets_file.replace("mets", str(pge_no).zfill(4))
+                )
+                content_item["l"]["src_files"]["page_image"].append(self.page_filenames[pge_no])
 
         return content_item, image_parts
 
@@ -368,6 +379,11 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     },
                     "l": {
                         "bl_nlp": self.nlp,
+                        "src_files": {
+                            "mets_xml": self.mets_file,
+                            "alto_xml": [self.mets_file.replace("mets", str(pg_nums[0]).zfill(4))],
+                            "page_image": [self.page_filenames[pg_nums[0]]],
+                        },
                         "id": img_comp_id,
                         "parts": parts,
                     },

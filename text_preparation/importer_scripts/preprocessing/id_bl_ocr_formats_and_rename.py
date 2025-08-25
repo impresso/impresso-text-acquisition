@@ -213,7 +213,11 @@ def identify_edition(img_day_dir, nlp, nlps_for_alias):
 
 def id_bl_alias_format(alias, ocr_files, ocr_issue_dir, ocr_formats) -> dict[str, list]:
     _, nlp, year, month, day = ocr_issue_dir.split(alias)[-1].split("/")
-    expected_prefix = f"WO1_{alias}_{year}_{month}_{day}-"
+    if alias == "HPNW":
+        # there is a mismatch for this alias
+        expected_prefix = f"WO1_IPNW_{year}_{month}_{day}-"
+    else:
+        expected_prefix = f"WO1_{alias}_{year}_{month}_{day}-"
     matching_files = [f for f in ocr_files if expected_prefix in f and f.endswith(".xml")]
 
     if matching_files:
@@ -421,6 +425,10 @@ def main(
 
         all_bl_titles = list(chosen_issues.keys())
 
+        # due to a small error, this title is not initally included in the BL_alias list
+        if VALID_OCR_FORMAT == "BL-ALIAS":
+            all_bl_titles = ["DNLN", "FRJO", "HPNW"]
+
     else:
         # list all NLPs and identify the ones that will be processed now
         # and remove the json files form the listed dir
@@ -483,7 +491,7 @@ def main(
                             _, month, day = root.replace(year_root_dir, "").split("/")
 
                             # don't recompute the OCR format if it was already computed
-                            if root in ocr_formats_for_alias[year]:
+                            if root in ocr_formats_for_alias[year] and bl_alias != "HPNW":
                                 ocr_formats = ocr_formats_for_alias[year][root]
                             else:
                                 # add here identification of OCR format and filtering.

@@ -169,6 +169,7 @@ class MetsAltoCanonicalIssue(CanonicalIssue):
         # create the canonical issue id
         self.image_properties = {}
         self.ark_id = None
+        self.mets_file = None
 
         self._find_pages()
         self._parse_mets()
@@ -212,9 +213,9 @@ class MetsAltoCanonicalIssue(CanonicalIssue):
                     tries = 1
                     # return
 
-                mets_file = mets_file[0]
+                self.mets_file = mets_file[0]
 
-                with open(mets_file, "r", encoding="utf-8") as f:
+                with open(self.mets_file, "r", encoding="utf-8") as f:
                     raw_xml = f.read()
 
                 mets_doc = BeautifulSoup(raw_xml, "xml")
