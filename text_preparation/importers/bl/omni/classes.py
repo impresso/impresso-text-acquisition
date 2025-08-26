@@ -341,7 +341,11 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "m": metadata,
             "l": {
                 "bl_nlp": self.nlp,
-                "src_files": {"mets_xml": self.mets_file, "alto_xml": [], "page_image": []},
+                "src_files": {
+                    "mets_xml": os.path.basename(self.mets_file),
+                    "alto_xml": [],
+                    "page_image": [],
+                },
                 "id": item_div.get("ID"),
                 "parts": ci_parts,
             },
@@ -351,7 +355,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             if pge_no not in content_item["m"]["pp"]:
                 content_item["m"]["pp"].append(pge_no)
                 content_item["l"]["src_files"]["alto_xml"].append(
-                    self.mets_file.replace("mets", str(pge_no).zfill(4))
+                    os.path.basename(self.mets_file).replace("mets", str(pge_no).zfill(4))
                 )
                 content_item["l"]["src_files"]["page_image"].append(self.page_filenames[pge_no])
 
