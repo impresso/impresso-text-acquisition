@@ -3,6 +3,8 @@
 import bs4
 from bs4.element import Tag
 
+IMG_COMP_LABELS = ["illustration", "image"]
+
 
 def distill_coordinates(element: Tag) -> list[int]:
     """Extract image coordinates from any XML tag.
@@ -99,6 +101,15 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
                 continue
 
             block_id = block.get("ID")
+
+            if block.get("TYPE") and block.get("TYPE").lower() in IMG_COMP_LABELS:
+                # don't add the text from illustration regions
+                # because it's very often OCR none-sense.
+                print(
+                    f"Block {block_id} is of an image: {block.get('TYPE')}, ignoring its textlines"
+                )
+                continue
+
             if block_id in mappings:
                 part_of_contentitem = mappings[block_id]
             else:
@@ -120,6 +131,8 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
 
             if part_of_contentitem:
                 region["pOf"] = part_of_contentitem
+            else:
+                print(f"Block {block_id} not in mappings: {mappings}")
 
             notes += new_notes
             regions.append(region)

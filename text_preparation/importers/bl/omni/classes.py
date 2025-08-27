@@ -124,15 +124,16 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         Raises:
             e: Creating a `BlNewspaperPage` raised an exception.
         """
-        page_file_names = [
-            file
-            for file in os.listdir(self.path)
-            if (not file.startswith(".") and file.endswith(".xml") and "mets" not in file)
-        ]
-        page_numbers = sorted(
-            int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names
+        page_file_names = sorted(
+            [
+                file
+                for file in os.listdir(self.path)
+                if (not file.startswith(".") and file.endswith(".xml") and "mets" not in file)
+            ],
+            key=lambda f: int(os.path.splitext(f)[0].split("_")[-1]),
         )
 
+        page_numbers = [int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names]
         page_canonical_names = [f"{self.id}-p{str(page_n).zfill(4)}" for page_n in page_numbers]
 
         # look for the renaming info file to get the images width and height
@@ -142,6 +143,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         self.pages = []
         self.page_filenames = {}
         for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
+            # print(f"Adding page {page_no} {page_id} {filename}")
             try:
                 page_width = renaming_info[str(page_no)]["width"]
                 page_height = renaming_info[str(page_no)]["height"]
@@ -364,6 +366,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
     def _parse_image_cis(self, image_parts, corresp_ci, counter) -> list[dict[str, Any]]:
         img_cis = []
 
+        # TODO some illustrations not attached to elements are lost!!
         for img_comp_id, parts in image_parts.items():
             if parts[0]["comp_label"] == BL_IMG_TYPE and parts[0]["comp_id"] == img_comp_id:
                 # ensure that the element is indeed an illustration
@@ -384,8 +387,12 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     "l": {
                         "bl_nlp": self.nlp,
                         "src_files": {
-                            "mets_xml": self.mets_file,
-                            "alto_xml": [self.mets_file.replace("mets", str(pg_nums[0]).zfill(4))],
+                            "mets_xml": os.path.basename(self.mets_file),
+                            "alto_xml": [
+                                os.path.basename(self.mets_file).replace(
+                                    "mets", str(pg_nums[0]).zfill(4)
+                                )
+                            ],
                             "page_image": [self.page_filenames[pg_nums[0]]],
                         },
                         "id": img_comp_id,

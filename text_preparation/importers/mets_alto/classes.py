@@ -120,12 +120,17 @@ class MetsAltoCanonicalPage(CanonicalPage):
 
     def parse(self) -> None:
         doc = self.xml
-
         mappings = {}
+        image_parts = []
         for ci in self.issue.issue_data["i"]:
             ci_id = ci["m"]["id"]
             if "parts" in ci["l"]:
                 for part in ci["l"]["parts"]:
+                    """if "comp_label" in part and part["comp_label"] in IMG_COMP_LABELS:
+                    print(
+                        f"{ci_id} - part {part['comp_id']} is an illustration, not including the textlines for it"
+                    )
+                    image_parts.append(part)"""
                     # TODO check what needs to be done there
                     # if part["comp_id"] in mappings and ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
                     # we want to make sure to link the images to their original CI,
