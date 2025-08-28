@@ -11,17 +11,14 @@ import json
 from time import strftime
 from typing import Any
 
-from bs4.element import Tag
+from bs4.element import Tag, NavigableString
 from impresso_essentials.utils import SourceType, SourceMedium, timestamp
 from text_preparation.importers import (
     CONTENTITEM_TYPES,
     CONTENTITEM_TYPE_IMAGE,
     CONTENTITEM_TYPE_ADVERTISEMENT,
 )
-from text_preparation.importers.mets_alto import (
-    MetsAltoCanonicalIssue,
-    MetsAltoCanonicalPage,
-)
+from text_preparation.importers.mets_alto import MetsAltoCanonicalIssue, MetsAltoCanonicalPage, alto
 from text_preparation.importers.bl.detect import BlIssueDir
 from text_preparation.utils import get_reading_order, coords_to_xywh
 
@@ -363,9 +360,10 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return content_item, image_parts
 
-    def _parse_image_cis(self, image_parts, corresp_ci, counter) -> list[dict[str, Any]]:
+    def _parse_image_cis_in_div(self, image_parts, corresp_ci, counter) -> list[dict[str, Any]]:
         img_cis = []
 
+        # first go through each page to find illustrations not associated to existing CIs.
         # TODO some illustrations not attached to elements are lost!!
         for img_comp_id, parts in image_parts.items():
             if parts[0]["comp_label"] == BL_IMG_TYPE and parts[0]["comp_id"] == img_comp_id:
@@ -408,6 +406,77 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return img_cis, counter
 
+    def find_unlinked_image_cis(self, structlink: Tag, ci_counter: int) -> list[dict[str, Any]]:
+        # extract the list of all regions/blocks listed in the mets file
+        all_linked_regions = [
+            e.get("xlink:href").lstrip("#") for e in structlink.find_all("smLocatorLink")
+        ]
+        image_cis = []
+
+        for page in self.pages:
+
+            pg_xml = page.xml
+            pt_space = pg_xml.find("PrintSpace")
+
+            for block in pt_space.children:
+                if isinstance(block, NavigableString):
+                    continue
+
+                # if the block is an illustration which was not attached to an existing CI, create a CI for it.
+                if (
+                    block.get("TYPE")
+                    and block.get("TYPE").lower() in [BL_IMG_TYPE, "image"]
+                    and block.get("ID") not in all_linked_regions
+                ):
+                    coords = alto.distill_coordinates(block)
+
+                    content_item = {
+                        "m": {
+                            "id": f"{self.id}-i{str(ci_counter).zfill(4)}",
+                            "tp": CONTENTITEM_TYPE_IMAGE,
+                            "pp": [page.number],
+                            "iiif_link": os.path.join(
+                                IIIF_ENDPOINT_URI,
+                                f"{self.id}-p{str(page.number).zfill(4)}",
+                                IIIF_SUFFIX,
+                            ),
+                            "var_t": self.var_title,
+                        },
+                        "l": {
+                            "bl_nlp": self.nlp,
+                            "src_files": {
+                                "mets_xml": os.path.basename(self.mets_file),
+                                "alto_xml": [
+                                    os.path.basename(self.mets_file).replace(
+                                        "mets", str(page.number).zfill(4)
+                                    )
+                                ],
+                                "page_image": [self.page_filenames[page.number]],
+                            },
+                            "id": block.get("ID"),
+                            "parts": [
+                                {
+                                    "comp_id": block.get("ID"),
+                                    "comp_label": block.get("TYPE").lower(),
+                                    "comp_fileid": f"img{str(page.number).zfill(3)}-alto",
+                                    "comp_page_no": page.number,
+                                }
+                            ],
+                        },
+                        "c": coords,
+                    }
+                    msg = (
+                        f"page {page.number} -> found an unlinked illustration: {block.get('ID')}, "
+                        f"coords = {coords}, adding the CI: {self.id}-i{str(ci_counter).zfill(4)}"
+                    )
+                    print(msg)
+                    self._notes.append(msg)
+
+                    image_cis.append(content_item)
+                    ci_counter += 1
+
+        return image_cis
+
     def _parse_content_items(self) -> list[dict[str, Any]]:
         """Extract content item elements from a Mets XML file.
 
@@ -434,19 +503,27 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         structlink = mets_doc.find("structLink")
 
         counter = 1
+        # page_num_of_last_ci = None
+        # for page in self.pages:
         for div in divs:
             # Parse Each contentitem
             dmd_sec = mets_doc.find("dmdSec", {"ID": div.get("DMDID")})
             parsed_ci, image_parts = self._parse_content_item(
                 div, counter, phys_structmap, structlink, dmd_sec
             )
+
             content_items.append(parsed_ci)
             counter += 1
 
             if len(image_parts) > 0:
                 # process any image parts found in CI and add as other CIs, increase counter accordingly
-                image_cis, counter = self._parse_image_cis(image_parts, parsed_ci, counter)
+                image_cis, counter = self._parse_image_cis_in_div(image_parts, parsed_ci, counter)
                 content_items.extend(image_cis)
+
+        # Now recognize all the images present in the pages' alto files,
+        # not associated to any article
+        unlinked_img_cis = self.find_unlinked_image_cis(structlink, counter)
+        content_items.extend(unlinked_img_cis)
 
         # compute the reading order for the issue's items
         reading_order_dict = get_reading_order(content_items)
@@ -480,8 +557,6 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
     def _parse_mets(self) -> None:
 
         self._find_variant_title()
-
-        # TODO add the images (illsutrations) No image properties in BL data
 
         # Parse all the content items
         content_items = self._parse_content_items()

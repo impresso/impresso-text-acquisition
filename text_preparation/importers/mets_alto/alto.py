@@ -105,9 +105,9 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
             if block.get("TYPE") and block.get("TYPE").lower() in IMG_COMP_LABELS:
                 # don't add the text from illustration regions
                 # because it's very often OCR none-sense.
-                print(
+                """print(
                     f"Block {block_id} is of an image: {block.get('TYPE')}, ignoring its textlines"
-                )
+                )"""
                 continue
 
             if block_id in mappings:
@@ -131,8 +131,8 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
 
             if part_of_contentitem:
                 region["pOf"] = part_of_contentitem
-            else:
-                print(f"Block {block_id} not in mappings: {mappings}")
+            """else:
+                print(f"Block {block_id} not in mappings: {mappings}")"""
 
             notes += new_notes
             regions.append(region)
