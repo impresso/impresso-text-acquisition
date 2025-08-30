@@ -122,6 +122,9 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
             if len(tmp) > 0:
                 lines, new_notes = list(zip(*tmp))
                 new_notes = [i for n in new_notes for i in n]
+                if isinstance(lines, tuple):
+                    # formatting problem
+                    lines = list(lines)
             else:
                 lines, new_notes = [], []
 

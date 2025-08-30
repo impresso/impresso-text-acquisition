@@ -326,6 +326,9 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "pp": [],
             "var_t": self.var_title,
         }
+        """if self.var_title is not None:
+            metadata["var_t"] = self.var_title"""
+
         # Get content item's language
         lang = item_dmd_sec.findChild("languageTerm")
         if lang is not None:
@@ -401,6 +404,9 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     "pOf": corresp_ci["m"]["id"],
                 }
 
+                """if self.var_title is not None:
+                    content_item["m"]["var_t"] = self.var_title"""
+
                 img_cis.append(content_item)
                 counter += 1
 
@@ -465,11 +471,15 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                         },
                         "c": coords,
                     }
+
+                    """if self.var_title is not None:
+                        content_item["m"]["var_t"] = self.var_title"""
+
                     msg = (
-                        f"page {page.number} -> found an unlinked illustration: {block.get('ID')}, "
+                        f"{self.id} page {page.number} -> found an unlinked illustration: {block.get('ID')}, "
                         f"coords = {coords}, adding the CI: {self.id}-i{str(ci_counter).zfill(4)}"
                     )
-                    print(msg)
+                    # print(msg)
                     self._notes.append(msg)
 
                     image_cis.append(content_item)
@@ -549,10 +559,11 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                 self.bl_work_title = title_dict["Working title (BL)"]
                 # not used at the moment
                 self.norm_title = title_dict["Normalized Working Title"]
-            else:
-                msg = f"{self.id} ({self.nlp}) - Issue year doesn't match the period {period} for the variant title!"
-                print(msg)
-                logger.warning(msg)
+
+        if not self.var_title:
+            msg = f"{self.id} ({self.nlp}) - Issue year doesn't match the period {period} for the variant title!"
+            print(msg)
+            logger.warning(msg)
 
     def _parse_mets(self) -> None:
 
