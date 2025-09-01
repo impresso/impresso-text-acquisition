@@ -21,6 +21,7 @@ from text_preparation.importers import (
 from text_preparation.importers.mets_alto import MetsAltoCanonicalIssue, MetsAltoCanonicalPage, alto
 from text_preparation.importers.bl.detect import BlIssueDir
 from text_preparation.utils import get_reading_order, coords_to_xywh
+from text_preparation.tokenization import insert_whitespace
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ RENAMING_INFO_FILE = "renaming_info.json"
 BL_IMG_TYPE = "illustration"
 BL_AD_TYPE = "advert"
 BL_CAPTION_TYPE = "caption"
+BL_TITLE_TYPE = "headline"
 
 
 class BlOmniNewspaperPage(MetsAltoCanonicalPage):
@@ -110,6 +112,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         self.bl_base_dir = issue_dir.path.split(issue_dir.alias)[0].rstrip("/")
         # initialize attributes to prevent errors
         self.var_title, self.bl_work_title, self.norm_title = None, None, None
+        self.page_xmls = {}
 
         super().__init__(issue_dir)
 
@@ -139,6 +142,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         self.pages = []
         self.page_filenames = {}
+
         for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             # print(f"Adding page {page_no} {page_id} {filename}")
             try:
@@ -150,6 +154,8 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     )
                 )
                 self.page_filenames[page_no] = renaming_info[str(page_no)]["original_filename"]
+                # directly save the xml for this page, as it's needed in various places
+                self.page_xmls[str(page_no)] = self.pages[-1].xml.find("PrintSpace")
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -282,6 +288,8 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return ci_parts, ci_image_parts
 
+    # def _parse_title_block(self, part_dict):
+
     def _parse_content_item(
         self,
         item_div: Tag,
@@ -326,10 +334,11 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "pp": [],
             "var_t": self.var_title,
         }
-        """if self.var_title is not None:
-            metadata["var_t"] = self.var_title"""
 
-        # Get content item's language
+        # Get content item's title and language
+        title = item_dmd_sec.findChild("title")
+        if title is not None:
+            metadata["t"] = title.text
         lang = item_dmd_sec.findChild("languageTerm")
         if lang is not None:
             metadata["lg"] = lang.text
@@ -337,6 +346,10 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         ci_parts, image_parts = self._parse_content_parts_and_images(
             item_div, phys_structmap, structlink
         )
+
+        # Check if the first part is a title (comp_label='headline')
+        # if ci_parts[0]["comp_label"] == BL_TITLE_TYPE:
+        #    metadata["t"] = self._parse_title_block(ci_parts[0])
 
         # Load physical struct map, and find all parts in physical map
         content_item = {
@@ -363,6 +376,45 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return content_item, image_parts
 
+    def _parse_img_caption(self, img_parts, page_num, lang=None):
+
+        pt_space = self.page_xmls[str(page_num)]
+
+        caption_part = [part for part in img_parts if part["comp_label"] == BL_CAPTION_TYPE]
+        if len(caption_part) == 0:
+            # No caption for this image
+            return None
+
+        if len(caption_part) > 1:
+            print(f"{self.id} - page {page_num} - Warning! Mulitple caption parts!!")
+
+        caption_part = caption_part[0]
+
+        cap_words = []
+        for block in pt_space.find_all("TextBlock", {"ID": caption_part["comp_id"]}):
+            for line in block.find_all("TextLine"):
+                cap_words.extend([s.get("CONTENT") for s in line.find_all("String")])
+
+        cap_text = ""
+        for i, token in enumerate(cap_words):
+
+            if i == 0 and i != len(cap_words) - 1:
+                # Start of the line
+                insert_ws = insert_whitespace(token, cap_words[i + 1], None, lang)
+            elif len(cap_words) == 1 or i == len(cap_words) - 1:
+                # End of the line
+                insert_ws = False
+            else:
+                # Inside the line
+                insert_ws = insert_whitespace(token, cap_words[i + 1], cap_words[i - 1], lang)
+
+            if insert_ws:
+                cap_text += f"{token} "
+            else:
+                cap_text += token
+
+        return cap_text
+
     def _parse_image_cis_in_div(self, image_parts, corresp_ci, counter) -> list[dict[str, Any]]:
         img_cis = []
 
@@ -380,6 +432,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                         "id": f"{self.id}-i{str(counter).zfill(4)}",
                         "tp": CONTENTITEM_TYPE_IMAGE,
                         "pp": [pg_nums[0]],
+                        # "t": self._parse_img_caption(parts, pg_nums[0], corresp_ci["m"]["lg"]),
                         "iiif_link": os.path.join(
                             IIIF_ENDPOINT_URI, f"{self.id}-p{str(pg_nums[0]).zfill(4)}", IIIF_SUFFIX
                         ),
@@ -404,6 +457,13 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     "pOf": corresp_ci["m"]["id"],
                 }
 
+                caption = self._parse_img_caption(parts, pg_nums[0], corresp_ci["m"]["lg"])
+                if caption:
+                    content_item["m"]["t"] = caption
+
+                # add the title from the initial CI (or caption???)
+                if "lg" in corresp_ci["m"]:
+                    content_item["m"]["lg"] = corresp_ci["m"]["lg"]
                 """if self.var_title is not None:
                     content_item["m"]["var_t"] = self.var_title"""
 
@@ -421,8 +481,12 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         for page in self.pages:
 
+            """
             pg_xml = page.xml
             pt_space = pg_xml.find("PrintSpace")
+            """
+            # fetch the xml for this page which was already read
+            pt_space = self.page_xmls[str(page.number)]
 
             for block in pt_space.children:
                 if isinstance(block, NavigableString):
@@ -471,9 +535,6 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                         },
                         "c": coords,
                     }
-
-                    """if self.var_title is not None:
-                        content_item["m"]["var_t"] = self.var_title"""
 
                     msg = (
                         f"{self.id} page {page.number} -> found an unlinked illustration: {block.get('ID')}, "
