@@ -154,8 +154,6 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     )
                 )
                 self.page_filenames[page_no] = renaming_info[str(page_no)]["original_filename"]
-                # directly save the xml for this page, as it's needed in various places
-                self.page_xmls[str(page_no)] = self.pages[-1].xml.find("PrintSpace")
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -378,7 +376,8 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
     def _parse_img_caption(self, img_parts, page_num, lang=None):
 
-        pt_space = self.page_xmls[str(page_num)]
+        # pages are ordered but number starts at 1
+        pt_space = self.pages[page_num - 1].alto_doc.find("PrintSpace")
 
         caption_part = [part for part in img_parts if part["comp_label"] == BL_CAPTION_TYPE]
         if len(caption_part) == 0:
@@ -386,18 +385,19 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             return None
 
         if len(caption_part) > 1:
-            print(f"{self.id} - page {page_num} - Warning! Mulitple caption parts!!")
+            msg = f"{self.id} - page {page_num} - Warning! Mulitple caption parts!!"
+            print(msg)
+            self._notes.append(msg)
 
         caption_part = caption_part[0]
 
         cap_words = []
-        for block in pt_space.find_all("TextBlock", {"ID": caption_part["comp_id"]}):
-            for line in block.find_all("TextLine"):
-                cap_words.extend([s.get("CONTENT") for s in line.find_all("String")])
+        block = pt_space.find("TextBlock", {"ID": caption_part["comp_id"]})
+        for line in block.find_all("TextLine"):
+            cap_words.extend([s.get("CONTENT") for s in line.find_all("String")])
 
         cap_text = ""
         for i, token in enumerate(cap_words):
-
             if i == 0 and i != len(cap_words) - 1:
                 # Start of the line
                 insert_ws = insert_whitespace(token, cap_words[i + 1], None, lang)
@@ -486,7 +486,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             pt_space = pg_xml.find("PrintSpace")
             """
             # fetch the xml for this page which was already read
-            pt_space = self.page_xmls[str(page.number)]
+            pt_space = page.alto_doc.find("PrintSpace")  # self.page_xmls[str(page.number)]
 
             for block in pt_space.children:
                 if isinstance(block, NavigableString):
@@ -572,6 +572,11 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         phys_structmap = mets_doc.find("structMap", {"TYPE": "PHYSICAL"})
         structlink = mets_doc.find("structLink")
+
+        for page in self.pages:
+            # directly save the xml for this page, as it's needed in various places
+            page.alto_doc = page.xml
+            # self.page_xmls[str(page.number)] = page.alto_doc.find("PrintSpace")
 
         counter = 1
         # page_num_of_last_ci = None

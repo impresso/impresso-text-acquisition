@@ -67,6 +67,7 @@ class MetsAltoCanonicalPage(CanonicalPage):
             "r": [],  # here go the page regions
         }
 
+        self.alto_doc = None
         # TODO add page width & height
 
     @property
@@ -119,7 +120,11 @@ class MetsAltoCanonicalPage(CanonicalPage):
         pass
 
     def parse(self) -> None:
-        doc = self.xml
+        if self.alto_doc is None:
+            doc = self.xml
+        else:
+            doc = self.alto_doc
+
         mappings = {}
         image_parts = []
         for ci in self.issue.issue_data["i"]:
