@@ -126,7 +126,6 @@ class MetsAltoCanonicalPage(CanonicalPage):
             doc = self.alto_doc
 
         mappings = {}
-        image_parts = []
         for ci in self.issue.issue_data["i"]:
             ci_id = ci["m"]["id"]
             if "parts" in ci["l"]:

@@ -374,10 +374,10 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return content_item, image_parts
 
-    def _parse_img_caption(self, img_parts, page_num, lang=None):
+    def _parse_img_caption(self, img_parts, page_num, page_pt_space, lang=None):
 
         # pages are ordered but number starts at 1
-        pt_space = self.pages[page_num - 1].alto_doc.find("PrintSpace")
+        # pt_space = self.page_xmls[str(page_num)]  # .alto_doc.find("PrintSpace")
 
         caption_part = [part for part in img_parts if part["comp_label"] == BL_CAPTION_TYPE]
         if len(caption_part) == 0:
@@ -391,31 +391,54 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         caption_part = caption_part[0]
 
-        cap_words = []
-        block = pt_space.find("TextBlock", {"ID": caption_part["comp_id"]})
-        for line in block.find_all("TextLine"):
-            cap_words.extend([s.get("CONTENT") for s in line.find_all("String")])
-
         cap_text = ""
-        for i, token in enumerate(cap_words):
-            if i == 0 and i != len(cap_words) - 1:
-                # Start of the line
-                insert_ws = insert_whitespace(token, cap_words[i + 1], None, lang)
-            elif len(cap_words) == 1 or i == len(cap_words) - 1:
-                # End of the line
-                insert_ws = False
-            else:
-                # Inside the line
-                insert_ws = insert_whitespace(token, cap_words[i + 1], cap_words[i - 1], lang)
+        block = page_pt_space.find("TextBlock", {"ID": caption_part["comp_id"]})
+        for line in block.find_all("TextLine"):
+            all_strings = line.find_all("String")
+            for i, s in enumerate(all_strings):
+                token = s.get("CONTENT")
+                if len(all_strings) == 1 or i == len(all_strings) - 1:
+                    insert_ws = False
+                elif i == 0 and i != len(all_strings) - 1:
+                    insert_ws = insert_whitespace(
+                        token, all_strings[i + 1].get("CONTENT"), None, lang
+                    )
+                else:
+                    insert_ws = insert_whitespace(
+                        token,
+                        all_strings[i + 1].get("CONTENT"),
+                        all_strings[i - 1].get("CONTENT"),
+                        lang,
+                    )
 
-            if insert_ws:
-                cap_text += f"{token} "
-            else:
-                cap_text += token
+                if insert_ws:
+                    cap_text += f"{token} "
+                else:
+                    cap_text += token
+            """cap_words.extend([s.get("CONTENT") for s in line.find_all("String")])
 
+            cap_text = ""
+            for i, token in enumerate(cap_words):
+                if i == 0 and i != len(cap_words) - 1:
+                    # Start of the line
+                    insert_ws = insert_whitespace(token, cap_words[i + 1], None, lang)
+                elif len(cap_words) == 1 or i == len(cap_words) - 1:
+                    # End of the line
+                    insert_ws = False
+                else:
+                    # Inside the line
+                    insert_ws = insert_whitespace(token, cap_words[i + 1], cap_words[i - 1], lang)
+
+                if insert_ws:
+                    cap_text += f"{token} "
+                else:
+                    cap_text += token
+            """
         return cap_text
 
-    def _parse_image_cis_in_div(self, image_parts, corresp_ci, counter) -> list[dict[str, Any]]:
+    def _parse_image_cis_in_div(
+        self, image_parts, corresp_ci, counter, page_xmls
+    ) -> list[dict[str, Any]]:
         img_cis = []
 
         # first go through each page to find illustrations not associated to existing CIs.
@@ -457,7 +480,9 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     "pOf": corresp_ci["m"]["id"],
                 }
 
-                caption = self._parse_img_caption(parts, pg_nums[0], corresp_ci["m"]["lg"])
+                caption = self._parse_img_caption(
+                    parts, pg_nums[0], page_xmls[str(pg_nums[0])], corresp_ci["m"]["lg"]
+                )
                 if caption:
                     content_item["m"]["t"] = caption
 
@@ -472,7 +497,9 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return img_cis, counter
 
-    def find_unlinked_image_cis(self, structlink: Tag, ci_counter: int) -> list[dict[str, Any]]:
+    def find_unlinked_image_cis(
+        self, structlink: Tag, ci_counter: int, page_xmls: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         # extract the list of all regions/blocks listed in the mets file
         all_linked_regions = [
             e.get("xlink:href").lstrip("#") for e in structlink.find_all("smLocatorLink")
@@ -486,7 +513,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             pt_space = pg_xml.find("PrintSpace")
             """
             # fetch the xml for this page which was already read
-            pt_space = page.alto_doc.find("PrintSpace")  # self.page_xmls[str(page.number)]
+            pt_space = page_xmls[str(page.number)]  # page.alto_doc.find("PrintSpace")
 
             for block in pt_space.children:
                 if isinstance(block, NavigableString):
@@ -573,10 +600,11 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         phys_structmap = mets_doc.find("structMap", {"TYPE": "PHYSICAL"})
         structlink = mets_doc.find("structLink")
 
+        page_xmls = {}
         for page in self.pages:
             # directly save the xml for this page, as it's needed in various places
-            page.alto_doc = page.xml
-            # self.page_xmls[str(page.number)] = page.alto_doc.find("PrintSpace")
+            # page.alto_doc = page.xml
+            page_xmls[str(page.number)] = page.xml.find("PrintSpace")
 
         counter = 1
         # page_num_of_last_ci = None
@@ -593,12 +621,14 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
             if len(image_parts) > 0:
                 # process any image parts found in CI and add as other CIs, increase counter accordingly
-                image_cis, counter = self._parse_image_cis_in_div(image_parts, parsed_ci, counter)
+                image_cis, counter = self._parse_image_cis_in_div(
+                    image_parts, parsed_ci, counter, page_xmls
+                )
                 content_items.extend(image_cis)
 
         # Now recognize all the images present in the pages' alto files,
         # not associated to any article
-        unlinked_img_cis = self.find_unlinked_image_cis(structlink, counter)
+        unlinked_img_cis = self.find_unlinked_image_cis(structlink, counter, page_xmls)
         content_items.extend(unlinked_img_cis)
 
         # compute the reading order for the issue's items
