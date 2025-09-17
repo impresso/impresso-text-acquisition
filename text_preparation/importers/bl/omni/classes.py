@@ -190,8 +190,36 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         }
 
     def _get_image_and_captions(
-        self, div, part_id, div_parts, curr_ci_parts, ci_image_parts, last_img_part_id
-    ):
+        self,
+        div: Tag,
+        part_id: str,
+        div_parts: dict[str, Any],
+        curr_ci_parts: list[dict],
+        ci_image_parts: dict[str, Any],
+        last_img_part_id: str,
+    ) -> tuple[dict[str, Any], str]:
+        """Extract image or caption information from a div and update ci_image_parts.
+
+        Args:
+            div (Tag): The BeautifulSoup tag representing the current div element.
+            part_id (str): The component ID of the current div.
+            div_parts (dict[str, Any]): The extracted attributes of the current div.
+            curr_ci_parts (list[dict]): All parts belonging to the current content item.
+            ci_image_parts (dict[str, Any]): Mapping of image part_id → [image div, caption divs].
+            last_img_part_id (str): ID of the most recently processed image part.
+
+        Returns:
+            tuple[dict[str, Any], str]:
+                - Updated ci_image_parts dictionary.
+                - The most recent image part_id (last_img_part_id).
+
+        Notes:
+            - If the div is an image (LABEL == BL_IMG_TYPE), stores coordinates
+            and initializes an entry in ci_image_parts.
+            - If the div is a caption (LABEL == BL_CAPTION_TYPE), attaches it
+            to the last seen image if consistent.
+            - Captions not directly following an image trigger a warning note.
+        """
         # for each illustration, store its coordinates and any potential caption
         if div.get("LABEL").lower() == BL_IMG_TYPE:
             img_xy_coords = div.find("area", {"SHAPE": "RECT"}).get("COORDS")
@@ -286,8 +314,6 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return ci_parts, ci_image_parts
 
-    # def _parse_title_block(self, part_dict):
-
     def _parse_content_item(
         self,
         item_div: Tag,
@@ -313,7 +339,6 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         """
         div_type = item_div.get("TYPE").lower()
 
-        # TODO --> when there are images, it not at this level that's it's given!
         if div_type == BL_IMG_TYPE:
             div_type = CONTENTITEM_TYPE_IMAGE
             msg = f"{self.id}-i{str(counter).zfill(4)} - Warning! The CI div type is image and not handled as such! item_div ID={item_div.get('ID')}"
@@ -345,13 +370,10 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             item_div, phys_structmap, structlink
         )
 
-        # Check if the first part is a title (comp_label='headline')
-        # if ci_parts[0]["comp_label"] == BL_TITLE_TYPE:
-        #    metadata["t"] = self._parse_title_block(ci_parts[0])
-
         # Load physical struct map, and find all parts in physical map
         content_item = {
             "m": metadata,
+            # full legacy information for potential return cards
             "l": {
                 "bl_nlp": self.nlp,
                 "src_files": {
@@ -374,11 +396,25 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return content_item, image_parts
 
-    def _parse_img_caption(self, img_parts, page_num, page_pt_space, lang=None):
+    def _parse_img_caption(
+        self, img_parts: list[dict], page_num: int, page_pt_space: Tag, lang: str | None = None
+    ) -> str | None:
+        """Extract the text of a caption associated with an image.
 
-        # pages are ordered but number starts at 1
-        # pt_space = self.page_xmls[str(page_num)]  # .alto_doc.find("PrintSpace")
+        Args:
+            img_parts (list[dict]): The list of image parts (including captions).
+            page_num (int): The page number where the image appears.
+            page_pt_space (Tag): BeautifulSoup tag representing the page text space.
+            lang (str | None, optional): Language code used for whitespace insertion rules.
 
+        Returns:
+            str | None: The extracted caption text, or None if no caption is found.
+
+        Notes:
+            - If multiple caption parts exist, only the first is parsed.
+            - Issues are logged and added to ``self._notes``.
+        """
+        # Find caption parts
         caption_part = [part for part in img_parts if part["comp_label"] == BL_CAPTION_TYPE]
         if len(caption_part) == 0:
             # No caption for this image
@@ -391,8 +427,18 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         caption_part = caption_part[0]
 
-        cap_text = ""
+        # Locate the caption block
         block = page_pt_space.find("TextBlock", {"ID": caption_part["comp_id"]})
+        if block is None:
+            msg = (
+                f"{self.id} - page {page_num} - "
+                f"Missing TextBlock for caption {caption_part.get('comp_id')}"
+            )
+            logger.warning(msg)
+            self._notes.append(msg)
+            return None
+
+        cap_text = []
         for line in block.find_all("TextLine"):
             all_strings = line.find_all("String")
             for i, s in enumerate(all_strings):
@@ -411,45 +457,54 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                         lang,
                     )
 
-                if insert_ws:
-                    cap_text += f"{token} "
-                else:
-                    cap_text += token
-            """cap_words.extend([s.get("CONTENT") for s in line.find_all("String")])
+                cap_text.append(f"{token} " if insert_ws else token)
 
-            cap_text = ""
-            for i, token in enumerate(cap_words):
-                if i == 0 and i != len(cap_words) - 1:
-                    # Start of the line
-                    insert_ws = insert_whitespace(token, cap_words[i + 1], None, lang)
-                elif len(cap_words) == 1 or i == len(cap_words) - 1:
-                    # End of the line
-                    insert_ws = False
-                else:
-                    # Inside the line
-                    insert_ws = insert_whitespace(token, cap_words[i + 1], cap_words[i - 1], lang)
-
-                if insert_ws:
-                    cap_text += f"{token} "
-                else:
-                    cap_text += token
-            """
-        return cap_text
+        return "".join(cap_text)
 
     def _parse_image_cis_in_div(
-        self, image_parts, corresp_ci, counter, page_xmls
-    ) -> list[dict[str, Any]]:
+        self,
+        image_parts: list[dict],
+        corresp_ci: dict[str, Any],
+        counter: int,
+        page_xmls: dict[str, Any],
+    ) -> tuple[list[dict[str, Any]], int]:
+        """Parse image content items (CIs) linked to a given content item.
+
+        Iterates over image parts, validates that each corresponds to a single page,
+        and constructs a content item (CI) dictionary for each image, optionally
+        attaching a caption if available.
+
+        Args:
+            image_parts (dict[str, list[dict]]): Mapping of image component IDs
+                to their associated parts.
+            corresp_ci (dict[str, Any]): The corresponding content item to which
+                images are attached.
+            counter (int): Counter used to generate unique image CI IDs.
+            page_xmls (dict[str, Any]): Mapping of page numbers to parsed XML content.
+
+        Returns:
+            tuple[list[dict[str, Any]], int]:
+                - List of parsed image CIs.
+                - Updated counter after processing.
+
+        Raises:
+            ValueError: If an image part is found on more than one page.
+        """
         img_cis = []
 
         # first go through each page to find illustrations not associated to existing CIs.
-        # TODO some illustrations not attached to elements are lost!!
         for img_comp_id, parts in image_parts.items():
             if parts[0]["comp_label"] == BL_IMG_TYPE and parts[0]["comp_id"] == img_comp_id:
                 # ensure that the element is indeed an illustration
                 pg_nums = list(set(p["comp_page_no"] for p in parts))
-                assert (
-                    len(pg_nums) == 1
-                ), f"{corresp_ci['m']['id']}, image with part_id {img_comp_id}, is on more than one page"
+                if len(pg_nums) != 1:
+                    msg = (
+                        f"{corresp_ci['m']['id']} - Image with part_id {img_comp_id} "
+                        f"is associated with multiple pages: {pg_nums}, selecting the first."
+                    )
+                    logger.error(msg)
+                    self._notes.append(msg)
+
                 content_item = {
                     "m": {
                         "id": f"{self.id}-i{str(counter).zfill(4)}",
@@ -480,17 +535,15 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     "pOf": corresp_ci["m"]["id"],
                 }
 
+                # add the caption from the image as CI title
                 caption = self._parse_img_caption(
-                    parts, pg_nums[0], page_xmls[str(pg_nums[0])], corresp_ci["m"]["lg"]
+                    parts, pg_nums[0], page_xmls[str(pg_nums[0])], corresp_ci["m"].get("lg")
                 )
                 if caption:
                     content_item["m"]["t"] = caption
 
-                # add the title from the initial CI (or caption???)
                 if "lg" in corresp_ci["m"]:
                     content_item["m"]["lg"] = corresp_ci["m"]["lg"]
-                """if self.var_title is not None:
-                    content_item["m"]["var_t"] = self.var_title"""
 
                 img_cis.append(content_item)
                 counter += 1
@@ -500,36 +553,49 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
     def find_unlinked_image_cis(
         self, structlink: Tag, ci_counter: int, page_xmls: dict[str, Any]
     ) -> list[dict[str, Any]]:
-        # extract the list of all regions/blocks listed in the mets file
-        all_linked_regions = [
+        """Find illustrations in ALTO pages that are not linked in the METS structlink.
+
+        Iterates through all pages, checking for image/illustration blocks (`TYPE` = "illustration" or "image").
+        If such blocks are not referenced in the structlink, creates new content items (CIs) for them.
+
+        Args:
+            structlink (Tag): The METS structLink element containing linked regions.
+            ci_counter (int): Counter used to generate unique CI IDs.
+            page_xmls (dict[str, Any]): Mapping of page numbers to parsed ALTO XML documents.
+
+        Returns:
+            list[dict[str, Any]]: List of newly created image content items.
+        """
+        # extract the list of all regions/blocks listed in the METS file
+        all_linked_regions = {
             e.get("xlink:href").lstrip("#") for e in structlink.find_all("smLocatorLink")
-        ]
+        }
         image_cis = []
 
         for page in self.pages:
 
-            """
-            pg_xml = page.xml
-            pt_space = pg_xml.find("PrintSpace")
-            """
             # fetch the xml for this page which was already read
-            pt_space = page_xmls[str(page.number)]  # page.alto_doc.find("PrintSpace")
+            pt_space = page_xmls[str(page.number)]
 
             for block in pt_space.children:
                 if isinstance(block, NavigableString):
                     continue
 
+                block_id = block.get("ID")
+                block_type = block.get("TYPE")
+
                 # if the block is an illustration which was not attached to an existing CI, create a CI for it.
                 if (
-                    block.get("TYPE")
-                    and block.get("TYPE").lower() in [BL_IMG_TYPE, "image"]
-                    and block.get("ID") not in all_linked_regions
+                    block_type
+                    and block_type.lower() in [BL_IMG_TYPE, "image"]
+                    and block_id not in all_linked_regions
                 ):
                     coords = alto.distill_coordinates(block)
+                    ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
 
                     content_item = {
                         "m": {
-                            "id": f"{self.id}-i{str(ci_counter).zfill(4)}",
+                            "id": ci_id,
                             "tp": CONTENTITEM_TYPE_IMAGE,
                             "pp": [page.number],
                             "iiif_link": os.path.join(
@@ -550,11 +616,11 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                                 ],
                                 "page_image": [self.page_filenames[page.number]],
                             },
-                            "id": block.get("ID"),
+                            "id": block_id,
                             "parts": [
                                 {
-                                    "comp_id": block.get("ID"),
-                                    "comp_label": block.get("TYPE").lower(),
+                                    "comp_id": block_id,
+                                    "comp_label": block_type.lower(),
                                     "comp_fileid": f"img{str(page.number).zfill(3)}-alto",
                                     "comp_page_no": page.number,
                                 }
@@ -564,10 +630,9 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     }
 
                     msg = (
-                        f"{self.id} page {page.number} -> found an unlinked illustration: {block.get('ID')}, "
-                        f"coords = {coords}, adding the CI: {self.id}-i{str(ci_counter).zfill(4)}"
+                        f"{self.id} page {page.number} -> found an unlinked illustration: {block_id}, "
+                        f"coords = {coords}, adding the CI: {ci_id}"
                     )
-                    # print(msg)
                     self._notes.append(msg)
 
                     image_cis.append(content_item)
@@ -576,11 +641,15 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         return image_cis
 
     def _parse_content_items(self) -> list[dict[str, Any]]:
-        """Extract content item elements from a Mets XML file.
+        """Extract and normalize all content items (CIs) from a METS XML file.
+
+        The function parses the logical structure map (`structMap/LOGICAL`) to find
+        all content items (articles, illustrations, etc.), enriches them with metadata,
+        and attaches any unlinked illustrations found in the ALTO page files.
+        It also computes and assigns the reading order for the issue.
 
         Returns:
-            list[dict[str, Any]]: List of all content items and the relevant
-                information in canonical format for each one.
+            list[dict[str, Any]]: List of all parsed content items in canonical format.
         """
         mets_doc = self.xml
         content_items = []
@@ -591,24 +660,13 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             .findChildren("div")
         )
 
-        # Sort to have same naming TODO remove because ordering is already fixed
-        # sorted_divs = sorted(divs, key=lambda x: x.get("DMDID").lower())
-
-        # Get all CI types
-        found_types = set(x.get("TYPE") for x in divs)
-
         phys_structmap = mets_doc.find("structMap", {"TYPE": "PHYSICAL"})
         structlink = mets_doc.find("structLink")
 
-        page_xmls = {}
-        for page in self.pages:
-            # directly save the xml for this page, as it's needed in various places
-            # page.alto_doc = page.xml
-            page_xmls[str(page.number)] = page.xml.find("PrintSpace")
+        # Preload PrintSpace XMLs for all pages
+        page_xmls = {str(page.number): page.xml.find("PrintSpace") for page in self.pages}
 
         counter = 1
-        # page_num_of_last_ci = None
-        # for page in self.pages:
         for div in divs:
             # Parse Each contentitem
             dmd_sec = mets_doc.find("dmdSec", {"ID": div.get("DMDID")})
@@ -619,47 +677,52 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             content_items.append(parsed_ci)
             counter += 1
 
-            if len(image_parts) > 0:
-                # process any image parts found in CI and add as other CIs, increase counter accordingly
+            if image_parts:
+                # Attach illustrations linked to this CI as standalone CIs
                 image_cis, counter = self._parse_image_cis_in_div(
                     image_parts, parsed_ci, counter, page_xmls
                 )
                 content_items.extend(image_cis)
 
-        # Now recognize all the images present in the pages' alto files,
-        # not associated to any article
+        # Detect standalone illustrations in ALTO pages not linked to any CI
         unlinked_img_cis = self.find_unlinked_image_cis(structlink, counter, page_xmls)
         content_items.extend(unlinked_img_cis)
 
-        # compute the reading order for the issue's items
+        # Compute and assign reading order
         reading_order_dict = get_reading_order(content_items)
-
         for ci in content_items:
-            # add the reading order
             ci["m"]["ro"] = reading_order_dict[ci["m"]["id"]]
 
         return content_items
 
     def _find_variant_title(self) -> None:
+        """Find and assign the variant title for this issue from the BL titles file."""
 
         with open(os.path.join(self.bl_base_dir, BL_TITLES_FILE), "r", encoding="utf-8") as fin:
             titles = json.load(fin)
 
         titles_for_alias_nlp = titles["-".join([self.alias, self.nlp])]
 
+        found = False
         for str_period, title_dict in titles_for_alias_nlp.items():
             period = [int(y) for y in str_period.split("-")]
             # ensure that this issue is indeed in the period listed for the given title
             if self.date.year in range(period[0], period[1] + 1):
-                self.var_title = title_dict["Variant Title"]
-                self.bl_work_title = title_dict["Working title (BL)"]
-                # not used at the moment
-                self.norm_title = title_dict["Normalized Working Title"]
+                self.var_title = title_dict.get("Variant Title")
+                self.bl_work_title = title_dict.get("Working title (BL)")
+                self.norm_title = title_dict.get("Normalized Working Title")  # not used yet
+                found = True
+                break  # stop at first matching period
 
-        if not self.var_title:
-            msg = f"{self.id} ({self.nlp}) - Issue year doesn't match the period {period} for the variant title!"
+        if not found:
+            available_periods = ", ".join(titles_for_alias_nlp.keys())
+            msg = (
+                f"{self.id} ({self.nlp}) - Issue year {self.date.year} does not match "
+                f"any available title periods: {available_periods}"
+            )
             print(msg)
             logger.warning(msg)
+            self._notes.append(msg)
 
     def _parse_mets(self) -> None:
 

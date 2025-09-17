@@ -113,6 +113,7 @@ def dir2issue(path: str) -> BlIssueDir | None:
         int(split[-1]),
     )
 
+    # TODO fix this!!! there are some issues which have multiple editions!!!
     return BlIssueDir(
         provider="BL", alias=alias, date=date(year, month, day), edition="a", path=path, nlp=nlp
     )
