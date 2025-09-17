@@ -461,6 +461,60 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         return "".join(cap_text)
 
+    def _make_image_ci(
+        self,
+        ci_id: str,
+        ci_type: str,
+        page_num: int,
+        parts: list[dict],
+        coords: list[int],
+        corresp_ci: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        """Helper to construct a Content Item (CI) of type image in canonical format.
+
+        Args:
+            ci_id (str): Unique ID for this CI.
+            ci_type (str): Type of content item (e.g., article, image).
+            page_num (int): Page number this CI belongs to.
+            parts (list[dict]): List of parts associated with this CI.
+            coords (list[int]): Optional coordinates for the CI.
+            corresp_ci (dict[str, Any] | None): Optional parent CI to inherit metadata (e.g. language).
+
+        Returns:
+            dict[str, Any]: Canonical CI dictionary.
+        """
+        ci = {
+            "m": {
+                "id": ci_id,
+                "tp": ci_type,
+                "pp": [page_num],
+                "iiif_link": os.path.join(
+                    IIIF_ENDPOINT_URI, f"{self.id}-p{str(page_num).zfill(4)}", IIIF_SUFFIX
+                ),
+                "var_t": self.var_title,
+            },
+            "c": coords,
+            "l": {
+                "bl_nlp": self.nlp,
+                "src_files": {
+                    "mets_xml": os.path.basename(self.mets_file),
+                    "alto_xml": [
+                        os.path.basename(self.mets_file).replace("mets", str(page_num).zfill(4))
+                    ],
+                    "page_image": [self.page_filenames[page_num]],
+                },
+                "id": parts[0]["comp_id"] if parts else None,
+                "parts": parts,
+            },
+        }
+
+        if corresp_ci:
+            ci["pOf"] = corresp_ci["m"]["id"]
+            if "lg" in corresp_ci["m"]:
+                ci["m"]["lg"] = corresp_ci["m"]["lg"]
+
+        return ci
+
     def _parse_image_cis_in_div(
         self,
         image_parts: list[dict],
@@ -505,35 +559,14 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     logger.error(msg)
                     self._notes.append(msg)
 
-                content_item = {
-                    "m": {
-                        "id": f"{self.id}-i{str(counter).zfill(4)}",
-                        "tp": CONTENTITEM_TYPE_IMAGE,
-                        "pp": [pg_nums[0]],
-                        # "t": self._parse_img_caption(parts, pg_nums[0], corresp_ci["m"]["lg"]),
-                        "iiif_link": os.path.join(
-                            IIIF_ENDPOINT_URI, f"{self.id}-p{str(pg_nums[0]).zfill(4)}", IIIF_SUFFIX
-                        ),
-                        "var_t": self.var_title,
-                    },
-                    "l": {
-                        "bl_nlp": self.nlp,
-                        "src_files": {
-                            "mets_xml": os.path.basename(self.mets_file),
-                            "alto_xml": [
-                                os.path.basename(self.mets_file).replace(
-                                    "mets", str(pg_nums[0]).zfill(4)
-                                )
-                            ],
-                            "page_image": [self.page_filenames[pg_nums[0]]],
-                        },
-                        "id": img_comp_id,
-                        "parts": parts,
-                    },
-                    "c": parts[0]["coords"],
-                    # ensure to keep track of the CI this image is attached to
-                    "pOf": corresp_ci["m"]["id"],
-                }
+                content_item = self._make_image_ci(
+                    ci_id=f"{self.id}-i{str(counter).zfill(4)}",
+                    ci_type=CONTENTITEM_TYPE_IMAGE,
+                    page_num=pg_nums[0],
+                    parts=parts,
+                    coords=parts[0]["coords"],
+                    corresp_ci=corresp_ci,
+                )
 
                 # add the caption from the image as CI title
                 caption = self._parse_img_caption(
@@ -593,41 +626,21 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                     coords = alto.distill_coordinates(block)
                     ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
 
-                    content_item = {
-                        "m": {
-                            "id": ci_id,
-                            "tp": CONTENTITEM_TYPE_IMAGE,
-                            "pp": [page.number],
-                            "iiif_link": os.path.join(
-                                IIIF_ENDPOINT_URI,
-                                f"{self.id}-p{str(page.number).zfill(4)}",
-                                IIIF_SUFFIX,
-                            ),
-                            "var_t": self.var_title,
-                        },
-                        "l": {
-                            "bl_nlp": self.nlp,
-                            "src_files": {
-                                "mets_xml": os.path.basename(self.mets_file),
-                                "alto_xml": [
-                                    os.path.basename(self.mets_file).replace(
-                                        "mets", str(page.number).zfill(4)
-                                    )
-                                ],
-                                "page_image": [self.page_filenames[page.number]],
-                            },
-                            "id": block_id,
-                            "parts": [
-                                {
-                                    "comp_id": block_id,
-                                    "comp_label": block_type.lower(),
-                                    "comp_fileid": f"img{str(page.number).zfill(3)}-alto",
-                                    "comp_page_no": page.number,
-                                }
-                            ],
-                        },
-                        "c": coords,
-                    }
+                    # since it's not linked to any other block we cannot have a caption/title
+                    content_item = self._make_image_ci(
+                        ci_id=f"{self.id}-i{str(ci_counter).zfill(4)}",
+                        ci_type=CONTENTITEM_TYPE_IMAGE,
+                        page_num=page.number,
+                        parts=[
+                            {
+                                "comp_id": block_id,
+                                "comp_label": block_type.lower(),
+                                "comp_fileid": f"img{str(page.number).zfill(3)}-alto",
+                                "comp_page_no": page.number,
+                            }
+                        ],
+                        coords=coords,
+                    )
 
                     msg = (
                         f"{self.id} page {page.number} -> found an unlinked illustration: {block_id}, "
