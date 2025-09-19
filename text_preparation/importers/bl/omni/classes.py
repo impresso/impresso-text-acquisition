@@ -255,7 +255,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
 
         # if the next element is a caption, attach it directly
         if div.get("LABEL").lower() == BL_CAPTION_TYPE:
-            if curr_ci_parts[-1]["comp_id"] == last_img_part_id:
+            if curr_ci_parts and curr_ci_parts[-1]["comp_id"] == last_img_part_id:
                 cap_xy_coords = div.find("area", {"SHAPE": "RECT"}).get("COORDS")
                 # directly convert the coordinates to the wanted xywh format
                 div_parts["coords"] = coords_to_xywh([int(c) for c in cap_xy_coords.split(",")])
