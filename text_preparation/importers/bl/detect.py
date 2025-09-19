@@ -51,50 +51,6 @@ Args:
 """
 
 
-def _get_journal_name(issue_path: str, blip_id: str) -> str | None:
-    """Find the Journal name from within the Mets file.
-
-    For BL, the journal name is not present in the directory structure.
-    The BLIP Id is needed to fetch the right section. The BLIP ID is usually
-    the top-level directory where the issue is located.
-
-    Args:
-        issue_path (str): Path to issue directory
-        blip_id (str): BLIP ID of the issue.
-
-    Returns:
-        str | None: The name of the journal, or None if not found.
-    """
-    mets_file = [
-        os.path.join(issue_path, f) for f in os.listdir(issue_path) if "mets.xml" in f.lower()
-    ]
-    if len(mets_file) == 0:
-        logger.critical("Could not find METS file in %s", issue_path)
-        return None
-
-    mets_file = mets_file[0]
-
-    with open(mets_file, "r", encoding="utf-8") as f:
-        raw_xml = f.read()
-
-    mets_doc = BeautifulSoup(raw_xml, "xml")
-
-    dmd_sec = [x for x in mets_doc.findAll("dmdSec") if x.get("ID") and blip_id in x.get("ID")]
-    if len(dmd_sec) != 1:
-        logger.critical("Could not get journal name for %s", issue_path)
-        return None
-
-    contents = dmd_sec[0].find("title").contents
-    if len(contents) != 1:
-        logger.critical("Could not get journal name for %s", issue_path)
-        return None
-
-    title = contents[0]
-    acronym = [x[0] for x in title.split(" ")]
-
-    return "".join(acronym)
-
-
 def dir2issue(path: str) -> BlIssueDir | None:
     """Given the directory of an issue, create the `BlIssueDir` object.
 

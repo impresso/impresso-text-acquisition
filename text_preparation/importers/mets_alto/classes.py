@@ -207,17 +207,19 @@ class MetsAltoCanonicalIssue(CanonicalIssue):
         tries = 3
         for i in range(tries):
             try:
-                mets_file = [
-                    os.path.join(self.path, f)
-                    for f in os.listdir(self.path)
-                    if "mets.xml" in f.lower()
-                ]
-                if len(mets_file) == 0:
-                    logger.critical("Could not find METS file in %s", self.path)
-                    tries = 1
-                    # return
+                if not self.mets_file:
+                    # only find the mets file if it's not already found
+                    mets_file = [
+                        os.path.join(self.path, f)
+                        for f in os.listdir(self.path)
+                        if "mets.xml" in f.lower()
+                    ]
+                    if len(mets_file) == 0:
+                        logger.critical("Could not find METS file in %s", self.path)
+                        tries = 1
+                        # return
 
-                self.mets_file = mets_file[0]
+                    self.mets_file = mets_file[0]
 
                 with open(self.mets_file, "r", encoding="utf-8") as f:
                     raw_xml = f.read()

@@ -124,21 +124,42 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         Raises:
             e: Creating a `BlNewspaperPage` raised an exception.
         """
+        # look for the renaming info file to get the precomputed page xml filenames
+        # as well as images width and height
+        with open(os.path.join(self.path, RENAMING_INFO_FILE), "r", encoding="utf-8") as fin:
+            renaming_info = json.load(fin)
+
+        all_xml_files = renaming_info["ocr_formats"]["OmniPage-NLP"]
+        self.mets_file = os.path.join(
+            self.path, [file for file in all_xml_files if "mets" in file][0]
+        )
+
         page_file_names = sorted(
+            [file for file in all_xml_files if "mets" not in file],
+            key=lambda f: int(os.path.splitext(f)[0].split("_")[-1]),
+        )
+        # The exact list of pages in the right format are already present in the renaming info file.
+        """page_file_names = sorted(
             [
                 file
                 for file in os.listdir(self.path)
-                if (not file.startswith(".") and file.endswith(".xml") and "mets" not in file)
+                if (
+                    self.nlp
+                    in file  # omnipage format files include the nlp eg: 0000268_18100108_0004.xml  0000268_18100108_mets.xml
+                    and not file.startswith(".")
+                    and file.endswith(".xml")
+                    and "mets" not in file
+                )
             ],
             key=lambda f: int(os.path.splitext(f)[0].split("_")[-1]),
         )
 
+        if any(x not in page_file_names for x in pre_comp_page_file_names):
+            msg = f"{self.id}: Warning, pre-computed page file names don't match the ones found on the fly! path = {self.path}"
+        """
+
         page_numbers = [int(os.path.splitext(fname)[0].split("_")[-1]) for fname in page_file_names]
         page_canonical_names = [f"{self.id}-p{str(page_n).zfill(4)}" for page_n in page_numbers]
-
-        # look for the renaming info file to get the images width and height
-        with open(os.path.join(self.path, RENAMING_INFO_FILE), "r", encoding="utf-8") as fin:
-            renaming_info = json.load(fin)
 
         self.pages = []
         self.page_filenames = {}
@@ -683,6 +704,10 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
         for div in divs:
             # Parse Each contentitem
             dmd_sec = mets_doc.find("dmdSec", {"ID": div.get("DMDID")})
+            if not dmd_sec:
+                msg = f'Warning: {self.id} ({self.mets_file}): --- issue div={mets_doc.find("structMap", {"TYPE": "LOGICAL"}).find("div", {"TYPE": "ISSUE"}).get("ID")}'
+                print(msg)
+                self._notes.append(msg)
             parsed_ci, image_parts = self._parse_content_item(
                 div, counter, phys_structmap, structlink, dmd_sec
             )
