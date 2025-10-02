@@ -286,7 +286,12 @@ def coords_to_xywh(coords: list[int | Any], as_int: bool = True) -> list[int | A
 
 
 def draw_box_on_img(
-    base_img_path: str, coords_xy: list, img: Image = None, width: int = 10
+    base_img_path: str,
+    coords_xy: list,
+    img: Image = None,
+    width: int = 10,
+    color: str | None = "red",
+    text: str | None = None,
 ) -> Image:
     """Draw a bounding box on an image given coordinates in x1y1x2y2 format.
 
@@ -298,13 +303,23 @@ def draw_box_on_img(
         coords_xy (list): Coordinates of the bbox to draw.
         img (Image, optional): PIL image if already loaded. Defaults to None.
         width (int, optional): Stroke width for the bbox. Defaults to 10.
+        color (str, optional): Color of stroke. Defaults to 'red'.
+        text (str, optional): Text two write next to the box. Defaults to None.
 
     Returns:
         Image: Resulting PIL Image with the bbox drawn on it.
     """
     if not img:
         img = Image.open(base_img_path)
-    ImageDraw.Draw(img).rectangle(coords_xy, outline="red", width=width)
+        img = img.convert("RGB")
+        img = img.convert(mode="1")
+        img = img.convert("RGB")
+
+    img_draw = ImageDraw.Draw(img)
+    img_draw.rectangle(coords_xy, outline=color, width=width)
+
+    if text is not None:
+        img_draw.text((coords_xy[0] + 50, coords_xy[1] + 75), text, "black")
     return img
 
 
