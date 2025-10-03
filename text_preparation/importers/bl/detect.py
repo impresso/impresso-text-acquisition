@@ -82,15 +82,16 @@ def detect_issues(
     alias_filter: list[str] | None = None,
     exclude_list: list[str] | None = None,
 ) -> list[BlIssueDir]:
-    """Detect newspaper issues to import within the filesystem.
-
-    This function expects the directory structure that the BL used to
-    organize the dump of Mets/Alto OCR data.
+    """Detect BL issues to import within the filesystem.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data,
             this directory should contain directories corresponding to the BL aliases.
-        tmp_dir (str): Temporary directory to unzip archives.
+        ocr_format (str, optional): BL OCR format which is to be processed. Defaults to "OmniPage-NLP".
+        bl_issues_for_format (str | None, optional): Name of the file which contains the list of issues
+            for the given OCR format. Defaults to BL_FORMAT_SPECIFIC_FILE.
+        alias_filter (list[str] | None, optional): Aliases to consider. Defaults to None.
+        exclude_list (list[str] | None, optional): Aliases to exclude. Defaults to None.
 
     Returns:
         list[BlIssueDir]: List of `BlIssueDir` instances to import.
@@ -132,9 +133,11 @@ def select_issues(
     further details on how to configure filtering.
 
     Args:
-        base_dir (str): Path to the base directory of newspaper data.
-        config (dict): Config dictionary for filtering.
-        tmp_dir (str): Temporary directory to unzip archives.
+        base_dir (str): Path to the base directory of newspaper data,
+            this directory should contain directories corresponding to the BL aliases.
+        ocr_format (str, optional): BL OCR format which is to be processed. Defaults to "OmniPage-NLP".
+        bl_issues_for_format (str | None, optional): Name of the file which contains the list of issues
+            for the given OCR format. Defaults to BL_FORMAT_SPECIFIC_FILE.
 
     Returns:
         list[BlIssueDir] | None: List of `BlIssueDir` instances to import.

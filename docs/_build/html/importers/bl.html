@@ -151,15 +151,17 @@ second, etc.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.bl.detect.detect_issues">
 <span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bl.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ocr_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'OmniPage-NLP'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bl_issues_for_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BL_{ocr_format}_issues.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bl.detect.detect_issues" title="Link to this definition"></a></dt>
-<dd><p>Detect newspaper issues to import within the filesystem.</p>
-<p>This function expects the directory structure that the BL used to
-organize the dump of Mets/Alto OCR data.</p>
+<dd><p>Detect BL issues to import within the filesystem.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data,
 this directory should contain directories corresponding to the BL aliases.</p></li>
-<li><p><strong>tmp_dir</strong> (<em>str</em>) – Temporary directory to unzip archives.</p></li>
+<li><p><strong>ocr_format</strong> (<em>str</em><em>, </em><em>optional</em>) – BL OCR format which is to be processed. Defaults to “OmniPage-NLP”.</p></li>
+<li><p><strong>bl_issues_for_format</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Name of the file which contains the list of issues
+for the given OCR format. Defaults to BL_FORMAT_SPECIFIC_FILE.</p></li>
+<li><p><strong>alias_filter</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Aliases to consider. Defaults to None.</p></li>
+<li><p><strong>exclude_list</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Aliases to exclude. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -199,9 +201,11 @@ further details on how to configure filtering.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
-<li><p><strong>tmp_dir</strong> (<em>str</em>) – Temporary directory to unzip archives.</p></li>
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data,
+this directory should contain directories corresponding to the BL aliases.</p></li>
+<li><p><strong>ocr_format</strong> (<em>str</em><em>, </em><em>optional</em>) – BL OCR format which is to be processed. Defaults to “OmniPage-NLP”.</p></li>
+<li><p><strong>bl_issues_for_format</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Name of the file which contains the list of issues
+for the given OCR format. Defaults to BL_FORMAT_SPECIFIC_FILE.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
