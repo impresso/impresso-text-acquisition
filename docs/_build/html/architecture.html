@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,18 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Overview &mdash; Impresso Text Preparation  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -52,12 +50,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#canonical-identifiers">Canonical identifiers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#issue-ids">Issue IDs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#page-ids">Page IDs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audio-records-ids">Audio Records IDs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#content-item-ids">Content item IDs</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#data-packaging">Data packaging</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#issue-data">Issue data</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#page-data">Page data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#page-or-audio-record-data">Page or Audio Record data</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#rebuilt-data">Rebuilt data</a></li>
 </ul>
 </li>
@@ -119,40 +118,52 @@
 <h2>Data architecture<a class="headerlink" href="#data-architecture" title="Link to this heading"></a></h2>
 <p><cite>Impreso Text Preparation</cite>, composed of the <cite>Importer</cite> and the <cite>Rebuilder</cite> is the main part of the data architecture defined in
 the framework of the impresso project to store and process a large-scale
-archive of historical newspapers. To understand the importer’s logic
+archive of historical newspapers and radio (broadcasts and bulletins). To understand the importer’s logic
 is worth touching upon the key points of the architecure into which it fits.</p>
 <section id="canonical-identifiers">
 <h3>Canonical identifiers<a class="headerlink" href="#canonical-identifiers" title="Link to this heading"></a></h3>
 <p>Canonical identifiers are defined at the following levels:</p>
 <ol class="arabic simple">
-<li><p>newspaper issue</p></li>
-<li><p>newspaper page</p></li>
-<li><p>content item (e.g. article, advertisement, weather forecast, obituary, etc.)</p></li>
+<li><p>newspaper or broadcast issue</p></li>
+<li><p>newspaper page or audio record</p></li>
+<li><p>paper-based content item (e.g. article, advertisement, weather forecast, obituary, etc.) or audio-record content item (audio broadcast emission)</p></li>
 </ol>
 <section id="issue-ids">
 <h4>Issue IDs<a class="headerlink" href="#issue-ids" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}</span></code></p></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{media_alias}-{date.year}-{date.month}-{date.day}-{edition}</span></code></p></li>
+<li><p>regex pattern: <code class="docutils literal notranslate"><span class="pre">^[A-Za-z][A-Za-z0-9_]*-\\d{4}-\\d{2}-\\d{2}-[a-z]{1,2}$</span></code></p></li>
 <li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a</span></code></p></li>
 </ul>
 </section>
 <section id="page-ids">
 <h4>Page IDs<a class="headerlink" href="#page-ids" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-p{page_number}</span></code></p></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{media_alias}-{date.year}-{date.month}-{date.day}-{edition}-p{page_number}</span></code></p></li>
+<li><p>regex pattern: <code class="docutils literal notranslate"><span class="pre">^[A-Za-z][A-Za-z0-9_]*-\\d{4}-\\d{2}-\\d{2}-[a-z]{1,2}-p[0-9]{4}$</span></code></p></li>
+<li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a-p0002</span></code></p></li>
+</ul>
+</section>
+<section id="audio-records-ids">
+<h4>Audio Records IDs<a class="headerlink" href="#audio-records-ids" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{media_alias}-{date.year}-{date.month}-{date.day}-{edition}-r{record_number}</span></code></p></li>
+<li><p>regex pattern: <code class="docutils literal notranslate"><span class="pre">^[A-Za-z][A-Za-z0-9_]*-\\d{4}-\\d{2}-\\d{2}-[a-z]{1,2}-r[0-9]{4}$</span></code></p></li>
 <li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a-p0002</span></code></p></li>
 </ul>
 </section>
 <section id="content-item-ids">
 <h4>Content item IDs<a class="headerlink" href="#content-item-ids" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-i{item_number}</span></code></p></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{media_alias}-{date.year}-{date.month}-{date.day}-{edition}-i{item_number}</span></code></p></li>
+<li><p>regex pattern: <code class="docutils literal notranslate"><span class="pre">^[A-Za-z][A-Za-z0-9_]*-\\d{4}-\\d{2}-\\d{2}-[a-z]{1,2}-i[0-9]{4}$</span></code></p></li>
 <li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-i0048</span></code>, <code class="docutils literal notranslate"><span class="pre">JDG-1901-01-01-a-i0031</span></code></p></li>
 </ul>
 <p>Some things to note about these templates:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">newspaper_id</span></code> is an arbitrary string, not containing white spaces, unambiguously identifying a given newspaper</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">media_alias</span></code> is an arbitrary string, not containing white spaces, unambiguously identifying a given media title</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">page_number</span></code> is a four-digits integer (zeroes are used for filling)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">record_number</span></code> is a four-digits integer (zeroes are used for filling). In most cases a broadcast only has one MP3 recording, but is here for conformity.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">edition</span></code>: in case of newspapers published multiple times per day, a lowercase letter is used to indicate the edition number: <code class="docutils literal notranslate"><span class="pre">a</span></code> for the first, <code class="docutils literal notranslate"><span class="pre">b</span></code> for the second, etc.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">item_number</span></code>: is a four-digits integer (zeroes are used for filling); <strong>NB</strong>: content item IDs are <strong>expected to remain stable</strong> across any two runs of the importer given the same input data.</p></li>
 </ul>
@@ -164,17 +175,19 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 <p>In Impresso we use an S3 solution for distributed storage to store newspaper data and accessed them at processing time.</p>
 <section id="issue-data">
 <h4>Issue data<a class="headerlink" href="#issue-data" title="Link to this heading"></a></h4>
-<p>They are packaged <strong>by newspaper and by year</strong> (as they tend to be very small files). Each archive contains, one document per line, all issues of a newspaper that appeared in that year.</p>
+<p>They are packaged <strong>by media title and by year</strong> (as they tend to be very small files). Each archive contains, one document per line, all issues of a media title that appeared in that year.</p>
 <p>Examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-issues.jsonl.bz2</span></code> contains all issues of the <em>Gazette de Lausanne</em> published in 1900.</p>
 </section>
-<section id="page-data">
-<h4>Page data<a class="headerlink" href="#page-data" title="Link to this heading"></a></h4>
-<p>They are packaged <strong>by newspaper issue</strong>. Each archive contains, one document per line, all JSON pages belonging to a given newspaper issue (edition).</p>
-<p>Examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-01-a-pages.jsonl.bz2</span></code> contains all issues of the <em>Gazette de Lausanne</em> (= <code class="docutils literal notranslate"><span class="pre">GDL</span></code>) published on January 1, 1900.</p>
+<section id="page-or-audio-record-data">
+<h4>Page or Audio Record data<a class="headerlink" href="#page-or-audio-record-data" title="Link to this heading"></a></h4>
+<p>They are packaged <strong>by issue</strong>. Each archive contains, one document per line, all JSON pages belonging to a given issue (edition).</p>
+<p>Examples:
+- <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-01-a-pages.jsonl.bz2</span></code> contains all issues of the <em>Gazette de Lausanne</em> (= <code class="docutils literal notranslate"><span class="pre">GDL</span></code>) published on January 1, 1900.
+- <code class="docutils literal notranslate"><span class="pre">RDN-1950-01-12-a-audios.jsonl.bz2</span></code> contains all issues of <em>La ronde des nations</em> (= <code class="docutils literal notranslate"><span class="pre">RDN</span></code>) published on January 12, 1950.</p>
 </section>
 <section id="rebuilt-data">
 <h4>Rebuilt data<a class="headerlink" href="#rebuilt-data" title="Link to this heading"></a></h4>
-<p>They are packaged <strong>by newspaper and by year</strong>. Each archive contains, one document per line, all JSON content-items belonging to a given newspaper and year.</p>
+<p>They are packaged <strong>by media title and by year</strong>. Each archive contains, one document per line, all JSON content-items belonging to a given title and year.</p>
 <p>Examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900.jsonl.bz2</span></code> contains all rebuilt data of the <em>Gazette de Lausanne</em> (= <code class="docutils literal notranslate"><span class="pre">GDL</span></code>) published in 1900.</p>
 </section>
 </section>
@@ -546,7 +559,7 @@ the error occurred, or corresponding canonical ID.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+    <p>&#169; Copyright 2025, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
