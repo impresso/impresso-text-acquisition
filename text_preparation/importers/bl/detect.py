@@ -2,12 +2,10 @@
 
 import logging
 import os
+import json
 from collections import namedtuple
 from datetime import date
-import zipfile
 
-from glob import glob
-from dask import bag as db
 from text_preparation.importers.detect import _apply_datefilter
 
 from bs4 import BeautifulSoup
@@ -15,11 +13,14 @@ from bs4 import BeautifulSoup
 logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
+# BL_SAMPLE_DIR = "../text_preparation/data/sample_data/BL/"
+BL_OCR_FILE = "BL_ocr_formats.json"
+BL_FORMAT_SPECIFIC_FILE = "BL_{ocr_format}_issues.json"
+POSSIBLE_FORMATS = ["OmniPage-NLP", "BL-ALIAS", "Nuance-NLP", "ABBYY-ALIAS", "ABBYY-NLP"]
+# add here the file with the mapping from issue to working and alternative titles
 
-BlIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
+BlIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path", "nlp"])
 """A light-weight data structure to represent a newspaper issue.
-
-# TODO add NLP?
 
 This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
@@ -36,182 +37,107 @@ Args:
     date (datetime.date): Publication date or issue.
     edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
     path (str): Path to the directory containing the issue's OCR data.
+    nlp (str): BL internal NLP for this issue (eg. '0002088')
 
 >>> from datetime import date
 >>> i = BlIssueDir(
     provider='BL',
-    alias='0002088', 
+    alias='LSGA', 
     date=datetime.date(1832, 11, 23), 
     edition='a', 
-    path='./BL/BLIP_20190920_01.zip', 
+    path='./BL/LSGA/0002088/1832/11/23', 
+    nlp='0002088'
 )
 """
 
 
-def _get_single_subdir(_dir: str) -> str | None:
-    """Check if the given dir only has one directory and return its basename.
-
-    Args:
-        _dir (str): Directory to check.
-
-    Returns:
-        str | None: Subdirectory's basename if it's unique, None otherwise.
-    """
-    sub_dirs = [x for x in os.listdir(_dir) if os.path.isdir(os.path.join(_dir, x))]
-
-    if len(sub_dirs) == 0:
-        logger.warning("Could not find issue in BLIP: %s", _dir)
-        return None
-    if len(sub_dirs) > 1:
-        logger.warning("Found more than one issue in BLIP: %s", _dir)
-        return None
-    return sub_dirs[0]
-
-
-def _get_journal_name(issue_path: str, blip_id: str) -> str | None:
-    """Find the Journal name from within the Mets file.
-
-    For BL, the journal name is not present in the directory structure.
-    The BLIP Id is needed to fetch the right section. The BLIP ID is usually
-    the top-level directory where the issue is located.
-
-    Args:
-        issue_path (str): Path to issue directory
-        blip_id (str): BLIP ID of the issue.
-
-    Returns:
-        str | None: The name of the journal, or None if not found.
-    """
-    mets_file = [
-        os.path.join(issue_path, f) for f in os.listdir(issue_path) if "mets.xml" in f.lower()
-    ]
-    if len(mets_file) == 0:
-        logger.critical("Could not find METS file in %s", issue_path)
-        return None
-
-    mets_file = mets_file[0]
-
-    with open(mets_file, "r", encoding="utf-8") as f:
-        raw_xml = f.read()
-
-    mets_doc = BeautifulSoup(raw_xml, "xml")
-
-    dmd_sec = [x for x in mets_doc.findAll("dmdSec") if x.get("ID") and blip_id in x.get("ID")]
-    if len(dmd_sec) != 1:
-        logger.critical("Could not get journal name for %s", issue_path)
-        return None
-
-    contents = dmd_sec[0].find("title").contents
-    if len(contents) != 1:
-        logger.critical("Could not get journal name for %s", issue_path)
-        return None
-
-    title = contents[0]
-    acronym = [x[0] for x in title.split(" ")]
-
-    return "".join(acronym)
-
-
-def _extract_all(archive_dir: str, destination: str) -> None:
-    """Extract all zip files in `archive_dir` into `destination`.
-
-    Args:
-        archive_dir (str): Directory containing all archives to extract.
-        destination (str): Destination directory.
-    """
-
-    archive_files = glob(os.path.join(archive_dir, "*.zip"))
-    logger.info("Found %s files to extract", len(archive_files))
-
-    for archive in archive_files:
-        with zipfile.ZipFile(archive, "r") as zip_ref:
-            zip_ref.extractall(destination)
-
-
 def dir2issue(path: str) -> BlIssueDir | None:
-    """Given the BLIP directory of an issue, create the `BlIssueDir` object.
-
-    TODO: add NLP?
+    """Given the directory of an issue, create the `BlIssueDir` object.
 
     Args:
-        path (str): The BLIP directory path
+        path (str): The issue directory path
 
     Returns:
         Optional[BlIssueDir]: The corresponding Issue
     """
     split = path.split("/")
-    alias, year, month_day = split[-3], int(split[-2]), split[-1]
-    month, day = int(month_day[:2]), int(month_day[2:])
+    alias, nlp, year, month, day = (
+        split[-5],
+        split[-4],
+        int(split[-3]),
+        int(split[-2]),
+        int(split[-1]),
+    )
 
+    # TODO fix this!!! there are some issues which have multiple editions!!!
     return BlIssueDir(
-        provider="BL",
-        alias=alias,
-        date=date(year, month, day),
-        edition="a",
-        path=path,
+        provider="BL", alias=alias, date=date(year, month, day), edition="a", path=path, nlp=nlp
     )
 
 
-def detect_issues(base_dir: str, tmp_dir: str) -> list[BlIssueDir]:
-    """Detect newspaper issues to import within the filesystem.
-
-    This function expects the directory structure that the BL used to
-    organize the dump of Mets/Alto OCR data.
-    TODO add NLP
-    TODO update to match new structure
+def detect_issues(
+    base_dir: str,
+    ocr_format: str = "OmniPage-NLP",
+    bl_issues_for_format: str | None = BL_FORMAT_SPECIFIC_FILE,
+    alias_filter: list[str] | None = None,
+    exclude_list: list[str] | None = None,
+) -> list[BlIssueDir]:
+    """Detect BL issues to import within the filesystem.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data,
-            this directory should contain `zip` files.
-        tmp_dir (str): Temporary directory to unzip archives.
+            this directory should contain directories corresponding to the BL aliases.
+        ocr_format (str, optional): BL OCR format which is to be processed. Defaults to "OmniPage-NLP".
+        bl_issues_for_format (str | None, optional): Name of the file which contains the list of issues
+            for the given OCR format. Defaults to BL_FORMAT_SPECIFIC_FILE.
+        alias_filter (list[str] | None, optional): Aliases to consider. Defaults to None.
+        exclude_list (list[str] | None, optional): Aliases to exclude. Defaults to None.
 
     Returns:
         list[BlIssueDir]: List of `BlIssueDir` instances to import.
     """
-    # Extract all zips to tmp_dir
-    _extract_all(base_dir, tmp_dir)
+    # Fin the file with the BL issues for the wanted format
+    ocr_format_filepath = os.path.join(base_dir, bl_issues_for_format.format(ocr_format=ocr_format))
 
-    # base_dir becomes extracted archives dir
-    base_dir = tmp_dir
+    with open(ocr_format_filepath, "r", encoding="utf-8") as fin:
+        issues_for_format = json.load(fin)
 
-    # Get all BLIP dirs (named with NLP ID)
-    blip_dirs = [x for x in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, x))]
-    issues = []
+    all_issues = []
+    for alias, issues_of_alias in issues_for_format.items():
 
-    for blip in blip_dirs:
-        blip_path = os.path.join(base_dir, blip)
-        dir_path, journal_dirs, files = next(os.walk(blip_path))
+        if (alias_filter and alias not in alias_filter) or (exclude_list and alias in exclude_list):
+            # if any of the filters are defined and the current alias should not be processed, skip
+            msg = f"Skipping {alias} - based on config filters."
+            logger.debug(msg)
+            continue
 
-        # First iterate on all journals in BLIP dir
-        for journal in journal_dirs:
-            journal_path = os.path.join(blip_path, journal)
-            _, year_dirs, _ = next(os.walk(journal_path))
+        issue_paths = [dir2issue(path) for path in list(issues_of_alias["priority_issues"].keys())]
+        msg = f"{alias} - Found {len(issue_paths)} issues"
+        logger.debug(msg)
+        all_issues.extend(issue_paths)
 
-            # Then on years
-            for year in year_dirs:
-                year_path = os.path.join(journal_path, year)
-                _, month_day_dirs, _ = next(os.walk(year_path))
-                # Then on each issue
-                for month_day in month_day_dirs:
-                    path = os.path.join(year_path, month_day)
-                    issues.append(dir2issue(path))
-
-    return issues
+    return all_issues
 
 
-def select_issues(base_dir: str, config: dict, tmp_dir: str) -> list[BlIssueDir] | None:
+def select_issues(
+    base_dir: str,
+    config: dict,
+    ocr_format: str = "OmniPage-NLP",
+    bl_issues_for_format: str | None = BL_FORMAT_SPECIFIC_FILE,
+) -> list[BlIssueDir] | None:
     """SDetect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
     import. See `this section <../importers.html#configuration-files>`__ for
     further details on how to configure filtering.
-    TODO add NLP
 
     Args:
-        base_dir (str): Path to the base directory of newspaper data.
-        config (dict): Config dictionary for filtering.
-        tmp_dir (str): Temporary directory to unzip archives.
+        base_dir (str): Path to the base directory of newspaper data,
+            this directory should contain directories corresponding to the BL aliases.
+        ocr_format (str, optional): BL OCR format which is to be processed. Defaults to "OmniPage-NLP".
+        bl_issues_for_format (str | None, optional): Name of the file which contains the list of issues
+            for the given OCR format. Defaults to BL_FORMAT_SPECIFIC_FILE.
 
     Returns:
         list[BlIssueDir] | None: List of `BlIssueDir` instances to import.
@@ -229,12 +155,11 @@ def select_issues(base_dir: str, config: dict, tmp_dir: str) -> list[BlIssueDir]
         )
         return None
 
-    issues = detect_issues(base_dir, tmp_dir)
-    issue_bag = db.from_sequence(issues)
-    selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
-        and i.alias not in exclude_list
-    ).compute()
+    alias_filter = list(filter_dict.keys())
+
+    selected_issues = detect_issues(
+        base_dir, ocr_format, bl_issues_for_format, alias_filter, exclude_list
+    )
 
     exclude_flag = False if not exclude_list else True
     filtered_issues = (

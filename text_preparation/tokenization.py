@@ -6,9 +6,7 @@ from impresso_essentials.text_utils import WHITESPACE_RULES
 logger = logging.getLogger(__name__)
 
 
-def insert_whitespace(
-    token: str, following_token: str, previous_token: str, language: str
-) -> bool:
+def insert_whitespace(token: str, following_token: str, previous_token: str, language: str) -> bool:
     """Determine whether a whitespace should be inserted after a token.
 
     Args:
@@ -21,7 +19,8 @@ def insert_whitespace(
         bool: Whether a whitespace should be inserted after the `token`.
     """
     try:
-        wsrules = WHITESPACE_RULES[language]
+        lang = language if language in WHITESPACE_RULES else "other"
+        wsrules = WHITESPACE_RULES[lang]
     except Exception:
         pass
         return

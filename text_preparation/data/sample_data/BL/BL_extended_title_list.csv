@@ -1,4 +1,3 @@
-,,,,,,,,,,,,
 ,Normalized Working Title,Working title (BL),Variant Title,NLP,Alias (in file-syst or generated),Country,Start Year,End Year,Copy already shared with Impresso,Start year in Impresso local copy,End year in Impresso local copy,Notes about local copy
 1,Aberdeen Press and Journal,Aberdeen Press and Journal,Aberdeen Journal and General Advertiser,0000031,ANJO,Scotland,1798,1876,"Yes, fully",1789,1876,
 2,Aberdeen Press and Journal,Aberdeen Press and Journal,Aberdeen Weekly Journal and General Advertiser,0000032 ,ANJO,Scotland,1876,1900,"Yes, fully",1877,1900,There were some small problems in the filenaming and some files were copied across all leaf directories (eg 0929WO1_ANJO_1896_09_29-0005-021.xml in 0000032/1896/0918)
@@ -88,7 +87,7 @@
 514,Denton and Haughton Examiner,Denton and Haughton Examiner,"Denton and Haughton Examiner, etc",0002620,DHEX,England,1880,1892,"Yes, fully",1880,1892,Not separated in the data
 7,Derby Mercury,Derby Mercury,Derby Mercury,0000052,DYMR,England,1800,1900,"Yes, more than in the list",1788,1900,
 600,Derby Mercury,Derby Mercury,Derby Mercury,0000189,DYMR,,,,"Yes, not originally lsit",1727,1787,
-559,Dewsbury Chronicle and West Riding Advertiser ,Dewsbury Chronicle and West Riding Advertiser ,Dewsbury Chronicle and West Riding Advertiser ,0003408,DCWA,England,1876,1895,"Yes, more than in the list",1869,1895,
+559,Dewsbury Chronicle and West Riding Advertiser ,Dewsbury Chronicle and West Riding Advertiser ,Dewsbury Chronicle and West Riding Advertiser ,0003408,DCWR,England,1876,1895,"Yes, more than in the list",1869,1895,
 468,Dorset County Express and Agricultural Gazette,Dorset County Express and Agricultural Gazette,The Dorset County Express and Agricultural Gazette.,0003091,DCEA,England,1858,1879,"Yes, fully",1858,1879,Not separated in the data
 550,Dorset County Express and Agricultural Gazette,Dorset County Express and Agricultural Gazette,Dorset County Express and Agricultural Gazette,0003091,DCEA,England,1880,1886,"Yes, fully",1880,1886,Not separated in the data
 134,Douglas Jerrold's Weekly Newspaper,Douglas Jerrold's Weekly Newspaper,Douglas Jerrold's Weekly Newspaper.,0002409,DJWN,England,1846,1848,"Yes, fully",1846,1848,
@@ -189,7 +188,7 @@
 203,London Moderator and National Adviser,London Moderator and National Adviser,London Moderator and National Adviser,0002761,LMNA,England,1813,1823,"Yes, fully",1813,1823,
 206,London Railway Newspaper,London Railway Newspaper,London Railway Newspaper.,0003000,LRNW,England,1845,1845,"Yes, fully",1845,1845,
 42,The London News Letter and Price Current,London News Letter and Price Current,The London News Letter and Price Current,0004199,LNPC,England,1859,1865,"Yes, fully",1859,1865,
-557,Manchester Examiner,Manchester Examiner,Manchester Examiner,0003398,MEXM,England,1847,1847,"Yes, more than in the list",1846,1848,
+557,Manchester Examiner,Manchester Examiner,Manchester Examiner,0003398,MEXA,England,1847,1847,"Yes, more than in the list",1846,1848,
 208,Manchester Times,Manchester Times,Manchester Examiner and Times,0000502,MRTM,England,1849,1855,"Yes, fully",1849,1855,
 209,Manchester Times,Manchester Times,Manchester Weekly Examiner & Times,0000503,MRTM,England,1856,1857,"Yes, fully",1856,1857,
 210,Manchester Times,Manchester Times,Manchester Weekly Times and Examiner,0000504,MRTM,England,1857,1900,"Yes, fully",1858,1900,
