@@ -14,6 +14,9 @@ text_preparation/data/logs/importer_logs/playground_*
 text_preparation/data/logs/rebuilt_logs/debug_*
 text_preparation/data/logs/test_logs/*
 text_preparation/data/sample_data/BCUL/171722
+text_preparation/data/sample_data/BL/importer_examples/*
+text_preparation/data/sample_data/INA/*/*.MP3
+text_preparation/data/sample_data/INA/*/manifest.json
 .pytest_cache
 *.egg-info
 .ipynb_checkpoints/
