@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/          http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+<responseDate>2025-01-17T16:39:07.133Z</responseDate>
+<request metadataPrefix="didl" verb="GetRecord">http://services.kb.nl/mdo/oai	</request>
+<GetRecord>
+<record>
+<header>
+<identifier>anp:anp:1937:03:01:1:mpeg21</identifier>
+<datestamp>2008-09-24T09:09:18.285Z</datestamp>
+<setSpec>anp</setSpec>
+</header>
+<metadata>
+<didl:DIDL xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcmitype="http://purl.org/dc/dcmitype/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dcx="http://krait.kb.nl/coop/tel/handbook/telterms.html" xmlns:didl="urn:mpeg:mpeg21:2002:02-DIDL-NS" xmlns:srw_dc="info:srw/schema/1/dc-v1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><didl:Item dc:identifier="anp:1937:03:01:1:mpeg21"><didl:Component dc:identifier="anp:1937:03:01:1:mpeg21:metadata"><didl:Descriptor><didl:Statement dc:type="role" mimeType="text/plain">metadata</didl:Statement></didl:Descriptor><didl:Resource mimeType="text/xml"><srw_dc:dcx xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<dc:identifier>http://resolver.kb.nl/resolve?urn=anp:1937:03:01:1:mpeg21</dc:identifier>
+<dcx:recordIdentifier>anp:1937:03:01:1</dcx:recordIdentifier>
+<dcterms:isPartOf>ANP</dcterms:isPartOf>
+<dcterms:isPartOf>ANP Nieuwsberichten 1937-1989</dcterms:isPartOf>
+<dc:type xsi:type="dcterms:DCMIType">Text</dc:type>
+<dcterms:medium xsi:type="dcterms:IMT">image/jpg</dcterms:medium>
+<dc:language xsi:type="ISO-639-2">dut</dc:language>
+<dc:rights>ANP</dc:rights>
+<dcx:recordRights>Koninklijke Bibliotheek, Den Haag</dcx:recordRights>
+<dc:title>ANP Nieuwsbericht - 01-03-1937 - 1</dc:title>
+<dc:date>1937-03-01</dc:date>
+<dcx:volgnummer>1</dcx:volgnummer>
+</srw_dc:dcx>
+</didl:Resource></didl:Component><didl:Component dc:identifier="anp:1937:03:01:1:mpeg21:image"><didl:Descriptor><didl:Statement dc:type="role" mimeType="text/plain">image</didl:Statement></didl:Descriptor><didl:Resource mimeType="image/jpeg" ref="anp_1937-03-01_1_access.jpg"/><didl:Resource mimeType="image/jpeg" ref="http://resolver.kb.nl/resolve?urn=anp:1937:03:01:1:mpeg21:image"/></didl:Component><didl:Component dc:identifier="anp:1937:03:01:1:mpeg21:alto"><didl:Descriptor><didl:Statement dc:type="role" mimeType="text/plain">alto</didl:Statement></didl:Descriptor><didl:Resource mimeType="text/xml" ref="anp_1937-03-01_1_alto.xml"/><didl:Resource mimeType="text/xml" ref="http://resolver.kb.nl/resolve?urn=anp:1937:03:01:1:mpeg21:alto"/></didl:Component><didl:Component dc:identifier="anp:1937:03:01:1:mpeg21:ocr"><didl:Descriptor><didl:Statement dc:type="role" mimeType="text/plain">ocr</didl:Statement></didl:Descriptor><didl:Resource mimeType="text/xml" ref="anp_1937-03-01_1_text.xml"/><didl:Resource mimeType="text/xml" ref="http://resolver.kb.nl/resolve?urn=anp:1937:03:01:1:mpeg21:ocr"/></didl:Component></didl:Item></didl:DIDL>
+</metadata>
+</record>
+</GetRecord>
+</OAI-PMH>

@@ -1,3 +1,0 @@
-from text_importer.importers.mets_alto.classes import MetsAltoNewspaperPage, MetsAltoNewspaperIssue
-from text_importer.importers.mets_alto.mets import parse_mets_amdsec
-from text_importer.importers.mets_alto.alto import find_alto_files_or_retry

@@ -7,23 +7,23 @@ produced by PDFlib TET.
 Tetml Custom classes
 --------------------
 
-.. automodule:: text_importer.importers.tetml.classes
+.. automodule:: text_preparation.importers.tetml.classes
   :members:
 
 Tetml Detect functions
 ----------------------
 
-.. automodule:: text_importer.importers.tetml.detect
+.. automodule:: text_preparation.importers.tetml.detect
   :members:
 
 Tetml parsers
 -------------
 
-.. automodule:: text_importer.importers.tetml.parsers
+.. automodule:: text_preparation.importers.tetml.parsers
   :members:
 
 Tetml Helper methods
 --------------------
 
-.. automodule:: text_importer.importers.tetml.helpers
+.. automodule:: text_preparation.importers.tetml.helpers
   :members:

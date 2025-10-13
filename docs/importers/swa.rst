@@ -8,11 +8,11 @@ It was developed to handle OCR newspaper data in Alto format provided by the `Sc
 SWA Custom classes
 ------------------
 
-.. automodule:: text_importer.importers.swa.classes
+.. automodule:: text_preparation.importers.swa.classes
   :members:
 
 SWA Detect functions
 --------------------
 
-.. automodule:: text_importer.importers.swa.detect
+.. automodule:: text_preparation.importers.swa.detect
   :members:

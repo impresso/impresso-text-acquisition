@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ticket type="Abbyy">
+	<meta>
+		<date><![CDATA[17621207]]></date>
+		<publication><![CDATA[24 Heures]]></publication>
+		<publisher><![CDATA[]]></publisher>
+		<title><![CDATA[Annonces et avis divers]]></title>
+		<language><![CDATA[fr]]></language>
+		<category><![CDATA[91]]></category>
+		<description><![CDATA[]]></description>
+	</meta>
+	<images pdf="/abbyy_singlexml/1762/FAL_1762_12_07/PDF/FAL_1762_12_07.pdf" xml="XML/FAL_1762_12_07.xml">
+		<image w="1854" h="2383" src="/abbyy_singlexml/1762/FAL_1762_12_07/STR/FAL_1762_12_07_0001.jp2" xml="/abbyy_singlexml/1762/FAL_1762_12_07/FAL_1762_12_07_0001_page_1.xml" res="">
+		</image>
+		<image w="1854" h="2383" src="/abbyy_singlexml/1762/FAL_1762_12_07/STR/FAL_1762_12_07_0002.jp2" xml="/abbyy_singlexml/1762/FAL_1762_12_07/FAL_1762_12_07_0001_page_2.xml" res="">
+		</image>
+		<image w="1798" h="2385" src="/abbyy_singlexml/1762/FAL_1762_12_07/STR/FAL_1762_12_07_0003.jp2" xml="/abbyy_singlexml/1762/FAL_1762_12_07/FAL_1762_12_07_0001_page_3.xml" res="">
+		</image>
+		<image w="1798" h="2392" src="/abbyy_singlexml/1762/FAL_1762_12_07/STR/FAL_1762_12_07_0004.jp2" xml="/abbyy_singlexml/1762/FAL_1762_12_07/FAL_1762_12_07_0001_page_4.xml" res="">
+		</image>
+	</images>
+	<settings>
+		<fsb>11</fsb>
+		<fsn>16</fsn>
+	</settings>
+</ticket>

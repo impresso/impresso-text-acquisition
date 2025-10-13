@@ -1,28 +1,26 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generic TETML importer &mdash; Impresso TextImporter  documentation</title>
+  <title>Generic TETML importer &mdash; Impresso Text Preparation  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="FedGaz TETML importer" href="fedgaz.html" />
-    <link rel="prev" title="BNF-EN Mets/Alto importer" href="bnf-en.html" /> 
+    <link rel="prev" title="INA AudioDoc importer" href="ina.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +32,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            Impresso TextImporter
+            Impresso Text Preparation
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -48,21 +46,25 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">TextImporter</a><ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">Importers</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bl.html">British Library Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bl.html">British Library importers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Generic TETML importer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.tetml.classes">Tetml Custom classes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.tetml.detect">Tetml Detect functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.tetml.parsers">Tetml parsers</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_importer.importers.tetml.helpers">Tetml Helper methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.tetml.classes">Tetml Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.tetml.detect">Tetml Detect functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.tetml.parsers">Tetml parsers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.tetml.helpers">Tetml Helper methods</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
@@ -70,10 +72,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../importers.html#module-text_importer.utils">Utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#writing-a-new-importer">Writing a new importer</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../custom_importer.html">Writing a new importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rebuilders.html">Rebuilders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities</a></li>
 </ul>
 
         </div>
@@ -82,7 +85,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">Impresso TextImporter</a>
+          <a href="../index.html">Impresso Text Preparation</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -90,7 +93,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../importers.html">TextImporter</a></li>
+          <li class="breadcrumb-item"><a href="../importers.html">Importers</a></li>
       <li class="breadcrumb-item active">Generic TETML importer</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/importers/tetml.rst.txt" rel="nofollow"> View page source</a>
@@ -105,12 +108,12 @@
 <h1>Generic TETML importer<a class="headerlink" href="#generic-tetml-importer" title="Link to this heading"></a></h1>
 <p>This generic importer was developed to parse the OCR document data,
 produced by PDFlib TET.</p>
-<section id="module-text_importer.importers.tetml.classes">
-<span id="tetml-custom-classes"></span><h2>Tetml Custom classes<a class="headerlink" href="#module-text_importer.importers.tetml.classes" title="Link to this heading"></a></h2>
+<section id="module-text_preparation.importers.tetml.classes">
+<span id="tetml-custom-classes"></span><h2>Tetml Custom classes<a class="headerlink" href="#module-text_preparation.importers.tetml.classes" title="Link to this heading"></a></h2>
 <p>Classes to handle the TETML OCR format.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.classes.TetmlNewspaperIssue">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.classes.</span></span><span class="sig-name descname"><span class="pre">TetmlNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.tetml.classes.TetmlNewspaperIssue" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.classes.TetmlNewspaperIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.classes.</span></span><span class="sig-name descname"><span class="pre">TetmlNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.tetml.classes.TetmlNewspaperIssue" title="Link to this definition"></a></dt>
 <dd><p>Class representing a newspaper issue in TETML format.</p>
 <p>Upon object initialization the following things happen:</p>
 <ul class="simple">
@@ -124,16 +127,16 @@ produced by PDFlib TET.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.classes.TetmlNewspaperIssue.parse_articles">
-<span class="sig-name descname"><span class="pre">parse_articles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.tetml.classes.TetmlNewspaperIssue.parse_articles" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.classes.TetmlNewspaperIssue.parse_articles">
+<span class="sig-name descname"><span class="pre">parse_articles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.tetml.classes.TetmlNewspaperIssue.parse_articles" title="Link to this definition"></a></dt>
 <dd><p>Parse all articles of this issue</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.classes.TetmlNewspaperPage">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.classes.</span></span><span class="sig-name descname"><span class="pre">TetmlNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_xml</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.tetml.classes.TetmlNewspaperPage" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.classes.TetmlNewspaperPage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.classes.</span></span><span class="sig-name descname"><span class="pre">TetmlNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_xml</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.tetml.classes.TetmlNewspaperPage" title="Link to this definition"></a></dt>
 <dd><p>Generic class representing a page in Tetml format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -145,21 +148,21 @@ produced by PDFlib TET.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.classes.TetmlNewspaperPage.add_issue">
-<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.tetml.classes.TetmlNewspaperPage.add_issue" title="Link to this definition"></a></dt>
-<dd><p>Add to a page object its parent, i.e. the newspaper issue.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.classes.TetmlNewspaperPage.add_issue">
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.tetml.classes.TetmlNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
 <p>This allows each page to preserve contextual information coming from
-the newspaper issue.</p>
+the canonical issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Newspaper issue containing this page.</p>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.classes.TetmlNewspaperPage.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_importer.importers.tetml.classes.TetmlNewspaperPage.parse" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.classes.TetmlNewspaperPage.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.tetml.classes.TetmlNewspaperPage.parse" title="Link to this definition"></a></dt>
 <dd><p>Process the page XML file and transform into canonical Page format.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -172,11 +175,12 @@ method is called.</p>
 </dd></dl>
 
 </section>
-<section id="module-text_importer.importers.tetml.detect">
-<span id="tetml-detect-functions"></span><h2>Tetml Detect functions<a class="headerlink" href="#module-text_importer.importers.tetml.detect" title="Link to this heading"></a></h2>
+<section id="module-text_preparation.importers.tetml.detect">
+<span id="tetml-detect-functions"></span><h2>Tetml Detect functions<a class="headerlink" href="#module-text_preparation.importers.tetml.detect" title="Link to this heading"></a></h2>
+<p>This module contains functions to detect Tetml OCR data to be imported.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.detect.TetmlIssueDir">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">TetmlIssueDir</span></span><a class="headerlink" href="#text_importer.importers.tetml.detect.TetmlIssueDir" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.detect.TetmlIssueDir">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">TetmlIssueDir</span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.TetmlIssueDir" title="Link to this definition"></a></dt>
 <dd><p>A light-weight data structure to represent a newspaper issue.</p>
 <p>This named tuple contains basic metadata about a newspaper issue. They
 can then be used to locate the relevant data in the filesystem or to create
@@ -190,44 +194,23 @@ second, etc.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>journal</strong> (<em>str</em>) – Newspaper ID</p></li>
+<li><p><strong>provider</strong> (<em>str</em>) – Provider for this alias, here always “NZZ” or “FedGaz”</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – Newspaper alias</p></li>
 <li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date</p></li>
 <li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.)</p></li>
 <li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing OCR data</p></li>
-<li><p><strong>rights</strong> (<em>str</em>) – Access rights on the data (open, closed, etc.)</p></li>
 </ul>
 </dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">TetmlIssueDir</span><span class="p">(</span><span class="s1">&#39;GDL&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./GDL-1900-01-01/&#39;</span><span class="p">,</span> <span class="s1">&#39;open&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">TetmlIssueDir</span><span class="p">(</span><span class="s1">&#39;NZZ&#39;</span><span class="p">,</span> <span class="s1">&#39;NZZ&#39;</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">1900</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;./NZZ-1900-01-01/&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.detect.dir2tetmldir">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">dir2tetmldir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">TetmlIssueDirectory</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.detect.dir2tetmldir" title="Link to this definition"></a></dt>
-<dd><p>Helper function that injects access rights info into an <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function is called internally by <a class="reference internal" href="#text_importer.importers.tetml.detect.tetml_detect_issues" title="text_importer.importers.tetml.detect.tetml_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">tetml_detect_issues()</span></code></a>.</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Input <code class="docutils literal notranslate"><span class="pre">IssueDir</span></code> object.</p></li>
-<li><p><strong>access_rights</strong> (<em>dict</em>) – Access rights information.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>New <code class="docutils literal notranslate"><span class="pre">TetmlIssueDir</span></code> object.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.detect.tetml_detect_issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">tetml_detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">journal_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TetmlIssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.tetml.detect.tetml_detect_issues" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.detect.tetml_detect_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">tetml_detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">set</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TetmlIssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.tetml_detect_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect newspaper issues to import within the filesystem.</p>
 <p>This function expects the directory structure that RERO used to
 organize the dump of Tetml OCR data.</p>
@@ -235,9 +218,8 @@ organize the dump of Tetml OCR data.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
-<li><p><strong>journal_filter</strong> (<em>set</em>) – IDs of newspapers to consider.</p></li>
-<li><p><strong>exclude</strong> (<em>bool</em>) – Whether <code class="docutils literal notranslate"><span class="pre">journal_filter</span></code> should determine exclusion.</p></li>
+<li><p><strong>alias_filter</strong> (<em>set</em>) – IDs of newspapers to consider.</p></li>
+<li><p><strong>exclude</strong> (<em>bool</em>) – Whether <code class="docutils literal notranslate"><span class="pre">alias_filter</span></code> should determine exclusion.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -247,10 +229,10 @@ organize the dump of Tetml OCR data.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.detect.tetml_select_issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">tetml_select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TetmlIssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.tetml.detect.tetml_select_issues" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.detect.tetml_select_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.detect.</span></span><span class="sig-name descname"><span class="pre">tetml_select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TetmlIssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.detect.tetml_select_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
-<p>The behavior is very similar to <a class="reference internal" href="#text_importer.importers.tetml.detect.tetml_detect_issues" title="text_importer.importers.tetml.detect.tetml_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">tetml_detect_issues()</span></code></a> with the only
+<p>The behavior is very similar to <a class="reference internal" href="#text_preparation.importers.tetml.detect.tetml_detect_issues" title="text_preparation.importers.tetml.detect.tetml_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">tetml_detect_issues()</span></code></a> with the only
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
 import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
 further details on how to configure filtering.</p>
@@ -259,7 +241,6 @@ further details on how to configure filtering.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
 <li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
-<li><p><strong>access_rights</strong> (<em>str</em>) – Path to <code class="docutils literal notranslate"><span class="pre">access_rights.json</span></code> file.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -269,12 +250,12 @@ further details on how to configure filtering.</p>
 </dd></dl>
 
 </section>
-<section id="module-text_importer.importers.tetml.parsers">
-<span id="tetml-parsers"></span><h2>Tetml parsers<a class="headerlink" href="#module-text_importer.importers.tetml.parsers" title="Link to this heading"></a></h2>
+<section id="module-text_preparation.importers.tetml.parsers">
+<span id="tetml-parsers"></span><h2>Tetml parsers<a class="headerlink" href="#module-text_preparation.importers.tetml.parsers" title="Link to this heading"></a></h2>
 <p>Functions to parse TETML data.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.parsers.tetml_parser">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.parsers.</span></span><span class="sig-name descname"><span class="pre">tetml_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tetml</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_page_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'de'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.parsers.tetml_parser" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.parsers.tetml_parser">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.parsers.</span></span><span class="sig-name descname"><span class="pre">tetml_parser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tetml</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filtering</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_page_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">language</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'de'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.parsers.tetml_parser" title="Link to this definition"></a></dt>
 <dd><p>Parse a TETML file (e.g. from Swiss Federal Archive).</p>
 <p>The main logic implemented here was derived from
 <a class="reference external" href="https://github.com/impresso/nzz/">https://github.com/impresso/nzz/</a>. A TETML file
@@ -297,14 +278,14 @@ of the founding pdf.</p>
 </dd></dl>
 
 </section>
-<section id="module-text_importer.importers.tetml.helpers">
-<span id="tetml-helper-methods"></span><h2>Tetml Helper methods<a class="headerlink" href="#module-text_importer.importers.tetml.helpers" title="Link to this heading"></a></h2>
+<section id="module-text_preparation.importers.tetml.helpers">
+<span id="tetml-helper-methods"></span><h2>Tetml Helper methods<a class="headerlink" href="#module-text_preparation.importers.tetml.helpers" title="Link to this heading"></a></h2>
 <p>Helper functions used by the Tetml Importer.</p>
 <p>These functions are mainly used within (i.e. called by) the classes
 <code class="docutils literal notranslate"><span class="pre">TetmlNewspaperIssue</span></code> and <code class="docutils literal notranslate"><span class="pre">TetmlNewspaperPage</span></code>.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.add_gn_property">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">add_gn_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tokens:</span> <span class="pre">[&lt;class</span> <span class="pre">'dict'&gt;],</span> <span class="pre">language:</span> <span class="pre">str</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.add_gn_property" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.add_gn_property">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">add_gn_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">tokens:</span> <span class="pre">[&lt;class</span> <span class="pre">'dict'&gt;],</span> <span class="pre">language:</span> <span class="pre">str</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.add_gn_property" title="Link to this definition"></a></dt>
 <dd><p>Set property to indicate the use of whitespace following a token</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -320,8 +301,8 @@ of the founding pdf.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.compute_bb">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">compute_bb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">innerbbs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.compute_bb" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.compute_bb">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">compute_bb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">innerbbs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.compute_bb" title="Link to this definition"></a></dt>
 <dd><p>Compute coordinates of the bounding box from multiple boxes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -334,8 +315,8 @@ of the founding pdf.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.compute_box">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">compute_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">llx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ury</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pageheight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pagewidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageheight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imagewidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placedimage_attribs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.compute_box" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.compute_box">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">compute_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">llx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lly</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">urx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ury</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pageheight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pagewidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageheight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imagewidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placedimage_attribs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.compute_box" title="Link to this definition"></a></dt>
 <dd><p>Compute IIIF box coordinates of input_box.</p>
 <p>New box coordinates [x,y,w,h] are in IIIF coordinate system <a class="reference external" href="https://iiif.io/api/image/2.0/#region">https://iiif.io/api/image/2.0/#region</a></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
@@ -356,10 +337,10 @@ of the founding pdf.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pageheight</strong> (<em>float</em>) – </p></li>
-<li><p><strong>pagewidth</strong> (<em>float</em>) – </p></li>
-<li><p><strong>imageheight</strong> (<em>float</em>) – </p></li>
-<li><p><strong>imagewidth</strong> (<em>float</em>) – </p></li>
+<li><p><strong>pageheight</strong> (<em>float</em>)</p></li>
+<li><p><strong>pagewidth</strong> (<em>float</em>)</p></li>
+<li><p><strong>imageheight</strong> (<em>float</em>)</p></li>
+<li><p><strong>imagewidth</strong> (<em>float</em>)</p></li>
 <li><p><strong>llx</strong> (<em>float</em>) – lower left x coordinate (lower=smaller)</p></li>
 <li><p><strong>lly</strong> (<em>float</em>) – lower left y coordinate (lower=smaller)</p></li>
 <li><p><strong>urx</strong> (<em>float</em>) – upper right x coordinate (upper=bigger)</p></li>
@@ -377,8 +358,8 @@ of the founding pdf.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.filter_special_symbols">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">filter_special_symbols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jtoken</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.filter_special_symbols" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.filter_special_symbols">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">filter_special_symbols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jtoken</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.filter_special_symbols" title="Link to this definition"></a></dt>
 <dd><p>Check if token needs to be filtered out as it is a non-content word</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -391,8 +372,8 @@ of the founding pdf.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.get_metadata">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.get_metadata" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.get_metadata">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">get_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.get_metadata" title="Link to this definition"></a></dt>
 <dd><p>Return dict with relevant metadata from page file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -405,8 +386,8 @@ of the founding pdf.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.get_placed_image">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">get_placed_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.get_placed_image" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.get_placed_image">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">get_placed_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.get_placed_image" title="Link to this definition"></a></dt>
 <dd><p>Return dimensions of the placed image</p>
 <p>``
 &lt;PlacedImage image=”I0” x=”0.00” y=”0.00” width=”588.84” height=”842.00” /&gt;
@@ -417,8 +398,8 @@ of the founding pdf.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.get_tif_shape">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">get_tif_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.get_tif_shape" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.get_tif_shape">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">get_tif_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.get_tif_shape" title="Link to this definition"></a></dt>
 <dd><p>Return original tiff dimensions stored in tetml</p>
 <p>``
 &lt;Image id=”I0” extractedAs=”.tif” width=”1404” height=”2367” colorspace=”CS0” bitsPerComponent=”1”/&gt;
@@ -434,8 +415,8 @@ of the founding pdf.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.remove_page_number">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">remove_page_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jtoken</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_word</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.remove_page_number" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.remove_page_number">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">remove_page_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jtoken</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i_word</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.remove_page_number" title="Link to this definition"></a></dt>
 <dd><p>Check if page number in the header appears within the first 3 tokens
 of the first line and is not longer than 3 digits.</p>
 <dl class="field-list simple">
@@ -453,8 +434,8 @@ of the first line and is not longer than 3 digits.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.tetml.helpers.word2json">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">word2json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">word</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pageheight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pagewidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageheight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imagewidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placed_image_attribs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_importer.importers.tetml.helpers.word2json" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.tetml.helpers.word2json">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.tetml.helpers.</span></span><span class="sig-name descname"><span class="pre">word2json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">word</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pageheight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pagewidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageheight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imagewidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placed_image_attribs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#text_preparation.importers.tetml.helpers.word2json" title="Link to this definition"></a></dt>
 <dd><p>Return dict with all information about the (hyphenated) TETML word element</p>
 <p><code class="docutils literal notranslate"><span class="pre">{&quot;tx&quot;:</span> <span class="pre">Text,</span>
 <span class="pre">&quot;c&quot;:</span> <span class="pre">coords,</span>
@@ -464,13 +445,13 @@ of the first line and is not longer than 3 digits.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pageheight</strong> (<em>float</em>) – </p></li>
-<li><p><strong>pagewidth</strong> (<em>float</em>) – </p></li>
-<li><p><strong>imageheight</strong> (<em>float</em>) – </p></li>
-<li><p><strong>imagewidth</strong> (<em>float</em>) – </p></li>
-<li><p><strong>placed_image_attribs</strong> (<em>dict</em>) – </p></li>
-<li><p><strong>filename</strong> (<em>str</em>) – </p></li>
-<li><p><strong>word</strong> (<em>lxml.etree.Element</em>) – </p></li>
+<li><p><strong>pageheight</strong> (<em>float</em>)</p></li>
+<li><p><strong>pagewidth</strong> (<em>float</em>)</p></li>
+<li><p><strong>imageheight</strong> (<em>float</em>)</p></li>
+<li><p><strong>imagewidth</strong> (<em>float</em>)</p></li>
+<li><p><strong>placed_image_attribs</strong> (<em>dict</em>)</p></li>
+<li><p><strong>filename</strong> (<em>str</em>)</p></li>
+<li><p><strong>word</strong> (<em>lxml.etree.Element</em>)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -486,14 +467,14 @@ of the first line and is not longer than 3 digits.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="bnf-en.html" class="btn btn-neutral float-left" title="BNF-EN Mets/Alto importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ina.html" class="btn btn-neutral float-left" title="INA AudioDoc importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="fedgaz.html" class="btn btn-neutral float-right" title="FedGaz TETML importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+    <p>&#169; Copyright 2025, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

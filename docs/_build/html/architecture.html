@@ -1,27 +1,25 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview &mdash; Impresso TextImporter  documentation</title>
+  <title>Overview &mdash; Impresso Text Preparation  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="TextImporter" href="importers.html" />
+    <link rel="next" title="Preprocessing" href="preprocessing.html" />
     <link rel="prev" title="Installation" href="install.html" /> 
 </head>
 
@@ -34,7 +32,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            Impresso TextImporter
+            Impresso Text Preparation
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -52,36 +50,42 @@
 <li class="toctree-l3"><a class="reference internal" href="#canonical-identifiers">Canonical identifiers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#issue-ids">Issue IDs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#page-ids">Page IDs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audio-records-ids">Audio Records IDs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#content-item-ids">Content item IDs</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#data-packaging">Data packaging</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#issue-data">Issue data</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#page-data">Page data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#page-or-audio-record-data">Page or Audio Record data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#rebuilt-data">Rebuilt data</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#image-data">Image data</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-text_importer.importers.core">Processing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.compress_issues"><code class="docutils literal notranslate"><span class="pre">compress_issues()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.compress_pages"><code class="docutils literal notranslate"><span class="pre">compress_pages()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.dir2issue"><code class="docutils literal notranslate"><span class="pre">dir2issue()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.dirs2issues"><code class="docutils literal notranslate"><span class="pre">dirs2issues()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.import_issues"><code class="docutils literal notranslate"><span class="pre">import_issues()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.issue2pages"><code class="docutils literal notranslate"><span class="pre">issue2pages()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.process_pages"><code class="docutils literal notranslate"><span class="pre">process_pages()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.remove_filelocks"><code class="docutils literal notranslate"><span class="pre">remove_filelocks()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.serialize_pages"><code class="docutils literal notranslate"><span class="pre">serialize_pages()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.upload_issues"><code class="docutils literal notranslate"><span class="pre">upload_issues()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.upload_pages"><code class="docutils literal notranslate"><span class="pre">upload_pages()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.importers.core.write_error"><code class="docutils literal notranslate"><span class="pre">write_error()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-text_preparation.importers.core">Processing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.cleanup"><code class="docutils literal notranslate"><span class="pre">cleanup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.compress_issues"><code class="docutils literal notranslate"><span class="pre">compress_issues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.compress_supports"><code class="docutils literal notranslate"><span class="pre">compress_supports()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.dir2issue"><code class="docutils literal notranslate"><span class="pre">dir2issue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.dirs2issues"><code class="docutils literal notranslate"><span class="pre">dirs2issues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.import_issues"><code class="docutils literal notranslate"><span class="pre">import_issues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.is_audio_issue"><code class="docutils literal notranslate"><span class="pre">is_audio_issue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.issue2supports"><code class="docutils literal notranslate"><span class="pre">issue2supports()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.process_supports"><code class="docutils literal notranslate"><span class="pre">process_supports()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.remove_filelocks"><code class="docutils literal notranslate"><span class="pre">remove_filelocks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.serialize_supports"><code class="docutils literal notranslate"><span class="pre">serialize_supports()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.upload_issues"><code class="docutils literal notranslate"><span class="pre">upload_issues()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.upload_supports"><code class="docutils literal notranslate"><span class="pre">upload_supports()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#text_preparation.importers.core.write_error"><code class="docutils literal notranslate"><span class="pre">write_error()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="importers.html">TextImporter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Writing a new importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers.html">Importers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rebuilders.html">Rebuilders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
 </ul>
 
         </div>
@@ -90,7 +94,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Impresso TextImporter</a>
+          <a href="index.html">Impresso Text Preparation</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -112,42 +116,54 @@
 <h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
 <section id="data-architecture">
 <h2>Data architecture<a class="headerlink" href="#data-architecture" title="Link to this heading"></a></h2>
-<p>The <cite>Impreso TextImporter</cite> is part of and fits into the data architecture defined in
+<p><cite>Impreso Text Preparation</cite>, composed of the <cite>Importer</cite> and the <cite>Rebuilder</cite> is the main part of the data architecture defined in
 the framework of the impresso project to store and process a large-scale
-archive of historical newspapers. To understand the importer’s logic
+archive of historical newspapers and radio (broadcasts and bulletins). To understand the importer’s logic
 is worth touching upon the key points of the architecure into which it fits.</p>
 <section id="canonical-identifiers">
 <h3>Canonical identifiers<a class="headerlink" href="#canonical-identifiers" title="Link to this heading"></a></h3>
 <p>Canonical identifiers are defined at the following levels:</p>
 <ol class="arabic simple">
-<li><p>newspaper issue</p></li>
-<li><p>newspaper page</p></li>
-<li><p>content item (e.g. article, advertisement, weather forecast, obituary, etc.)</p></li>
+<li><p>newspaper or broadcast issue</p></li>
+<li><p>newspaper page or audio record</p></li>
+<li><p>paper-based content item (e.g. article, advertisement, weather forecast, obituary, etc.) or audio-record content item (audio broadcast emission)</p></li>
 </ol>
 <section id="issue-ids">
 <h4>Issue IDs<a class="headerlink" href="#issue-ids" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}</span></code></p></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{media_alias}-{date.year}-{date.month}-{date.day}-{edition}</span></code></p></li>
+<li><p>regex pattern: <code class="docutils literal notranslate"><span class="pre">^[A-Za-z][A-Za-z0-9_]*-\\d{4}-\\d{2}-\\d{2}-[a-z]{1,2}$</span></code></p></li>
 <li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a</span></code></p></li>
 </ul>
 </section>
 <section id="page-ids">
 <h4>Page IDs<a class="headerlink" href="#page-ids" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-p{page_number}</span></code></p></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{media_alias}-{date.year}-{date.month}-{date.day}-{edition}-p{page_number}</span></code></p></li>
+<li><p>regex pattern: <code class="docutils literal notranslate"><span class="pre">^[A-Za-z][A-Za-z0-9_]*-\\d{4}-\\d{2}-\\d{2}-[a-z]{1,2}-p[0-9]{4}$</span></code></p></li>
+<li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a-p0002</span></code></p></li>
+</ul>
+</section>
+<section id="audio-records-ids">
+<h4>Audio Records IDs<a class="headerlink" href="#audio-records-ids" title="Link to this heading"></a></h4>
+<ul class="simple">
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{media_alias}-{date.year}-{date.month}-{date.day}-{edition}-r{record_number}</span></code></p></li>
+<li><p>regex pattern: <code class="docutils literal notranslate"><span class="pre">^[A-Za-z][A-Za-z0-9_]*-\\d{4}-\\d{2}-\\d{2}-[a-z]{1,2}-r[0-9]{4}$</span></code></p></li>
 <li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>, <code class="docutils literal notranslate"><span class="pre">luxzeit1858-1858-12-7-a-p0002</span></code></p></li>
 </ul>
 </section>
 <section id="content-item-ids">
 <h4>Content item IDs<a class="headerlink" href="#content-item-ids" title="Link to this heading"></a></h4>
 <ul class="simple">
-<li><p>template: <code class="docutils literal notranslate"><span class="pre">{newspaper_id}-{date.year}-{date.month}-{date.day}-{edition}-i{item_number}</span></code></p></li>
+<li><p>template: <code class="docutils literal notranslate"><span class="pre">{media_alias}-{date.year}-{date.month}-{date.day}-{edition}-i{item_number}</span></code></p></li>
+<li><p>regex pattern: <code class="docutils literal notranslate"><span class="pre">^[A-Za-z][A-Za-z0-9_]*-\\d{4}-\\d{2}-\\d{2}-[a-z]{1,2}-i[0-9]{4}$</span></code></p></li>
 <li><p>examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-i0048</span></code>, <code class="docutils literal notranslate"><span class="pre">JDG-1901-01-01-a-i0031</span></code></p></li>
 </ul>
 <p>Some things to note about these templates:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">newspaper_id</span></code> is an arbitrary string, not containing white spaces, unambiguously identifying a given newspaper</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">media_alias</span></code> is an arbitrary string, not containing white spaces, unambiguously identifying a given media title</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">page_number</span></code> is a four-digits integer (zeroes are used for filling)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">record_number</span></code> is a four-digits integer (zeroes are used for filling). In most cases a broadcast only has one MP3 recording, but is here for conformity.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">edition</span></code>: in case of newspapers published multiple times per day, a lowercase letter is used to indicate the edition number: <code class="docutils literal notranslate"><span class="pre">a</span></code> for the first, <code class="docutils literal notranslate"><span class="pre">b</span></code> for the second, etc.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">item_number</span></code>: is a four-digits integer (zeroes are used for filling); <strong>NB</strong>: content item IDs are <strong>expected to remain stable</strong> across any two runs of the importer given the same input data.</p></li>
 </ul>
@@ -155,17 +171,24 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 </section>
 <section id="data-packaging">
 <h3>Data packaging<a class="headerlink" href="#data-packaging" title="Link to this heading"></a></h3>
-<p>The JSON data produced by <code class="docutils literal notranslate"><span class="pre">TextImporter</span></code> are packaged into <code class="docutils literal notranslate"><span class="pre">.bz2</span></code> archives for efficient storage. Each archive consists of one JSON-line file, where each line contains a JSON document. The JSON schemas are described <a class="reference external" href="https://github.com/impresso/impresso-schemas">here</a>.</p>
+<p>The JSON data produced by the <code class="docutils literal notranslate"><span class="pre">Importer</span></code> and <code class="docutils literal notranslate"><span class="pre">Rebuilder</span></code> are packaged into <code class="docutils literal notranslate"><span class="pre">.bz2</span></code> archives for efficient storage. Each archive consists of one JSON-line file, where each line contains a JSON document. The JSON schemas are described <a class="reference external" href="https://github.com/impresso/impresso-schemas">here</a>.</p>
 <p>In Impresso we use an S3 solution for distributed storage to store newspaper data and accessed them at processing time.</p>
 <section id="issue-data">
 <h4>Issue data<a class="headerlink" href="#issue-data" title="Link to this heading"></a></h4>
-<p>They are packaged <strong>by newspaper and by year</strong> (as they tend to be very small files). Each archive contains, one document per line, all issues of a newspaper that appeared in that year.</p>
+<p>They are packaged <strong>by media title and by year</strong> (as they tend to be very small files). Each archive contains, one document per line, all issues of a media title that appeared in that year.</p>
 <p>Examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-issues.jsonl.bz2</span></code> contains all issues of the <em>Gazette de Lausanne</em> published in 1900.</p>
 </section>
-<section id="page-data">
-<h4>Page data<a class="headerlink" href="#page-data" title="Link to this heading"></a></h4>
-<p>They are packaged <strong>by newspaper issue</strong>. Each archive contains, one document per line, all JSON pages belonging to a given newspaper issue (edition).</p>
-<p>Examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-01-a-pages.jsonl.bz2</span></code> contains all issues of the <em>Gazette de Lausanne</em> (= <code class="docutils literal notranslate"><span class="pre">GDL</span></code>) published on January 1, 1900.</p>
+<section id="page-or-audio-record-data">
+<h4>Page or Audio Record data<a class="headerlink" href="#page-or-audio-record-data" title="Link to this heading"></a></h4>
+<p>They are packaged <strong>by issue</strong>. Each archive contains, one document per line, all JSON pages belonging to a given issue (edition).</p>
+<p>Examples:
+- <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-01-a-pages.jsonl.bz2</span></code> contains all issues of the <em>Gazette de Lausanne</em> (= <code class="docutils literal notranslate"><span class="pre">GDL</span></code>) published on January 1, 1900.
+- <code class="docutils literal notranslate"><span class="pre">RDN-1950-01-12-a-audios.jsonl.bz2</span></code> contains all issues of <em>La ronde des nations</em> (= <code class="docutils literal notranslate"><span class="pre">RDN</span></code>) published on January 12, 1950.</p>
+</section>
+<section id="rebuilt-data">
+<h4>Rebuilt data<a class="headerlink" href="#rebuilt-data" title="Link to this heading"></a></h4>
+<p>They are packaged <strong>by media title and by year</strong>. Each archive contains, one document per line, all JSON content-items belonging to a given title and year.</p>
+<p>Examples: <code class="docutils literal notranslate"><span class="pre">GDL-1900.jsonl.bz2</span></code> contains all rebuilt data of the <em>Gazette de Lausanne</em> (= <code class="docutils literal notranslate"><span class="pre">GDL</span></code>) published in 1900.</p>
 </section>
 </section>
 <section id="image-data">
@@ -177,31 +200,48 @@ is worth touching upon the key points of the architecure into which it fits.</p>
 </div>
 </section>
 </section>
-<section id="module-text_importer.importers.core">
-<span id="processing"></span><h2>Processing<a class="headerlink" href="#module-text_importer.importers.core" title="Link to this heading"></a></h2>
+<section id="module-text_preparation.importers.core">
+<span id="processing"></span><h2>Processing<a class="headerlink" href="#module-text_preparation.importers.core" title="Link to this heading"></a></h2>
 <p>Core functions to perform large-scale import of OCR data.</p>
 <p>Most of the functions in this module are meant to be used in conjuction
 with <a class="reference external" href="https://dask.org/">Dask</a>, the library we are using to parallelize
 the ingestion process and run it on distributed computing infrastructures.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The function <a class="reference internal" href="#text_importer.importers.core.import_issues" title="text_importer.importers.core.import_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">import_issues()</span></code></a> is the most important in this module
+<p>The function <a class="reference internal" href="#text_preparation.importers.core.import_issues" title="text_preparation.importers.core.import_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">import_issues()</span></code></a> is the most important in this module
 as it keeps everything together, by calling all other functions.</p>
 </div>
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.compress_issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">compress_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.core.compress_issues" title="Link to this definition"></a></dt>
-<dd><p>Compress issues of the same Journal-year and save them in a json file.</p>
-<p>First check if the file exists, load it and then over-write/add the newly
-generated issues.
-The compressed <code class="docutils literal notranslate"><span class="pre">.bz2</span></code> output file is a JSON-line file, where each line
-corresponds to an individual and issue document in the canonical format.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.core.cleanup">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">cleanup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upload_success</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.core.cleanup" title="Link to this definition"></a></dt>
+<dd><p>Remove a file if it has been successfully uploaded to S3.</p>
+<p>Copied and adapted from impresso-pycommons.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>Tuple</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Newspaper ID and year of input issues
+<li><p><strong>upload_success</strong> (<em>bool</em>) – Whether the upload was successful</p></li>
+<li><p><strong>filepath</strong> (<em>str</em>) – Path to the uploaded file</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.core.compress_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">compress_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.core.compress_issues" title="Link to this definition"></a></dt>
+<dd><p>Compress issues of the same alias-year and save them in a json file.</p>
+<p>First check if the file exists, load it and then over-write/add the newly
+generated issues.
+The compressed <code class="docutils literal notranslate"><span class="pre">.bz2</span></code> output file is a JSON-line file, where each line
+corresponds to an individual and issue document in the canonical format.
+Finally, yearly statistics are computed on the issues and included in the
+returned values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>Tuple</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – Newspaper or media alias and year of input issues
 (e.g. <cite>(GDL, 1900)</cite>).</p></li>
-<li><p><strong>issues</strong> (<em>list</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a><em>]</em>) – A list of <cite>NewspaperIssue</cite> instances.</p></li>
+<li><p><strong>issues</strong> (<em>list</em><em>[</em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a><em>]</em>) – A list of <cite>CanonicalIssue</cite> instances.</p></li>
 <li><p><strong>output_dir</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Output directory. Defaults to None.</p></li>
 <li><p><strong>failed_log</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to the log file used when an
 instantiation was not successful. Defaults to None.</p></li>
@@ -209,7 +249,7 @@ instantiation was not successful. Defaults to None.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>Label following the template <cite>&lt;NEWSPAPER&gt;-&lt;YEAR&gt;</cite> and</dt><dd><p>the path to the the compressed <cite>.bz2</cite> file.</p>
+<dt>Label following the template <cite>&lt;ALIAS&gt;-&lt;YEAR&gt;</cite>, the path to</dt><dd><p>the the compressed <cite>.bz2</cite> file, and the statistics computed on the issues.</p>
 </dd>
 </dl>
 </p>
@@ -221,13 +261,13 @@ instantiation was not successful. Defaults to None.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.compress_pages">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">compress_pages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.core.compress_pages" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.core.compress_supports">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">compress_supports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.core.compress_supports" title="Link to this definition"></a></dt>
 <dd><p>Merge a set of JSON line files into a single compressed archive.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> (<em>str</em>) – Canonical ID of the newspaper issue (e.g. GDL-1900-01-02-a).</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – Canonical ID of the issue (e.g. GDL-1900-01-02-a).</p></li>
 <li><p><strong>json_files</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Paths of input JSON line files.</p></li>
 <li><p><strong>output_dir</strong> (<em>str</em>) – Directory where to write the output file.</p></li>
 <li><p><strong>suffix</strong> (<em>str</em><em>, </em><em>optional</em>) – Suffix to add to the filename. Defaults to “”.</p></li>
@@ -243,16 +283,16 @@ instantiation was not successful. Defaults to None.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.dir2issue">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.core.dir2issue" title="Link to this definition"></a></dt>
-<dd><p>Instantiate a <cite>NewspaperIssue</cite> object from an <cite>IssueDir</cite>.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.core.dir2issue">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.core.dir2issue" title="Link to this definition"></a></dt>
+<dd><p>Instantiate a <cite>CanonicalIssue</cite> object from an <cite>IssueDir</cite>.</p>
 <p>Any instantiation leading to an exception is logged to a specific file
 only containing issues which could not be imported.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>issue</strong> (<em>IssueDir</em>) – <cite>IssueDir</cite> representing the issue to instantiate.</p></li>
-<li><p><strong>issue_class</strong> (<em>Type</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a><em>]</em>) – Type of <cite>NewspaperIssue</cite> to use.</p></li>
+<li><p><strong>issue_class</strong> (<em>Type</em><em>[</em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a><em>]</em>) – Type of <cite>CanonicalIssue</cite> to use.</p></li>
 <li><p><strong>failed_log</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to the log file used if the
 instantiation was not successful. Defaults to None.</p></li>
 <li><p><strong>image_dirs</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to the directory containing the
@@ -263,28 +303,28 @@ issue’s zip archive into. Defaults to None.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>A new <cite>NewspaperIssue</cite> instance, or <cite>None</cite> if</dt><dd><p>the instantiation triggered an exception.</p>
+<dt>A new <cite>CanonicalIssue</cite> instance, or <cite>None</cite> if</dt><dd><p>the instantiation triggered an exception.</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue">NewspaperIssue</a> | None</p>
+<dd class="field-odd"><p><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a> | None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.dirs2issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">dirs2issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDir</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.core.dirs2issues" title="Link to this definition"></a></dt>
-<dd><p>Instantiate the <cite>NewspaperIssue</cite> objects to import to Impresso’s format.</p>
-<p>Any <cite>NewspaperIssue</cite> for which the instantiation is unsuccessful
+<dt class="sig sig-object py" id="text_preparation.importers.core.dirs2issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">dirs2issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDir</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.core.dirs2issues" title="Link to this definition"></a></dt>
+<dd><p>Instantiate the <cite>CanonicalIssue</cite> objects to import to Impresso’s format.</p>
+<p>Any <cite>CanonicalIssue</cite> for which the instantiation is unsuccessful
 will be logged, along with the triggered error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>issues</strong> (<em>list</em><em>[</em><em>IssueDir</em><em>]</em>) – List of issues to instantiate and import.</p></li>
-<li><p><strong>issue_class</strong> (<em>Type</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a><em>]</em>) – Type of <cite>NewspaperIssue</cite> to use.</p></li>
+<li><p><strong>issue_class</strong> (<em>Type</em><em>[</em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a><em>]</em>) – Type of <cite>CanonicalIssue</cite> to use.</p></li>
 <li><p><strong>failed_log</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to the log file used when an
 instantiation was not successful. Defaults to None.</p></li>
 <li><p><strong>image_dirs</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to the directory containing the
@@ -294,78 +334,105 @@ archives of issues into. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of <cite>NewspaperIssue</cite> instances to import.</p>
+<dd class="field-even"><p>List of <cite>CanonicalIssue</cite> instances to import.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue">NewspaperIssue</a>]</p>
+<dd class="field-odd"><p>list[<a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.import_issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">import_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDir</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3_bucket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Client</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.core.import_issues" title="Link to this definition"></a></dt>
-<dd><p>Import a bunch of newspaper issues.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.core.import_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">import_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDir</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s3_bucket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_dirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataManifest</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Client</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.core.import_issues" title="Link to this definition"></a></dt>
+<dd><p>Import a bunch of canonical issues (newspaper or radio-broadcast).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>issues</strong> (<em>list</em><em>[</em><em>IssueDir</em><em>]</em>) – Issues to import.</p></li>
 <li><p><strong>out_dir</strong> (<em>str</em>) – Output directory for the json files.</p></li>
 <li><p><strong>s3_bucket</strong> (<em>str</em><em> | </em><em>None</em>) – Output s3 bucket for the json files.</p></li>
-<li><p><strong>issue_class</strong> (<em>Type</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a><em>]</em>) – Newspaper issue class to import,
-(Child of <code class="docutils literal notranslate"><span class="pre">NewspaperIssue</span></code>).</p></li>
+<li><p><strong>issue_class</strong> (<em>Type</em><em>[</em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a><em>]</em>) – Canonical issue class to import,
+(Child of <code class="docutils literal notranslate"><span class="pre">CanonicalIssue</span></code>).</p></li>
 <li><p><strong>image_dirs</strong> (<em>str</em><em> | </em><em>None</em>) – Directory of images for Olive format,
 (can be multiple).</p></li>
 <li><p><strong>temp_dir</strong> (<em>str</em><em> | </em><em>None</em>) – Temporary directory for extracting archives
 (applies only to importers make use of <code class="docutils literal notranslate"><span class="pre">ZipArchive</span></code>).</p></li>
 <li><p><strong>chunk_size</strong> (<em>int</em><em> | </em><em>None</em>) – Chunk size in years used to process issues.</p></li>
+<li><p><strong>manifest</strong> (<em>DataManifest</em>) – Data manifest instance, tracking the stats on the imported data.</p></li>
+<li><p><strong>client</strong> (<em>Client</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Dask client. Defaults to None.</p></li>
+<li><p><strong>is_audio</strong> (<em>bool</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The if the data being imported is audio. Defaults to False.</p></li>
+<li><p><strong>provider</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The provider of the data being ingested, if possible.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.issue2pages">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">issue2pages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><span class="pre">NewspaperPage</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.core.issue2pages" title="Link to this definition"></a></dt>
-<dd><p>Flatten an issue into a list of their pages.</p>
-<p>As an issue consists of several pages, this function is useful
-in order to process each page in a truly parallel fashion.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.core.is_audio_issue">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">is_audio_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#text_preparation.importers.core.is_audio_issue" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the given canonical issue corresponds to audio data.</p>
+<p>This is done by checking the “sm” (ie. “source medium”) property.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a>) – Issue to collect the pages of.</p>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical Issue for which to identify the medium</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of pages of the given issue.</p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – If the source medium found is invalid.</p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage">NewspaperPage</a>]</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the issue corresponds to audio data, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.process_pages">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">process_pages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><span class="pre">NewspaperPage</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><span class="pre">NewspaperPage</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.core.process_pages" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.core.issue2supports">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">issue2supports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><span class="pre">CanonicalPage</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord"><span class="pre">CanonicalAudioRecord</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.core.issue2supports" title="Link to this definition"></a></dt>
+<dd><p>Flatten an issue into a list of their pages or audio records.</p>
+<p>Case of newspapers and radio bulletins:
+As an issue consists of several pages, this function is useful
+in order to process each page in a truly parallel fashion.</p>
+<p>For radio audio broadcasts, it’s more to keep a unified processing approach</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Issue to collect the pages or audio records of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of pages or audio records of the given issue.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage">CanonicalPage</a>] | list[<a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord">CanonicalAudioRecord</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.core.process_supports">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">process_supports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><span class="pre">CanonicalPage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord"><span class="pre">CanonicalAudioRecord</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><span class="pre">CanonicalPage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord"><span class="pre">CanonicalAudioRecord</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.core.process_supports" title="Link to this definition"></a></dt>
 <dd><p>Given a list of pages, trigger the <code class="docutils literal notranslate"><span class="pre">.parse()</span></code> method of each page.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pages</strong> (<em>list</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><em>NewspaperPage</em></a><em>]</em>) – Input newspaper pages.</p></li>
+<li><p><strong>supports</strong> (<em>list</em><em>[</em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><em>CanonicalPage</em></a><em> | </em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord"><em>CanonicalAudioRecord</em></a><em>]</em>) – Input canonical supports.</p></li>
 <li><p><strong>failed_log</strong> (<em>str</em>) – File path of failed log.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of processed pages.</p>
+<dd class="field-even"><p>A list of processed supports.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage">NewspaperPage</a>]</p>
+<dd class="field-odd"><p>list[<a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage">CanonicalPage</a> | <a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord">CanonicalAudioRecord</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.remove_filelocks">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">remove_filelocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.core.remove_filelocks" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.core.remove_filelocks">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">remove_filelocks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.core.remove_filelocks" title="Link to this definition"></a></dt>
 <dd><p>Remove all files ending with .lock in a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -375,15 +442,18 @@ in order to process each page in a truly parallel fashion.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.serialize_pages">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">serialize_pages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><span class="pre">NewspaperPage</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDir</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.core.serialize_pages" title="Link to this definition"></a></dt>
-<dd><p>Serialize a list of pages to an output directory.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.core.serialize_supports">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">serialize_supports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">supports</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><span class="pre">CanonicalPage</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord"><span class="pre">CanonicalAudioRecord</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_audio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDir</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.core.serialize_supports" title="Link to this definition"></a></dt>
+<dd><p>Serialize a list of pages or audio records to an output directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pages</strong> (<em>list</em><em>[</em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><em>NewspaperPage</em></a><em>]</em>) – Input newspaper pages.</p></li>
+<li><p><strong>pages</strong> (<em>list</em><em>[</em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><em>CanonicalPage</em></a><em>] </em><em>| </em><em>list</em><em>[</em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord"><em>CanonicalAudioRecord</em></a><em>]</em>) – Input
+canonical pages or audio supports.</p></li>
 <li><p><strong>output_dir</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to the output directory.
 Defaults to None.</p></li>
+<li><p><strong>failed_log</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to the log file used when an
+instantiation was not successful. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -401,17 +471,20 @@ belong, and <cite>path</cite> the path to the individual page JSON file.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.upload_issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">upload_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.core.upload_issues" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.core.upload_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">upload_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.core.upload_issues" title="Link to this definition"></a></dt>
 <dd><p>Upload an issues JSON-line file to a given S3 bucket.</p>
-<p><cite>sort_key</cite> is expected to be the concatenation of newspaper ID and year.</p>
+<p><cite>sort_key</cite> is expected to be the concatenation of title alias and year.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>sort_key</strong> (<em>str</em>) – Key used to group articles (e.g. “GDL-1900”).</p></li>
 <li><p><strong>filepath</strong> (<em>str</em>) – Path of the file to upload to S3.</p></li>
+<li><p><strong>provider</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Name of the alias’ provider to include in s3 path.
+the file. Defaults to None.</p></li>
 <li><p><strong>bucket_name</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Name of S3 bucket where to upload
 the file. Defaults to None.</p></li>
+<li><p><strong>failed_log</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to file where to log errors.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -428,16 +501,19 @@ the file. Defaults to None.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.upload_pages">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">upload_pages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_importer.importers.core.upload_pages" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.core.upload_supports">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">upload_supports</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sort_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bucket_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">supports_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.core.upload_supports" title="Link to this definition"></a></dt>
 <dd><p>Upload a page JSON file to a given S3 bucket.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>sort_key</strong> (<em>str</em>) – the key used to group articles (e.g. “GDL-1900”).</p></li>
+<li><p><strong>sort_key</strong> (<em>str</em>) – the key used to group articles (e.g. “GDL-1900-01-01-a”).</p></li>
 <li><p><strong>filepath</strong> (<em>str</em>) – Path of the file to upload to S3.</p></li>
+<li><p><strong>provider</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Name of the alias’ provider to include in s3 path.
+the file. Defaults to None.</p></li>
 <li><p><strong>bucket_name</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Name of S3 bucket where to upload
 the file. Defaults to None.</p></li>
+<li><p><strong>failed_log</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Path to file where to log errors.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -454,14 +530,14 @@ the file. Defaults to None.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_importer.importers.core.write_error">
-<span class="sig-prename descclassname"><span class="pre">text_importer.importers.core.</span></span><span class="sig-name descname"><span class="pre">write_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><span class="pre">NewspaperIssue</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><span class="pre">NewspaperPage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">IssueDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.importers.core.write_error" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.core.write_error">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.core.</span></span><span class="sig-name descname"><span class="pre">write_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">thing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><span class="pre">CanonicalPage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">IssueDir</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed_log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.core.write_error" title="Link to this definition"></a></dt>
 <dd><p>Write the given error of a failed import to the <cite>failed_log</cite> file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>thing</strong> (<a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperIssue" title="text_importer.importers.classes.NewspaperIssue"><em>NewspaperIssue</em></a><em> | </em><a class="reference internal" href="custom_importer.html#text_importer.importers.classes.NewspaperPage" title="text_importer.importers.classes.NewspaperPage"><em>NewspaperPage</em></a><em> | </em><em>IssueDir</em>) – Object for which
-the error occurred.</p></li>
+<li><p><strong>thing</strong> (<a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a><em> | </em><a class="reference internal" href="importers.html#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><em>CanonicalPage</em></a><em> | </em><em>IssueDir</em><em> | </em><em>str</em>) – Object for which
+the error occurred, or corresponding canonical ID.</p></li>
 <li><p><strong>error</strong> (<em>Exception</em>) – Error that occurred and should be logged.</p></li>
 <li><p><strong>failed_log</strong> (<em>str</em>) – Path to log file for failed imports.</p></li>
 </ul>
@@ -477,13 +553,13 @@ the error occurred.</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="importers.html" class="btn btn-neutral float-right" title="TextImporter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="preprocessing.html" class="btn btn-neutral float-right" title="Preprocessing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+    <p>&#169; Copyright 2025, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

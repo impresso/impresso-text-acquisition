@@ -1,28 +1,26 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TextImporter &mdash; Impresso TextImporter  documentation</title>
+  <title>Importers &mdash; Impresso Text Preparation  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Olive XML importer" href="importers/olive.html" />
-    <link rel="prev" title="Overview" href="architecture.html" /> 
+    <link rel="prev" title="Preprocessing" href="preprocessing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -34,7 +32,7 @@
           
           
           <a href="index.html" class="icon icon-home">
-            Impresso TextImporter
+            Impresso Text Preparation
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -48,34 +46,42 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="architecture.html">Overview</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">TextImporter</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Importers</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#available-importers">Available importers</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="importers/olive.html">Olive XML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/mets-alto.html">Generic Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/rero.html">RERO Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/swa.html">SWA Alto importer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="importers/bl.html">British Library Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/bl.html">British Library importers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/bnf-en.html">BNF-EN Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="importers/ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="importers/fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuration-file">Configuration file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-text_importer.utils">Utilities</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_access_right"><code class="docutils literal notranslate"><span class="pre">get_access_right()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_issue_schema"><code class="docutils literal notranslate"><span class="pre">get_issue_schema()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_page_schema"><code class="docutils literal notranslate"><span class="pre">get_page_schema()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.get_pkg_resource"><code class="docutils literal notranslate"><span class="pre">get_pkg_resource()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.init_logger"><code class="docutils literal notranslate"><span class="pre">init_logger()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#text_importer.utils.verify_imported_issues"><code class="docutils literal notranslate"><span class="pre">verify_imported_issues()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#writing-a-new-importer">Writing a new importer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#detect-data-to-import">Detect data to import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#implement-abstract-classes">Implement abstract classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue"><code class="docutils literal notranslate"><span class="pre">CanonicalIssue</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalPage"><code class="docutils literal notranslate"><span class="pre">CanonicalPage</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalAudioRecord"><code class="docutils literal notranslate"><span class="pre">CanonicalAudioRecord</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#write-an-importer-cli-script">Write an importer CLI script</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#test">Test</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="custom_importer.html">Writing a new importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rebuilders.html">Rebuilders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
 </ul>
 
         </div>
@@ -84,7 +90,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">Impresso TextImporter</a>
+          <a href="index.html">Impresso Text Preparation</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -92,7 +98,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">TextImporter</li>
+      <li class="breadcrumb-item active">Importers</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/importers.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -102,26 +108,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="textimporter">
-<h1>TextImporter<a class="headerlink" href="#textimporter" title="Link to this heading"></a></h1>
+  <section id="importers">
+<h1>Importers<a class="headerlink" href="#importers" title="Link to this heading"></a></h1>
 <section id="available-importers">
 <h2>Available importers<a class="headerlink" href="#available-importers" title="Link to this heading"></a></h2>
-<p>The <em>Impresso TextImporter</em> already supports a number of formats (and flavours of standard formats), while a few others
+<p>The <em>Impresso Importers</em> already support a number of formats (and flavours of standard formats), while a few others
 are currently being developed.</p>
 <p>The following importer CLI scripts are already available:</p>
 <ul class="simple">
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.oliveimporter</span></code>: importer for the <em>Olive XML format</em>, used by
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.oliveimporter</span></code>: importer for the <em>Olive XML format</em>, used by
 <a class="reference external" href="https://www.rero.ch/">RERO</a> to encode and deliver the majority of its newspaper data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.reroimporter</span></code>: importer for the Mets/ALTO flavor used by <a class="reference external" href="https://www.rero.ch/">RERO</a>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.reroimporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by <a class="reference external" href="https://www.rero.ch/">RERO</a>
 to encode and deliver part of its data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.luximporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://bnl.public.lu/">Bibliothèque nationale de Luxembourg (BNL)</a> to encode and deliver its newspaper data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.bnfimporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a> to encode and deliver its newspaper data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.bnfen_importer</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a>  to encode and deliver its newspaper data for the Europeana collection.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.swaimporter</span></code>: ALTO flavor of the <cite>Basel University Library</cite>.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.blimporter</span></code>: importer for the Mets/ALTO flavor used by the <a class="reference external" href="https://www.bl.uk/">British Library (BL)</a>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.luximporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://bnl.public.lu/">Bibliothèque nationale de Luxembourg (BNL)</a> to encode and deliver its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.swaimporter</span></code>: <em>ALTO flavor</em> of the <cite>Basel University Library</cite>.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.blimporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://www.bl.uk/">British Library (BL)</a>
 to encode and deliver its newspaper data.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.tetml</span></code>: generic importer for the <em>TETML format</em>, produced by <a class="reference external" href="https://www.pdflib.com/products/tet/overview/">PDFlib TET</a>.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_importer.scripts.fedgaz</span></code>: importer for the <em>TETML format</em> with separate metadata file and a heuristic article segmentation,
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bnfimporter</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a> to encode and deliver its newspaper data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bnfen_importer</span></code>: importer for the <em>Mets/ALTO flavor</em> used by the <a class="reference external" href="https://www.bnf.fr/en/">Bibliothèque nationale de France (BNF)</a>  to encode and deliver its newspaper data for the Europeana collection.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.bcul_importer</span></code>: importer for the <em>ABBYY format</em> used by the <a class="reference external" href="https://www.bcu-lausanne.ch/en/">Bibliothèque Cantonale Universitaire de Lausanne (BCUL)</a>  to encode and deliver the newspaper data which is on the <a class="reference external" href="https://scriptorium.bcu-lausanne.ch/page/home">Scriptorium interface</a>.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.swissinfoimporter</span></code>: importer for the <em>JSON format extracted from PDF embedded OCR</em> used by Memoriav of the <a class="reference external" href="https://www.swissinfo.ch/eng/">Swissinfo</a>
+collection to encore and deliver its radio-bulletin data.
+- <code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.inaimporter</span></code>: importer for the <em>AudioDoc ASR format</em> used by the <a class="reference external" href="https://www.ina.fr/">Institut National de L’audiovisuel (INA)</a>
+to encode and deliver its radio data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.tetml</span></code>: generic importer for the <em>TETML format</em>, produced by <a class="reference external" href="https://www.pdflib.com/products/tet/overview/">PDFlib TET</a>.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.scripts.fedgaz</span></code>: importer for the <em>TETML format</em> with separate metadata file and a heuristic article segmentation,
 used to parse the <a class="reference external" href="https://www.admin.ch/gov/de/start/bundesrecht/bundesblatt.html">Federal Gazette</a>.</p></li>
 </ul>
 <p>For further details on any of these implementations, please do refer to its documentation:</p>
@@ -132,9 +143,12 @@ used to parse the <a class="reference external" href="https://www.admin.ch/gov/d
 <li class="toctree-l1"><a class="reference internal" href="importers/lux.html">BNL Mets/Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/rero.html">RERO Mets/Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/swa.html">SWA Alto importer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="importers/bl.html">British Library Mets/Alto importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/bl.html">British Library importers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/bnf.html">BNF Mets/Alto importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/bnf-en.html">BNF-EN Mets/Alto importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="importers/ina.html">INA AudioDoc importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/tetml.html">Generic TETML importer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="importers/fedgaz.html">FedGaz TETML importer</a></li>
 </ul>
@@ -147,14 +161,14 @@ used to parse the <a class="reference external" href="https://www.admin.ch/gov/d
 <p>All importers share the same command-line interface; only a few options
 are import-specific (see documentation below).</p>
 </div>
-<p id="module-text_importer.importers.generic_importer">Functions and CLI script to convert any OCR data into Impresso’s format.</p>
+<p id="module-text_preparation.importers.generic_importer">Functions and CLI script to convert any OCR data into Impresso’s format.</p>
 <dl>
-<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –chunk-size=&lt;cs&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –access-rights=&lt;ar&gt;]
+<dt>Usage:</dt><dd><p>&lt;importer-name&gt;importer.py –input-dir=&lt;id&gt; (–clear | –incremental) [–output-dir=&lt;od&gt; –image-dirs=&lt;imd&gt; –temp-dir=&lt;td&gt; –chunk-size=&lt;cs&gt; –provider=&lt;p&gt; –s3-bucket=&lt;b&gt; –config-file=&lt;cf&gt; –log-file=&lt;f&gt; –verbose –scheduler=&lt;sch&gt; –git-repo=&lt;gr&gt; –num-workers=&lt;nw&gt; –dont-push-manifest –is-audio]
 &lt;importer-name&gt;importer.py –version</p>
 </dd>
 <dt>Options:</dt><dd><dl class="option-list">
 <dt><kbd><span class="option">--input-dir=<var>&lt;id&gt;</var></span></kbd></dt>
-<dd><p>Base directory containing one sub-directory for each journal</p>
+<dd><p>Base directory containing one sub-directory for each media alias</p>
 </dd>
 <dt><kbd><span class="option">--image-dirs=<var>&lt;imd&gt;</var></span></kbd></dt>
 <dd><p>Directory containing (canonical) images and their metadata (use <cite>,</cite> to separate multiple dirs)</p>
@@ -177,11 +191,23 @@ are import-specific (see documentation below).</p>
 <dt><kbd><span class="option">--log-file=<var>&lt;f&gt;</var></span></kbd></dt>
 <dd><p>Log file; when missing print log to stdout</p>
 </dd>
-<dt><kbd><span class="option">--access-rights=<var>&lt;ar&gt;</var></span></kbd></dt>
-<dd><p>Access right file if relevant (only for <cite>olive</cite> and <cite>rero</cite> importers)</p>
-</dd>
 <dt><kbd><span class="option">--chunk-size=<var>&lt;cs&gt;</var></span></kbd></dt>
 <dd><p>Chunk size in years used to group issues when importing</p>
+</dd>
+<dt><kbd><span class="option">--provider=<var>&lt;p&gt;</var></span></kbd></dt>
+<dd><p>Data provider corresponding to the data being ingested, if possible.</p>
+</dd>
+<dt><kbd><span class="option">--git-repo=<var>&lt;gr&gt;</var></span></kbd></dt>
+<dd><p>Local path to the “impresso-text-acquisition” git directory (including it).</p>
+</dd>
+<dt><kbd><span class="option">--num-workers=<var>&lt;nw&gt;</var></span></kbd></dt>
+<dd><p>Number of workers to use for local dask cluster</p>
+</dd>
+<dt><kbd><span class="option">--dont-push-manifest</span></kbd></dt>
+<dd><p>Whether to push the generated manifest to github (will push if not specified)</p>
+</dd>
+<dt><kbd><span class="option">--is-audio</span></kbd></dt>
+<dd><p>Whether the data to import is audio data (source medium)</p>
 </dd>
 <dt><kbd><span class="option">--verbose</span></kbd></dt>
 <dd><p>Verbose log messages (good for debugging)</p>
@@ -206,8 +232,8 @@ means of a configuration file (JSON format). The path to this file is passed via
 CLI parameter.</p>
 <p>This JSON file contains three properties:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">newspapers</span></code>: a dictionary containing the newspaper IDs to be imported (e.g. GDL);</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">exclude_newspapers</span></code>: a list of the newspaper IDs to be excluded;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aliases</span></code>: a dictionary containing the media aliases to be imported (e.g. GDL);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_aliases</span></code>: a list of the media aliases to be excluded;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">year_only</span></code>: a boolean flag indicating whether date ranges are expressed by using years
 or more granular dates (in the format <code class="docutils literal notranslate"><span class="pre">YYYY/MM/DD</span></code>).</p></li>
 </ul>
@@ -218,150 +244,402 @@ your data imports into batches or homogeneous collections.</p>
 </div>
 <p>Here is a simple configuration file:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;newspapers&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="p">[]</span>
     <span class="p">},</span>
-  <span class="s2">&quot;exclude_newspapers&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;exclude_aliases&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="s2">&quot;year_only&quot;</span><span class="p">:</span> <span class="n">false</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>This is what a more complex config file looks like (only contents for the decade 1950-1960 of GDL are processed):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="s2">&quot;newspapers&quot;</span><span class="p">:</span> <span class="p">{</span>
+  <span class="s2">&quot;aliases&quot;</span><span class="p">:</span> <span class="p">{</span>
       <span class="s2">&quot;GDL&quot;</span><span class="p">:</span> <span class="s2">&quot;1950/01/01-1960/12/31&quot;</span>
     <span class="p">},</span>
-  <span class="s2">&quot;exclude_newspapers&quot;</span><span class="p">:</span> <span class="p">[],</span>
+  <span class="s2">&quot;exclude_aliases&quot;</span><span class="p">:</span> <span class="p">[],</span>
   <span class="s2">&quot;year_only&quot;</span><span class="p">:</span> <span class="n">false</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </section>
-<section id="module-text_importer.utils">
-<span id="utilities"></span><h2>Utilities<a class="headerlink" href="#module-text_importer.utils" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="text_importer.utils.get_access_right">
-<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">get_access_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">journal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">date</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">access_rights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_importer.utils.get_access_right" title="Link to this definition"></a></dt>
-<dd><p>Fetch the access rights for a specific journal and publication date.</p>
+<section id="writing-a-new-importer">
+<h2>Writing a new importer<a class="headerlink" href="#writing-a-new-importer" title="Link to this heading"></a></h2>
+<p>Writing a new importer is easy and entails implementing two
+pieces of code:</p>
+<ol class="arabic simple">
+<li><p>implementing <strong>functions to detect the data</strong> to import;</p></li>
+<li><p>implementing from scratch <strong>classes that handle the conversion into JSON</strong> of your OCR format or adapt one of the existing importers.</p></li>
+</ol>
+<p>Once these two pieces of code are in place, they can be plugged into the functions defined in <a class="reference internal" href="#module-text_preparation.importers.generic_importer" title="text_preparation.importers.generic_importer"><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer</span></code></a> so as to create a dedicated CLI script for your specific format.</p>
+<p>For example, this is the content of <code class="docutils literal notranslate"><span class="pre">oliveimporter.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">text_preparation.importers</span> <span class="kn">import</span> <span class="n">generic_importer</span>
+<span class="kn">from</span> <span class="nn">text_preparation.importers.olive.classes</span> <span class="kn">import</span> <span class="n">OliveCanonicalIssue</span>
+<span class="kn">from</span> <span class="nn">text_preparation.importers.olive.detect</span> <span class="kn">import</span> <span class="p">(</span><span class="n">olive_detect_issues</span><span class="p">,</span>
+                                                  <span class="n">olive_select_issues</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">generic_importer</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
+        <span class="n">OliveCanonicalIssue</span><span class="p">,</span>
+        <span class="n">olive_detect_issues</span><span class="p">,</span>
+        <span class="n">olive_select_issues</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>How should the code of a new text importer be structured?</strong> We recommend to comply to the following structure:</p>
+<ul class="simple">
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.&lt;new_importer&gt;.detect</span></code> will contain functions to find the data to be imported;</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.&lt;new_importer&gt;.helpers</span></code> (optional) will contain ancillary functions;</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation.importers.&lt;new_importer&gt;.parsers</span></code> (optional) will contain functions/classes to parse the data.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">text_preparation/scripts/&lt;new_importer&gt;.py</span></code>: will contain a CLI script to run the importer.</p></li>
+</ul>
+<section id="detect-data-to-import">
+<h3>Detect data to import<a class="headerlink" href="#detect-data-to-import" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>the importer needs to know which data should be imported</p></li>
+<li><p>information about the newspaper/radio-bulletin/audio-broadcast contents is often encoded as part of
+folder names etc., thus it needs to be extracted and made explicit, by means
+of <a class="reference internal" href="architecture.html#canonical-identifiers"><span class="std std-ref">Canonical identifiers</span></a></p></li>
+<li><p>add some sample data to <code class="docutils literal notranslate"><span class="pre">text_preparation/data/sample/&lt;new_format&gt;</span></code></p></li>
+</ul>
+<p>For example: <a class="reference internal" href="importers/olive.html#text_preparation.importers.olive.detect.olive_detect_issues" title="text_preparation.importers.olive.detect.olive_detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">olive_detect_issues()</span></code></a></p>
+</section>
+<section id="implement-abstract-classes">
+<h3>Implement abstract classes<a class="headerlink" href="#implement-abstract-classes" title="Link to this heading"></a></h3>
+<p>These two classes are passed to the the importer’s generic command-line interface,
+see <code class="xref py py-func docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer.main()</span></code></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue" title="Link to this definition"></a></dt>
+<dd><p>Abstract class representing a canonical issue.</p>
+<p>Each text importer needs to define a subclass of <cite>CanonicalIssue</cite> which
+specifies the logic to handle OCR data in a given format (e.g. Olive).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>journal</strong> (<em>str</em>) – Journal name.</p></li>
-<li><p><strong>date</strong> (<em>date</em>) – Publication date of the journal</p></li>
-<li><p><strong>access_rights</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – Access rights for various
-journals.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Identifying information about the issue.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Access rights for specific journal issue.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="text_importer.utils.get_issue_schema">
-<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">get_issue_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'impresso-schemas/json/newspaper/issue.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Namespace</span></span></span><a class="headerlink" href="#text_importer.utils.get_issue_schema" title="Link to this definition"></a></dt>
-<dd><p>Generate a list of python classes starting from a JSON schema.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.edition" title="Link to this definition"></a></dt>
+<dd><p>Lower case letter ordering issues of the same day.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the schema folder. Defaults to
-“impresso-schemas/json/newspaper/issue.schema.json”.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Newspaper issue schema based on canonical format.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pjs.util.Namespace</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="text_importer.utils.get_page_schema">
-<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">get_page_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">schema_folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'impresso-schemas/json/newspaper/page.schema.json'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Namespace</span></span></span><a class="headerlink" href="#text_importer.utils.get_page_schema" title="Link to this definition"></a></dt>
-<dd><p>Generate a list of python classes starting from a JSON schema.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.alias" title="Link to this definition"></a></dt>
+<dd><p>Media unique alias (identifier or name).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>schema_folder</strong> (<em>str</em><em>, </em><em>optional</em>) – Path to the schema folder. Defaults to
-“impresso-schemas/json/newspaper/page.schema.json”.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Newspaper page schema based on canonical format.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pjs.util.Namespace</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="text_importer.utils.get_pkg_resource">
-<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">get_pkg_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_manager</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ExitStack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'text_importer'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PosixPath</span></span></span><a class="headerlink" href="#text_importer.utils.get_pkg_resource" title="Link to this definition"></a></dt>
-<dd><p>Return the resource at <cite>path</cite> in <cite>package</cite>, using a context manager.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.path" title="Link to this definition"></a></dt>
+<dd><p>Path to directory containing the issue’s OCR data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.date" title="Link to this definition"></a></dt>
+<dd><p>Publication date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.issue_data" title="Link to this definition"></a></dt>
+<dd><p>Issue data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.pages" title="Link to this definition"></a></dt>
+<dd><p>List of <a class="reference internal" href="#text_preparation.importers.classes.CanonicalPage" title="text_preparation.importers.classes.CanonicalPage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CanonicalPage</span></code></a> instances from this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.audio_records">
+<span class="sig-name descname"><span class="pre">audio_records</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.audio_records" title="Link to this definition"></a></dt>
+<dd><p>List of <a class="reference internal" href="#text_preparation.importers.classes.CanonicalAudioRecord" title="text_preparation.importers.classes.CanonicalAudioRecord"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CanonicalAudioRecord</span></code></a> instances from this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.issuedir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">issuedir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">IssueDir</span></em><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.issuedir" title="Link to this definition"></a></dt>
+<dd><p>IssueDirectory corresponding to this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><cite>IssueDir</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalIssue.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalIssue.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.issue_data</span></code> against the issue canonical schema.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The context manager <cite>file_manager</cite> needs to be instantiated prior to
-calling this function and should be closed once the package resource
-is no longer of use.</p>
+<p>Validation adds a substantial overhead to computing time. For
+serialization of large amounts of issues it is recommendable to
+bypass schema validation.</p>
 </div>
+</dd></dl>
+
+</dd></dl>
+
+<p>And one the two types of physical supports: Pages and Audio Records:</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage" title="Link to this definition"></a></dt>
+<dd><p>Abstract class representing a printed or typescripted page.</p>
+<p>Each text importer needs to define a subclass of <code class="docutils literal notranslate"><span class="pre">CanonicalPage</span></code> which
+specifies the logic to handle OCR data in a given format (e.g. Alto).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>file_manager</strong> (<em>contextlib.ExitStack</em>) – Context manager.</p></li>
-<li><p><strong>path</strong> (<em>str</em>) – Path to the desired resource in given package.</p></li>
-<li><p><strong>package</strong> (<em>str</em><em>, </em><em>optional</em>) – Package name. Defaults to “text_importer”.</p></li>
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Path to desired managed resource.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pathlib.PosixPath</p>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="text_importer.utils.init_logger">
-<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">init_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RootLogger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">RootLogger</span></span></span><a class="headerlink" href="#text_importer.utils.init_logger" title="Link to this definition"></a></dt>
-<dd><p>Initialise the logger.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.number" title="Link to this definition"></a></dt>
+<dd><p>Page number.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>_logger</strong> (<em>logging.RootLogger</em>) – Logger instance to initialise.</p></li>
-<li><p><strong>log_level</strong> (<em>int</em>) – Desidered logging level (e.g. <code class="docutils literal notranslate"><span class="pre">logging.INFO</span></code>).</p></li>
-<li><p><strong>log_file</strong> (<em>str</em>) – Path to destination file for logging output. If no
-output file is provided (<code class="docutils literal notranslate"><span class="pre">log_file</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>) logs will
-be written to standard output.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The initialised logger object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>logging.RootLogger</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="text_importer.utils.verify_imported_issues">
-<span class="sig-prename descclassname"><span class="pre">text_importer.utils.</span></span><span class="sig-name descname"><span class="pre">verify_imported_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actual_issue_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_issue_json</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_importer.utils.verify_imported_issues" title="Link to this definition"></a></dt>
-<dd><p>Verify that the imported issues fit expectations.</p>
-<p>Two verifications are done: the number of content items, and their IDs.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.page_data" title="Link to this definition"></a></dt>
+<dd><p>Page data according to canonical format.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>actual_issue_json</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Created issue json,</p></li>
-<li><p><strong>expected_issue_json</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em>) – Expected issue json.</p></li>
-</ul>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
 </dd>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.add_issue">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the canonical issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.parse">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.parse" title="Link to this definition"></a></dt>
+<dd><p>Process the page XML file and transform into canonical Page format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This lazy behavior means that the page contents are not processed
+upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
+method is called.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalPage.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalPage.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.page_data</span></code> against the page canonical schema.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.classes.</span></span><span class="sig-name descname"><span class="pre">CanonicalAudioRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord" title="Link to this definition"></a></dt>
+<dd><p>Abstract class representing an radio audio record.</p>
+<p>Each text importer for radio records needs to define a subclass of
+<code class="docutils literal notranslate"><span class="pre">CanonicalAudioRecord</span></code> which specifies the logic to handle ASR data
+in a given format (e.g. AudioDoc).
+The concept and abstraction of Canonical Audio Record is a mirror of the
+Canonical Page (for print - newspapers or typescript - radio bulletins) and
+is meant to provide a data structure representing the digitization of an archival
+content’s physical support through automated techniques (ie. ASR or OCR/OLR).
+As a result, this class aims to mimic as closely as possible the CanonicalPage and
+might include attributes or methods that make sense only to maintain the logic of
+our processings and data structures through our pipeline (eg. number as we only have
+1 recording per radio audio program, while a print/typescript can have several pages).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical Audio Record ID (e.g. <code class="docutils literal notranslate"><span class="pre">-1900-01-02-a-r0001</span></code>).</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Record number (for compatibility with other source mediums).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Audio Record ID (e.g. <code class="docutils literal notranslate"><span class="pre">INA-1900-01-02-a-r0001</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.number" title="Link to this definition"></a></dt>
+<dd><p>Record number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.record_data">
+<span class="sig-name descname"><span class="pre">record_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.record_data" title="Link to this definition"></a></dt>
+<dd><p>Audio record data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.add_issue">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><span class="pre">CanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to an audio record object its parent, i.e. the canonical issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the canonical issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.parse">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.parse" title="Link to this definition"></a></dt>
+<dd><p>Process the audio record XML file and transform into canonical AudioRecord format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This lazy behavior means that the record contents are not processed
+upon creation of the audio record object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
+method is called.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.validate">
+<span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.validate" title="Link to this definition"></a></dt>
+<dd><p>Validate <code class="docutils literal notranslate"><span class="pre">self.record_data</span></code> against the audio record canonical schema.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="write-an-importer-cli-script">
+<h3>Write an importer CLI script<a class="headerlink" href="#write-an-importer-cli-script" title="Link to this heading"></a></h3>
+<p>This script imports passes the new <code class="xref py py-class docutils literal notranslate"><span class="pre">CanonicalIssue</span></code> class, together with the-newly
+defined <em>detect</em> functions, to the <code class="docutils literal notranslate"><span class="pre">main()</span></code> function of the generic importer CLI
+<code class="xref py py-func docutils literal notranslate"><span class="pre">text_preparation.importers.generic_importer.main()</span></code>.</p>
+</section>
+<section id="test">
+<h3>Test<a class="headerlink" href="#test" title="Link to this heading"></a></h3>
+<p>Create a new test file named <code class="docutils literal notranslate"><span class="pre">test_&lt;new_importer&gt;_importer.py</span></code> and add it to <code class="docutils literal notranslate"><span class="pre">tests/importers/</span></code>.</p>
+<p>This file should contain at the very minimum a test called <code class="xref py py-func docutils literal notranslate"><span class="pre">test_import_issues()</span></code>, which</p>
+<ul class="simple">
+<li><p>detects input data from <code class="docutils literal notranslate"><span class="pre">text_preparation/data/sample/&lt;new_format&gt;</span></code></p></li>
+<li><p>writes any output to <code class="docutils literal notranslate"><span class="pre">text_preparation/data/out/</span></code>.</p></li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -369,14 +647,14 @@ be written to standard output.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="architecture.html" class="btn btn-neutral float-left" title="Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="preprocessing.html" class="btn btn-neutral float-left" title="Preprocessing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="importers/olive.html" class="btn btn-neutral float-right" title="Olive XML importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+    <p>&#169; Copyright 2025, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

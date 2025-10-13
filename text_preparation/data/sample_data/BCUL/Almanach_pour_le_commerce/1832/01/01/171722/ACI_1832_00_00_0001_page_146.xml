@@ -1,0 +1,12 @@
+<page width="1079" height="1943" resolution="300" originalCoords="1">
+<block blockType="Text" l="360" t="1910" r="924" b="1943"><region><rect l="360" t="1910" r="924" b="1943"/></region>
+</block>
+<block blockType="Separator" l="755" t="1933" r="955" b="1943"><region><rect l="757" t="1933" r="892" b="1934"/><rect l="755" t="1934" r="923" b="1935"/><rect l="755" t="1935" r="923" b="1938"/><rect l="755" t="1938" r="934" b="1939"/><rect l="755" t="1939" r="955" b="1943"/></region>
+<separator type="Black" thickness="7"><start x="755" y="1938"/><end x="955" y="1938"/>
+</separator>
+</block>
+<block blockType="Separator" l="288" t="1936" r="665" b="1943"><region><rect l="326" t="1936" r="512" b="1937"/><rect l="326" t="1937" r="417" b="1938"/><rect l="326" t="1938" r="537" b="1939"/><rect l="324" t="1939" r="618" b="1940"/><rect l="324" t="1940" r="665" b="1941"/><rect l="288" t="1941" r="665" b="1943"/></region>
+<separator type="Black" thickness="4"><start x="288" y="1939"/><end x="665" y="1939"/>
+</separator>
+</block>
+</page>
