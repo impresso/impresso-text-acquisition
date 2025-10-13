@@ -1,11 +1,8 @@
 """Utility functions to parse Alto XML files."""
 
-import logging
 import bs4
-import os
 from bs4.element import Tag
 
-logger = logging.getLogger(__name__)
 IMG_COMP_LABELS = ["illustration", "image"]
 
 
@@ -32,12 +29,11 @@ def distill_coordinates(element: Tag) -> list[int]:
     return [hpos, vpos, width, height]
 
 
-def parse_textline(element: Tag, text_style: str | None = None) -> tuple[dict, list[str]]:
+def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     """Parse the ``<TextLine>`` element of an ALTO XML document.
 
     Args:
         element (Tag): Input XML element (``<TextLine>``).
-        text_style (str | None, optional): text style ID. Defaults to None.
 
     Returns:
         tuple[dict, list[str]]: Parsed lines or text in the canonical format
@@ -88,9 +84,6 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
         element (Tag): Input XML element (``<PrintSpace>``).
         mappings (dict[str, str]): Mapping from OCR component ids to their
             corresponding canonical Content Item ID.
-        text_styles (dict[str, dict], optional): Text styles present on this
-            page, with their page-level IDs as key and the text style object
-            containing issue-level IDs as value. Defaults to None.
 
     Returns:
         tuple[list[dict], list[str]]: List of page regions in the canonical
@@ -154,7 +147,6 @@ def parse_style(style_div: Tag) -> dict[str, float | str]:
 
     Args:
         style_div (Tag): Element of XML file containing font-style information.
-        page_num (int | None, optional): Page number. Defaults to None.
 
     Returns:
         dict[str, float | str]: Parsed style for Issue canonical format.
@@ -174,52 +166,3 @@ def parse_style(style_div: Tag) -> dict[str, float | str]:
         "f": font_name,
     }
     return style
-
-
-def find_alto_files_or_retry(
-    alto_path: str, issue_id: str, name_contents: str = ".xml"
-) -> list[str]:
-    """List XML files present in given page file dir, retry up to 3 times.
-
-    During the processing, some IO errors can randomly happen when listing
-    the contents of the directory, preventing the correct parsing of
-    the issue. The error is raised after the third try.
-    If the given directory does not exist, only try once.
-
-    Args:
-        alto_path (str): Path to the directory with the Alto XML files.
-        issue_id (str): Canonical ID of the issue the pages belong to.
-        name_contents (str, optional): String used to filter the files of
-            interest – Alto XML files. Defaults to '.xml'.
-
-    Raises:
-        e: Given directory does not exist, or listing its contents failed
-            three times in a row.
-
-    Returns:
-        list[str]: List of paths of the pages' Alto XML files.
-    """
-    if not os.path.exists(alto_path):
-        logger.critical(f"Could not find pages for {issue_id}")
-        tries = 1
-
-    tries = 3
-    for i in range(tries):
-        try:
-            page_file_names = [
-                file
-                for file in os.listdir(alto_path)
-                if not file.startswith(".") and name_contents in file
-            ]
-            return page_file_names
-        except IOError as e:
-            if i < tries - 1:  # i is zero indexed
-                logger.warning(
-                    f"Caught error for {issue_id}, "
-                    f"retrying (up to {tries} times) "
-                    f"to find pages. Error: {e}."
-                )
-                continue
-            else:
-                logger.warning("Reached maximum amount " f"of errors for {issue_id}.")
-                raise e
