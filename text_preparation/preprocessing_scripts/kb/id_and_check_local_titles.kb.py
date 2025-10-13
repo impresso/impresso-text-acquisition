@@ -1,7 +1,6 @@
 import os
 import json
 import logging
-import fire
 from impresso_essentials.utils import init_logger
 
 logger = logging.getLogger(__name__)
@@ -12,14 +11,6 @@ LOG_FILE = (
     "/scratch/piconti/impresso/all_logs/text_prep/preprocessing/KB/id_and_check_titles.kb.log"
 )
 PPNA_LIST_FILEPATH = "../../data/sample_data/KB/title_ppna_mapping.kb.json"
-
-# Placeholder list of valid NPA IDs (to be replaced by the actual list)
-NPA_list = [
-    "040031721",
-    "040987654",
-    "040123456",
-    # ... add other IDs here
-]
 
 
 def check_title_directory(title_path):
