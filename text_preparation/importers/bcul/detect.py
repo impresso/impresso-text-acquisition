@@ -120,7 +120,7 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
         edition = "a"
 
     return BculIssueDir(
-        provider="BL",
+        provider="BCUL",
         alias=journal_info["alias"],
         date=date,
         edition=edition,

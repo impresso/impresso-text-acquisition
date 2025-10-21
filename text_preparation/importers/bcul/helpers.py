@@ -166,14 +166,10 @@ def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]
 
         # not all OCR has the same indication for word start: 'wordStart', 'wordFirst'
         is_word_start = (
-            t.get("wordStart") in ["true", "1"]
-            if t.get("wordStart") is not None
-            else False
+            t.get("wordStart") in ["true", "1"] if t.get("wordStart") is not None else False
         )
         is_word_first = (
-            t.get("wordFirst") in ["true", "1"]
-            if t.get("wordFirst") is not None
-            else False
+            t.get("wordFirst") in ["true", "1"] if t.get("wordFirst") is not None else False
         )
         curr_t = t.getText()
 
@@ -212,6 +208,7 @@ def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]
 def parse_textline(line: Tag) -> dict[str, list[Any]]:
     """Parse the div element corresponding to a textline.
 
+    # TODO add hyphenisation!
     Args:
         line (Tag): Textline div element Tag.
 
