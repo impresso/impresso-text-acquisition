@@ -49,7 +49,8 @@ Args:
 # issues that lead to HTTP response 404. Skipping them altogether.
 # These issues are often dublicates of issues for which the API works
 # In addition, it was found that some issues were listed with wrong dates.
-ALIASES_FILEPATH = "../data/sample_data/BCUL/access_rights_and_aliases.json"
+OLD_ALIASES_FILEPATH = "../data/sample_data/BCUL/access_rights_and_aliases.json"
+ALIASES_FILEPATH = '/rcp-scratch/iccluster040_scratch/students/banuls/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/bcul_aliases3_4.json'
 FAULTY_ISSUES = [
     "127626",
     "127627",
@@ -90,14 +91,28 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
         logger.error("Could not find MIT file in %s", path)
         return None
 
-    if not mit_file.endswith(journal_info["file_type"]):
-        logger.warning(
-            "Found mit file %s does not correspond to mit file type %s",
-            os.path.join(path, mit_file),
-            journal_info["file_type"],
-        )
-        # override the mit file type if the extension of the file found does not match
-        journal_info["file_type"] = mit_file.split(".")[-1]
+    mit_ext = mit_file.split(".")[-1]
+    expected_ext = journal_info["mit_file_type"]
+    print('mit file ends with:', mit_file, mit_ext, expected_ext)
+    # --- handle 'both' case --- 
+    if expected_ext == "both":
+        if mit_ext not in ('xml', 'json'):
+            logger.warning(
+                "Found mit file %s has unexpected extension %s, expected 'xml' or 'json'",
+                os.path.join(path, mit_file),
+                mit_ext,
+            )
+            # accept either format without changing journal_info
+    else: 
+        # --- normal case ---
+        if not mit_file.endswith(journal_info["mit_file_type"]):
+            logger.warning(
+                "Found mit file %s does not correspond to mit file type %s",
+                os.path.join(path, mit_file),
+                expected_ext,
+            )
+            # override the mit file type if the extension of the file found does not match
+            journal_info["mit_file_type"] = mit_ext
 
     date = parse_date(mit_file)
 
@@ -107,10 +122,10 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
     day_editions = [
         str(i)
         for i in os.listdir(day_dir)
-        if i not in FAULTY_ISSUES and i not in CORRECT_ISSUE_DATES and i != ".DS_Store"
+        if i != ".DS_Store"
     ]
 
-    if len(day_editions) > 1 and os.path.basename(path) not in CORRECT_ISSUE_DATES:
+    if len(day_editions) > 1:
         # if multiple issues exist for a given day, find the correct edition
         logger.info("Multiple issues for %s, finding the edition", day_dir)
         # exclude incorrect issues from the list
@@ -125,8 +140,9 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
         date=date,
         edition=edition,
         path=path,
-        mit_file_type=journal_info["file_type"],
+        mit_file_type=mit_ext if expected_ext == "both" else journal_info["mit_file_type"],
     )
+
 
 
 def detect_issues(base_dir: str) -> list[BculIssueDir]:
@@ -152,16 +168,6 @@ def detect_issues(base_dir: str) -> list[BculIssueDir]:
         for _dir in dirs
         if _dir not in ["OLD", "wrong_BCUL", ".DS_Store"] and _dir in alias_mapping
     ]
-
-    if "La_Veveysanne__La_Patrie" in os.listdir(dir_path):
-        # for the case of 'La_Veveysanne__La_Patrie' add them also
-        vvs_pat_base_dir = os.path.join(dir_path, "La_Veveysanne__La_Patrie")
-        vvs_pat_dirs = [
-            os.path.join(vvs_pat_base_dir, _dir)
-            for _dir in os.listdir(vvs_pat_base_dir)
-            if ".DS_Store" not in _dir and _dir in alias_mapping
-        ]
-        journal_dirs.extend(vvs_pat_dirs)
 
     issue_dirs = []
     for journal in journal_dirs:
