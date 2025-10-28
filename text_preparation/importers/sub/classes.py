@@ -12,7 +12,7 @@ from text_preparation.importers.mets_alto import (
 )
 
 
-class BnfEnNewspaperPage(MetsAltoCanonicalPage):
+class SubNewspaperPage(MetsAltoCanonicalPage):
 
     def __init__(self, _id: str, number: int, filename: str, basedir: str) -> None:
         super().__init__(_id, number, filename, basedir)
@@ -22,7 +22,7 @@ class BnfEnNewspaperPage(MetsAltoCanonicalPage):
         pass
 
 
-class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
+class SubNewspaperIssue(MetsAltoCanonicalIssue):
 
     def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
