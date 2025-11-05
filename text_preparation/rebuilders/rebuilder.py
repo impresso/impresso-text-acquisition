@@ -103,7 +103,9 @@ def compress(key: str, json_files: list, output_dir: str) -> tuple[str, str]:
     return (key, filepath)
 
 
-def upload(sort_key: str, filepath: str, bucket_name: str | None = None) -> tuple[bool, str]:
+def upload(
+    sort_key: str, filepath: str, bucket_name: str | None = None, provider: str | None = None
+) -> tuple[bool, str]:
     """Upload a file to a given S3 bucket.
 
     Args:
@@ -119,7 +121,10 @@ def upload(sort_key: str, filepath: str, bucket_name: str | None = None) -> tupl
     # create connection with bucket
     # copy contents to s3 key
     alias, _ = sort_key.split("-")
-    key_name = f"{alias}/{os.path.basename(filepath)}"
+    if provider:
+        key_name = f"{provider}/{alias}/{os.path.basename(filepath)}"
+    else:
+        key_name = f"{alias}/{os.path.basename(filepath)}"
     if "/" in bucket_name:
         # if the provided bucket also contains a partition, add it to the key name
         bucket_name, partition = bucket_name.split("/")
@@ -384,6 +389,10 @@ def main() -> None:
                 start_year, end_year = batch[alias]
                 provider = get_provider_for_alias(alias)
 
+                msg = f"-----> Starting processing for alias {alias} ({provider}) for years {start_year}-{end_year} <-----"
+                logger.info(msg)
+                print(msg)
+
                 for year in range(start_year, end_year):
                     proc_year_msg = f"Processing year {year} \nRetrieving issues..."
                     logger.info(proc_year_msg)
@@ -424,7 +433,7 @@ def main() -> None:
                 future = (
                     db.from_sequence(rebuilt_issues)
                     .starmap(compress, output_dir=outp_dir)
-                    .starmap(upload, bucket_name=output_bucket_name)
+                    .starmap(upload, bucket_name=output_bucket_name, provider=provider)
                     .starmap(cleanup)
                 ).persist()
 
