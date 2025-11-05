@@ -184,7 +184,7 @@ class BculNewspaperIssue(CanonicalIssue):
         self.content_items = []
 
         self._find_pages()
-        self._find_content_items()
+        self._find_content_items2()
 
         self.issue_data = {
             "id": self.id,
@@ -437,6 +437,7 @@ class BculNewspaperIssue(CanonicalIssue):
         elif self.is_xml:
             self._find_pages_xml()
 
+
     def _find_content_items(self) -> None:
         """Find the various content items in this Newspaper issue.
 
@@ -444,21 +445,36 @@ class BculNewspaperIssue(CanonicalIssue):
         are. As a result, each page is a content item, as well as the tables
         and pictures that were segmented.
         """
+        mit_basename = os.path.basename(self.mit_file) if self.mit_file else None
+        
         # First add the pages as content items
+        page_id_map = {}
         for n, page in enumerate(sorted(self.pages, key=lambda x: x.number)):
             ci_id = self.id + "-i" + str(n + 1).zfill(4)
             
+            # Determine page xml file basename (page.path should be the xml/bz2)
+            page_file_basename = os.path.basename(page.path) if getattr(page, "path", None) else None
+            
+            page_original_id = getattr(page, "id", f"{self.id}-p{str(page.number).zfill(4)}")
             legacy = {
-                "id": f"{self.id}-p{str(page.number).zfill(4)}",  # BCUL page ID
+                "id": page_original_id,  #f"{self.id}-p{str(page.number).zfill(4)}",  # BCUL page ID
                 "parts": [
                     {
-                        "comp_role": "page", 
-                        "comp_id": page.page_data["id"],
-                        "comp_fileid": os.path.basename(page.path),
+                        "comp_role": "text blocks", 
+                        "comp_id": page_original_id, #page.page_data["id"],
+                        "comp_fileid": page_file_basename,
                         "comp_page_no": page.number,
                         
                     }],
-                "source": os.path.basename(page.path),
+                # source files: mit, page xml, page image (IIIF base or exif filename)
+                "source": {
+                    "mit": mit_basename,
+                    "page_xml": [page_file_basename] if page_file_basename else [],
+                    # iiif or page image filename(s). use iiif_base_uri (if available) as reference
+                    "page_image": [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else [],
+                },
+
+                #"source": os.path.basename(page.path),
             }
             
             ci = {
@@ -470,50 +486,206 @@ class BculNewspaperIssue(CanonicalIssue):
                 "l": legacy,
             }
             self.content_items.append(ci)
-
-        # TODO - Add legacy!! (Scriptorium Issue # and page # inside legacy)
+            page_id_map[page.number] = page_original_id
 
 
         n = len(self.content_items) + 1
         # Get all images and tables
         for p in sorted(self.pages, key=lambda x: x.number):
-            # Get page
-            page_cis = [(div.get("blockType"), get_div_coords(div)) for div in p.get_ci_divs()]
-            # Sort by coordinates
-            for div_type, coords in sorted(page_cis, key=lambda x: x[1]):
-                ci_id = self.id + "-i" + str(n).zfill(4)
+            # get all picture/table blocks and their coords
+            page_blocks = p.get_ci_divs()  # returns Tag elements
+            # build list of tuples (block_tag, block_type, coords)
+            page_cis = []
+            for div_tag in page_blocks:
+                block_type = div_tag.get("blockType")
+                coords = get_div_coords(div_tag)
+                page_cis.append((div_tag, block_type, coords))
 
-                ci_type = BCUL_CI_TRANSLATION[div_type]
+            # Sort by coords for stable ordering
+            for div_tag, div_type, coords in sorted(page_cis, key=lambda x: (x[2] or [0, 0, 0, 0])):
+                ci_id = f"{self.id}-i{str(n).zfill(4)}"
+                ci_type = BCUL_CI_TRANSLATION.get(div_type, "unknown")
 
-                # Build legacy section for this component (table or picture)
-                legacy = {
-                    "id": f"{self.id}-p{str(p.number).zfill(4)}",
-                    "parts": [{
-                        "comp_role": ci_type,
-                        "comp_id": None,  # If IDs exist inside XML, add them here
-                        "comp_fileid": os.path.basename(p.path),
-                        "comp_page_no": p.number,
-                    }],
-                    "source": os.path.basename(p.path),
+                # attempt to extract an original block id from XML (common attribute names)
+                comp_id = div_tag.get("pageElemId") or None
+
+                # construct part dict
+                part = {
+                    "comp_role": ci_type,
+                    "comp_id": comp_id,
+                    "comp_fileid": os.path.basename(p.path),
+                    "comp_page_no": p.number,
                 }
+                # include coords in the part for images/tables if we have them
+                if coords is not None:
+                    # coords is already in iiif [x,y,w,h], keep it under part for traceability
+                    part["coords"] = coords
+
+                legacy_info = {
+                    "id": page_id_map.get(p.number, f"{self.id}-p{str(p.number).zfill(4)}"),
+                    "parts": [part],
+                    "source": {
+                        "mit": mit_basename,
+                        "page_xml": [os.path.basename(p.path)],
+                        "page_image": [p.iiif_base_uri] if getattr(p, "iiif_base_uri", None) else [],
+                    },
+                }
+
+                ci = {
+                   "m": {
+                        "id": ci_id,
+                        "pp": [p.number],
+                        "tp": ci_type,
+                    },
+                    "l": legacy_info,
+                }
+
+                
+                if ci_type==CONTENTITEM_TYPE_IMAGE: # table as well ?
+                    if coords:
+                        ci["c"] = coords
+                    if ci_type == CONTENTITEM_TYPE_IMAGE and getattr(page, "iiif_base_uri", None):
+                        ci["m"]["iiif_link"] = os.path.join(page.iiif_base_uri, IIIF_SUFFIX)
+
+                self.content_items.append(ci)
+                n += 1  
+        
+        # once the pages are added to the metadata, compute & add the reading order
+        reading_order_dict = get_reading_order(self.content_items)
+        for item in self.content_items:
+            item["m"]["ro"] = reading_order_dict[item["m"]["id"]]
+
+    
+    def _find_content_items2(self) -> None:
+        """Find all content items (pages, images, tables) in this Newspaper issue.
+
+        - Loops once over all pages.
+        - Each page gets one content item with all text block IDs in comp_id.
+        - Each image/table block on that page gets its own content item.
+        - Adds 'issue_id' and 'page_id' in legacy metadata.
+        """
+        mit_basename = os.path.basename(self.mit_file) if self.mit_file else None
+
+        # Extract numeric issue_id from IIIF manifest URL
+        issue_id = None
+        try:
+            issue_id = int(self.iiif_manifest.split("/")[-2])
+        except Exception:
+            logger.warning("Could not extract issue_id from manifest %s", self.iiif_manifest)
+
+        # Query IIIF API once to map page_number → page_id
+        iiif_canvases = self.query_iiif_api()
+        canvas_id_map = {}
+        for canvas in iiif_canvases:
+            canvas_url = canvas.get("id") or canvas.get("@id")
+            if not canvas_url:
+                continue
+            try:
+                page_num = None
+                label = canvas.get("label")
+                if isinstance(label, dict):  # IIIF v3
+                    label_val = next(iter(label.values()))[0]
+                else:
+                    label_val = label
+                if label_val:
+                    page_num = int("".join(ch for ch in str(label_val) if ch.isdigit()))
+                page_id_num = int(canvas_url.split("/")[-1])
+                if page_num:
+                    canvas_id_map[page_num] = page_id_num
+            except Exception:
+                continue
+
+        # Loop once on all pages
+        ci_counter = 1
+        for page in sorted(self.pages, key=lambda x: x.number):
+            page_file_basename = os.path.basename(page.path) if getattr(page, "path", None) else None
+            #page_original_id = getattr(page, "id", f"{self.id}-p{str(page.number).zfill(4)}")
+            file_id = os.path.splitext(os.path.basename(page.path))[0]
+            # ---- PAGE CONTENT ITEM ----
+            text_blocks = page.xml.findAll("block", {"blockType": "Text"})
+            text_ids = [tb.get("pageElemId") for tb in text_blocks if tb.get("pageElemId")]
+
+            page_ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
+            page_id = canvas_id_map.get(page.number)
+            ci_counter += 1
+
+            legacy_page = {
+                "file_id": file_id,
+                "issue_id": issue_id,
+                "page_id": page_id,
+                "parts": [
+                    {
+                        "comp_role": "text blocks",
+                        "comp_id": text_ids,  # list of text block IDs
+                        "comp_fileid": page_file_basename,
+                        "comp_page_no": page.number,
+                    }
+                ],
+                "source": {
+                    "mit": mit_basename,
+                    "page_xml": [page_file_basename] if page_file_basename else [],
+                    "page_image": [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else [],
+                },
+            }
+
+            page_ci = {
+                "m": {
+                    "id": page_ci_id,
+                    "pp": [page.number],
+                    "tp": "page",
+                },
+                "l": legacy_page,
+            }
+            self.content_items.append(page_ci)
+
+            # ---- IMAGE & TABLE CONTENT ITEMS ----
+            for div_tag in page.get_ci_divs():
+                block_type = div_tag.get("blockType")
+                coords = get_div_coords(div_tag)
+                ci_type = BCUL_CI_TRANSLATION.get(block_type, "unknown")
+                comp_id = div_tag.get("pageElemId")
+
+                ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
+                ci_counter += 1
+
+                part = {
+                    "comp_role": ci_type,
+                    "comp_id": comp_id,
+                    "comp_fileid": page_file_basename,
+                    "comp_page_no": page.number,
+                }
+                if coords:
+                    part["coords"] = coords
+
+                legacy = {
+                    "file_id": file_id,
+                    "issue_id": issue_id,
+                    "page_id": canvas_id_map.get(page.number),
+                    "parts": [part],
+                    "source": {
+                        "mit": mit_basename,
+                        "page_xml": [page_file_basename],
+                        "page_image": [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else [],
+                    },
+                }
+
                 ci = {
                     "m": {
                         "id": ci_id,
-                        "pp": [p.number],
-                        "tp": BCUL_CI_TRANSLATION[div_type],
+                        "pp": [page.number],
+                        "tp": ci_type,
                     },
                     "l": legacy,
                 }
 
-                # Content item is an image
-                if ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
-                    ci["m"]["iiif_link"] = os.path.join(p.iiif_base_uri, IIIF_SUFFIX)
+                if ci_type == CONTENTITEM_TYPE_IMAGE and coords:
                     ci["c"] = coords
+                    if getattr(page, "iiif_base_uri", None):
+                        ci["m"]["iiif_link"] = os.path.join(page.iiif_base_uri, IIIF_SUFFIX)
 
                 self.content_items.append(ci)
-                n += 1
 
-        # once the pages are added to the metadata, compute & add the reading order
+        # ---- ADD READING ORDER ----
         reading_order_dict = get_reading_order(self.content_items)
         for item in self.content_items:
             item["m"]["ro"] = reading_order_dict[item["m"]["id"]]

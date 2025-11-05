@@ -230,7 +230,7 @@ def parse_textline(line: Tag) -> dict[str, list[Any]]:
 
     line_ci["t"] = tokens
     return line_ci
-
+# tx - le hyphen dans une nouvelle vRIABLE a retournenr et sinon none
 
 def parse_textblock(block: Tag, page_ci_id: str) -> dict[str, Any]:
     """Parse the given textblock element into a canonical region element.
@@ -244,6 +244,7 @@ def parse_textblock(block: Tag, page_ci_id: str) -> dict[str, Any]:
     """
     coordinates = get_div_coords(block)
 
+    # check if none, 
     lines = [parse_textline(line) for line in block.findAll("line")]
     paragraph = {
         "c": coordinates,
