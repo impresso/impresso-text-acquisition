@@ -134,7 +134,11 @@ def read_page(page_key: str, bucket_name: str, s3_client) -> dict[str, Any] | No
 
 
 def read_issue_supports(
-    issue: IssueDir, issue_json: dict[str, Any], is_audio: bool, bucket: str | None = None
+    issue: IssueDir,
+    issue_json: dict[str, Any],
+    is_audio: bool,
+    bucket: str | None = None,
+    provider: str = None,
 ) -> tuple[IssueDir, dict[str, Any]]:
     """Read all pages/audio records of a given issue from S3 in parallel, and add them to it.
 
@@ -158,9 +162,13 @@ def read_issue_supports(
     if "s3//" not in bucket:
         bucket = f"s3://{bucket}"
 
-    # TODO add provider
     filename = os.path.join(
-        bucket, alias, support, f"{alias}-{year}", f"{issue_json['id']}-{support}.jsonl.bz2"
+        bucket,
+        provider,
+        alias,
+        support,
+        f"{alias}-{year}",
+        f"{issue_json['id']}-{support}.jsonl.bz2",
     )
 
     supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]

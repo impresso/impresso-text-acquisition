@@ -40,7 +40,13 @@ from docopt import docopt
 from smart_open import smart_open
 
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, init_logger
+from impresso_essentials.utils import (
+    IssueDir,
+    SourceMedium,
+    SourceType,
+    init_logger,
+    get_provider_for_alias,
+)
 
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
@@ -152,7 +158,9 @@ def cleanup(upload_success: bool, filepath: str) -> None:
         logger.info("Not removing %s as upload has failed", filepath)
 
 
-def filter_and_process_cis(issues_bag, input_bucket: str, issue_medium: str, _format: str):
+def filter_and_process_cis(
+    issues_bag, input_bucket: str, issue_medium: str, _format: str, provider: str = None
+):
     """Process the issues into rebuilt CIs
 
     Args:
@@ -197,7 +205,7 @@ def filter_and_process_cis(issues_bag, input_bucket: str, issue_medium: str, _fo
 
     cis_bag = (
         issues_bag.filter(lambda i: len(i[1][support_property]) > 0)
-        .starmap(read_issue_supports, is_audio=is_audio, bucket=input_bucket)
+        .starmap(read_issue_supports, is_audio=is_audio, bucket=input_bucket, provider=provider)
         .starmap(rejoin_cis)
         .flatten()
         .persist()
@@ -221,6 +229,7 @@ def rebuild_issues(
     dask_client: Client,
     _format: str = "solr",
     filter_language: list[str] = None,
+    provider: str = None,
 ) -> tuple[str, list, list[dict[str, int | str]]]:
     """Rebuild a set of newspaper issues into a given format.
 
@@ -264,7 +273,7 @@ def rebuild_issues(
     print("Fleshing out articles by issue...")
     issues_bag = db.from_sequence(issues, partition_size=3)
 
-    cis_bag = filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format)
+    cis_bag = filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format, provider)
 
     def has_language(ci):
         if "lg" not in ci:
@@ -369,15 +378,18 @@ def main() -> None:
                 proc_b_msg = f"Processing batch {n + 1}/{len(config)} [{batch}]"
                 logger.info(proc_b_msg)
                 print(proc_b_msg)
+
+                # extract the alias, provider and period to process
                 alias = list(batch.keys())[0]
                 start_year, end_year = batch[alias]
+                provider = get_provider_for_alias(alias)
 
                 for year in range(start_year, end_year):
                     proc_year_msg = f"Processing year {year} \nRetrieving issues..."
                     logger.info(proc_year_msg)
                     print(proc_year_msg)
 
-                    input_issues = read_s3_issues(alias, year, input_bucket_name)
+                    input_issues = read_s3_issues(alias, year, input_bucket_name, provider=provider)
                     if len(input_issues) == 0:
                         # read_s3_issues does not raise an exception anymore
                         fnf_msg = f"{alias}-{year} not found in {input_bucket_name}"
@@ -392,6 +404,7 @@ def main() -> None:
                         dask_client=client,
                         _format=output_format,
                         filter_language=languages,
+                        provider=provider,
                     )
                     rebuilt_issues.append((issue_key, json_files))
                     del input_issues
