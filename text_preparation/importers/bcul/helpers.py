@@ -200,7 +200,19 @@ def parse_char_tokens(char_tokens: list[Tag]) -> list[dict[str, list[int] | str]
         last_token = {"c": coords, "tx": tx}
 
     # when all tokens have been processed, add the last token that was constructed.
-    tokens.append(last_token)
+    if tx and coords:
+        tokens.append(last_token)
+
+    # --- 🔧 Detect hyphenation (hard '-' or soft '¬') ---
+    for i in range(len(tokens) - 1):
+        curr_tx = tokens[i].get("tx", "")
+        next_tx = tokens[i + 1].get("tx", "")
+
+        # check if the current token ends with a hyphen or soft hyphen
+        if curr_tx.endswith(("-", "¬")) and next_tx and next_tx[0].islower():
+            tokens[i]["hy"] = True  # mark hyphenated
+            tokens[i + 1]["nf"] = curr_tx.rstrip("-¬") + next_tx  # normalized full form
+
 
     return tokens
 
@@ -244,8 +256,41 @@ def parse_textblock(block: Tag, page_ci_id: str) -> dict[str, Any]:
     """
     coordinates = get_div_coords(block)
 
+    
     # check if none, 
     lines = [parse_textline(line) for line in block.findAll("line")]
+    
+    # lines: each is {'c': coords, 't': [ { 'c':..., 'tx': ... , ...}, ... ] }
+    # Post-process: detect hyphenation across line breaks
+    for i in range(len(lines) - 1):
+        this_line_tokens = lines[i].get("t", [])
+        next_line_tokens = lines[i + 1].get("t", [])
+        if not this_line_tokens or not next_line_tokens:
+            continue
+
+        last_tok = this_line_tokens[-1]
+        first_tok = next_line_tokens[0]
+
+        last_tx = last_tok.get("tx", "")
+        first_tx = first_tok.get("tx", "")
+
+        # consider ASCII hyphen '-' and soft hyphen '¬'
+        if last_tx and last_tx.endswith(("-", "¬")) and first_tx:
+            first_char = first_tx[0]
+            try:
+                is_lower = first_char.islower()
+            except Exception:
+                is_lower = False
+
+            if is_lower:
+                # mark hy on last token (include hyphen)
+                last_tok["hy"] = True
+                # normalized form: strip hyphen/soft-hyphen from end of last_tx and concat with first token
+                # should we keep the hyphen
+                dehy = last_tx.rstrip("-¬") + first_tx
+                first_tok["nf"] = dehy
+    
+    
     paragraph = {
         "c": coordinates,
         "l": lines,
