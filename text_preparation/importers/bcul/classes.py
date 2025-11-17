@@ -16,6 +16,7 @@ import requests
 from bs4 import BeautifulSoup, Tag
 
 import certifi, urllib3
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from impresso_essentials.utils import SourceMedium, SourceType, timestamp
@@ -64,7 +65,15 @@ class BculNewspaperPage(CanonicalPage):
         iiif_base_uri (str): URI to image IIIF of this page.
     """
 
-    def __init__(self, _id: str, number: int, page_path: str, iiif_uri: str, width: int | None = None, height: int | None = None) -> None:
+    def __init__(
+        self,
+        _id: str,
+        number: int,
+        page_path: str,
+        iiif_uri: str,
+        width: int | None = None,
+        height: int | None = None,
+    ) -> None:
         super().__init__(_id, number)
         self.path = page_path
         self.iiif_base_uri = iiif_uri
@@ -79,7 +88,7 @@ class BculNewspaperPage(CanonicalPage):
             "r": [],  # here go the page regions
             "iiif_img_base_uri": iiif_uri,
         }
-        
+
         # # Add width and height if available
         if self.width is not None and self.height is not None:
             self.page_data["fw"] = self.width
@@ -213,7 +222,9 @@ class BculNewspaperIssue(CanonicalIssue):
         page_identifier = os.path.basename(page_path).split(".")[0]
         return os.path.join(IIIF_IMG_BASE_URI, page_identifier)
 
-    def query_iiif_api(self, num_tries: int = 0, max_retries: int = 3, sleep_seconds: int=2) -> dict[str, Any]:
+    def query_iiif_api(
+        self, num_tries: int = 0, max_retries: int = 3, sleep_seconds: int = 2
+    ) -> dict[str, Any]:
         """Query the Scriptorium IIIF API for the issue's manifest data.
 
         TODO: implement the retry approach with `celery` package or similar.
@@ -238,7 +249,9 @@ class BculNewspaperIssue(CanonicalIssue):
                 elif "items" in data and data["items"]:
                     return data["items"]
                 else:
-                    msg = f"{self.id}: IIIF manifest format not recognized. Keys: {list(data.keys())}"
+                    msg = (
+                        f"{self.id}: IIIF manifest format not recognized. Keys: {list(data.keys())}"
+                    )
                     raise requests.exceptions.HTTPError(msg)
 
             if response.status_code == 404:
@@ -277,19 +290,18 @@ class BculNewspaperIssue(CanonicalIssue):
         Returns:
             str | None: IIIF image base uri (no suffix) if found in manifest else None.
         """
-        
+
         page_canvas = None
-        
-        for c in canvases: 
+
+        for c in canvases:
             label = c.get("label")
-            
-            
+
             # IIIF v3: {"en": ["Page 1"]}
             if isinstance(label, dict):
                 label_val = next(iter(label.values()))[0] if label.values() else None
-                
+
             # IIIF v2: "1" or "Page 1"
-            else: 
+            else:
                 label_val = label
             if label_val:
                 try:
@@ -323,7 +335,6 @@ class BculNewspaperIssue(CanonicalIssue):
 
         # Return image base URI (remove suffix)
         return "/".join(iiif.split("/")[:-4])
-                
 
     def _find_pages_xml(self) -> None:
         """Finds the pages when the format for the `mit_file` is XML.
@@ -361,7 +372,7 @@ class BculNewspaperIssue(CanonicalIssue):
                             self.iiif_manifest,
                         )
                         continue
-                    
+
                     # CHANGES HERE - fetch width and height from iiif_canvases
                     canvas = iiif_canvases[page_no - 1]
                     width = canvas.get("width")
@@ -379,7 +390,7 @@ class BculNewspaperIssue(CanonicalIssue):
                             self.id,
                             page_no,
                         )
-                        
+
                     page = BculNewspaperPage(page_id, page_no, page_path, page_iiif, width, height)
                     self.pages.append(page)
                     found = True
@@ -404,13 +415,13 @@ class BculNewspaperIssue(CanonicalIssue):
         ]
 
         for f in files:
-            
-            with open(f, 'r', encoding='utf-8') as jf:
+
+            with open(f, "r", encoding="utf-8") as jf:
                 exif_list = json.load(jf)
             exif_data = exif_list[0]
             jpeg_info = exif_data.get("Jpeg2000", {})
-            width = jpeg_info.get('ImageWidth')
-            height = jpeg_info.get('ImageHeight')    
+            width = jpeg_info.get("ImageWidth")
+            height = jpeg_info.get("ImageHeight")
             # Page file is the same name without `_exif`
             file_id = os.path.splitext(os.path.basename(f))[0].replace("_exif", "")
             # check the page xml file exists
@@ -437,7 +448,6 @@ class BculNewspaperIssue(CanonicalIssue):
         elif self.is_xml:
             self._find_pages_xml()
 
-
     def _find_content_items(self) -> None:
         """Find the various content items in this Newspaper issue.
 
@@ -446,48 +456,50 @@ class BculNewspaperIssue(CanonicalIssue):
         and pictures that were segmented.
         """
         mit_basename = os.path.basename(self.mit_file) if self.mit_file else None
-        
+
         # First add the pages as content items
         page_id_map = {}
         for n, page in enumerate(sorted(self.pages, key=lambda x: x.number)):
             ci_id = self.id + "-i" + str(n + 1).zfill(4)
-            
+
             # Determine page xml file basename (page.path should be the xml/bz2)
-            page_file_basename = os.path.basename(page.path) if getattr(page, "path", None) else None
-            
+            page_file_basename = (
+                os.path.basename(page.path) if getattr(page, "path", None) else None
+            )
+
             page_original_id = getattr(page, "id", f"{self.id}-p{str(page.number).zfill(4)}")
             legacy = {
-                "id": page_original_id,  #f"{self.id}-p{str(page.number).zfill(4)}",  # BCUL page ID
+                "id": page_original_id,  # f"{self.id}-p{str(page.number).zfill(4)}",  # BCUL page ID
                 "parts": [
                     {
-                        "comp_role": "text blocks", 
-                        "comp_id": page_original_id, #page.page_data["id"],
+                        "comp_role": "text blocks",
+                        "comp_id": page_original_id,  # page.page_data["id"],
                         "comp_fileid": page_file_basename,
                         "comp_page_no": page.number,
-                        
-                    }],
+                    }
+                ],
                 # source files: mit, page xml, page image (IIIF base or exif filename)
                 "source": {
                     "mit": mit_basename,
                     "page_xml": [page_file_basename] if page_file_basename else [],
                     # iiif or page image filename(s). use iiif_base_uri (if available) as reference
-                    "page_image": [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else [],
+                    "page_image": (
+                        [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else []
+                    ),
                 },
-
-                #"source": os.path.basename(page.path),
+                # "source": os.path.basename(page.path),
             }
-            
+
             ci = {
                 "m": {
                     "id": ci_id,
                     "pp": [page.number],
                     "tp": "page",
-                }, 
+                },
                 "l": legacy,
             }
             self.content_items.append(ci)
             page_id_map[page.number] = page_original_id
-
 
         n = len(self.content_items) + 1
         # Get all images and tables
@@ -506,16 +518,19 @@ class BculNewspaperIssue(CanonicalIssue):
                 ci_id = f"{self.id}-i{str(n).zfill(4)}"
                 ci_type = BCUL_CI_TRANSLATION.get(div_type, "unknown")
 
-                # attempt to extract an original block id from XML (common attribute names)
-                comp_id = div_tag.get("pageElemId") or None
-
                 # construct part dict
                 part = {
                     "comp_role": ci_type,
-                    "comp_id": comp_id,
                     "comp_fileid": os.path.basename(p.path),
                     "comp_page_no": p.number,
                 }
+
+                # attempt to extract an original block id from XML (common attribute names)
+                comp_id = div_tag.get("pageElemId") or None
+                if comp_id:
+                    # only add the comp_id if it's not None
+                    part["comp_id"] = comp_id
+
                 # include coords in the part for images/tables if we have them
                 if coords is not None:
                     # coords is already in iiif [x,y,w,h], keep it under part for traceability
@@ -527,12 +542,14 @@ class BculNewspaperIssue(CanonicalIssue):
                     "source": {
                         "mit": mit_basename,
                         "page_xml": [os.path.basename(p.path)],
-                        "page_image": [p.iiif_base_uri] if getattr(p, "iiif_base_uri", None) else [],
+                        "page_image": (
+                            [p.iiif_base_uri] if getattr(p, "iiif_base_uri", None) else []
+                        ),
                     },
                 }
 
                 ci = {
-                   "m": {
+                    "m": {
                         "id": ci_id,
                         "pp": [p.number],
                         "tp": ci_type,
@@ -540,22 +557,20 @@ class BculNewspaperIssue(CanonicalIssue):
                     "l": legacy_info,
                 }
 
-                
-                if ci_type==CONTENTITEM_TYPE_IMAGE: # table as well ?
+                if ci_type == CONTENTITEM_TYPE_IMAGE:  # table as well ?
                     if coords:
                         ci["c"] = coords
                     if ci_type == CONTENTITEM_TYPE_IMAGE and getattr(page, "iiif_base_uri", None):
                         ci["m"]["iiif_link"] = os.path.join(page.iiif_base_uri, IIIF_SUFFIX)
 
                 self.content_items.append(ci)
-                n += 1  
-        
+                n += 1
+
         # once the pages are added to the metadata, compute & add the reading order
         reading_order_dict = get_reading_order(self.content_items)
         for item in self.content_items:
             item["m"]["ro"] = reading_order_dict[item["m"]["id"]]
 
-    
     def _find_content_items2(self) -> None:
         """Find all content items (pages, images, tables) in this Newspaper issue.
 
@@ -599,21 +614,24 @@ class BculNewspaperIssue(CanonicalIssue):
         ci_counter = 1
         ci_counter_intern = 0
         nb_pages = len(self.pages)
-        print(f'il y a :{nb_pages} pages')
+
+        # print(f"il y a :{nb_pages} pages")
         for page in sorted(self.pages, key=lambda x: x.number):
-            page_file_basename = os.path.basename(page.path) if getattr(page, "path", None) else None
-            #page_original_id = getattr(page, "id", f"{self.id}-p{str(page.number).zfill(4)}")
+            page_file_basename = (
+                os.path.basename(page.path) if getattr(page, "path", None) else None
+            )
+            # page_original_id = getattr(page, "id", f"{self.id}-p{str(page.number).zfill(4)}")
             file_id = os.path.splitext(os.path.basename(page.path))[0]
             # ---- PAGE CONTENT ITEM ----
-            text_blocks = page.xml.findAll("block", {"blockType": "Text"})
+            page_xml = page.xml
+            text_blocks = page_xml.findAll("block", {"blockType": "Text"})
             text_ids = [tb.get("pageElemId") for tb in text_blocks if tb.get("pageElemId")]
 
             page_ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
             page_id = canvas_id_map.get(page.number)
-            
 
             legacy_page = {
-                #"file_id": file_id,
+                # "file_id": file_id,
                 "issue_id": issue_id,
                 "page_id": page_id,
                 "parts": [
@@ -624,7 +642,7 @@ class BculNewspaperIssue(CanonicalIssue):
                         "comp_page_no": page.number,
                     }
                 ],
-                "source": mit_basename
+                "source": mit_basename,
                 #     {
                 #     "mit": mit_basename,
                 #     "page_xml": [page_file_basename] if page_file_basename else [],
@@ -644,29 +662,41 @@ class BculNewspaperIssue(CanonicalIssue):
 
             counter_temp = 0
             # ---- IMAGE & TABLE CONTENT ITEMS ----
-            for div_tag in page.get_ci_divs():
+            # TODO : ici le `get_ci_divs` rappelle encore le page.xml d'au dessus,
+            # tu ouvres donc le fichier XML des pages 3 fois par page: 2 ici et 1 fois lorsque tu fais page.parse().
+            # Il faudrait le réduire à 2, donc potentiellement au dessus faire page_xml = page.xml
+            # séparément text_blocks=page_xml.findAll(...) et la version de get_ci_divs qui selectionne seulement les
+            # texblocks d'image et de table. Normalement cela devrait accélerer le processus (pour le moment c'est un peu trop lent.)
+
+            # là je viens de le faitre en dessous mais peut-être si tu peux un peu "nettoyer" le tout etc
+            # (aussi garger seulement une fonction _find_content_items etc)
+            ci_divs = page_xml.findAll("block", {"blockType": lambda x: x in BCUL_CI_TYPES})
+            for div_tag in ci_divs:
                 block_type = div_tag.get("blockType")
                 coords = get_div_coords(div_tag)
                 ci_type = BCUL_CI_TRANSLATION.get(block_type, "unknown")
                 comp_id = div_tag.get("pageElemId")
                 add_nb = ci_counter + nb_pages + ci_counter_intern + counter_temp
                 ci_id = f"{self.id}-i{str(add_nb).zfill(4)}"
-                
+
                 part = {
                     "comp_role": ci_type,
-                    "comp_id": comp_id,
                     "comp_fileid": page_file_basename,
                     "comp_page_no": page.number,
                 }
+                # don't define the comp_id if it's None (does not pass schema validation)
+                if comp_id:
+                    part["comp_id"] = comp_id
+
                 if coords:
                     part["coords"] = coords
 
                 legacy = {
-                    #"file_id": file_id,
+                    # "file_id": file_id,
                     "issue_id": issue_id,
                     "page_id": canvas_id_map.get(page.number),
                     "parts": [part],
-                    "source": mit_basename
+                    "source": mit_basename,
                     #     {
                     #     "mit": mit_basename,
                     #     "page_xml": [page_file_basename],
@@ -690,8 +720,8 @@ class BculNewspaperIssue(CanonicalIssue):
 
                 self.content_items.append(ci)
                 counter_temp += 1
-            
-            ci_counter_intern += counter_temp - 1 
+
+            ci_counter_intern += counter_temp - 1
             ci_counter += 1
 
         # ---- ADD READING ORDER ----
