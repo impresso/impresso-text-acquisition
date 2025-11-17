@@ -192,6 +192,10 @@ class BculNewspaperIssue(CanonicalIssue):
         )
         self.content_items = []
 
+        # TODO j'ai mis ça dans une variable de l'issue pour eviter de devoir query plusieurs fois
+        # fetch the issue's iiif manifest
+        self.iiif_canvases = self.query_iiif_api()
+
         self._find_pages()
         self._find_content_items2()
 
@@ -350,9 +354,6 @@ class BculNewspaperIssue(CanonicalIssue):
         with open(self.mit_file, encoding="utf-8") as f:
             mit = BeautifulSoup(f, "xml")
 
-        # fetch the issue's iiif manifest
-        iiif_canvases = self.query_iiif_api()
-
         pages = sorted([os.path.basename(x.get("xml")) for x in mit.findAll("image")])
         for p in pages:
             found = False
@@ -363,7 +364,7 @@ class BculNewspaperIssue(CanonicalIssue):
                     page_path = os.path.join(self.path, f)
                     page_no = int(f.split(".")[0].split("_")[-1])
                     page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
-                    page_iiif = self._get_iiif_link_xml(page_no, iiif_canvases)
+                    page_iiif = self._get_iiif_link_xml(page_no, self.iiif_canvases)
                     if page_iiif is None:
                         logger.error(
                             "%s: No iiif link found for Page %s on API (manifest: %s)",
@@ -374,7 +375,7 @@ class BculNewspaperIssue(CanonicalIssue):
                         continue
 
                     # CHANGES HERE - fetch width and height from iiif_canvases
-                    canvas = iiif_canvases[page_no - 1]
+                    canvas = self.iiif_canvases[page_no - 1]
                     width = canvas.get("width")
                     height = canvas.get("height")
                     if width is None or height is None:
@@ -588,10 +589,12 @@ class BculNewspaperIssue(CanonicalIssue):
         except Exception:
             logger.warning("Could not extract issue_id from manifest %s", self.iiif_manifest)
 
+        # TODO remove to prevent too many API calls
         # Query IIIF API once to map page_number → page_id
-        iiif_canvases = self.query_iiif_api()
+        # iiif_canvases = self.query_iiif_api()
+
         canvas_id_map = {}
-        for canvas in iiif_canvases:
+        for canvas in self.iiif_canvases:
             canvas_url = canvas.get("id") or canvas.get("@id")
             if not canvas_url:
                 continue
