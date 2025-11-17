@@ -597,6 +597,9 @@ class BculNewspaperIssue(CanonicalIssue):
 
         # Loop once on all pages
         ci_counter = 1
+        ci_counter_intern = 0
+        nb_pages = len(self.pages)
+        print(f'il y a :{nb_pages} pages')
         for page in sorted(self.pages, key=lambda x: x.number):
             page_file_basename = os.path.basename(page.path) if getattr(page, "path", None) else None
             #page_original_id = getattr(page, "id", f"{self.id}-p{str(page.number).zfill(4)}")
@@ -607,10 +610,10 @@ class BculNewspaperIssue(CanonicalIssue):
 
             page_ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
             page_id = canvas_id_map.get(page.number)
-            ci_counter += 1
+            
 
             legacy_page = {
-                "file_id": file_id,
+                #"file_id": file_id,
                 "issue_id": issue_id,
                 "page_id": page_id,
                 "parts": [
@@ -621,11 +624,12 @@ class BculNewspaperIssue(CanonicalIssue):
                         "comp_page_no": page.number,
                     }
                 ],
-                "source": {
-                    "mit": mit_basename,
-                    "page_xml": [page_file_basename] if page_file_basename else [],
-                    "page_image": [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else [],
-                },
+                "source": mit_basename
+                #     {
+                #     "mit": mit_basename,
+                #     "page_xml": [page_file_basename] if page_file_basename else [],
+                #     "page_image": [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else [],
+                # },
             }
 
             page_ci = {
@@ -638,16 +642,16 @@ class BculNewspaperIssue(CanonicalIssue):
             }
             self.content_items.append(page_ci)
 
+            counter_temp = 0
             # ---- IMAGE & TABLE CONTENT ITEMS ----
             for div_tag in page.get_ci_divs():
                 block_type = div_tag.get("blockType")
                 coords = get_div_coords(div_tag)
                 ci_type = BCUL_CI_TRANSLATION.get(block_type, "unknown")
                 comp_id = div_tag.get("pageElemId")
-
-                ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
-                ci_counter += 1
-
+                add_nb = ci_counter + nb_pages + ci_counter_intern + counter_temp
+                ci_id = f"{self.id}-i{str(add_nb).zfill(4)}"
+                
                 part = {
                     "comp_role": ci_type,
                     "comp_id": comp_id,
@@ -658,15 +662,16 @@ class BculNewspaperIssue(CanonicalIssue):
                     part["coords"] = coords
 
                 legacy = {
-                    "file_id": file_id,
+                    #"file_id": file_id,
                     "issue_id": issue_id,
                     "page_id": canvas_id_map.get(page.number),
                     "parts": [part],
-                    "source": {
-                        "mit": mit_basename,
-                        "page_xml": [page_file_basename],
-                        "page_image": [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else [],
-                    },
+                    "source": mit_basename
+                    #     {
+                    #     "mit": mit_basename,
+                    #     "page_xml": [page_file_basename],
+                    #     "page_image": [page.iiif_base_uri] if getattr(page, "iiif_base_uri", None) else [],
+                    # },
                 }
 
                 ci = {
@@ -684,6 +689,10 @@ class BculNewspaperIssue(CanonicalIssue):
                         ci["m"]["iiif_link"] = os.path.join(page.iiif_base_uri, IIIF_SUFFIX)
 
                 self.content_items.append(ci)
+                counter_temp += 1
+            
+            ci_counter_intern += counter_temp - 1 
+            ci_counter += 1
 
         # ---- ADD READING ORDER ----
         reading_order_dict = get_reading_order(self.content_items)
