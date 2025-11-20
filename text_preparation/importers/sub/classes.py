@@ -324,7 +324,8 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     "id": page_ci_id,
                     "tp": "page",  # content type: page
                     "l": alto_soup.find("Page").get("language", "de"),  # language
-                    "pp": [page.id],  # pages this CI appears on
+                    # for pp take last 4 strings and turn into digits
+                    "pp": [int(page.id[-4:])]
                 },
                 # Legacy section - tracking ALTO components
                 "l": {
@@ -355,6 +356,24 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 illus_id = illustration.get("ID")
                 if not illus_id:
                     continue
+                
+                # Extract coordinates from Illustration element
+                hpos = illustration.get("HPOS")
+                vpos = illustration.get("VPOS")
+                width = illustration.get("WIDTH")
+                height = illustration.get("HEIGHT")
+                
+                coords = None
+                if hpos and vpos and width and height:
+                    try:
+                        coords = [
+                            int(float(hpos)),
+                            int(float(vpos)),
+                            int(float(width)),
+                            int(float(height)),
+                        ]
+                    except (ValueError, TypeError):
+                        logger.warning(f"Invalid coordinates for Illustration {illus_id}")
                     
                 # Generate unique CI ID for this image
                 ci_counter += 1
@@ -365,8 +384,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     "m": {
                         "id": image_ci_id,
                         "tp": "image",  # content type: image
-                        "l": alto_soup.find("Page").get("language", "de"),
-                        "pp": [page.id],  # page this image appears on
+                        "pp": [int(page.id[-4:])],  # page this image appears on
                     },
                     # Legacy section
                     "l": {
@@ -386,15 +404,38 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         "title_ppn": self.title_ppn,
                     },
                 }
+                
+                # Add coordinates if available
+                if coords:
+                    image_ci["m"]["c"] = coords
+                
                 content_items.append(image_ci)
             
             # === 3. Create content items for Tables ===
-            for text_block in print_space.find_all("TextBlock"):
+            for text_block in print_space.find_all("ComposedBlock"):
                 block_type = text_block.get("TYPE", "")
                 if block_type.lower() == "table":
                     table_id = text_block.get("ID")
                     if not table_id:
                         continue
+                    
+                    # Extract coordinates from ComposedBlock element
+                    hpos = text_block.get("HPOS")
+                    vpos = text_block.get("VPOS")
+                    width = text_block.get("WIDTH")
+                    height = text_block.get("HEIGHT")
+                    
+                    coords = None
+                    if hpos and vpos and width and height:
+                        try:
+                            coords = [
+                                int(float(hpos)),
+                                int(float(vpos)),
+                                int(float(width)),
+                                int(float(height)),
+                            ]
+                        except (ValueError, TypeError):
+                            logger.warning(f"Invalid coordinates for table {table_id}")
                     
                     # Generate unique CI ID for this table
                     ci_counter += 1
@@ -406,7 +447,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                             "id": table_ci_id,
                             "tp": "table",  # content type: table
                             "l": alto_soup.find("Page").get("language", "de"),
-                            "pp": [page.id],
+                            "pp": [int(page.id[-4:])],
                         },
                         # Legacy section
                         "l": {
@@ -426,6 +467,11 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                             "title_ppn": self.title_ppn,
                         },
                     }
+                    
+                    # Add coordinates if available
+                    if coords:
+                        table_ci["m"]["c"] = coords
+                    
                     content_items.append(table_ci)
         
         logger.info(
