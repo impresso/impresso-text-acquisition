@@ -49,7 +49,7 @@ Args:
 # issues that lead to HTTP response 404. Skipping them altogether.
 # These issues are often dublicates of issues for which the API works
 # In addition, it was found that some issues were listed with wrong dates.
-OLD_ALIASES_FILEPATH = "../data/sample_data/BCUL/access_rights_and_aliases.json"
+# OLD_ALIASES_FILEPATH = "../data/sample_data/BCUL/access_rights_and_aliases.json"
 ALIASES_FILEPATH = "/rcp-scratch/iccluster040_scratch/students/banuls/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/bcul_aliases.json"
 FAULTY_ISSUES = [
     "127626",
