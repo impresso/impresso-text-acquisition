@@ -1,0 +1,816 @@
+{
+    "id": "hamb_echo-1888-02-02-a",
+    "cdt": "2025-11-20 18:20:57",
+    "ts": "2025-11-20T17:20:57Z",
+    "st": "newspaper",
+    "sm": "print",
+    "olr": false,
+    "i": [
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0001",
+                "tp": "page",
+                "l": "de",
+                "pp": [
+                    1
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000001.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block11",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block12",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block14",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block15",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block16",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block17",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block19",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block20",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block21",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    },
+                    {
+                        "comp_id": "Page1_Block22",
+                        "r": "body",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0002",
+                "tp": "image",
+                "pp": [
+                    1
+                ],
+                "c": [
+                    3043,
+                    2399,
+                    104,
+                    165
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000001.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block51",
+                        "r": "image",
+                        "file_id": "00000001.xml",
+                        "pn": 1
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0002",
+                "tp": "page",
+                "l": "de",
+                "pp": [
+                    2
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000002.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block1",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block4",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block5",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block6",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block7",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block8",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block9",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block10",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block11",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block13",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block14",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block15",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    },
+                    {
+                        "comp_id": "Page1_Block16",
+                        "r": "body",
+                        "file_id": "00000002.xml",
+                        "pn": 2
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0003",
+                "tp": "page",
+                "l": "de",
+                "pp": [
+                    3
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000003.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block17",
+                        "r": "body",
+                        "file_id": "00000003.xml",
+                        "pn": 3
+                    },
+                    {
+                        "comp_id": "Page1_Block18",
+                        "r": "body",
+                        "file_id": "00000003.xml",
+                        "pn": 3
+                    },
+                    {
+                        "comp_id": "Page1_Block19",
+                        "r": "body",
+                        "file_id": "00000003.xml",
+                        "pn": 3
+                    },
+                    {
+                        "comp_id": "Page1_Block21",
+                        "r": "body",
+                        "file_id": "00000003.xml",
+                        "pn": 3
+                    },
+                    {
+                        "comp_id": "Page1_Block22",
+                        "r": "body",
+                        "file_id": "00000003.xml",
+                        "pn": 3
+                    },
+                    {
+                        "comp_id": "Page1_Block23",
+                        "r": "body",
+                        "file_id": "00000003.xml",
+                        "pn": 3
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0004",
+                "tp": "page",
+                "l": "de",
+                "pp": [
+                    4
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000004.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block1",
+                        "r": "body",
+                        "file_id": "00000004.xml",
+                        "pn": 4
+                    },
+                    {
+                        "comp_id": "Page1_Block3",
+                        "r": "body",
+                        "file_id": "00000004.xml",
+                        "pn": 4
+                    },
+                    {
+                        "comp_id": "Page1_Block5",
+                        "r": "body",
+                        "file_id": "00000004.xml",
+                        "pn": 4
+                    },
+                    {
+                        "comp_id": "Page1_Block6",
+                        "r": "body",
+                        "file_id": "00000004.xml",
+                        "pn": 4
+                    },
+                    {
+                        "comp_id": "Page1_Block7",
+                        "r": "body",
+                        "file_id": "00000004.xml",
+                        "pn": 4
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0003",
+                "tp": "image",
+                "pp": [
+                    4
+                ],
+                "c": [
+                    2106,
+                    2,
+                    110,
+                    45
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000004.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block34",
+                        "r": "image",
+                        "file_id": "00000004.xml",
+                        "pn": 4
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0005",
+                "tp": "page",
+                "l": "de",
+                "pp": [
+                    5
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000005.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block1",
+                        "r": "body",
+                        "file_id": "00000005.xml",
+                        "pn": 5
+                    },
+                    {
+                        "comp_id": "Page1_Block3",
+                        "r": "body",
+                        "file_id": "00000005.xml",
+                        "pn": 5
+                    },
+                    {
+                        "comp_id": "Page1_Block4",
+                        "r": "body",
+                        "file_id": "00000005.xml",
+                        "pn": 5
+                    },
+                    {
+                        "comp_id": "Page1_Block6",
+                        "r": "body",
+                        "file_id": "00000005.xml",
+                        "pn": 5
+                    },
+                    {
+                        "comp_id": "Page1_Block7",
+                        "r": "body",
+                        "file_id": "00000005.xml",
+                        "pn": 5
+                    },
+                    {
+                        "comp_id": "Page1_Block8",
+                        "r": "body",
+                        "file_id": "00000005.xml",
+                        "pn": 5
+                    },
+                    {
+                        "comp_id": "Page1_Block9",
+                        "r": "body",
+                        "file_id": "00000005.xml",
+                        "pn": 5
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0006",
+                "tp": "page",
+                "l": "de",
+                "pp": [
+                    6
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000006.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block14",
+                        "r": "body",
+                        "file_id": "00000006.xml",
+                        "pn": 6
+                    },
+                    {
+                        "comp_id": "Page1_Block16",
+                        "r": "body",
+                        "file_id": "00000006.xml",
+                        "pn": 6
+                    },
+                    {
+                        "comp_id": "Page1_Block17",
+                        "r": "body",
+                        "file_id": "00000006.xml",
+                        "pn": 6
+                    },
+                    {
+                        "comp_id": "Page1_Block18",
+                        "r": "body",
+                        "file_id": "00000006.xml",
+                        "pn": 6
+                    },
+                    {
+                        "comp_id": "Page1_Block19",
+                        "r": "body",
+                        "file_id": "00000006.xml",
+                        "pn": 6
+                    },
+                    {
+                        "comp_id": "Page1_Block20",
+                        "r": "body",
+                        "file_id": "00000006.xml",
+                        "pn": 6
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0004",
+                "tp": "image",
+                "pp": [
+                    6
+                ],
+                "c": [
+                    3188,
+                    444,
+                    47,
+                    289
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000006.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block29",
+                        "r": "image",
+                        "file_id": "00000006.xml",
+                        "pn": 6
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0007",
+                "tp": "page",
+                "l": "de",
+                "pp": [
+                    7
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000007.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block1",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block3",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block4",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block5",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block6",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block7",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block8",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block10",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block11",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block13",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block14",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block15",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block16",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block17",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block19",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block20",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block21",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block22",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block23",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block24",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block25",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block26",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block27",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block28",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block29",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block30",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    },
+                    {
+                        "comp_id": "Page1_Block31",
+                        "r": "body",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0005",
+                "tp": "image",
+                "pp": [
+                    7
+                ],
+                "c": [
+                    1846,
+                    1106,
+                    842,
+                    630
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000007.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block96",
+                        "r": "image",
+                        "file_id": "00000007.xml",
+                        "pn": 7
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0008",
+                "tp": "page",
+                "l": "de",
+                "pp": [
+                    8
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000008.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block2",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block3",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block5",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block6",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block8",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block9",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block11",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block12",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block14",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    },
+                    {
+                        "comp_id": "Page1_Block15",
+                        "r": "body",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        },
+        {
+            "m": {
+                "id": "hamb_echo-1888-02-02-a-i0006",
+                "tp": "image",
+                "pp": [
+                    8
+                ],
+                "c": [
+                    470,
+                    322,
+                    2635,
+                    517
+                ]
+            },
+            "l": {
+                "id": "PPN1754726119-PPN1754726119-00000008.xml",
+                "parts": [
+                    {
+                        "comp_id": "Page1_Block4",
+                        "r": "image",
+                        "file_id": "00000008.xml",
+                        "pn": 8
+                    }
+                ],
+                "source": "PPN1754726119_18880202.xml",
+                "ppn": "PPN1754726119",
+                "title_ppn": "PPN1754726119"
+            }
+        }
+    ],
+    "pp": [
+        "hamb_echo-1888-02-02-a-p0001",
+        "hamb_echo-1888-02-02-a-p0002",
+        "hamb_echo-1888-02-02-a-p0003",
+        "hamb_echo-1888-02-02-a-p0004",
+        "hamb_echo-1888-02-02-a-p0005",
+        "hamb_echo-1888-02-02-a-p0006",
+        "hamb_echo-1888-02-02-a-p0007",
+        "hamb_echo-1888-02-02-a-p0008"
+    ],
+    "iiif_manifest_uri": "https://iiif.sub.uni-hamburg.de/object/PPN1754726119/manifest",
+    "n": [],
+    "t": "Hamburger Echo"
+}
