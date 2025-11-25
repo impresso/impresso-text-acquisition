@@ -56,6 +56,7 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
         basedir: str,
         page_size: tuple[int, int],
         encoding: str = "utf-8",
+        # TODO add iiif link
     ) -> None:
         super().__init__(_id, number, filename, basedir, encoding)
 
@@ -105,33 +106,33 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         self.title = None
         self.page_sizes = {}
         self.mets_file = None
-        
+
         super().__init__(issue_dir)
 
     def _extract_ppn_from_mets(self) -> str:
         """Extract PPN identifier from METS filename.
-        
+
         The METS filename follows the pattern: PPN{ppn}_{date}.xml
         The PPN contains both the title-level identifier and the date.
-        
+
         Returns:
             str: The PPN identifier (including date suffix)
-            
+
         Raises:
             ValueError: If no valid METS file is found
         """
         mets_files = [
             f for f in os.listdir(self.path) if f.endswith(".xml") and f.startswith("PPN")
         ]
-        
+
         if not mets_files:
             raise ValueError(f"No METS file found in {self.path}")
-            
+
         # Extract PPN from filename (e.g., PPN1754726119_18880201.xml)
         # The full PPN includes the date suffix (e.g., "PPN1754726119")
         mets_filename = mets_files[0]
-        ppn = mets_filename.split('_')[0]  # Gets "PPN1754726119"
-        
+        ppn = mets_filename.split("_")[0]  # Gets "PPN1754726119"
+
         return ppn
 
     def _find_pages(self) -> None:
@@ -145,30 +146,33 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         """
         # Find the METS file and extract PPN
         self.ppn = self._extract_ppn_from_mets()
-        
+
         # The title-level PPN is the PPN without any date-specific suffix
         # For SUB, the PPN itself serves as the title identifier
         self.title_ppn = self.ppn
-        
+
         # Get the full path to the METS file
         self.mets_file = os.path.join(
             self.path,
             [f for f in os.listdir(self.path) if f.startswith("PPN") and f.endswith(".xml")][0],
         )
-        
+
         # Parse METS to get page information and dimensions
+        # TODO replace by mets_soup = self.xml
         with open(self.mets_file, "r", encoding="utf-8") as f:
             mets_soup = BeautifulSoup(f, "xml")
-        
+
         # Extract page dimensions from techMD sections
         self._extract_page_dimensions(mets_soup)
-        
+
         # Find all page files from FULLTEXT fileGrp
         file_grp = mets_soup.find("fileGrp", {"USE": "FULLTEXT"})
         if not file_grp:
             logger.warning(f"No FULLTEXT fileGrp found in {self.mets_file}")
             return
-            
+
+        # TODO find iiif links of pages with file group IIIF & remove "/info.json" suffix
+
         page_files = []
         for file_elem in file_grp.find_all("file"):
             flocat = file_elem.find("FLocat")
@@ -184,28 +188,29 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 except (IndexError, ValueError):
                     logger.warning(f"Could not extract page number from {file_id}")
                     continue
-        
+
         # Sort by page number
         page_files.sort(key=lambda x: x[0])
-        
+
         self.pages = []
         for page_num, filename in page_files:
             page_id = f"{self.id}-p{str(page_num).zfill(4)}"
-            
+
             try:
                 # Get page dimensions (default to 3150x4743 if not found)
                 page_size = self.page_sizes.get(page_num, (3150, 4743))
-                
+
                 page = SubNewspaperPage(
                     page_id,
                     page_num,
                     filename,
                     self.path,
                     page_size,
+                    # TODO add page iiif link
                 )
                 self.pages.append(page)
                 logger.debug(f"Added page {page_num}: {page_id}")
-                
+
             except Exception as e:
                 msg = f"Adding page {page_num} {page_id} {filename} raised exception: {e}"
                 logger.error(msg)
@@ -213,16 +218,16 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
 
     def _extract_page_dimensions(self, mets_soup: BeautifulSoup) -> None:
         """Extract page dimensions from METS technical metadata.
-        
+
         Parses the techMD sections to find image width and height information
         stored in MIX format metadata.
-        
+
         Args:
             mets_soup (BeautifulSoup): Parsed METS XML document
         """
         # Find all techMD elements with IIIF or image metadata
         tech_mds = mets_soup.find_all("techMD")
-        
+
         for tech_md in tech_mds:
             tech_id = tech_md.get("ID", "")
             # Extract page number from ID (e.g., FILE_0001_IIIF_AMDT1 -> 1)
@@ -230,13 +235,13 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 page_num = int(tech_id.split("_")[1])
             except (IndexError, ValueError):
                 continue
-                
+
             # Look for image dimensions in mix:mix metadata
             mix_elem = tech_md.find("mix")
             if mix_elem:
                 width_elem = mix_elem.find("imageWidth")
                 height_elem = mix_elem.find("imageHeight")
-                
+
                 if width_elem and height_elem:
                     try:
                         width = int(width_elem.text)
@@ -248,65 +253,68 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
 
     def _extract_title_from_mets(self) -> str | None:
         """Extract newspaper title from METS metadata.
-        
+
         Searches the METS dmdSec/MODS metadata for the newspaper title.
-        
+
         Returns:
             str | None: The newspaper title, or None if not found
         """
         try:
             with open(self.mets_file, "r", encoding="utf-8") as f:
                 mets_soup = BeautifulSoup(f, "xml")
-            
+
             # Look for title in dmdSec/MODS metadata
             title_elem = mets_soup.find("title")
             if title_elem:
                 return title_elem.text.strip()
-                
+
             logger.warning(f"No title found in {self.mets_file}")
             return None
-            
+
         except Exception as e:
             logger.error(f"Error extracting title from METS: {e}")
             return None
 
     def _find_content_items(self) -> list[dict[str, Any]]:
         """Extract content items from Alto files for this issue.
-        
+
         For SUB data without OLR (Optical Layout Recognition at article level),
         we create content items for:
         1. Page-level content items containing all TextBlocks (excluding tables)
         2. Image content items for Illustration elements
         3. Table content items for TextBlocks with type="Table"
-        
+
         Each content item includes:
         - Metadata: id, type, language, page references
         - Legacy: tracking METS/ALTO component information for reconstruction
-        
+
         Returns:
             list[dict[str, Any]]: List of content item dictionaries
         """
         content_items = []
         ci_counter = 1  # Counter for images and tables after page CIs
-        
+
         # Process each page to extract content items
         for page in sorted(self.pages, key=lambda x: x.number):
             page_num_str = str(page.number).zfill(4)
             alto_file_path = os.path.join(self.path, page.filename)
-            
+
+            # TODO either alto_soup = page.xml
+            # or page.alto_doc = page.xml
             try:
+
                 with open(alto_file_path, "r", encoding="utf-8") as f:
                     alto_soup = BeautifulSoup(f, "xml")
             except Exception as e:
                 logger.error(f"Failed to parse Alto file {alto_file_path}: {e}")
                 continue
-            
+
             # Get the PrintSpace element which contains the page content
             print_space = alto_soup.find("PrintSpace")
             if not print_space:
                 logger.warning(f"No PrintSpace found in {alto_file_path}")
                 continue
-            
+
             # === 1. Create page-level content item ===
             # Collect all TextBlock elements that are NOT tables
             text_blocks = []
@@ -315,7 +323,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 block_type = text_block.get("TYPE", "")
                 if block_type.lower() != "table":
                     text_blocks.append(text_block)
-            
+
             # Create the page-level content item (type "page")
             page_ci_id = f"{self.id}-i{page_num_str}"
             page_ci = {
@@ -325,7 +333,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     "tp": "page",  # content type: page
                     "l": alto_soup.find("Page").get("language", "de"),  # language
                     # for pp take last 4 strings and turn into digits
-                    "pp": [int(page.id[-4:])]
+                    "pp": [int(page.id[-4:])],
                 },
                 # Legacy section - tracking ALTO components
                 "l": {
@@ -335,9 +343,9 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     "parts": [
                         {
                             "comp_id": tb.get("ID"),  # TextBlock ID from Alto
-                            "r": "body",  # role: body text
-                            "file_id": page.filename,  # Alto filename
-                            "pn": page.number,  # page number
+                            "comp_role": "body",  # role: body text
+                            "comp_fileid": page.filename,  # Alto filename
+                            "comp_page_no": page.number,  # page number
                         }
                         for tb in text_blocks
                         if tb.get("ID")
@@ -350,19 +358,20 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 },
             }
             content_items.append(page_ci)
-            
+
             # === 2. Create content items for Illustrations (images) ===
             for illustration in print_space.find_all("Illustration"):
                 illus_id = illustration.get("ID")
                 if not illus_id:
                     continue
-                
+
+                # here call mets_alto.alto.distill_coordinates
                 # Extract coordinates from Illustration element
                 hpos = illustration.get("HPOS")
                 vpos = illustration.get("VPOS")
                 width = illustration.get("WIDTH")
                 height = illustration.get("HEIGHT")
-                
+
                 coords = None
                 if hpos and vpos and width and height:
                     try:
@@ -374,11 +383,11 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         ]
                     except (ValueError, TypeError):
                         logger.warning(f"Invalid coordinates for Illustration {illus_id}")
-                    
+
                 # Generate unique CI ID for this image
                 ci_counter += 1
                 image_ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
-                
+
                 image_ci = {
                     # Metadata section
                     "m": {
@@ -394,9 +403,9 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         "parts": [
                             {
                                 "comp_id": illus_id,  # Illustration ID from Alto
-                                "r": "image",  # role: image
-                                "file_id": page.filename,
-                                "pn": page.number,
+                                "comp_role": "image",  # role: image
+                                "comp_fileid": page.filename,
+                                "comp_page_no": page.number,
                             }
                         ],
                         "source": os.path.basename(self.mets_file),
@@ -404,13 +413,13 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         "title_ppn": self.title_ppn,
                     },
                 }
-                
+
                 # Add coordinates if available
                 if coords:
                     image_ci["m"]["c"] = coords
-                
+
                 content_items.append(image_ci)
-            
+
             # === 3. Create content items for Tables ===
             for text_block in print_space.find_all("ComposedBlock"):
                 block_type = text_block.get("TYPE", "")
@@ -418,13 +427,13 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     table_id = text_block.get("ID")
                     if not table_id:
                         continue
-                    
+
                     # Extract coordinates from ComposedBlock element
                     hpos = text_block.get("HPOS")
                     vpos = text_block.get("VPOS")
                     width = text_block.get("WIDTH")
                     height = text_block.get("HEIGHT")
-                    
+
                     coords = None
                     if hpos and vpos and width and height:
                         try:
@@ -436,11 +445,11 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                             ]
                         except (ValueError, TypeError):
                             logger.warning(f"Invalid coordinates for table {table_id}")
-                    
+
                     # Generate unique CI ID for this table
                     ci_counter += 1
                     table_ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
-                    
+
                     table_ci = {
                         # Metadata section
                         "m": {
@@ -457,9 +466,9 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                             "parts": [
                                 {
                                     "comp_id": table_id,  # TextBlock ID from Alto
-                                    "r": "table",  # role: table
-                                    "file_id": page.filename,
-                                    "pn": page.number,
+                                    "comp_role": "table",  # role: table
+                                    "comp_fileid": page.filename,
+                                    "comp_page_no": page.number,
                                 }
                             ],
                             "source": os.path.basename(self.mets_file),
@@ -467,40 +476,43 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                             "title_ppn": self.title_ppn,
                         },
                     }
-                    
+
                     # Add coordinates if available
                     if coords:
                         table_ci["m"]["c"] = coords
-                    
+
                     content_items.append(table_ci)
-        
-        logger.info(
+
+        msg = (
             f"Created {len(content_items)} content items for issue {self.id}: "
             f"{sum(1 for ci in content_items if ci['m']['tp'] == 'page')} pages, "
             f"{sum(1 for ci in content_items if ci['m']['tp'] == 'image')} images, "
             f"{sum(1 for ci in content_items if ci['m']['tp'] == 'table')} tables"
         )
-        
+        logger.debug(msg)
+        if logger.level == logging.debug:
+            print(msg)
+
         return content_items
 
     def _parse_mets(self) -> None:
         """Parse METS file to extract issue-level metadata and create content items.
-        
+
         This method:
         1. Extracts the newspaper title from METS metadata
         2. Creates content items by parsing Alto files (page CIs, images, tables)
         3. Constructs the issue_data dictionary according to canonical format
-        
+
         Note: SUB format has minimal logical structure in METS, so content items
         are primarily extracted from Alto XML files at the page level.
         """
         # Extract title from METS
         self.title = self._extract_title_from_mets()
-        
+
         # Extract content items from Alto files
         # This creates page-level CIs, image CIs, and table CIs
         content_items = self._find_content_items()
-        
+
         # Construct the issue data according to canonical format
         self.issue_data = {
             "id": self.id,
@@ -514,11 +526,11 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
             "iiif_manifest_uri": f"{IIIF_ENDPOINT_URI}{self.ppn}{IIIF_MANIFEST_SUFFIX}",
             "n": self._notes,
         }
-        
+
         # Add title if available
         if self.title:
             self.issue_data["t"] = self.title
-            
+
         logger.info(
             f"Parsed issue {self.id}: {len(self.pages)} pages, "
             f"{len(content_items)} content items, "
