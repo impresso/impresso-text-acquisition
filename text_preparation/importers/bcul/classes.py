@@ -7,11 +7,17 @@ the ABBYY format to a unified canoncial format.
 import codecs
 import logging
 import os
+import time
 from time import strftime
 from typing import Any
+import json
 
 import requests
 from bs4 import BeautifulSoup, Tag
+
+import certifi, urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from impresso_essentials.utils import SourceMedium, SourceType, timestamp
 from text_preparation.importers.bcul.helpers import (
@@ -59,10 +65,20 @@ class BculNewspaperPage(CanonicalPage):
         iiif_base_uri (str): URI to image IIIF of this page.
     """
 
-    def __init__(self, _id: str, number: int, page_path: str, iiif_uri: str) -> None:
+    def __init__(
+        self,
+        _id: str,
+        number: int,
+        page_path: str,
+        iiif_uri: str,
+        width: int | None = None,
+        height: int | None = None,
+    ) -> None:
         super().__init__(_id, number)
         self.path = page_path
         self.iiif_base_uri = iiif_uri
+        self.width = width
+        self.height = height
         self.page_data = {
             "id": _id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
@@ -72,6 +88,11 @@ class BculNewspaperPage(CanonicalPage):
             "r": [],  # here go the page regions
             "iiif_img_base_uri": iiif_uri,
         }
+
+        # # Add width and height if available
+        if self.width is not None and self.height is not None:
+            self.page_data["fw"] = self.width
+            self.page_data["fh"] = self.height
 
     @property
     def xml(self) -> BeautifulSoup | None:
@@ -171,6 +192,8 @@ class BculNewspaperIssue(CanonicalIssue):
         )
         self.content_items = []
 
+        self.iiif_canvases = self.query_iiif_api()
+
         self._find_pages()
         self._find_content_items()
 
@@ -201,7 +224,9 @@ class BculNewspaperIssue(CanonicalIssue):
         page_identifier = os.path.basename(page_path).split(".")[0]
         return os.path.join(IIIF_IMG_BASE_URI, page_identifier)
 
-    def query_iiif_api(self, num_tries: int = 0, max_retries: int = 3) -> dict[str, Any]:
+    def query_iiif_api(
+        self, num_tries: int = 0, max_retries: int = 3, sleep_seconds: int = 2
+    ) -> dict[str, Any]:
         """Query the Scriptorium IIIF API for the issue's manifest data.
 
         TODO: implement the retry approach with `celery` package or similar.
@@ -218,9 +243,18 @@ class BculNewspaperIssue(CanonicalIssue):
         """
         try:
             logger.info("Submitting request to iiif API for %s: %s", self.id, self.iiif_manifest)
-            response = requests.get(self.iiif_manifest, timeout=60)
+            response = requests.get(self.iiif_manifest, timeout=60, verify=False)
+            data = response.json()
             if response.status_code == 200:
-                return response.json()["sequences"][0]["canvases"]
+                if "sequences" in data and data["sequences"]:
+                    return data["sequences"][0]["canvases"]
+                elif "items" in data and data["items"]:
+                    return data["items"]
+                else:
+                    msg = (
+                        f"{self.id}: IIIF manifest format not recognized. Keys: {list(data.keys())}"
+                    )
+                    raise requests.exceptions.HTTPError(msg)
 
             if response.status_code == 404:
                 msg = (
@@ -237,6 +271,9 @@ class BculNewspaperIssue(CanonicalIssue):
             msg += f" Retrying {3-num_tries} times."
             logger.error(msg)
             return self.query_iiif_api(num_tries + 1)
+            # logger.info("Retrying in %s seconds... (%s/%s)", sleep_seconds, num_tries + 1, max_retries)
+            # time.sleep(sleep_seconds)
+            # return self.query_iiif_api(num_tries + 1, max_retries, sleep_seconds)
 
         msg += f" Max number of retries reached, {self.id} will not be processed."
         logger.error(msg)
@@ -255,19 +292,50 @@ class BculNewspaperIssue(CanonicalIssue):
         Returns:
             str | None: IIIF image base uri (no suffix) if found in manifest else None.
         """
-        page_canvas = canvases[page_number - 1]
-        page_canvas_num = int(page_canvas["label"])
-        if page_canvas_num != page_number:
-            for c in canvases.items():
-                page_canvas = None
-                if c["label"] == page_number:
-                    page_canvas = c
-                    break
+
+        page_canvas = None
+
+        for c in canvases:
+            label = c.get("label")
+
+            # IIIF v3: {"en": ["Page 1"]}
+            if isinstance(label, dict):
+                label_val = next(iter(label.values()))[0] if label.values() else None
+
+            # IIIF v2: "1" or "Page 1"
+            else:
+                label_val = label
+            if label_val:
+                try:
+                    num_in_label = int("".join(ch for ch in str(label_val) if ch.isdigit()))
+                except ValueError:
+                    num_in_label = None
+            else:
+                num_in_label = None
+
+            if num_in_label == page_number:
+                page_canvas = c
+                break
+
         if page_canvas is None:
-            logger.warning("%s: Page %s will not be included.", self.id, page_number)
+            logger.warning("%s: Page %s not found in IIIF manifest.", self.id, page_number)
             return None
 
-        iiif = page_canvas["images"][0]["resource"]["@id"]
+        # --- IIIF v2 or v3: extract the image URL ---
+        if "images" in page_canvas:  # IIIF v2
+            iiif = page_canvas["images"][0]["resource"]["@id"]
+        elif "items" in page_canvas:  # IIIF v3
+            # In v3, each canvas has items -> annotations -> body -> id
+            try:
+                iiif = page_canvas["items"][0]["items"][0]["body"]["id"]
+            except Exception as e:
+                logger.error("Could not extract IIIF image for page %s: %s", page_number, e)
+                return None
+        else:
+            logger.error("No IIIF image data found for page %s.", page_number)
+            return None
+
+        # Return image base URI (remove suffix)
         return "/".join(iiif.split("/")[:-4])
 
     def _find_pages_xml(self) -> None:
@@ -284,9 +352,6 @@ class BculNewspaperIssue(CanonicalIssue):
         with open(self.mit_file, encoding="utf-8") as f:
             mit = BeautifulSoup(f, "xml")
 
-        # fetch the issue's iiif manifest
-        iiif_canvases = self.query_iiif_api()
-
         pages = sorted([os.path.basename(x.get("xml")) for x in mit.findAll("image")])
         for p in pages:
             found = False
@@ -297,7 +362,7 @@ class BculNewspaperIssue(CanonicalIssue):
                     page_path = os.path.join(self.path, f)
                     page_no = int(f.split(".")[0].split("_")[-1])
                     page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
-                    page_iiif = self._get_iiif_link_xml(page_no, iiif_canvases)
+                    page_iiif = self._get_iiif_link_xml(page_no, self.iiif_canvases)
                     if page_iiif is None:
                         logger.error(
                             "%s: No iiif link found for Page %s on API (manifest: %s)",
@@ -306,7 +371,25 @@ class BculNewspaperIssue(CanonicalIssue):
                             self.iiif_manifest,
                         )
                         continue
-                    page = BculNewspaperPage(page_id, page_no, page_path, page_iiif)
+                    
+                    canvas = self.iiif_canvases[page_no - 1]
+                    width = canvas.get("width")
+                    height = canvas.get("height")
+                    if width is None or height is None:
+                        try:
+                            ann_body = canvas["items"][0]["items"][0]["body"]
+                            width = width or ann_body.get("width")
+                            height = height or ann_body.get("height")
+                        except (KeyError, IndexError, TypeError):
+                            pass
+                    if width is None or height is None:
+                        logger.warning(
+                            "%s: Width or height missing for Page %s on IIIF manifest.",
+                            self.id,
+                            page_no,
+                        )
+
+                    page = BculNewspaperPage(page_id, page_no, page_path, page_iiif, width, height)
                     self.pages.append(page)
                     found = True
             if not found:
@@ -330,6 +413,13 @@ class BculNewspaperIssue(CanonicalIssue):
         ]
 
         for f in files:
+
+            with open(f, "r", encoding="utf-8") as jf:
+                exif_list = json.load(jf)
+            exif_data = exif_list[0]
+            jpeg_info = exif_data.get("Jpeg2000", {})
+            width = jpeg_info.get("ImageWidth")
+            height = jpeg_info.get("ImageHeight")
             # Page file is the same name without `_exif`
             file_id = os.path.splitext(os.path.basename(f))[0].replace("_exif", "")
             # check the page xml file exists
@@ -342,7 +432,7 @@ class BculNewspaperIssue(CanonicalIssue):
             page_no = get_page_number(f)
             page_id = "{}-p{}".format(self.id, str(page_no).zfill(4))
             page_iiif = self._get_iiif_link_json(page_path)
-            page = BculNewspaperPage(page_id, page_no, page_path, page_iiif)
+            page = BculNewspaperPage(page_id, page_no, page_path, page_iiif, width, height)
             self.pages.append(page)
 
     def _find_pages(self) -> None:
@@ -356,53 +446,138 @@ class BculNewspaperIssue(CanonicalIssue):
         elif self.is_xml:
             self._find_pages_xml()
 
-    def _find_content_items(self) -> None:
-        """Find the various content items in this Newspaper issue.
 
-        In the BCUL Format, articles are not segmented, but tables and pictures
-        are. As a result, each page is a content item, as well as the tables
-        and pictures that were segmented.
+    def _find_content_items(self) -> None:
+        """Find all content items (pages, images, tables) in this Newspaper issue.
+
+        - Loops once over all pages.
+        - Each page gets one content item with all text block IDs in comp_id.
+        - Each image/table block on that page gets its own content item.
+        - Adds 'issue_id' and 'page_id' in legacy metadata.
         """
-        # First add the pages as content items
-        for n, page in enumerate(sorted(self.pages, key=lambda x: x.number)):
-            ci_id = self.id + "-i" + str(n + 1).zfill(4)
-            ci = {
+        mit_basename = os.path.basename(self.mit_file) if self.mit_file else None
+
+        # Extract numeric issue_id from IIIF manifest URL
+        issue_id = None
+        try:
+            issue_id = int(self.iiif_manifest.split("/")[-2])
+        except Exception:
+            logger.warning("Could not extract issue_id from manifest %s", self.iiif_manifest)
+
+        canvas_id_map = {}
+        for canvas in self.iiif_canvases:
+            canvas_url = canvas.get("id") or canvas.get("@id")
+            if not canvas_url:
+                continue
+            try:
+                page_num = None
+                label = canvas.get("label")
+                if isinstance(label, dict):  # IIIF v3
+                    label_val = next(iter(label.values()))[0]
+                else:
+                    label_val = label
+                if label_val:
+                    page_num = int("".join(ch for ch in str(label_val) if ch.isdigit()))
+                page_id_num = int(canvas_url.split("/")[-1])
+                if page_num:
+                    canvas_id_map[page_num] = page_id_num
+            except Exception:
+                continue
+
+        # Loop once on all pages
+        ci_counter = 1
+        ci_counter_intern = 0
+        nb_pages = len(self.pages)
+
+        for page in sorted(self.pages, key=lambda x: x.number):
+            page_file_basename = (
+                os.path.basename(page.path) if getattr(page, "path", None) else None
+            )
+            # ---- PAGE CONTENT ITEM ----
+            page_xml = page.xml
+            text_blocks = page_xml.findAll("block", {"blockType": "Text"})
+            text_ids = [tb.get("pageElemId") for tb in text_blocks if tb.get("pageElemId")]
+
+            page_ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
+            page_id = canvas_id_map.get(page.number)
+
+            legacy_page = {
+                "issue_id": issue_id,
+                "page_id": page_id,
+                "parts": [
+                    {
+                        "comp_role": "text blocks",
+                        "comp_id": text_ids,  # list of text block IDs
+                        "comp_fileid": page_file_basename,
+                        "comp_page_no": page.number,
+                    }
+                ],
+                "source": mit_basename,
+            }
+
+            page_ci = {
                 "m": {
-                    "id": ci_id,
+                    "id": page_ci_id,
                     "pp": [page.number],
                     "tp": "page",
-                }
+                },
+                "l": legacy_page,
             }
-            self.content_items.append(ci)
+            self.content_items.append(page_ci)
 
-        # TODO - Add legacy!! (Scriptorium Issue # and page # inside legacy)
+            counter_temp = 0
+            
+            ci_divs = page_xml.findAll("block", {"blockType": lambda x: x in BCUL_CI_TYPES})
 
-        n = len(self.content_items) + 1
-        # Get all images and tables
-        for p in sorted(self.pages, key=lambda x: x.number):
-            # Get page
-            page_cis = [(div.get("blockType"), get_div_coords(div)) for div in p.get_ci_divs()]
-            # Sort by coordinates
-            for div_type, coords in sorted(page_cis, key=lambda x: x[1]):
-                ci_id = self.id + "-i" + str(n).zfill(4)
+            for div_tag in ci_divs:
+                block_type = div_tag.get("blockType")
+                coords = get_div_coords(div_tag)
+                ci_type = BCUL_CI_TRANSLATION.get(block_type, "unknown")
+                comp_id = div_tag.get("pageElemId")
+                add_nb = ci_counter + nb_pages + ci_counter_intern + counter_temp
+                ci_id = f"{self.id}-i{str(add_nb).zfill(4)}"
+
+                part = {
+                    "comp_role": ci_type,
+                    "comp_fileid": page_file_basename,
+                    "comp_page_no": page.number,
+                }
+                # don't define the comp_id if it's None (does not pass schema validation)
+                if comp_id:
+                    part["comp_id"] = comp_id
+
+                if coords:
+                    part["coords"] = coords
+
+                legacy = {
+                    # "file_id": file_id,
+                    "issue_id": issue_id,
+                    "page_id": canvas_id_map.get(page.number),
+                    "parts": [part],
+                    "source": mit_basename,
+                }
 
                 ci = {
                     "m": {
                         "id": ci_id,
-                        "pp": [p.number],
-                        "tp": BCUL_CI_TRANSLATION[div_type],
+                        "pp": [page.number],
+                        "tp": ci_type,
                     },
+                    "l": legacy,
                 }
 
-                # Content item is an image
-                if ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
-                    ci["m"]["iiif_link"] = os.path.join(p.iiif_base_uri, IIIF_SUFFIX)
+                if ci_type == CONTENTITEM_TYPE_IMAGE and coords:
                     ci["c"] = coords
+                    if getattr(page, "iiif_base_uri", None):
+                        ci["m"]["iiif_link"] = os.path.join(page.iiif_base_uri, IIIF_SUFFIX)
 
                 self.content_items.append(ci)
-                n += 1
+                counter_temp += 1
 
-        # once the pages are added to the metadata, compute & add the reading order
+            ci_counter_intern += counter_temp - 1
+            ci_counter += 1
+
+        # ---- ADD READING ORDER ----
         reading_order_dict = get_reading_order(self.content_items)
         for item in self.content_items:
             item["m"]["ro"] = reading_order_dict[item["m"]["id"]]

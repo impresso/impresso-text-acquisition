@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.todo",
+    "sphinx_rtd_theme",
 ]
 
 autoclass_content = "both"

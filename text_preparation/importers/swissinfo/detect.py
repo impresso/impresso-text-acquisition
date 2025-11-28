@@ -41,7 +41,7 @@ Args:
     date=datetime.date(1940, 07, 22), 
     edition='a', 
     path='./SOC_CJ/1940/07/22/a', 
-    metadata_file='../data/sample_data/SWISSINFO/bulletins_metadata.json'
+    metadata_file='../data/sample_data/SWISSINFO/SOC_rb_metadata.json'
 )
 """
 

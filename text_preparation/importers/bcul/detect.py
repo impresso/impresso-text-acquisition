@@ -49,7 +49,8 @@ Args:
 # issues that lead to HTTP response 404. Skipping them altogether.
 # These issues are often dublicates of issues for which the API works
 # In addition, it was found that some issues were listed with wrong dates.
-ALIASES_FILEPATH = "../data/sample_data/BCUL/access_rights_and_aliases.json"
+# OLD_ALIASES_FILEPATH = "../data/sample_data/BCUL/access_rights_and_aliases.json"
+ALIASES_FILEPATH = "/rcp-scratch/iccluster040_scratch/students/banuls/impresso-text-acquisition/text_preparation/data/sample_data/BCUL/bcul_aliases.json"
 FAULTY_ISSUES = [
     "127626",
     "127627",
@@ -90,27 +91,40 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
         logger.error("Could not find MIT file in %s", path)
         return None
 
-    if not mit_file.endswith(journal_info["file_type"]):
-        logger.warning(
-            "Found mit file %s does not correspond to mit file type %s",
-            os.path.join(path, mit_file),
-            journal_info["file_type"],
-        )
-        # override the mit file type if the extension of the file found does not match
-        journal_info["file_type"] = mit_file.split(".")[-1]
+    mit_ext = mit_file.split(".")[-1]
+    expected_ext = journal_info["mit_file_type"]
+
+    msg = f"mit file ends with: {mit_file}, {mit_ext}, (expected: {expected_ext})"
+    logger.debug(msg)
+
+    # --- handle 'both' case ---
+    if expected_ext == "both":
+        if mit_ext not in ("xml", "json"):
+            logger.warning(
+                "Found mit file %s has unexpected extension %s, expected 'xml' or 'json'",
+                os.path.join(path, mit_file),
+                mit_ext,
+            )
+            # accept either format without changing journal_info
+    else:
+        # --- normal case ---
+        if not mit_file.endswith(journal_info["mit_file_type"]):
+            logger.warning(
+                "Found mit file %s does not correspond to mit file type %s",
+                os.path.join(path, mit_file),
+                expected_ext,
+            )
+            # override the mit file type if the extension of the file found does not match
+            journal_info["mit_file_type"] = "/".join([journal_info["mit_file_type"], mit_ext])
 
     date = parse_date(mit_file)
 
     # check if multiple issues are at this date:
     day_dir = os.path.dirname(path)
     day_editions = list(os.listdir(day_dir))
-    day_editions = [
-        str(i)
-        for i in os.listdir(day_dir)
-        if i not in FAULTY_ISSUES and i not in CORRECT_ISSUE_DATES and i != ".DS_Store"
-    ]
+    day_editions = [str(i) for i in os.listdir(day_dir) if i != ".DS_Store"]
 
-    if len(day_editions) > 1 and os.path.basename(path) not in CORRECT_ISSUE_DATES:
+    if len(day_editions) > 1:
         # if multiple issues exist for a given day, find the correct edition
         logger.info("Multiple issues for %s, finding the edition", day_dir)
         # exclude incorrect issues from the list
@@ -120,16 +134,18 @@ def dir2issue(path: str, journal_info: dict[str, str]) -> BculIssueDir | None:
         edition = "a"
 
     return BculIssueDir(
-        provider="BL",
+        provider="BCUL",
         alias=journal_info["alias"],
         date=date,
         edition=edition,
         path=path,
-        mit_file_type=journal_info["file_type"],
+        mit_file_type=mit_ext,
     )
 
 
-def detect_issues(base_dir: str) -> list[BculIssueDir]:
+def detect_issues(
+    base_dir: str, aliases_to_consider: set = None, aliases_to_exclude: list = None
+) -> list[BculIssueDir]:
     """Detect BCUL newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BCUL used to
@@ -147,34 +163,39 @@ def detect_issues(base_dir: str) -> list[BculIssueDir]:
 
     dir_path, dirs, files = next(os.walk(base_dir))
 
-    journal_dirs = [
-        os.path.join(dir_path, _dir)
+    journal_dirs = {
+        alias_mapping[_dir]["alias"]: os.path.join(dir_path, _dir)
         for _dir in dirs
         if _dir not in ["OLD", "wrong_BCUL", ".DS_Store"] and _dir in alias_mapping
-    ]
-
-    if "La_Veveysanne__La_Patrie" in os.listdir(dir_path):
-        # for the case of 'La_Veveysanne__La_Patrie' add them also
-        vvs_pat_base_dir = os.path.join(dir_path, "La_Veveysanne__La_Patrie")
-        vvs_pat_dirs = [
-            os.path.join(vvs_pat_base_dir, _dir)
-            for _dir in os.listdir(vvs_pat_base_dir)
-            if ".DS_Store" not in _dir and _dir in alias_mapping
-        ]
-        journal_dirs.extend(vvs_pat_dirs)
+    }
+    
+    if "La_Veveysanne_–_La_Patrie" in dirs:
+        if "VVS" in aliases_to_consider:
+            journal_dirs.update({"VVS": os.path.join(dir_path, "La_Veveysanne_–_La_Patrie/La_Veveysanne")})
+        if 'PAT' in aliases_to_consider:
+            journal_dirs.update({"PAT": os.path.join(dir_path, "La_Veveysanne_–_La_Patrie/La_Patrie")})
 
     issue_dirs = []
-    for journal in journal_dirs:
-        logger.info("Detecting issues for %s.", journal)
-        for dir_path, dirs, files in os.walk(journal):
-            title = journal.split("/")[-1]
-            # check if we are in the directory of a (valid) issue
-            if (
-                len(files) > 1
-                and "solr" not in dir_path
-                and os.path.basename(dir_path) not in FAULTY_ISSUES
-            ):
-                issue_dirs.append(dir2issue(dir_path, alias_mapping[title]))
+    for alias, journal in journal_dirs.items():
+        logger.info(f"alias: {alias}, journal: {journal}")
+        if (aliases_to_consider and alias in aliases_to_consider) or (
+            aliases_to_exclude and alias not in aliases_to_exclude
+        ):
+            logger.info("Detecting issues for %s.", journal)
+            for dir_path, dirs, files in os.walk(journal):
+                title = journal.split("/")[-1]
+                # check if we are in the directory of a (valid) issue
+                if (
+                    len(files) > 1
+                    and "solr" not in dir_path
+                    and os.path.basename(dir_path) not in FAULTY_ISSUES
+                ):
+                    issue_dirs.append(dir2issue(dir_path, alias_mapping[title]))
+
+                    if "/" in alias_mapping[title]["mit_file_type"]:
+                        alias_mapping[title]["mit_file_type"] = "both"
+        else:
+            logger.debug(f"Skipping alias {alias} since it's not in aliases to consider.")
 
     return issue_dirs
 
@@ -207,7 +228,7 @@ def select_issues(base_dir: str, config: dict) -> list[BculIssueDir] | None:
         )
         return
 
-    issues = detect_issues(base_dir)
+    issues = detect_issues(base_dir, filter_dict.keys(), exclude_list)
     issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
