@@ -36,6 +36,7 @@ Args:
 """
 
 
+# TODO @coralie --> update and adapt to a case where we already have all the paths
 def dir2issue(path: str) -> LuxIssueDir:
     """Create a `LuxIssueDir` from a directory (BNL format).
 
