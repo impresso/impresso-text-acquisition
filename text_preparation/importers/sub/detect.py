@@ -109,61 +109,62 @@ def detect_issues(
     Returns:
         list[SubIssueDir]: List of `SubIssueDir` instances to import.
     """
-    issues = []
     # Dictionary to track multiple issues per day: {(alias, date): [issues]}
     issues_per_day = {}
 
-    # alias_dir = base_dir/alias_subdir
-    # Walk through the directory structure
-    for root, dirs, files in os.walk(base_dir):
+    # First, list alias directories in base_dir
+    try:
+        alias_dirs = [d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d))]
+    except OSError as e:
+        logger.error(f"Failed to list base directory {base_dir}: {e}")
+        return []
 
-        # Check if this directory contains a METS XML file (indicates an issue)
-        mets_files = [f for f in files if f.endswith(".xml") and "PPN" in f]
+    # Apply alias filters early
+    if alias_filter:
+        alias_dirs = [a for a in alias_dirs if a in alias_filter]
+    if exclude_list:
+        alias_dirs = [a for a in alias_dirs if a not in exclude_list]
 
-        if mets_files:
-            # This appears to be an issue directory
-            issue = dir2issue(root)
+    # Walk through each alias directory
+    for alias in alias_dirs:
+        alias_path = os.path.join(base_dir, alias)
+        
+        for root, dirs, files in os.walk(alias_path):
+            # Check if this directory contains a METS XML file (indicates an issue)
+            mets_files = [f for f in files if f.endswith(".xml") and "PPN" in f]
 
-            if issue is None:
-                continue
+            if mets_files:
+                # This appears to be an issue directory
+                issue = dir2issue(root)
 
-            # Apply filters
-            if alias_filter and issue.alias not in alias_filter:
-                logger.debug(f"Skipping {issue.alias} - not in alias filter")
-                continue
+                if issue is None:
+                    continue
 
-            if exclude_list and issue.alias in exclude_list:
-                logger.debug(f"Skipping {issue.alias} - in exclude list")
-                continue
+                # Group issues by alias and date to handle multiple editions per day
+                day_key = (issue.alias, issue.date)
+                if day_key not in issues_per_day:
+                    issues_per_day[day_key] = []
+                issues_per_day[day_key].append(issue)
 
-            # Group issues by alias and date to handle multiple editions per day
-            day_key = (issue.alias, issue.date)
-            if day_key not in issues_per_day:
-                issues_per_day[day_key] = []
-            issues_per_day[day_key].append(issue)
-
-    # Process issues: assign correct editions when multiple issues exist for the same day
+    # Process and finalize issues in a single pass
+    issues = []
     for day_key, day_issues in issues_per_day.items():
-        if len(day_issues) == 1:
-            # Single issue for this day - keep edition as is
-            issues.extend(day_issues)
-        else:
-            # Multiple issues for the same day - assign editions based on alphabetical order
-            # Sort by the full path to ensure consistent ordering
-            sorted_issues = sorted(day_issues, key=lambda x: x.path)
+        # Sort by the full path to ensure consistent ordering
+        sorted_issues = sorted(day_issues, key=lambda x: x.path)
 
-            # Reassign editions: a, b, c, etc.
-            for idx, issue in enumerate(sorted_issues):
-                edition_letter = chr(97 + idx)  # 97 is ASCII for 'a'
-                # Create a new SubIssueDir with the corrected edition
-                corrected_issue = SubIssueDir(
-                    provider=issue.provider,
-                    alias=issue.alias,
-                    date=issue.date,
-                    edition=edition_letter,
-                    path=issue.path,
-                )
-                issues.append(corrected_issue)
+        # Assign editions: a, b, c, etc. based on sorted order
+        for idx, issue in enumerate(sorted_issues):
+            edition_letter = chr(97 + idx)  # 97 is ASCII for 'a'
+            # Create a new SubIssueDir with the corrected edition
+            corrected_issue = SubIssueDir(
+                provider=issue.provider,
+                alias=issue.alias,
+                date=issue.date,
+                edition=edition_letter,
+                path=issue.path,
+            )
+            issues.append(corrected_issue)
+            if len(sorted_issues) > 1:
                 logger.debug(
                     f"Found issue: {corrected_issue.alias} - {corrected_issue.date} - "
                     f"edition {corrected_issue.edition} (reassigned from multiple issues per day)"
