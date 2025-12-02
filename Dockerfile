@@ -1,5 +1,5 @@
 # Set base image
-FROM daskdev/dask:2023.11.0-py3.11
+FROM daskdev/dask:2024.09.0-py3.11
 
 # Set environment variables for user
 ENV GROUP_NAME=DHLAB-unit
@@ -63,7 +63,7 @@ EXPOSE 8787
 # Set the working directory
 WORKDIR /home/$USER_NAME/impresso-text-acquisition
 
-# Add local impresso_pycommons
+# Add local impresso_text_acquisition
 COPY . .
 
 # Change ownership of the copied files to the new user and group
@@ -72,9 +72,10 @@ RUN chown -R ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/impresso-text-acquisi
 # Switch to the new user
 USER $USER_NAME
 
-RUN pip install -e .
+RUN pip install .
 
 # Make sure the script launching the rebuilt is executable
-RUN chmod -x /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh
+RUN chmod -x /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh > /rcp-scratch/iccluster040_scratch/piconti/impresso/all_logs/text_prep/rebuilt_logs/failed_or_done_process.log
 
-CMD ["sleep", "infinity"]
+# sleep for 3 days (to sensure I have the time to check the run)
+CMD ["sleep", "259200"]
