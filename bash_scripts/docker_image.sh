@@ -9,6 +9,6 @@ docker buildx build . -t $image_name --platform linux/amd64 --build-arg USER_NAM
 
 #docker run $image_name pip freeze
 
-docker tag $image_name ic-registry.epfl.ch/dhlab/$image_name
+docker tag $image_name registry.rcp.epfl.ch/impresso/$image_name
 
-docker push ic-registry.epfl.ch/dhlab/$image_name
+docker push registry.rcp.epfl.ch/impresso/$image_name
