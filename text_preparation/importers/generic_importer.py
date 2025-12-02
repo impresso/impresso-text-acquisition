@@ -128,6 +128,7 @@ def apply_detect_func(
     Returns:
         list[IssueDir]: List of detected issues for this importer.
     """
+    print("In DETECT issues of generic importer WARNING!!!")
     if issue_class is BlOmniNewspaperIssue:
         return detect_func(input_dir, format="OmniPage-NLP")
     else:
@@ -154,6 +155,7 @@ def apply_select_func(
     Returns:
         list[IssueDir]: List of selected issues for this importer and config.
     """
+    print("In select issues of generic importer")
     if issue_class is BlOmniNewspaperIssue:
         return select_func(input_dir, config=config, ocr_format="OmniPage-NLP")
     # TODO add other BL importers
