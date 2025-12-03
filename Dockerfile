@@ -75,14 +75,14 @@ USER $USER_NAME
 RUN pip install .
 
 # debug print:
-RUN echo /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh
+#RUN echo /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh
 
 #RUN ls /rcp-scratch/iccluster040_scratch/piconti
 
 #RUN ls /rcp-scratch/piconti
 
 # Make sure the script launching the rebuilt is executable
-RUN chmod -x /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh 
+RUN chmod -x /rcp-scratch/${USER_NAME}/impresso/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh 
 #> /rcp-scratch/iccluster040_scratch/piconti/impresso/all_logs/text_prep/rebuilt_logs/failed_or_done_process.log
 
 # sleep for 3 days (to sensure I have the time to check the run)
