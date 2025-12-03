@@ -1,5 +1,5 @@
 # Set base image
-FROM daskdev/dask:2024.09.0-py3.11
+FROM daskdev/dask:2025.11.0-py3.11
 
 # Set environment variables for user
 ENV GROUP_NAME=DHLAB-unit
