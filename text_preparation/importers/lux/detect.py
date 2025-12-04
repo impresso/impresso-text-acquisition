@@ -1,6 +1,7 @@
 """This module contains helper functions to find BNL OCR data to be imported."""
 
 import logging
+import json
 import os
 from collections import namedtuple
 from datetime import date
@@ -11,6 +12,8 @@ from text_preparation.importers.detect import _apply_datefilter
 logger = logging.getLogger(__name__)
 
 EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
+
+JSON_FILE = "impresso-text-acquisition/text_preparation/data/sample_data/BNL/bnl_metadata.json"
 
 LuxIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
@@ -35,6 +38,54 @@ Args:
 >>> i = LuxIssueDir('BNL','armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/')
 """
 
+def entry_to_issue(alias: str, entry: dict) -> LuxIssueDir:
+    """
+    Convert one JSON entry into a LuxIssueDir.
+    Example of entry:
+        { "date": "1904-01-17", "local_path": "/mnt/.../1904-01-17_01" }
+    """
+    y, m, d = map(int, entry["date"].split("-"))
+
+    # Detect edition from local_path (optional)
+    # Example folder: 1904-01-17_01 → edition = 'a'
+    edition = "a"
+    base = os.path.basename(entry["local_path"])
+    if "_" in base:
+        suffix = base.split("_")[-1]
+        if suffix.isdigit() and int(suffix) > 1:
+            # map 2 → 'b', 3 → 'c', ...
+            edition = EDITIONS_MAPPINGS.get(int(suffix), "a")
+
+    return LuxIssueDir(
+        provider="BNL",
+        alias=alias,
+        date=date(y, m, d),
+        edition=edition,
+        path=entry["local_path"],
+    )
+
+def load_issues_from_json(json_path: str) -> list[LuxIssueDir]:
+    """Load the full list of BNL issues from the precomputed JSON file.
+    JSON structure:
+    {
+       "alias1": [ {"date": "...", "local_path": "..."} ],
+       "alias2": [ ... ]
+    }
+    Args:
+        json_path (str): Path to the JSON file.
+
+    Returns:
+        list[LuxIssueDir]: List of `LuxIssueDir` instances.
+    """
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    issues = []
+    for alias, entries in data.items():
+        for entry in entries:
+            issues.append(entry_to_issue(alias, entry))
+
+    return issues
 
 # TODO @coralie --> update and adapt to a case where we already have all the paths
 def dir2issue(path: str) -> LuxIssueDir:
@@ -74,15 +125,17 @@ def detect_issues(base_dir: str) -> list[LuxIssueDir]:
     Returns:
         list[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
     """
-    dir_path, dirs, _ = next(os.walk(base_dir))
-    batches_dirs = [os.path.join(dir_path, dir) for dir in dirs]
-    issue_dirs = [
-        os.path.join(batch_dir, dir)
-        for batch_dir in batches_dirs
-        for dir in os.listdir(batch_dir)
-        if "newspaper" in dir
-    ]
-    return [dir2issue(_dir) for _dir in issue_dirs]
+    # dir_path, dirs, _ = next(os.walk(base_dir))
+    # batches_dirs = [os.path.join(dir_path, dir) for dir in dirs]
+    # issue_dirs = [
+    #     os.path.join(batch_dir, dir)
+    #     for batch_dir in batches_dirs
+    #     for dir in os.listdir(batch_dir)
+    #     if "newspaper" in dir
+    # ]
+    # return [dir2issue(_dir) for _dir in issue_dirs]
+    
+    return load_issues_from_json(JSON_FILE)
 
 
 def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:

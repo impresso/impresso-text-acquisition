@@ -65,6 +65,8 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
         encoding (str, optional): Encoding of XML file.
     """
 
+    # TODO add __init__ function to initialize attributes if needed
+    
     def _parse_font_styles(self) -> None:
         """Parse section `<TextStyle>` of the XML file to extract the fonts."""
         style_divs = self.xml.findAll("TextStyle")
@@ -150,6 +152,8 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
     """
 
+    # TODO add __init__ function to initialize attributes if needed
+    
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
