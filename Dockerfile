@@ -8,6 +8,10 @@ ENV GROUP_ID=11703
 ARG USER_NAME
 ARG USER_ID
 
+# Set environment variables for user
+ENV USER_NAME=USER_NAME
+ENV USER_ID=USER_ID
+
 # Install build tools and libraries
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -82,7 +86,7 @@ RUN pip install .
 #RUN ls /rcp-scratch/piconti
 
 # Make sure the script launching the rebuilt is executable
-RUN chmod -x /rcp-scratch/${USER_NAME}/impresso/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh 
+#RUN chmod -x /rcp-scratch/${USER_NAME}/impresso/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh 
 #> /rcp-scratch/iccluster040_scratch/piconti/impresso/all_logs/text_prep/rebuilt_logs/failed_or_done_process.log
 
 # sleep for 3 days (to sensure I have the time to check the run)

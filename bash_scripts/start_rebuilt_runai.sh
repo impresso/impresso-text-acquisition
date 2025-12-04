@@ -5,16 +5,19 @@
 # "/home/$USER_NAME/dhlab-data/data/$USER_NAME-data/config_rebuilt_runai.sh" (or other provided script) for the various configuartions necessary.
 
 # Default number of workers
-DEFAULT_WORKERS='64'
+export DEFAULT_WORKERS='64'
 # Default config script
-DEFAULT_CONFIG='config_rebuilt_runai.sh'
+export DEFAULT_CONFIG="bash_scripts/config_rebuilt_runai.sh"
+
+export USER_NAME='piconti'
+export USER_ID='172943'
 
 # Display script usage information
 usage() {
-  echo "Usage: $0 [-h|--help] [-w|--nworkers <num> -c|--config-script <script>]"
+  echo "Usage: $0 [-h|--help] [-w|--workers <num> -c|--config-script <script>]"
   echo "Options:"
   echo "  -h, --help       Display this help message"
-  echo "  -w, --nworkers    Number of workers to use (default: $DEFAULT_WORKERS)"
+  echo "  -w, --workers    Number of workers to use (default: $DEFAULT_WORKERS)"
   echo "  -c, --config-script    Config script to use (default: $DEFAULT_CONFIG)"
   exit 1
 }
@@ -82,14 +85,16 @@ screen -dmS workers dask worker localhost:8786 --nworkers $WORKERS --nthreads 1 
 
 echo "dask dashboard at localhost:8786/status"
 
-screen -dmS rebuilt python $pvc_path/$text_prep_in_pvc_path/text_preparation/rebuilders/rebuilder.py rebuild_articles \
-     --input-bucket=$input_bucket \
-     --log-file=$log_file \
-     --output-dir=$output_dir \
-     --output-bucket=$output_bucket \
-     --format=$format \
-     --filter-config=$filter_config \
-     --git-repo=$git_repo \
-     --temp-dir=$temp_dir \
-     --prev-manifest=$prev_manifest_path \
-     --scheduler=localhost:8786
+screen -dmS rebuilt python $text_prep_in_pvc_path/text_preparation/rebuilders/rebuilder.py rebuild_articles \
+    --input-bucket=$input_bucket \
+    --log-file=$log_file \
+    --output-dir=$output_dir \
+    --output-bucket=$output_bucket \
+    --format=$format \
+    --filter-config=$filter_config \
+    --git-repo=$git_repo \
+    --temp-dir=$temp_dir \
+    --prev-manifest=$prev_manifest_path \
+    --scheduler="localhost:8786"
+
+echo "Script launched in screen 'rebuilt'"
