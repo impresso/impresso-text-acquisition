@@ -9,8 +9,8 @@ ARG USER_NAME
 ARG USER_ID
 
 # Set environment variables for user
-ENV USER_NAME=USER_NAME
-ENV USER_ID=USER_ID
+ENV USER_NAME=$USER_NAME
+ENV USER_ID=$USER_ID
 
 # Install build tools and libraries
 RUN apt-get update \
