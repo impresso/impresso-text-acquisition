@@ -10,8 +10,6 @@ export SE_SECRET_KEY='' # add your secret key here
 export output_bucket='' # TODO fill in
 export input_bucket='' # TODO fill in
 
-export $USER_NAME='' # TODO fill in
-
 # old pvc where the code was before to the "data" pvc -> change to the actual pvc path of /rcp-scratch
 export text_prep_in_pvc_path="/rcp-scratch/${USER_NAME}/impresso/impresso-text-acquisition"
 # directory with all the outputs, logs, and configs
