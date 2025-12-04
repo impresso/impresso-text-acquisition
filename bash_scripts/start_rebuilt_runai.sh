@@ -9,9 +9,6 @@ export DEFAULT_WORKERS='64'
 # Default config script
 export DEFAULT_CONFIG="bash_scripts/config_rebuilt_runai.sh"
 
-export USER_NAME='piconti'
-export USER_ID='172943'
-
 # Display script usage information
 usage() {
   echo "Usage: $0 [-h|--help] [-w|--workers <num> -c|--config-script <script>]"

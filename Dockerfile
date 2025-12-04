@@ -8,10 +8,6 @@ ENV GROUP_ID=11703
 ARG USER_NAME
 ARG USER_ID
 
-# Set environment variables for user
-ENV USER_NAME=$USER_NAME
-ENV USER_ID=$USER_ID
-
 # Install build tools and libraries
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -49,7 +45,8 @@ RUN echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # install desired libraries. 
 # TODO remove boto once it's removed from all functions.
 RUN pip install --upgrade pip setuptools
-RUN pip install numpy pillow beautifulsoup4 pandas PyYAML jsonlines pytest
+RUN pip install --upgrade pip impresso-essentials
+RUN pip install numpy pillow beautifulsoup4 pandas jsonlines pytest
 RUN pip install \
     boto3 \
     docopt \
@@ -57,8 +54,6 @@ RUN pip install \
     smart-open \
     git-python \
     python-dotenv
-
-RUN pip install --upgrade impresso-essentials
 
 EXPOSE 8080
 EXPOSE 8785
