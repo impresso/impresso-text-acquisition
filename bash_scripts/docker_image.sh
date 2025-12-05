@@ -1,5 +1,5 @@
 name="impresso_text_prep"
-image_version="v3"
+image_version="v4"
 image_name=$name:$image_version
 
 echo $image_name

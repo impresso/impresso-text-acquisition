@@ -353,7 +353,7 @@ def main() -> None:
 
     # start the dask local cluster
     if scheduler is None:
-        client = Client(n_workers=nworkers, threads_per_worker=1)
+        client = Client(n_workers=int(nworkers), threads_per_worker=1)
     else:
         client = Client(scheduler)
 
