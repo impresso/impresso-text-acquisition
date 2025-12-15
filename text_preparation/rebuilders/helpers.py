@@ -244,6 +244,10 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         if content_item["sm"] != "audio":
             # in the case of paper CIs, there might have been a re-ocr process
             solr_ci["consolidated_reocr_applied"] = content_item["m"]["consolidated_reocr_applied"]
+            if "consolidated_reocr_model_id" in content_item["m"]:
+                solr_ci["consolidated_reocr_model_id"] = content_item["m"][
+                    "consolidated_reocr_model_id"
+                ]
             solr_ci["consolidated_ocrqa"] = content_item["m"]["consolidated_ocrqa"]
         solr_ci["lg_original"] = og_lang
 
