@@ -416,7 +416,7 @@ def main() -> None:
                     logger.info(proc_year_msg)
                     print(proc_year_msg)
 
-                    print(f"IN MAIN 1: reading issues for {alias}-{year}")
+                    # print(f"IN MAIN 1: reading issues for {alias}-{year}")
                     input_issues = read_s3_issues(alias, year, input_bucket_name, provider=provider)
                     if len(input_issues) == 0:
                         # read_s3_issues does not raise an exception anymore

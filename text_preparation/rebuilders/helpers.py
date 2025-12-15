@@ -170,11 +170,11 @@ def read_issue_supports(
         f"{alias}-{year}",
         f"{issue_json['id']}-{support}.jsonl.bz2",
     )
-    print(f"IN SUPPORTS 1: Filename to be loaded for {alias}-{year}: {filename}")
+    # print(f"IN SUPPORTS 1: Filename to be loaded for {alias}-{year}: {filename}")
 
     supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
 
-    print(f"IN SUPPORTS 2: number of loaded files for {alias}-{year}: {len(supports)}")
+    # print(f"IN SUPPORTS 2: number of loaded files for {alias}-{year}: {len(supports)}")
 
     if is_audio:
         issue_json["rr"] = supports
@@ -213,10 +213,11 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     cons_lang, og_lang = None, None
     ## fetch the original language (from OCR/OLR)
     if content_item["consolidated"]:
+        # if "lg_original" in content_item["m"]:
         # case where it's consolidated
-        og_lang = content_item["m"]["lg_original"]
-        cons_lang = content_item["m"]["consolidated_lg"]
-    elif "lg" in content_item["m"]:
+        og_lang = content_item["m"].get("lg_original", None)
+        cons_lang = content_item["m"].get("consolidated_lg", None)
+    if "lg" in content_item["m"] and not og_lang:
         og_lang = content_item["m"]["lg"]
     elif "l" in content_item["m"]:
         og_lang = content_item["m"]["l"]
@@ -237,7 +238,7 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         "olr": has_olr,
         "st": content_item["st"],
         "sm": content_item["sm"],
-        "lg": cons_lang if cons_lang is not None else og_lang,
+        "lg": og_lang if cons_lang is None else cons_lang,
         "tp": mapped_type,
         "ro": reading_order,
         "consolidated": content_item["consolidated"],
@@ -246,17 +247,16 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     if content_item["consolidated"]:
         if content_item["sm"] != "audio":
             # in the case of paper CIs, there might have been a re-ocr process
-            if "consolidated_reocr_applied" in content_item["m"]:
-                solr_ci["consolidated_reocr_applied"] = content_item["m"][
-                    "consolidated_reocr_applied"
-                ]
-            else:
-                solr_ci["consolidated_reocr_applied"] = False
+            solr_ci["consolidated_reocr_applied"] = content_item["m"].get(
+                "consolidated_reocr_applied", False
+            )
             if "consolidated_reocr_model_id" in content_item["m"]:
                 solr_ci["consolidated_reocr_model_id"] = content_item["m"][
                     "consolidated_reocr_model_id"
                 ]
-            solr_ci["consolidated_ocrqa"] = content_item["m"]["consolidated_ocrqa"]
+            if "consolidated_ocrqa" in content_item["m"]:
+                solr_ci["consolidated_ocrqa"] = content_item["m"]["consolidated_ocrqa"]
+        # if cons_lang is not None:
         solr_ci["lg_original"] = og_lang
 
     if mapped_type == "img":
