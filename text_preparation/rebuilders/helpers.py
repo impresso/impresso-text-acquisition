@@ -170,8 +170,11 @@ def read_issue_supports(
         f"{alias}-{year}",
         f"{issue_json['id']}-{support}.jsonl.bz2",
     )
+    print(f"IN SUPPORTS 1: Filename to be loaded for {alias}-{year}: {filename}")
 
     supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
+
+    print(f"IN SUPPORTS 2: number of loaded files for {alias}-{year}: {len(supports)}")
 
     if is_audio:
         issue_json["rr"] = supports
@@ -243,7 +246,12 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     if content_item["consolidated"]:
         if content_item["sm"] != "audio":
             # in the case of paper CIs, there might have been a re-ocr process
-            solr_ci["consolidated_reocr_applied"] = content_item["m"]["consolidated_reocr_applied"]
+            if "consolidated_reocr_applied" in content_item["m"]:
+                solr_ci["consolidated_reocr_applied"] = content_item["m"][
+                    "consolidated_reocr_applied"
+                ]
+            else:
+                solr_ci["consolidated_reocr_applied"] = False
             if "consolidated_reocr_model_id" in content_item["m"]:
                 solr_ci["consolidated_reocr_model_id"] = content_item["m"][
                     "consolidated_reocr_model_id"

@@ -92,6 +92,7 @@ screen -dmS rebuilt python $text_prep_in_pvc_path/text_preparation/rebuilders/re
     --git-repo=$git_repo \
     --temp-dir=$temp_dir \
     --prev-manifest=$prev_manifest_path \
-    --scheduler="localhost:8786"
+    --scheduler="localhost:8786" \
+    #--compute-mft 
 
 echo "Script launched in screen 'rebuilt'"

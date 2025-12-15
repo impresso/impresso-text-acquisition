@@ -341,7 +341,7 @@ def main() -> None:
     languages = arguments["--languages"]
     repo_path = arguments["--git-repo"]
     temp_dir = arguments["--temp-dir"]
-    compute_mft = arguments["--compute-mft"]
+    compute_mft = bool(arguments["--compute-mft"])
     prev_manifest_path = arguments["--prev-manifest"] if arguments["--prev-manifest"] else None
 
     # bucket_name = f"s3://{input_bucket_name}"
@@ -373,6 +373,8 @@ def main() -> None:
     print(dask_cluster_msg)
 
     if compute_mft:
+        print("The Manifest will be computed for this rebuilt run!")
+        logger.info("The Manifest will be computed for this rebuilt run!")
         # the created manifest is not the same based on the output format
         data_stage = "rebuilt" if output_format == "solr" else "passim"
 
@@ -385,6 +387,10 @@ def main() -> None:
             temp_dir=temp_dir,
             previous_mft_path=prev_manifest_path if prev_manifest_path != "" else None,
         )
+    else:
+        print("NO MANIFEST will be computed for this rebuilt run!")
+        logger.info("NO MANIFEST will be computed for this rebuilt run!")
+
     titles = set()
 
     if arguments["rebuild_articles"]:
@@ -410,6 +416,7 @@ def main() -> None:
                     logger.info(proc_year_msg)
                     print(proc_year_msg)
 
+                    print(f"IN MAIN 1: reading issues for {alias}-{year}")
                     input_issues = read_s3_issues(alias, year, input_bucket_name, provider=provider)
                     if len(input_issues) == 0:
                         # read_s3_issues does not raise an exception anymore
@@ -426,6 +433,7 @@ def main() -> None:
                         _format=output_format,
                         filter_language=languages,
                         provider=provider,
+                        compute_mft=compute_mft,
                     )
                     rebuilt_issues.append((issue_key, json_files))
                     del input_issues
