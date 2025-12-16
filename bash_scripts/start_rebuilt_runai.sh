@@ -5,7 +5,7 @@
 # "/home/$USER_NAME/dhlab-data/data/$USER_NAME-data/config_rebuilt_runai.sh" (or other provided script) for the various configuartions necessary.
 
 # Default number of workers
-export DEFAULT_WORKERS='64'
+export DEFAULT_WORKERS='32'
 # Default config script
 export DEFAULT_CONFIG="bash_scripts/config_rebuilt_runai.sh"
 
