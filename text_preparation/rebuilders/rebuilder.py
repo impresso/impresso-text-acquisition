@@ -37,6 +37,7 @@ import git
 import dask.bag as db
 import jsonlines
 from dask.distributed import Client, progress
+from dask.diagnostics import ProgressBar
 from docopt import docopt
 from smart_open import smart_open
 
@@ -299,15 +300,18 @@ def rebuild_issues(
             stats_for_issues = compute_stats_in_rebuilt_bag(
                 filtered_cis, key, title=issue_dir.alias
             )
-        result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
+        with ProgressBar():
+            result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
     else:
         print(
-            f"cis_bag.count().compute(): {cis_bag.count().compute()}, out_dirs: {issue_out_dir}/*.json, cis_bag.take(3): {cis_bag.take(3)}"
+            f"cis_bag.count().compute(): {cis_bag.count().compute()}, out_dirs: {issue_out_dir}/*.json"  # , cis_bag.take(1): {cis_bag.take(1)}"
         )
         if compute_mft:
             # TODO provide sm and st to manifest
             stats_for_issues = compute_stats_in_rebuilt_bag(cis_bag, key, title=issue_dir.alias)
-        result = cis_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
+
+        with ProgressBar():
+            result = cis_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
 
     dask_client.cancel(issues_bag)
     logger.info("done.")
