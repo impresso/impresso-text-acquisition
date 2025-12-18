@@ -1,7 +1,6 @@
 """Functions and CLI to rebuild text from impresso's canonical format.
 For EPFL members, this script can be scaled by running it using Runai,
 as documented on https://github.com/impresso/impresso-infrastructure/blob/main/howtos/runai.md.
-TODO update the runai functionalities.
 
 Usage:
     rebuilder.py rebuild_articles --input-bucket=<b> --log-file=<f> --output-dir=<od> --filter-config=<fc> [--format=<fo> --scheduler=<sch> --output-bucket=<ob> --verbose --clear --languages=<lgs> --nworkers=<nw> --git-repo=<gr> --temp-dir=<tp> --compute-mft --prev-manifest=<pm>]
@@ -304,7 +303,7 @@ def rebuild_issues(
             result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
     else:
         print(
-            f"cis_bag.count().compute(): {cis_bag.count().compute()}, out_dirs: {issue_out_dir}/*.json"  # , cis_bag.take(1): {cis_bag.take(1)}"
+            f"cis_bag.count().compute(): {cis_bag.count().compute()}, out_dirs: {issue_out_dir}/*.json"
         )
         if compute_mft:
             # TODO provide sm and st to manifest
@@ -347,8 +346,6 @@ def main() -> None:
     temp_dir = arguments["--temp-dir"]
     compute_mft = bool(arguments["--compute-mft"])
     prev_manifest_path = arguments["--prev-manifest"] if arguments["--prev-manifest"] else None
-
-    # bucket_name = f"s3://{input_bucket_name}"
 
     signal.signal(signal.SIGINT, signal_handler)
 
