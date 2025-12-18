@@ -64,8 +64,6 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file.
     """
-
-    # TODO add __init__ function to initialize attributes if needed
     
     def _parse_font_styles(self) -> None:
         """Parse section `<TextStyle>` of the XML file to extract the fonts."""
@@ -83,12 +81,17 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
         iiif_base_link = f"{IIIF_ENDPOINT_URI}/{encoded_ark_id}"
         iiif_link = f"{iiif_base_link}%2fpages%2f{self.number}"
         self.page_data["iiif_img_base_uri"] = iiif_link
+        
+        # add width and height from METS
+        img_props = self.issue.image_properties[self.number]
+        self.page_data["fw"] = img_props["width"]
+        self.page_data["fh"] = img_props["height"]
+        
         self._parse_font_styles()
 
     def _convert_coordinates(self, page_regions: list[dict]) -> tuple[bool, list[dict]]:
         success = False
         try:
-            # TODO add width & height
             img_props = self.issue.image_properties[self.number]
             x_res = img_props["x_resolution"]
             y_res = img_props["y_resolution"]
@@ -151,8 +154,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
     """
-
-    # TODO add __init__ function to initialize attributes if needed
     
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
@@ -288,9 +289,13 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
 
                 if item_title:
                     metadata["t"] = item_title
-
+                source = {
+                    "ark_id": self.ark_id,
+                    "mets": os.path.basename(self.mets_file),
+                    "page_image": []
+                }
                 # Finalize the item
-                item = {"m": metadata, "l": {"id": section_id, "parts": parts}}
+                item = {"m": metadata, "l": {"id": section_id, "parts": parts, "source": source}}
 
                 # TODO: keep language (there may be more than one)
                 if item["m"]["tp"] == CONTENTITEM_TYPE_ARTICLE:
@@ -556,7 +561,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
 
         # explain
         self.image_properties = parse_mets_amdsec(
-            mets_doc, x_res="xOpticalResolution", y_res="yOpticalResolution"
+            mets_doc, x_res="xOpticalResolution", y_res="yOpticalResolution", img_width="imageWidth", img_height="imageHeight"
         )
 
         # First find `ARTICLE` and `PICTURE` content items
@@ -581,9 +586,23 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         reading_order_dict = get_reading_order(content_items)
 
         for ci in content_items:
-
+            # why is this commented ???
             # ci['l']['parts'] = self._parse_mets_div(item_div)
 
+            # ci["l"]["source"] = {
+            #     "ark_id": self.ark_id,
+            #     "mets": os.path.basename(self.mets_file),
+            #     "page_image": []
+            # }
+            print("TELL ME IF I COME HERE GODDAMN")
+
+            # add page image URLs for each page in the CI
+            for p in ci["m"]["pp"]:
+                encoded = encode_ark(self.ark_id)
+                url = f"{IIIF_ENDPOINT_URI}/{encoded}%2fpages%2f{p}/full/max/0/default.jpg"
+                ci["l"]["source"]["page_image"].append(url)
+                    
+                    
             if ci["m"]["tp"] == "image":
                 self._process_image_ci(ci, mets_doc)
             elif ci["m"]["tp"]:

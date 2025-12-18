@@ -38,24 +38,19 @@ Args:
 >>> i = LuxIssueDir('BNL','armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/')
 """
 
-def entry_to_issue(alias: str, entry: dict) -> LuxIssueDir:
+def entry_to_issue(alias: str, year: str, month: str, entry: dict) -> LuxIssueDir:
     """
-    Convert one JSON entry into a LuxIssueDir.
-    Example of entry:
-        { "date": "1904-01-17", "local_path": "/mnt/.../1904-01-17_01" }
+    Convert a hierarchical JSON entry into a LuxIssueDir.
+
+    entry example:
+      { "day": "15", "edition": "01", "local_path": "..._01" }
     """
-    y, m, d = map(int, entry["date"].split("-"))
+    y = int(year)
+    m = int(month)
+    d = int(entry["day"])
 
-    # Detect edition from local_path (optional)
-    # Example folder: 1904-01-17_01 → edition = 'a'
-    edition = "a"
-    base = os.path.basename(entry["local_path"])
-    if "_" in base:
-        suffix = base.split("_")[-1]
-        if suffix.isdigit() and int(suffix) > 1:
-            # map 2 → 'b', 3 → 'c', ...
-            edition = EDITIONS_MAPPINGS.get(int(suffix), "a")
-
+    edition = entry["edition"]
+    
     return LuxIssueDir(
         provider="BNL",
         alias=alias,
@@ -65,27 +60,32 @@ def entry_to_issue(alias: str, entry: dict) -> LuxIssueDir:
     )
 
 def load_issues_from_json(json_path: str) -> list[LuxIssueDir]:
-    """Load the full list of BNL issues from the precomputed JSON file.
-    JSON structure:
+    """
+    Load issues from hierarchical JSON:
     {
-       "alias1": [ {"date": "...", "local_path": "..."} ],
-       "alias2": [ ... ]
+      "alias": {
+         "year": {
+            "month": [
+               { "day": "...", "edition": "...", "local_path": "..." }
+            ]
+         }
+      }
     }
-    Args:
-        json_path (str): Path to the JSON file.
-
-    Returns:
-        list[LuxIssueDir]: List of `LuxIssueDir` instances.
     """
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     issues = []
-    for alias, entries in data.items():
-        for entry in entries:
-            issues.append(entry_to_issue(alias, entry))
+
+    for alias, years in data.items():
+        for year, months in years.items():
+            for month, entries in months.items():
+                for entry in entries:
+                    issue = entry_to_issue(alias, year, month, entry)
+                    issues.append(issue)
 
     return issues
+
 
 # TODO @coralie --> update and adapt to a case where we already have all the paths
 def dir2issue(path: str) -> LuxIssueDir:
