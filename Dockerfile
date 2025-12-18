@@ -1,5 +1,5 @@
 # Set base image
-FROM daskdev/dask:2023.11.0-py3.11
+FROM daskdev/dask:2024.9.0-py3.11
 
 # Set environment variables for user
 ENV GROUP_NAME=DHLAB-unit
@@ -45,15 +45,15 @@ RUN echo "${USER_NAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 # install desired libraries. 
 # TODO remove boto once it's removed from all functions.
 RUN pip install --upgrade pip setuptools
-RUN pip install numpy pillow beautifulsoup4 pandas PyYAML jsonlines pytest
+RUN pip install --upgrade pip impresso-essentials
+RUN pip install numpy pillow beautifulsoup4 pandas jsonlines pytest
 RUN pip install \
     boto3 \
     docopt \
     opencv-python \
     smart-open \
     git-python \
-    python-dotenv \
-    impresso-essentials
+    python-dotenv
 
 EXPOSE 8080
 EXPOSE 8785
@@ -63,7 +63,7 @@ EXPOSE 8787
 # Set the working directory
 WORKDIR /home/$USER_NAME/impresso-text-acquisition
 
-# Add local impresso_pycommons
+# Add local impresso_text_acquisition
 COPY . .
 
 # Change ownership of the copied files to the new user and group
@@ -72,9 +72,7 @@ RUN chown -R ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/impresso-text-acquisi
 # Switch to the new user
 USER $USER_NAME
 
-RUN pip install -e .
+RUN pip install .
 
-# Make sure the script launching the rebuilt is executable
-RUN chmod -x /home/${USER_NAME}/impresso-text-acquisition/bash_scripts/start_rebuilt_runai.sh
-
-CMD ["sleep", "infinity"]
+# sleep for 3 days (to sensure I have the time to check the run)
+CMD ["sleep", "259200"]
