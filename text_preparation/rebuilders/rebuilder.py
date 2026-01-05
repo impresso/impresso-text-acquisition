@@ -1,10 +1,9 @@
 """Functions and CLI to rebuild text from impresso's canonical format.
 For EPFL members, this script can be scaled by running it using Runai,
 as documented on https://github.com/impresso/impresso-infrastructure/blob/main/howtos/runai.md.
-TODO update the runai functionalities.
 
 Usage:
-    rebuilder.py rebuild_articles --input-bucket=<b> --log-file=<f> --output-dir=<od> --filter-config=<fc> [--format=<fo> --scheduler=<sch> --output-bucket=<ob> --verbose --clear --languages=<lgs> --nworkers=<nw> --git-repo=<gr> --temp-dir=<tp> --prev-manifest=<pm>]
+    rebuilder.py rebuild_articles --input-bucket=<b> --log-file=<f> --output-dir=<od> --filter-config=<fc> [--format=<fo> --scheduler=<sch> --output-bucket=<ob> --verbose --clear --languages=<lgs> --nworkers=<nw> --git-repo=<gr> --temp-dir=<tp> --compute-mft --prev-manifest=<pm>]
 
 Options:
 
@@ -20,6 +19,7 @@ Options:
 --nworkers=<nw>  number of workers for (local) Dask client.
 --git-repo=<gr>   Local path to the "impresso-text-acquisition" git directory (including it).
 --temp-dir=<tp>  Temporary directory in which to clone the impresso-data-release git repository.
+--compute-mft  Whether to perform the manifest computation on-the-fly during the rebuilt computation.
 --prev-manifest=<pm>  Optional S3 path to the previous manifest to use for the manifest generation.
 """  # noqa: E501
 
@@ -36,11 +36,18 @@ import git
 import dask.bag as db
 import jsonlines
 from dask.distributed import Client, progress
+from dask.diagnostics import ProgressBar
 from docopt import docopt
 from smart_open import smart_open
 
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
-from impresso_essentials.utils import IssueDir, SourceMedium, SourceType, init_logger
+from impresso_essentials.utils import (
+    IssueDir,
+    SourceMedium,
+    SourceType,
+    init_logger,
+    get_provider_for_alias,
+)
 
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
@@ -97,7 +104,9 @@ def compress(key: str, json_files: list, output_dir: str) -> tuple[str, str]:
     return (key, filepath)
 
 
-def upload(sort_key: str, filepath: str, bucket_name: str | None = None) -> tuple[bool, str]:
+def upload(
+    sort_key: str, filepath: str, bucket_name: str | None = None, provider: str | None = None
+) -> tuple[bool, str]:
     """Upload a file to a given S3 bucket.
 
     Args:
@@ -113,7 +122,10 @@ def upload(sort_key: str, filepath: str, bucket_name: str | None = None) -> tupl
     # create connection with bucket
     # copy contents to s3 key
     alias, _ = sort_key.split("-")
-    key_name = f"{alias}/{os.path.basename(filepath)}"
+    if provider:
+        key_name = f"{provider}/{alias}/{os.path.basename(filepath)}"
+    else:
+        key_name = f"{alias}/{os.path.basename(filepath)}"
     if "/" in bucket_name:
         # if the provided bucket also contains a partition, add it to the key name
         bucket_name, partition = bucket_name.split("/")
@@ -152,7 +164,9 @@ def cleanup(upload_success: bool, filepath: str) -> None:
         logger.info("Not removing %s as upload has failed", filepath)
 
 
-def filter_and_process_cis(issues_bag, input_bucket: str, issue_medium: str, _format: str):
+def filter_and_process_cis(
+    issues_bag, input_bucket: str, issue_medium: str, _format: str, provider: str = None
+):
     """Process the issues into rebuilt CIs
 
     Args:
@@ -197,7 +211,7 @@ def filter_and_process_cis(issues_bag, input_bucket: str, issue_medium: str, _fo
 
     cis_bag = (
         issues_bag.filter(lambda i: len(i[1][support_property]) > 0)
-        .starmap(read_issue_supports, is_audio=is_audio, bucket=input_bucket)
+        .starmap(read_issue_supports, is_audio=is_audio, bucket=input_bucket, provider=provider)
         .starmap(rejoin_cis)
         .flatten()
         .persist()
@@ -221,6 +235,8 @@ def rebuild_issues(
     dask_client: Client,
     _format: str = "solr",
     filter_language: list[str] = None,
+    provider: str = None,
+    compute_mft: bool = True,
 ) -> tuple[str, list, list[dict[str, int | str]]]:
     """Rebuild a set of newspaper issues into a given format.
 
@@ -264,26 +280,37 @@ def rebuild_issues(
     print("Fleshing out articles by issue...")
     issues_bag = db.from_sequence(issues, partition_size=3)
 
-    cis_bag = filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format)
+    cis_bag = filter_and_process_cis(issues_bag, input_bucket, issue_medium, _format, provider)
 
     def has_language(ci):
         if "lg" not in ci:
             return False
         return ci["lg"] in filter_language
 
+    # set stats to None by default in the case the manifest should not be computed
+    stats_for_issues = None
+
     if filter_language:
         filtered_cis = cis_bag.filter(has_language).persist()
         print(f"filtered_cis.count().compute(): {filtered_cis.count().compute()}")
-        # TODO provide sm and st to manifest
-        stats_for_issues = compute_stats_in_rebuilt_bag(filtered_cis, key, title=issue_dir.alias)
-        result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
+
+        if compute_mft:
+            # TODO provide sm and st to manifest
+            stats_for_issues = compute_stats_in_rebuilt_bag(
+                filtered_cis, key, title=issue_dir.alias
+            )
+        with ProgressBar():
+            result = filtered_cis.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
     else:
-        # TODO provide sm and st to manifest
         print(
-            f"cis_bag.count().compute(): {cis_bag.count().compute()}, out_dirs: {issue_out_dir}/*.json, cis_bag.take(3): {cis_bag.take(3)}"
+            f"cis_bag.count().compute(): {cis_bag.count().compute()}, out_dirs: {issue_out_dir}/*.json"
         )
-        stats_for_issues = compute_stats_in_rebuilt_bag(cis_bag, key, title=issue_dir.alias)
-        result = cis_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
+        if compute_mft:
+            # TODO provide sm and st to manifest
+            stats_for_issues = compute_stats_in_rebuilt_bag(cis_bag, key, title=issue_dir.alias)
+
+        with ProgressBar():
+            result = cis_bag.map(json.dumps).to_textfiles(f"{issue_out_dir}/*.json")
 
     dask_client.cancel(issues_bag)
     logger.info("done.")
@@ -317,9 +344,8 @@ def main() -> None:
     languages = arguments["--languages"]
     repo_path = arguments["--git-repo"]
     temp_dir = arguments["--temp-dir"]
+    compute_mft = bool(arguments["--compute-mft"])
     prev_manifest_path = arguments["--prev-manifest"] if arguments["--prev-manifest"] else None
-
-    # bucket_name = f"s3://{input_bucket_name}"
 
     signal.signal(signal.SIGINT, signal_handler)
 
@@ -339,7 +365,7 @@ def main() -> None:
 
     # start the dask local cluster
     if scheduler is None:
-        client = Client(n_workers=nworkers, threads_per_worker=1)
+        client = Client(n_workers=int(nworkers), threads_per_worker=1)
     else:
         client = Client(scheduler)
 
@@ -347,18 +373,25 @@ def main() -> None:
     logger.info(dask_cluster_msg)
     print(dask_cluster_msg)
 
-    # the created manifest is not the same based on the output format
-    data_stage = "rebuilt" if output_format == "solr" else "passim"
+    if compute_mft:
+        print("The Manifest will be computed for this rebuilt run!")
+        logger.info("The Manifest will be computed for this rebuilt run!")
+        # the created manifest is not the same based on the output format
+        data_stage = "rebuilt" if output_format == "solr" else "passim"
 
-    # initialize manifest
-    manifest = DataManifest(
-        data_stage=data_stage,
-        s3_output_bucket=output_bucket_name,
-        s3_input_bucket=input_bucket_name,
-        git_repo=git.Repo(repo_path),
-        temp_dir=temp_dir,
-        previous_mft_path=prev_manifest_path if prev_manifest_path != "" else None,
-    )
+        # initialize manifest
+        manifest = DataManifest(
+            data_stage=data_stage,
+            s3_output_bucket=output_bucket_name,
+            s3_input_bucket=input_bucket_name,
+            git_repo=git.Repo(repo_path),
+            temp_dir=temp_dir,
+            previous_mft_path=prev_manifest_path if prev_manifest_path != "" else None,
+        )
+    else:
+        print("NO MANIFEST will be computed for this rebuilt run!")
+        logger.info("NO MANIFEST will be computed for this rebuilt run!")
+
     titles = set()
 
     if arguments["rebuild_articles"]:
@@ -369,15 +402,23 @@ def main() -> None:
                 proc_b_msg = f"Processing batch {n + 1}/{len(config)} [{batch}]"
                 logger.info(proc_b_msg)
                 print(proc_b_msg)
+
+                # extract the alias, provider and period to process
                 alias = list(batch.keys())[0]
                 start_year, end_year = batch[alias]
+                provider = get_provider_for_alias(alias)
+
+                msg = f"-----> Starting processing for alias {alias} ({provider}) for years {start_year}-{end_year} <-----"
+                logger.info(msg)
+                print(msg)
 
                 for year in range(start_year, end_year):
                     proc_year_msg = f"Processing year {year} \nRetrieving issues..."
                     logger.info(proc_year_msg)
                     print(proc_year_msg)
 
-                    input_issues = read_s3_issues(alias, year, input_bucket_name)
+                    # print(f"IN MAIN 1: reading issues for {alias}-{year}")
+                    input_issues = read_s3_issues(alias, year, input_bucket_name, provider=provider)
                     if len(input_issues) == 0:
                         # read_s3_issues does not raise an exception anymore
                         fnf_msg = f"{alias}-{year} not found in {input_bucket_name}"
@@ -392,15 +433,18 @@ def main() -> None:
                         dask_client=client,
                         _format=output_format,
                         filter_language=languages,
+                        provider=provider,
+                        compute_mft=compute_mft,
                     )
                     rebuilt_issues.append((issue_key, json_files))
                     del input_issues
 
-                    msg = f"{issue_key} - year_stats: {year_stats}"
-                    print(msg)
-                    logger.debug(msg)
-                    manifest.add_by_title_year(alias, year, year_stats[0])
-                    titles.add(alias)
+                    if compute_mft:
+                        msg = f"{issue_key} - year_stats: {year_stats}"
+                        print(msg)
+                        logger.debug(msg)
+                        manifest.add_by_title_year(alias, year, year_stats[0])
+                        titles.add(alias)
 
                 msg = (
                     f"Uploading {len(rebuilt_issues)} rebuilt bz2files " f"to {output_bucket_name}"
@@ -411,7 +455,7 @@ def main() -> None:
                 future = (
                     db.from_sequence(rebuilt_issues)
                     .starmap(compress, output_dir=outp_dir)
-                    .starmap(upload, bucket_name=output_bucket_name)
+                    .starmap(upload, bucket_name=output_bucket_name, provider=provider)
                     .starmap(cleanup)
                 ).persist()
 
@@ -429,11 +473,12 @@ def main() -> None:
         finally:
             client.shutdown()
 
-        manifest_note = f"Rebuilt of newspaper articles for {list(titles)}."
-        manifest.append_to_notes(manifest_note)
-        # finalize and compute the manifest
-        manifest.compute(export_to_git_and_s3=False)
-        manifest.validate_and_export_manifest(push_to_git=False)
+        if compute_mft:
+            manifest_note = f"Rebuilt of newspaper articles for {list(titles)}."
+            manifest.append_to_notes(manifest_note)
+            # finalize and compute the manifest
+            manifest.compute(export_to_git_and_s3=False)
+            manifest.validate_and_export_manifest(push_to_git=False)
 
         logger.info("---------- Done ----------")
         print("---------- Done ----------")
