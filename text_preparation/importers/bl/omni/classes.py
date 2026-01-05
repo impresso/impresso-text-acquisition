@@ -376,7 +376,6 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "id": f"{self.id}-i{str(counter).zfill(4)}",
             "tp": div_type,
             "pp": [],
-            "var_t": self.var_title,
         }
 
         # Get content item's title and language
@@ -512,7 +511,6 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
                 "iiif_link": os.path.join(
                     IIIF_ENDPOINT_URI, f"{self.id}-p{str(page_num).zfill(4)}", IIIF_SUFFIX
                 ),
-                "var_t": self.var_title,
             },
             "c": coords,
             "l": {
@@ -776,6 +774,7 @@ class BlOmniNewspaperIssue(MetsAltoCanonicalIssue):
             "st": SourceType.NP.value,
             "sm": SourceMedium.PT.value,
             "olr": True,
+            "media_title_variant": self.var_title,
             "i": content_items,
             "pp": [p.id for p in sorted(self.pages, key=lambda x: x.number)],
             "n": self._notes,
