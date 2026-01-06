@@ -419,6 +419,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         "id": image_ci_id,
                         "tp": "image",  # content type: image
                         "pp": [int(page.id[-4:])],  # page this image appears on
+                        "iiif_link": os.path.join(page.iiif_img_base_uri, "info.json")
                     },
                     # Legacy section
                     "l": {
@@ -530,7 +531,6 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         # Construct the issue data according to canonical format
         self.issue_data = {
             "id": self.id,
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
             "st": SourceType.NP.value,
             "sm": SourceMedium.PT.value,
