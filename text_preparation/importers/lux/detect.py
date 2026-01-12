@@ -11,7 +11,10 @@ from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 
-EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
+EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e", 6: "f", 7: "g", 8: "h", 9: "i", 10: "j", 11: "k", 12: "l", 13: "m", 14: "n", 15: "o", 16: "p", 17: "q", 18: "r", 19: "s", 20: "t", 21: "u", 22: "v", 23: "w", 24: "x", 25: "y", 26: "z",
+                     27: "aa", 28: "ab", 29: "ac", 30: "ad", 31: "ae", 32: "af", 33: "ag", 34: "ah", 35: "ai", 36: "aj", 37: "ak", 38: "al", 39: "am", 40: "an", 41: "ao", 42: "ap", 43: "aq", 44: "ar", 45: "as", 46: "at", 47: "au", 48: "av", 49: "aw", 50: "ax", 51: "ay", 52: "az"
+                     }
+BASE_DIR = "/mnt/project_impresso/original"
 
 JSON_FILE = "impresso-text-acquisition/text_preparation/data/sample_data/BNL/bnl_metadata.json"
 
@@ -38,7 +41,12 @@ Args:
 >>> i = LuxIssueDir('BNL','armeteufel', date(1904,1,17), 'a', './protected_027/1497608_newspaper_armeteufel_1904-01-17/')
 """
 
-def entry_to_issue(alias: str, year: str, month: str, entry: dict) -> LuxIssueDir:
+
+
+# TODO @coralie --> update and adapt to a case where we already have all the paths
+# def dir2issue(path: str) -> LuxIssueDir:
+
+def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -> LuxIssueDir:
     """
     Convert a hierarchical JSON entry into a LuxIssueDir.
 
@@ -56,62 +64,8 @@ def entry_to_issue(alias: str, year: str, month: str, entry: dict) -> LuxIssueDi
         alias=alias,
         date=date(y, m, d),
         edition=edition,
-        path=entry["local_path"],
+        path=base_dir + entry["local_path"],
     )
-
-def load_issues_from_json(json_path: str) -> list[LuxIssueDir]:
-    """
-    Load issues from hierarchical JSON:
-    {
-      "alias": {
-         "year": {
-            "month": [
-               { "day": "...", "edition": "...", "local_path": "..." }
-            ]
-         }
-      }
-    }
-    """
-    with open(json_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    issues = []
-
-    for alias, years in data.items():
-        for year, months in years.items():
-            for month, entries in months.items():
-                for entry in entries:
-                    issue = entry_to_issue(alias, year, month, entry)
-                    issues.append(issue)
-
-    return issues
-
-
-# TODO @coralie --> update and adapt to a case where we already have all the paths
-def dir2issue(path: str) -> LuxIssueDir:
-    """Create a `LuxIssueDir` from a directory (BNL format).
-
-    Called internally by :func:`detect_issues`.
-
-    Args:
-        path (str): Path of issue.
-
-    Returns:
-        Rero2IssueDir: New `LuxIssueDir` object matching the path and rights.
-    """
-    issue_dir = os.path.basename(path)
-    local_id = issue_dir.split("_")[2]
-    issue_date = issue_dir.split("_")[3]
-    year, month, day = issue_date.split("-")
-
-    if len(issue_dir.split("_")) == 4:
-        edition = "a"
-    elif len(issue_dir.split("_")) == 5:
-        edition = issue_dir.split("_")[4]
-        edition = EDITIONS_MAPPINGS[int(edition)]
-
-    return LuxIssueDir("BNL", local_id, date(int(year), int(month), int(day)), edition, path)
-
 
 def detect_issues(base_dir: str) -> list[LuxIssueDir]:
     """Detect newspaper issues to import within the filesystem.
@@ -125,17 +79,25 @@ def detect_issues(base_dir: str) -> list[LuxIssueDir]:
     Returns:
         list[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
     """
-    # dir_path, dirs, _ = next(os.walk(base_dir))
-    # batches_dirs = [os.path.join(dir_path, dir) for dir in dirs]
-    # issue_dirs = [
-    #     os.path.join(batch_dir, dir)
-    #     for batch_dir in batches_dirs
-    #     for dir in os.listdir(batch_dir)
-    #     if "newspaper" in dir
-    # ]
-    # return [dir2issue(_dir) for _dir in issue_dirs]
+    # 1. Ensure base_dir is what we expect
+    if base_dir != BASE_DIR:
+        raise ValueError(
+            f"BNL importer expects base_dir='{BASE_DIR}', got '{base_dir}'"
+        )
+    with open(JSON_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    issues: list[LuxIssueDir] = []
+
+    for alias, years in data.items():
+        for year, months in years.items():
+            for month, entries in months.items():
+                for entry in entries:
+                    issue = entry2issue(alias, year, month, entry, base_dir)
+                    issues.append(issue)
     
-    return load_issues_from_json(JSON_FILE)
+    return issues
+
 
 
 def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:

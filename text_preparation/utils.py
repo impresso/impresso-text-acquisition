@@ -152,7 +152,7 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
     ids_and_pages = [(i["m"]["id"], i["m"]["pp"]) for i in items_copy]
     sorted_ids = sorted(
         sorted(ids_and_pages, key=lambda x: int(x[0].split("-i")[-1])),
-        key=lambda x: x[1],
+        key=lambda x: x[1][0],
     )
 
     return {t[0]: index + 1 for index, t in enumerate(sorted_ids)}
