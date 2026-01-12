@@ -134,7 +134,11 @@ def read_page(page_key: str, bucket_name: str, s3_client) -> dict[str, Any] | No
 
 
 def read_issue_supports(
-    issue: IssueDir, issue_json: dict[str, Any], is_audio: bool, bucket: str | None = None
+    issue: IssueDir,
+    issue_json: dict[str, Any],
+    is_audio: bool,
+    bucket: str | None = None,
+    provider: str = None,
 ) -> tuple[IssueDir, dict[str, Any]]:
     """Read all pages/audio records of a given issue from S3 in parallel, and add them to it.
 
@@ -158,12 +162,19 @@ def read_issue_supports(
     if "s3//" not in bucket:
         bucket = f"s3://{bucket}"
 
-    # TODO add provider
     filename = os.path.join(
-        bucket, alias, support, f"{alias}-{year}", f"{issue_json['id']}-{support}.jsonl.bz2"
+        bucket,
+        provider,
+        alias,
+        support,
+        f"{alias}-{year}",
+        f"{issue_json['id']}-{support}.jsonl.bz2",
     )
+    # print(f"IN SUPPORTS 1: Filename to be loaded for {alias}-{year}: {filename}")
 
     supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
+
+    # print(f"IN SUPPORTS 2: number of loaded files for {alias}-{year}: {len(supports)}")
 
     if is_audio:
         issue_json["rr"] = supports
@@ -199,12 +210,17 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     else:
         mapped_type = content_item["m"]["tp"]
 
-    if "lg" in content_item["m"]:
-        ci_lang = content_item["m"]["lg"]
+    cons_lang, og_lang = None, None
+    ## fetch the original language (from OCR/OLR)
+    if content_item["consolidated"]:
+        # if "lg_original" in content_item["m"]:
+        # case where it's consolidated
+        og_lang = content_item["m"].get("lg_original", None)
+        cons_lang = content_item["m"].get("consolidated_lg", None)
+    if "lg" in content_item["m"] and not og_lang:
+        og_lang = content_item["m"]["lg"]
     elif "l" in content_item["m"]:
-        ci_lang = content_item["m"]["l"]
-    else:
-        ci_lang = None
+        og_lang = content_item["m"]["l"]
 
     # if the reading order is not defined, use the number associated to each CI
     reading_order = content_item["m"]["ro"] if "ro" in content_item["m"] else int(ci_num[1:])
@@ -222,10 +238,26 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         "olr": has_olr,
         "st": content_item["st"],
         "sm": content_item["sm"],
-        "lg": ci_lang,
+        "lg": og_lang if cons_lang is None else cons_lang,
         "tp": mapped_type,
         "ro": reading_order,
+        "consolidated": content_item["consolidated"],
     }
+
+    if content_item["consolidated"]:
+        if content_item["sm"] != "audio":
+            # in the case of paper CIs, there might have been a re-ocr process
+            solr_ci["consolidated_reocr_applied"] = content_item["m"].get(
+                "consolidated_reocr_applied", False
+            )
+            if "consolidated_reocr_model_id" in content_item["m"]:
+                solr_ci["consolidated_reocr_model_id"] = content_item["m"][
+                    "consolidated_reocr_model_id"
+                ]
+            if "consolidated_ocrqa" in content_item["m"]:
+                solr_ci["consolidated_ocrqa"] = content_item["m"]["consolidated_ocrqa"]
+        # if cons_lang is not None:
+        solr_ci["lg_original"] = og_lang
 
     if mapped_type == "img":
         solr_ci["iiif_link"] = reconstruct_iiif_link(content_item)
@@ -234,6 +266,7 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         solr_ci["stt"] = content_item["stt"]
         solr_ci["dur"] = content_item["dur"]
 
+    ## CI METADATA
     # add the metadata on the content item if it's available
     if "t" in content_item["m"]:
         solr_ci["title"] = content_item["m"]["t"]
@@ -243,8 +276,11 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         solr_ci["rp"] = content_item["rp"]
 
     # special case for BL and SWISSINFO data - when there can be period-specific titles
-    if "var_t" in content_item["m"]:
-        solr_ci["var_t"] = content_item["m"]["var_t"]
+    if "media_title_variant" in content_item:
+        solr_ci["media_title_variant"] = content_item["media_title_variant"]
+    elif "var_t" in content_item["m"]:
+        solr_ci["media_title_variant"] = content_item["media_title_variant"]
+
     # special case for INA data
     if "archival_note" in content_item["m"]:
         solr_ci["archival_note"] = content_item["m"]["archival_note"]
@@ -327,6 +363,16 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
     for ci in issue_json["i"]:
 
         ci["has_problem"] = False
+
+        # check if the canonical used was consolidated (to be used later)
+        ci["consolidated"] = (
+            False if "consolidated" not in issue_json else issue_json["consolidated"]
+        )
+        # add the variant title if it's in the issue json (case of BL and SWISSINFO)
+        if "media_title_variant" in issue_json:
+            ci["media_title_variant"] = issue_json["media_title_variant"]
+
+        # fetch the information relative to the source type and medium to know how to process the data
         ci["sm"] = issue_json["sm"]
         ci["st"] = issue_json["st"]
 
