@@ -175,7 +175,6 @@ def read_issue_supports(
     supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
 
     # print(f"IN SUPPORTS 2: number of loaded files for {alias}-{year}: {len(supports)}")
-
     if is_audio:
         issue_json["rr"] = supports
     else:
@@ -370,8 +369,15 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
             ci["media_title_variant"] = issue_json["media_title_variant"]
 
         # fetch the information relative to the source type and medium to know how to process the data
-        ci["sm"] = issue_json["sm"]
-        ci["st"] = issue_json["st"]
+        # if the values are not defined, it's by default newspaper and print (ensure to set it in issue_json)
+        if "sm" not in issue_json or "st" not in issue_json:
+            ci["sm"] = "print"
+            issue_json['sm'] = "print"
+            ci['st'] = 'newspaper'
+            issue_json["st"] = 'newspaper'
+        else:
+            ci["sm"] = issue_json.get("sm", "print")
+            ci["st"] = issue_json.get("st", "newspaper")
 
         if issue_json["st"] == "radio_broadcast":
             # if the radio channel and program are defined, add them to the content item
