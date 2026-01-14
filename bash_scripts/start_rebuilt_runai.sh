@@ -5,7 +5,7 @@
 # "/home/$USER_NAME/dhlab-data/data/$USER_NAME-data/config_rebuilt_runai.sh" (or other provided script) for the various configuartions necessary.
 
 # Default number of workers
-export DEFAULT_WORKERS='32'
+export DEFAULT_WORKERS='16'
 # Default config script
 export DEFAULT_CONFIG="bash_scripts/config_rebuilt_runai.sh"
 
@@ -33,7 +33,7 @@ while [[ $# -gt 0 ]]; do
         echo "Error: Missing value for option -w|--workers"
         usage
       fi
-      WORKERS=$1
+      IN_WORKERS=$1
       ;;
     -c|--config-script)
       shift
@@ -41,7 +41,7 @@ while [[ $# -gt 0 ]]; do
         echo "Error: Missing value for option -c|--config-script"
         usage
       fi
-      CONFIG=$1
+      IN_CONFIG=$1
       ;;
     *)
       echo "Unknown option: $1"
@@ -52,9 +52,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 # If number of workers is not provided, use the default value
-WORKERS=${WORKERS:-$DEFAULT_WORKERS}
+WORKERS=${IN_WORKERS:-$DEFAULT_WORKERS}
 # If config script is not provided, use the default value
-CONFIG=${CONFIG:-$DEFAULT_CONFIG}
+CONFIG=${IN_CONFIG:-$DEFAULT_CONFIG}
 
 echo "Using user: $USER_NAME"
 echo "Launching using configuration script $CONFIG with $WORKERS workers."
@@ -92,7 +92,7 @@ screen -dmS rebuilt python $text_prep_in_pvc_path/text_preparation/rebuilders/re
     --git-repo=$git_repo \
     --temp-dir=$temp_dir \
     --prev-manifest=$prev_manifest_path \
-    --scheduler="localhost:8786" \
-    --compute-mft 
+    --compute-mft \
+    --scheduler="localhost:8786"
 
 echo "Script launched in screen 'rebuilt'"
