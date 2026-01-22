@@ -16,7 +16,7 @@ EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e", 6: "f", 7: "g", 8: 
                      }
 BASE_DIR = "/mnt/project_impresso/original"
 
-JSON_FILE = "impresso-text-acquisition/text_preparation/data/sample_data/BNL/bnl_metadata.json"
+JSON_FILE = "/rcp-scratch/iccluster040_scratch/students/banuls/impresso-text-acquisition/text_preparation/data/sample_data/BNL/issues_to_ingest.json"
 
 LuxIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.

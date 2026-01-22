@@ -38,7 +38,7 @@ from text_preparation.importers.mets_alto import (
     MetsAltoCanonicalPage,
     parse_mets_amdsec,
 )
-from text_preparation.utils import get_reading_order, extract_title_info, extract_language
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 IIIF_ENDPOINT_URI = "https://iiif.eluxemburgensia.lu/image/iiif/2"
@@ -281,8 +281,11 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                             lambda tag: tag.name.endswith("titleInfo")
                         )
         
-                titles = [extract_title_info(ti) for ti in title_elements]
-                titles = [t for t in titles if t]
+                titles = [
+                    ti.get_text(" ", strip=True)
+                    for ti in title_elements
+                    if ti.get_text(strip=True)
+                ]
 
                 item_title = None
 
@@ -320,12 +323,16 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     parts = []
                     item_div = None
 
-                if item_title:
-                    metadata["t"] = item_title
+                if item_title and item_title.strip():
+                    metadata["t"] = item_title.strip()
                 # Finalize the item
                 item = {"m": metadata, "l": {"id": section_id, "parts": parts }} #"source": source}}
                 
-                lang = extract_language(section)
+                langs = section.find(
+                    lambda t: t.name.endswith("languageTerm")
+                    and t.get("type") == "code"
+                )
+                lang = langs.get_text(strip=True) if langs else None
                 if lang:
                     item["m"]["lg"] = lang
                     
@@ -383,8 +390,11 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 "id": f"{self.id}-i{str(counter).zfill(4)}",
                 "tp": content_item_type,
                 "pp": [],
-                "t": div.get("LABEL"),
+                # "t": div.get("LABEL"),
             }
+            label = div.get("LABEL")
+            if label and label.strip():
+                metadata["t"] = label.strip()
 
             item = {
                 "m": metadata,
@@ -528,8 +538,12 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         title_elements = section.find_all(
                     lambda tag: tag.name.endswith("titleInfo")
                 )
-        titles = [extract_title_info(ti) for ti in title_elements]
-        titles = [t for t in titles if t]
+        titles = [
+            ti.get_text(" ", strip=True)
+            for ti in title_elements
+            if ti.get_text(strip=True)
+        ]
+        
         item_title = None
         # if only one, take it
         if len(titles) == 1:
@@ -548,8 +562,16 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             "pp": [],
             "tp": CONTENTITEM_TYPE_ARTICLE,
         }
-        if item_title:
-            metadata["t"] = item_title
+        if item_title and item_title.strip():
+            metadata["t"] = item_title.strip()
+        
+        langs = section.find(
+            lambda t: t.name.endswith("languageTerm")
+            and t.get("type") == "code"
+        )
+        lang = langs.get_text(strip=True) if langs else None
+        if lang:
+            metadata["lg"] = lang
 
         parts = self._parse_mets_div(section_div)
 
@@ -639,11 +661,14 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         self.ark_id = self.ark_id.replace("ark:/", "ark:")
         
         
-        # compute the reading order for the issue's items
-        # reading_order_dict = get_reading_order(content_items)
+        # Build legacy -> canonical lookup once
+        legacy_to_canonical = {
+            ci["l"]["id"]: ci["m"]["id"]
+            for ci in content_items
+            if ci.get("l", {}).get("id") and ci.get("m", {}).get("id")
+        }
 
         for ci in content_items:
-
             ci["l"]["ark_id"] = self.ark_id
             ci["l"]["src_files"] = {
                 "mets_xml": os.path.basename(self.mets_file),
@@ -652,7 +677,10 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             }                    
                     
             if ci["m"]["tp"] == "image":
+                ci["pOf"] = None
                 self._process_image_ci(ci, mets_doc)
+                if ci["pOf"]:
+                    ci["pOf"] = legacy_to_canonical.get(ci["pOf"], ci["pOf"])
             elif ci["m"]["tp"]:
                 for part in ci["l"]["parts"]:
                     page_no = part["comp_page_no"]

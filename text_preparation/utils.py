@@ -23,7 +23,7 @@ CANONICAL_PAGE_SCHEMA = "schemas/json/canonical/page.schema.json"
 CANONICAL_ISSUE_SCHEMA = "schemas/json/canonical/issue.schema.json"
 CANONICAL_RECORD_SCHEMA = "schemas/json/canonical/audio_record.schema.json"
 
-TP_PRIORITY = {
+TP_RO_PRIORITY = {
     "article": 0,
     "table": 1,
     "image": 2,
@@ -183,7 +183,7 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
         return min(pp) if pp else 10_000
 
     def type_priority(tp: str) -> int:
-        return TP_PRIORITY.get(tp, 99)
+        return TP_RO_PRIORITY.get(tp, 99)
 
     sortable = []
     for item in items:
@@ -199,28 +199,6 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
     sortable.sort()
 
     return {ci_id: idx + 1 for idx, (*_, ci_id) in enumerate(sortable)}
-def extract_title_info(title_info):
-    def find_child(name):
-        return title_info.find(lambda t: t.name.endswith(name))
-
-    parts = []
-
-    non_sort = find_child("nonSort")
-    if non_sort and non_sort.get_text(strip=True):
-        parts.append(non_sort.get_text(strip=True))
-
-    title = find_child("title")
-    if title and title.get_text(strip=True):
-        parts.append(title.get_text(strip=True))
-
-    return " ".join(parts).strip() if parts else None
-
-def extract_language(section):
-    lang_el = section.find(
-        lambda t: t.name.endswith("languageTerm")
-        and t.get("type") == "code"
-    )
-    return lang_el.get_text(strip=True) if lang_el else None
 
 def add_property(
     object_dict: dict[str, Any],
