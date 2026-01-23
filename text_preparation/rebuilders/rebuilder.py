@@ -461,10 +461,11 @@ def main() -> None:
 
                 progress(future)
                 # clear memory of objects once computations are done
-                client.restart()
-                rstrt_msg = f"Restarted client after finishing processing batch {n + 1}"
-                print(rstrt_msg)
-                logger.info(rstrt_msg)
+                if n%3==0 and n>0:
+                    client.restart()
+                    rstrt_msg = f"Restarted client after finishing processing batch {n + 1}"
+                    print(rstrt_msg)
+                    logger.info(rstrt_msg)
 
         except Exception as e:
             traceback.print_tb(e.__traceback__)
