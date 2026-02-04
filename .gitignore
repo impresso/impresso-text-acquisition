@@ -17,7 +17,7 @@ text_preparation/data/sample_data/BCUL/171722
 text_preparation/data/sample_data/BL/importer_examples/*
 text_preparation/data/sample_data/INA/*/*.MP3
 text_preparation/data/sample_data/INA/*/manifest.json
-text_preparation/data/sample_data/SUB/hamb_echo/*/*/*/*.tif
+text_preparation/data/sample_data/SUB/hamb_echo/*/*/*/*/*.tif
 text_preparation/data/sample_data/KBR/*/*/*.jpeg
 .pytest_cache
 *.egg-info
@@ -54,6 +54,6 @@ text_preparation/config/rebuilt_config/debug*
 
 
 .venv
-hamb_echo
+#hamb_echo
 tests_gleb
 debug_sub_importer_messy.ipynb

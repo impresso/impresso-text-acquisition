@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mets:mets xmlns:mets="http://www.loc.gov/METS/" xmlns:mix="http://www.loc.gov/mix/v20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="info:lc/xmlns/premis-v2 http://www.loc.gov/standards/premis/v2/premis-v2-0.xsd http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/mods.xsd http://www.loc.gov/METS/ http://www.loc.gov/standards/mets/mets.xsd http://www.loc.gov/mix/v20 https://www.loc.gov/standards/mix/mix20/mix20.xsd">
+  <mets:metsHdr CREATEDATE="2022-11-18T23:21:51">
+    <mets:agent OTHERTYPE="SOFTWARE" ROLE="CREATOR" TYPE="OTHER">
+      <mets:name>Kitodo - kitodo-ugh-2.1.3-kitodo-ugh-2.1.1-11-g4b06eaa - 30−July−2019</mets:name>
+      <mets:note>Kitodo</mets:note>
+    </mets:agent>
+  </mets:metsHdr>
+  <mets:dmdSec ID="DMDLOG_0006">
+    <mets:mdWrap MDTYPE="MODS">
+      <mets:xmlData>
+        <mods:mods xmlns:mods="http://www.loc.gov/mods/v3">
+          <mods:relatedItem type="host">
+            <mods:recordInfo>
+              <mods:recordIdentifier source="gbv">PPN1754726119</mods:recordIdentifier>
+            </mods:recordInfo>
+            <mods:titleInfo>
+              <mods:title>Hamburger Echo</mods:title>
+              <mods:partName>Abend-Ausgabe</mods:partName>
+            </mods:titleInfo>
+            <mods:identifier type="zdb">30603778</mods:identifier>
+            <mods:relatedItem type="original">
+              <mods:identifier type="zdb">283039-5</mods:identifier>
+            </mods:relatedItem>
+          </mods:relatedItem>
+          <mods:recordInfo>
+            <mods:recordIdentifier source="gbv">PPN1754726119_19320901</mods:recordIdentifier>
+          </mods:recordInfo>
+          <mods:identifier type="purl">https://resolver.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901</mods:identifier>
+          <mods:identifier type="urn">urn:nbn:de:gbv:18-5-PPN1754726119_193209016</mods:identifier>
+          <mods:typeOfResource>text</mods:typeOfResource>
+          <mods:classification authority="subhh">Zeitungen</mods:classification>
+          <mods:classification authority="subhh">Zeitung</mods:classification>
+          <mods:classification authority="subhh">Hamburgensien: Zeitungen</mods:classification>
+          <mods:language>
+            <mods:languageTerm authority="iso639-2b" type="code">ger</mods:languageTerm>
+          </mods:language>
+          <mods:accessCondition xmlns:xlink="http://www.w3.org/1999/xlink" type="use and reproduction" xlink:href="https://rightsstatements.org/vocab/CNE/1.0/">Copyright Not Evaluated</mods:accessCondition>
+          <mods:accessCondition xmlns:xlink="http://www.w3.org/1999/xlink" displayLabel="Access Status" type="restriction on access" xlink:href="http://purl.org/coar/access_right/c_abf2">open access</mods:accessCondition>
+          <mods:part order="19320901">
+            <mods:detail type="issue">
+              <mods:number>210, 01.09.1932</mods:number>
+            </mods:detail>
+            <mods:detail type="volume">
+              <mods:number>58</mods:number>
+            </mods:detail>
+          </mods:part>
+          <mods:originInfo eventType="digitization">
+            <mods:dateCaptured encoding="iso8601">2020</mods:dateCaptured>
+            <mods:publisher>Staats- und Universitätsbibliothek Hamburg</mods:publisher>
+          </mods:originInfo>
+          <mods:originInfo eventType="publication">
+            <mods:dateIssued encoding="iso8601" keyDate="yes">1932-09-01</mods:dateIssued>
+          </mods:originInfo>
+          <mods:location>
+            <mods:physicalLocation>DE-H46</mods:physicalLocation>
+            <mods:url access="raw object" displayLabel="PDF document">https://pdf.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901.pdf</mods:url>
+            <mods:url access="object in context" displayLabel="IIIF Manifest">https://iiif.sub.uni-hamburg.de/object/PPN1754726119_19320901/manifest</mods:url>
+          </mods:location>
+          <mods:note type="date">Donnerstag, den 1. September 1932</mods:note>
+        </mods:mods>
+      </mets:xmlData>
+    </mets:mdWrap>
+  </mets:dmdSec>
+  <mets:amdSec ID="AMD">
+    <mets:rightsMD ID="RIGHTS">
+      <mets:mdWrap MDTYPE="OTHER" MIMETYPE="text/xml" OTHERMDTYPE="DVRIGHTS">
+        <mets:xmlData>
+          <dv:rights xmlns:dv="http://dfg-viewer.de/">
+            <dv:owner>Staats- und Universitätsbibliothek Hamburg</dv:owner>
+            <dv:ownerLogo>https://www.sub.uni-hamburg.de/fileadmin/templates/images/logo-stabi.jpg</dv:ownerLogo>
+            <dv:ownerSiteURL>https://www.sub.uni-hamburg.de</dv:ownerSiteURL>
+            <dv:ownerContact>digitalisierung@sub.uni-hamburg.de</dv:ownerContact>
+          </dv:rights>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:rightsMD>
+    <mets:digiprovMD ID="DIGIPROV">
+      <mets:mdWrap MDTYPE="OTHER" MIMETYPE="text/xml" OTHERMDTYPE="DVLINKS">
+        <mets:xmlData>
+          <dv:links xmlns:dv="http://dfg-viewer.de/">
+            <dv:reference>https://kataloge.uni-hamburg.de/DB=1/PPN?PPN=1754726119</dv:reference>
+            <dv:presentation>https://resolver.sub.uni-hamburg.de/kitodo/PPN1754726119</dv:presentation>
+          </dv:links>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:digiprovMD>
+  </mets:amdSec>
+  <mets:amdSec ID="AMDT1">
+    <mets:techMD ID="FILE_0001_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4908</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0002_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4912</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0003_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4908</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0004_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4912</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0005_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4908</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0006_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4912</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0007_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4908</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0008_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4912</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0009_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4908</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+    <mets:techMD ID="FILE_0010_IIIF_AMDT1">
+      <mets:mdWrap MDTYPE="NISOIMG">
+        <mets:xmlData>
+          <mix:mix>
+            <mix:BasicImageInformation>
+              <mix:BasicImageCharacteristics>
+                <mix:imageWidth>4912</mix:imageWidth>
+                <mix:imageHeight>6980</mix:imageHeight>
+              </mix:BasicImageCharacteristics>
+            </mix:BasicImageInformation>
+          </mix:mix>
+        </mets:xmlData>
+      </mets:mdWrap>
+    </mets:techMD>
+  </mets:amdSec>
+  <mets:fileSec>
+    <mets:fileGrp USE="ZOOM">
+      <mets:file ID="FILE_0001_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000001.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0002_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000002.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0003_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000003.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0004_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000004.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0005_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000005.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0006_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000006.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0007_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000007.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0008_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000008.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0009_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000009.ptif"/>
+      </mets:file>
+      <mets:file ID="FILE_0010_ZOOM" MIMETYPE="application/vnd.kitodo.iiif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000010.ptif"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="DEFAULT">
+      <mets:file ID="FILE_0001_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000001.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0002_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000002.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0003_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000003.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0004_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000004.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0005_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000005.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0006_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000006.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0007_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000007.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0008_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000008.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0009_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000009.jpg"/>
+      </mets:file>
+      <mets:file ID="FILE_0010_DEFAULT" MIMETYPE="image/jpeg">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/2000/0/00000010.jpg"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="FULLTEXT">
+      <mets:file ID="FILE_0001_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000001.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0002_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000002.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0003_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000003.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0004_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000004.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0005_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000005.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0006_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000006.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0007_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000007.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0008_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000008.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0009_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000009.xml"/>
+      </mets:file>
+      <mets:file ID="FILE_0010_FULLTEXT" MIMETYPE="text/xml">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000010.xml"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="THUMBS">
+      <mets:file ID="FILE_0001_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000001.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0002_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000002.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0003_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000003.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0004_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000004.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0005_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000005.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0006_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000006.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0007_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000007.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0008_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000008.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0009_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000009.gif"/>
+      </mets:file>
+      <mets:file ID="FILE_0010_THUMBS" MIMETYPE="image/gif">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/PPN1754726119_19320901/150/0/00000010.gif"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="PRESENTATION">
+      <mets:file ID="FILE_0001_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000001.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0002_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000002.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0003_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000003.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0004_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000004.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0005_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000005.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0006_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000006.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0007_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000007.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0008_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000008.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0009_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000009.tif"/>
+      </mets:file>
+      <mets:file ID="FILE_0010_PRESENTATION" MIMETYPE="image/tiff">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/00000010.tif"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="DOWNLOAD">
+      <mets:file ID="FILE_0001_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000001.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0002_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000002.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0003_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000003.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0004_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000004.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0005_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000005.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0006_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000006.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0007_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000007.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0008_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000008.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0009_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000009.pdf"/>
+      </mets:file>
+      <mets:file ID="FILE_0010_DOWNLOAD" MIMETYPE="application/pdf">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://img.sub.uni-hamburg.de/kitodo/PPN1754726119_19320901/PDF/00000010.pdf"/>
+      </mets:file>
+    </mets:fileGrp>
+    <mets:fileGrp USE="IIIF">
+      <mets:file ID="FILE_0001_IIIF" MIMETYPE="application/json" ADMID="FILE_0001_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000001.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0002_IIIF" MIMETYPE="application/json" ADMID="FILE_0002_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000002.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0003_IIIF" MIMETYPE="application/json" ADMID="FILE_0003_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000003.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0004_IIIF" MIMETYPE="application/json" ADMID="FILE_0004_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000004.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0005_IIIF" MIMETYPE="application/json" ADMID="FILE_0005_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000005.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0006_IIIF" MIMETYPE="application/json" ADMID="FILE_0006_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000006.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0007_IIIF" MIMETYPE="application/json" ADMID="FILE_0007_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000007.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0008_IIIF" MIMETYPE="application/json" ADMID="FILE_0008_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000008.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0009_IIIF" MIMETYPE="application/json" ADMID="FILE_0009_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000009.tif/info.json"/>
+      </mets:file>
+      <mets:file ID="FILE_0010_IIIF" MIMETYPE="application/json" ADMID="FILE_0010_IIIF_AMDT1">
+        <mets:FLocat xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://pic.sub.uni-hamburg.de/iiif/2/PPN1754726119_19320901%2F00000010.tif/info.json"/>
+      </mets:file>
+    </mets:fileGrp>
+  </mets:fileSec>
+  <mets:structMap TYPE="LOGICAL">
+    <mets:div ID="LOG_0007" LABEL="Hamburger Echo" TYPE="newspaper">
+      <mets:mptr xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://mets.sub.uni-hamburg.de/kitodo/PPN1754726119"/>
+      <mets:div ID="LOG_0008" ORDERLABEL="1932" TYPE="year">
+        <mets:mptr xmlns:xlink="http://www.w3.org/1999/xlink" LOCTYPE="URL" xlink:href="https://mets.sub.uni-hamburg.de/kitodo/PPN1754726119_1932"/>
+        <mets:div ID="LOG_0009" ORDERLABEL="1932-09" TYPE="month">
+          <mets:div ID="LOG_0010" ORDERLABEL="1932-09-01" TYPE="day">
+            <mets:div ADMID="AMD" DMDID="DMDLOG_0006" ID="LOG_0011" TYPE="issue"/>
+          </mets:div>
+        </mets:div>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+  <mets:structMap TYPE="PHYSICAL">
+    <mets:div ID="PHYS_0000" TYPE="physSequence">
+      <mets:div ID="PHYS_0001" ORDER="1" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0001_ZOOM"/>
+        <mets:fptr FILEID="FILE_0001_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0001_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0001_THUMBS"/>
+        <mets:fptr FILEID="FILE_0001_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0001_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0001_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0002" ORDER="2" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0002_ZOOM"/>
+        <mets:fptr FILEID="FILE_0002_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0002_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0002_THUMBS"/>
+        <mets:fptr FILEID="FILE_0002_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0002_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0002_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0003" ORDER="3" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0003_ZOOM"/>
+        <mets:fptr FILEID="FILE_0003_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0003_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0003_THUMBS"/>
+        <mets:fptr FILEID="FILE_0003_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0003_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0003_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0004" ORDER="4" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0004_ZOOM"/>
+        <mets:fptr FILEID="FILE_0004_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0004_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0004_THUMBS"/>
+        <mets:fptr FILEID="FILE_0004_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0004_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0004_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0005" ORDER="5" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0005_ZOOM"/>
+        <mets:fptr FILEID="FILE_0005_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0005_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0005_THUMBS"/>
+        <mets:fptr FILEID="FILE_0005_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0005_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0005_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0006" ORDER="6" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0006_ZOOM"/>
+        <mets:fptr FILEID="FILE_0006_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0006_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0006_THUMBS"/>
+        <mets:fptr FILEID="FILE_0006_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0006_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0006_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0007" ORDER="7" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0007_ZOOM"/>
+        <mets:fptr FILEID="FILE_0007_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0007_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0007_THUMBS"/>
+        <mets:fptr FILEID="FILE_0007_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0007_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0007_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0008" ORDER="8" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0008_ZOOM"/>
+        <mets:fptr FILEID="FILE_0008_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0008_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0008_THUMBS"/>
+        <mets:fptr FILEID="FILE_0008_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0008_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0008_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0009" ORDER="9" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0009_ZOOM"/>
+        <mets:fptr FILEID="FILE_0009_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0009_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0009_THUMBS"/>
+        <mets:fptr FILEID="FILE_0009_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0009_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0009_IIIF"/>
+      </mets:div>
+      <mets:div ID="PHYS_0010" ORDER="10" ORDERLABEL=" - " TYPE="page">
+        <mets:fptr FILEID="FILE_0010_ZOOM"/>
+        <mets:fptr FILEID="FILE_0010_DEFAULT"/>
+        <mets:fptr FILEID="FILE_0010_FULLTEXT"/>
+        <mets:fptr FILEID="FILE_0010_THUMBS"/>
+        <mets:fptr FILEID="FILE_0010_PRESENTATION"/>
+        <mets:fptr FILEID="FILE_0010_DOWNLOAD"/>
+        <mets:fptr FILEID="FILE_0010_IIIF"/>
+      </mets:div>
+    </mets:div>
+  </mets:structMap>
+  <mets:structLink>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0001" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0002" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0003" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0004" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0005" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0006" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0007" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0008" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0009" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0010" xlink:from="LOG_0008"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0001" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0002" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0003" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0004" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0005" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0006" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0007" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0008" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0009" xlink:from="LOG_0011"/>
+    <mets:smLink xmlns:xlink="http://www.w3.org/1999/xlink" xlink:to="PHYS_0010" xlink:from="LOG_0011"/>
+  </mets:structLink>
+</mets:mets>
