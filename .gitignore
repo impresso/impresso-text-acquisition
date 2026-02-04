@@ -51,3 +51,9 @@ text_preparation/data/canonical_out/test_out/*
 text_preparation/config/importer_config/import_*debug*.json
 text_preparation/config/importer_config/import_*_*.json
 text_preparation/config/rebuilt_config/debug*
+
+
+.venv
+hamb_echo
+tests_gleb
+debug_sub_importer_messy.ipynb
