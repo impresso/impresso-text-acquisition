@@ -65,3 +65,7 @@ html_theme = "sphinx_rtd_theme"
 
 
 # -- Extension configuration -------------------------------------------------
+
+nitpick_ignore = [
+    ("py:attr", "date"),
+]
