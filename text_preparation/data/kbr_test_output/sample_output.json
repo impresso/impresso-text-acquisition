@@ -1,0 +1,386 @@
+{
+  "issue": {
+    "id": "Lynx-1831-04-25-a",
+    "ts": "<timestamp>",
+    "st": "newspaper",
+    "sm": "print",
+    "olr": false,
+    "i": [
+      {
+        "m": {
+          "id": "Lynx-1831-04-25-a-i0001",
+          "tp": "page",
+          "l": "fr",
+          "pp": [
+            1
+          ]
+        },
+        "l": {
+          "id": "Lynx-1831-04-25-a-BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+          "parts": [
+            {
+              "comp_id": "Page1_Block4",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+              "comp_page_no": 1
+            },
+            {
+              "comp_id": "Page1_Block5",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+              "comp_page_no": 1
+            },
+            {
+              "comp_id": "Page1_Block7",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+              "comp_page_no": 1
+            },
+            {
+              "comp_id": "Page1_Block8",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+              "comp_page_no": 1
+            },
+            {
+              "comp_id": "Page1_Block9",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+              "comp_page_no": 1
+            },
+            {
+              "comp_id": "Page1_Block11",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+              "comp_page_no": 1
+            },
+            {
+              "comp_id": "Page1_Block12",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+              "comp_page_no": 1
+            }
+          ],
+          "source": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml"
+        }
+      },
+      {
+        "m": {
+          "id": "Lynx-1831-04-25-a-i0005",
+          "tp": "image",
+          "pp": [
+            1
+          ],
+          "iiif_link": "https://impresso-project.ch/api/proxy/iiif/Lynx-1831-04-25-a-p0001/info.json",
+          "c": [
+            2264,
+            0,
+            1053,
+            446
+          ]
+        },
+        "l": {
+          "id": "Lynx-1831-04-25-a-BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+          "parts": [
+            {
+              "comp_id": "Page1_Block6",
+              "comp_role": "image",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml",
+              "comp_page_no": 1
+            }
+          ],
+          "source": "BE-KBR00_17142621_18310425_00_01_00_0_01_0001_17318870.xml"
+        }
+      },
+      {
+        "m": {
+          "id": "Lynx-1831-04-25-a-i0002",
+          "tp": "page",
+          "l": "fr",
+          "pp": [
+            2
+          ]
+        },
+        "l": {
+          "id": "Lynx-1831-04-25-a-BE-KBR00_17142621_18310425_00_01_00_0_01_0002_17318871.xml",
+          "parts": [
+            {
+              "comp_id": "Page1_Block2",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0002_17318871.xml",
+              "comp_page_no": 2
+            },
+            {
+              "comp_id": "Page1_Block3",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0002_17318871.xml",
+              "comp_page_no": 2
+            },
+            {
+              "comp_id": "Page1_Block4",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0002_17318871.xml",
+              "comp_page_no": 2
+            },
+            {
+              "comp_id": "Page1_Block5",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0002_17318871.xml",
+              "comp_page_no": 2
+            }
+          ],
+          "source": "BE-KBR00_17142621_18310425_00_01_00_0_01_0002_17318871.xml"
+        }
+      },
+      {
+        "m": {
+          "id": "Lynx-1831-04-25-a-i0003",
+          "tp": "page",
+          "l": "fr",
+          "pp": [
+            3
+          ]
+        },
+        "l": {
+          "id": "Lynx-1831-04-25-a-BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml",
+          "parts": [
+            {
+              "comp_id": "Page1_Block3",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml",
+              "comp_page_no": 3
+            },
+            {
+              "comp_id": "Page1_Block4",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml",
+              "comp_page_no": 3
+            },
+            {
+              "comp_id": "Page1_Block6",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml",
+              "comp_page_no": 3
+            },
+            {
+              "comp_id": "Page1_Block7",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml",
+              "comp_page_no": 3
+            }
+          ],
+          "source": "BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml"
+        }
+      },
+      {
+        "m": {
+          "id": "Lynx-1831-04-25-a-i0006",
+          "tp": "image",
+          "pp": [
+            3
+          ],
+          "iiif_link": "https://impresso-project.ch/api/proxy/iiif/Lynx-1831-04-25-a-p0003/info.json",
+          "c": [
+            1660,
+            3606,
+            1398,
+            146
+          ]
+        },
+        "l": {
+          "id": "Lynx-1831-04-25-a-BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml",
+          "parts": [
+            {
+              "comp_id": "Page1_Block5",
+              "comp_role": "image",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml",
+              "comp_page_no": 3
+            }
+          ],
+          "source": "BE-KBR00_17142621_18310425_00_01_00_0_01_0003_17318872.xml"
+        }
+      },
+      {
+        "m": {
+          "id": "Lynx-1831-04-25-a-i0004",
+          "tp": "page",
+          "l": "fr",
+          "pp": [
+            4
+          ]
+        },
+        "l": {
+          "id": "Lynx-1831-04-25-a-BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+          "parts": [
+            {
+              "comp_id": "Page1_Block2",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block3",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block4",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block5",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block6",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block7",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block8",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block9",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block10",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            },
+            {
+              "comp_id": "Page1_Block31",
+              "comp_role": "body",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            }
+          ],
+          "source": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml"
+        }
+      },
+      {
+        "m": {
+          "id": "Lynx-1831-04-25-a-i0007",
+          "tp": "table",
+          "l": "fr",
+          "pp": [
+            4
+          ],
+          "c": [
+            136,
+            3990,
+            3026,
+            636
+          ]
+        },
+        "l": {
+          "id": "Lynx-1831-04-25-a-BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+          "parts": [
+            {
+              "comp_id": "Page1_Block11",
+              "comp_role": "table",
+              "comp_fileid": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml",
+              "comp_page_no": 4
+            }
+          ],
+          "source": "BE-KBR00_17142621_18310425_00_01_00_0_01_0004_17318873.xml"
+        }
+      }
+    ],
+    "pp": [
+      "Lynx-1831-04-25-a-p0001",
+      "Lynx-1831-04-25-a-p0002",
+      "Lynx-1831-04-25-a-p0003",
+      "Lynx-1831-04-25-a-p0004"
+    ],
+    "n": []
+  },
+  "pages": [
+    {
+      "id": "Lynx-1831-04-25-a-p0001",
+      "cdt": "<created>",
+      "ts": "<timestamp>",
+      "st": "newspaper",
+      "sm": "print",
+      "cc": true,
+      "iiif_img_base_uri": "https://impresso-project.ch/api/proxy/iiif/Lynx-1831-04-25-a-p0001",
+      "fw": 3317,
+      "fh": 5249,
+      "region_count": 17,
+      "mapped_region_count": 0,
+      "token_count": 1712,
+      "content_items": []
+    },
+    {
+      "id": "Lynx-1831-04-25-a-p0002",
+      "cdt": "<created>",
+      "ts": "<timestamp>",
+      "st": "newspaper",
+      "sm": "print",
+      "cc": true,
+      "iiif_img_base_uri": "https://impresso-project.ch/api/proxy/iiif/Lynx-1831-04-25-a-p0002",
+      "fw": 3294,
+      "fh": 4988,
+      "region_count": 7,
+      "mapped_region_count": 1,
+      "token_count": 2020,
+      "content_items": [
+        "Lynx-1831-04-25-a-i0002"
+      ]
+    },
+    {
+      "id": "Lynx-1831-04-25-a-p0003",
+      "cdt": "<created>",
+      "ts": "<timestamp>",
+      "st": "newspaper",
+      "sm": "print",
+      "cc": true,
+      "iiif_img_base_uri": "https://impresso-project.ch/api/proxy/iiif/Lynx-1831-04-25-a-p0003",
+      "fw": 3298,
+      "fh": 4982,
+      "region_count": 10,
+      "mapped_region_count": 5,
+      "token_count": 2062,
+      "content_items": [
+        "Lynx-1831-04-25-a-i0003",
+        "Lynx-1831-04-25-a-i0006"
+      ]
+    },
+    {
+      "id": "Lynx-1831-04-25-a-p0004",
+      "cdt": "<created>",
+      "ts": "<timestamp>",
+      "st": "newspaper",
+      "sm": "print",
+      "cc": true,
+      "iiif_img_base_uri": "https://impresso-project.ch/api/proxy/iiif/Lynx-1831-04-25-a-p0004",
+      "fw": 3208,
+      "fh": 4908,
+      "region_count": 53,
+      "mapped_region_count": 11,
+      "token_count": 1810,
+      "content_items": [
+        "Lynx-1831-04-25-a-i0004",
+        "Lynx-1831-04-25-a-i0007"
+      ]
+    }
+  ]
+}
