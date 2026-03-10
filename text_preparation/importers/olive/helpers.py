@@ -13,9 +13,9 @@ from operator import itemgetter
 
 from typing import Any
 
-import numpy as np
+import io
 from bs4 import BeautifulSoup
-import cv2 as cv
+from PIL import Image
 
 from impresso_essentials.utils import IssueDir
 from text_preparation.importers.classes import CanonicalIssue, ZipArchive
@@ -418,7 +418,7 @@ def recompose_page(
 
 
 def compute_scale_factor(img_source_path: str, img_dest_path: str) -> float:
-    """Computes x scale factor bewteen 2 images.
+    """Computes x scale factor between 2 images.
 
     Args:
         img_source_path (str): Full path ot the source image.
@@ -427,10 +427,10 @@ def compute_scale_factor(img_source_path: str, img_dest_path: str) -> float:
     Returns:
         float: X Scale factor between the two.
     """
-    img_s = cv.imread(img_source_path, 0)
-    img_d = cv.imread(img_dest_path, 0)
-    x_s = img_s.shape[0]
-    x_d = img_d.shape[0]
+    with Image.open(img_source_path) as img_s:
+        x_s = img_s.height
+    with Image.open(img_dest_path) as img_d:
+        x_d = img_d.height
     return x_d / x_s
 
 
@@ -586,8 +586,8 @@ def get_scale_factor(issue_dir_path, archive, page_xml, box_strategy, img_source
         # get the x dimension of the unique jpg (from which jp2 was acquired)
         # and compare with olive's one
         img_data = archive.read(img_source_name)
-        img = cv.imdecode(np.frombuffer(img_data, np.uint8), 1)
-        jpg_x_dim = img.shape[1]
+        with Image.open(io.BytesIO(img_data)) as img:
+            jpg_x_dim = img.width
         olive_x_dim = page_root.meta["page_width"]
         if jpg_x_dim == int(olive_x_dim):
             return 1.0
