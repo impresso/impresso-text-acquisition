@@ -2,21 +2,18 @@
 
 import logging
 import json
-import os
 from collections import namedtuple
 from datetime import date
 
 from dask import bag as db
 from text_preparation.importers.detect import _apply_datefilter
+from text_preparation.utils import edition_num_to_code
 
 logger = logging.getLogger(__name__)
 
-EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e", 6: "f", 7: "g", 8: "h", 9: "i", 10: "j", 11: "k", 12: "l", 13: "m", 14: "n", 15: "o", 16: "p", 17: "q", 18: "r", 19: "s", 20: "t", 21: "u", 22: "v", 23: "w", 24: "x", 25: "y", 26: "z",
-                     27: "aa", 28: "ab", 29: "ac", 30: "ad", 31: "ae", 32: "af", 33: "ag", 34: "ah", 35: "ai", 36: "aj", 37: "ak", 38: "al", 39: "am", 40: "an", 41: "ao", 42: "ap", 43: "aq", 44: "ar", 45: "as", 46: "at", 47: "au", 48: "av", 49: "aw", 50: "ax", 51: "ay", 52: "az"
-                     }
 BASE_DIR = "/mnt/project_impresso/original"
 
-JSON_FILE = "/rcp-scratch/iccluster040_scratch/students/banuls/impresso-text-acquisition/text_preparation/data/sample_data/BNL/issues_to_ingest.json"
+JSON_FILE = "../../data/sample_data/BNL/issues_to_ingest.json"
 
 LuxIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
@@ -42,10 +39,6 @@ Args:
 """
 
 
-
-# TODO @coralie --> update and adapt to a case where we already have all the paths
-# def dir2issue(path: str) -> LuxIssueDir:
-
 def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -> LuxIssueDir:
     """
     Convert a hierarchical JSON entry into a LuxIssueDir.
@@ -57,8 +50,9 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
     m = int(month)
     d = int(entry["day"])
 
-    edition = entry["edition"]
-    
+    edition_num = int(entry["edition"])
+    edition = edition_num_to_code(edition_num)
+
     return LuxIssueDir(
         provider="BNL",
         alias=alias,
@@ -66,6 +60,7 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
         edition=edition,
         path=base_dir + entry["local_path"],
     )
+
 
 def detect_issues(base_dir: str) -> list[LuxIssueDir]:
     """Detect newspaper issues to import within the filesystem.
@@ -81,9 +76,7 @@ def detect_issues(base_dir: str) -> list[LuxIssueDir]:
     """
     # 1. Ensure base_dir is what we expect
     if base_dir != BASE_DIR:
-        raise ValueError(
-            f"BNL importer expects base_dir='{BASE_DIR}', got '{base_dir}'"
-        )
+        raise ValueError(f"BNL importer expects base_dir='{BASE_DIR}', got '{base_dir}'")
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -95,9 +88,8 @@ def detect_issues(base_dir: str) -> list[LuxIssueDir]:
                 for entry in entries:
                     issue = entry2issue(alias, year, month, entry, base_dir)
                     issues.append(issue)
-    
-    return issues
 
+    return issues
 
 
 def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
