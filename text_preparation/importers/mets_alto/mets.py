@@ -36,6 +36,8 @@ def parse_mets_amdsec(
     y_res: str,
     x_res_default: int = 300,
     y_res_default: int = 300,
+    img_width: str = None,
+    img_height: str = None
 ) -> dict:
     """Parse the ``<amdsec>`` section of Mets XML to extract image properties.
 
@@ -65,6 +67,9 @@ def parse_mets_amdsec(
     image_properties_dict = {}
     for image_no, image_id in page_image_ids.items():
         amd_sect = amd_sections[image_id]
+        
+        width_val= int(amd_sect.find(img_width).text) if img_width and amd_sect.find(img_width) else None
+        heigth_val = int(amd_sect.find(img_height).text) if img_height and amd_sect.find(img_height) else None
         try:
             x_res_val = (
                 int(amd_sect.find(x_res).text)
@@ -75,17 +80,23 @@ def parse_mets_amdsec(
                 int(amd_sect.find(y_res).text)
                 if amd_sect.find(y_res) is not None
                 else x_res_default
-            )
+            )                
             image_properties_dict[image_no] = {
                 "x_resolution": x_res_val,
                 "y_resolution": y_res_val,
+                "width": width_val,
+                "height": heigth_val,
             }
+
+                
         # if it fails it's because of value < 1
         except Exception as e:
             logger.debug("Error occured when parsing %s", e)
             image_properties_dict[image_no] = {
                 "x_resolution": x_res_default,
                 "y_resolution": y_res_default,
+                "width": width_val,
+                "height": heigth_val,
             }
     return image_properties_dict
 

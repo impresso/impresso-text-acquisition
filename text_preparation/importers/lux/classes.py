@@ -64,7 +64,7 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file.
     """
-
+    
     def _parse_font_styles(self) -> None:
         """Parse section `<TextStyle>` of the XML file to extract the fonts."""
         style_divs = self.xml.findAll("TextStyle")
@@ -81,12 +81,17 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
         iiif_base_link = f"{IIIF_ENDPOINT_URI}/{encoded_ark_id}"
         iiif_link = f"{iiif_base_link}%2fpages%2f{self.number}"
         self.page_data["iiif_img_base_uri"] = iiif_link
+        
+        # add width and height from METS
+        img_props = self.issue.image_properties[self.number]
+        self.page_data["fw"] = img_props["width"]
+        self.page_data["fh"] = img_props["height"]
+        
         self._parse_font_styles()
 
     def _convert_coordinates(self, page_regions: list[dict]) -> tuple[bool, list[dict]]:
         success = False
         try:
-            # TODO add width & height
             img_props = self.issue.image_properties[self.number]
             x_res = img_props["x_resolution"]
             y_res = img_props["y_resolution"]
@@ -149,7 +154,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             coordinates to iiif format compliant ones.
         ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
     """
-
+    
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
 
@@ -161,14 +166,17 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         # get the canonical names for pages in the newspaper issue by
         # visiting the `text` sub-folder with the alto XML files
         text_path = os.path.join(self.path, "text")
-        page_file_names = [
+        self.page_file_names = [
             file for file in os.listdir(text_path) if not file.startswith(".") and ".xml" in file
         ]
-
+        image_path = os.path.join(self.path, "images")
+        self.image_file_names = [
+            file for file in os.listdir(image_path) if not file.startswith(".") and ".tif" in file
+        ]
         page_numbers = []
         page_match_exp = r"(.*?)(\d{5})(.*)"
 
-        for fname in page_file_names:
+        for fname in self.page_file_names:
             g = re.match(page_match_exp, fname)
             page_no = g.group(2)
             page_numbers.append(int(page_no))
@@ -178,9 +186,22 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         ]
 
         self.pages = []
-        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
+        self.page_files_by_number = {}     
+        self.image_files_by_number = {}
+
+        for fname in self.image_file_names:
+            m = re.search(r"(\d{5})", fname)
+            if m:
+                page_no = int(m.group(1))
+                self.image_files_by_number[page_no] = fname
+        
+        
+        for filename, page_no, page_id in zip(self.page_file_names, page_numbers, page_canonical_names):
             try:
                 self.pages.append(LuxNewspaperPage(page_id, page_no, filename, text_path))
+                # TODO add page filenames, C'EST FINI NON?
+                self.page_files_by_number[page_no] = filename
+
             except Exception as e:
                 msg = (
                     f"Adding page {page_no} {page_id} {filename}",
@@ -192,38 +213,42 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
     def _parse_mets_div(self, div: Tag) -> list[dict[str, str | int]]:
         """Parse the children of a content item div for its legacy `parts`.
 
-        The `parts` are article-level metadata about the content item from the
-        ORC and OLR processes. This information is located in an `<area>` tag.
+         The `parts` are article-level metadata about the content item from the
+         ORC and OLR processes. This information is located in an `<area>` tag.
 
-        Args:
-            div (Tag): The div containing the content item
+         Args:
+             div (Tag): The div containing the content item
 
-        Returns:
-            list[dict[str, str | int]]: information on different parts for the
-                content item (role, id, fileid, page)
+         Returns:
+             list[dict[str, str | int]]: information on different parts for the
+                 content item (role, id, fileid, page)
         """
         parts = []
 
-        for child in div.children:
-            if isinstance(child, NavigableString):
-                continue
-            elif isinstance(child, Tag):
-                type_attr = child.get("TYPE")
-                comp_role = type_attr.lower() if type_attr else None
-                areas = child.findAll("area")
-                for area in areas:
-                    comp_id = area.get("BEGIN")
-                    comp_fileid = area.get("FILEID")
-                    comp_page_no = int(comp_fileid.replace("ALTO", ""))
+        for area in div.find_all("area"):
+            comp_id = area.get("BEGIN")
+            comp_fileid = area.get("FILEID")
+            comp_page_no = int(comp_fileid.replace("ALTO", ""))
 
-                    parts.append(
-                        {
-                            "comp_role": comp_role,
-                            "comp_id": comp_id,
-                            "comp_fileid": comp_fileid,
-                            "comp_page_no": comp_page_no,
-                        }
-                    )
+            # Walk up to find the closest semantic TYPE
+            role = None
+            parent = area.parent
+
+            while parent and parent != div:
+                if parent.name == "div" and parent.get("TYPE"):
+                    role = parent.get("TYPE").lower()
+                    break
+                parent = parent.parent
+
+            parts.append(
+                {
+                    "comp_role": role,
+                    "comp_id": comp_id,
+                    "comp_fileid": comp_fileid,
+                    "comp_page_no": comp_page_no,
+                }
+            )
+
         return parts
 
     def _parse_dmdsec(self, mets_doc: BeautifulSoup) -> tuple[list[dict[str, Any]], int]:
@@ -252,14 +277,30 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             section_id = section.get("ID")
 
             if "ARTICLE" in section_id or "PICT" in section_id:
-                # Get title Info
-                title_elements = section.find_all("titleInfo")
-                item_title = (
-                    title_elements[0].getText().replace("\n", " ").strip()
-                    if len(title_elements) > 0
-                    else None
-                )
+                title_elements = section.find_all(
+                            lambda tag: tag.name.endswith("titleInfo")
+                        )
+        
+                titles = [
+                    ti.get_text(" ", strip=True)
+                    for ti in title_elements
+                    if ti.get_text(strip=True)
+                ]
 
+                item_title = None
+
+                if len(titles) == 1:
+                    item_title = titles[0]
+
+                elif len(titles) >= 2:
+                    first, second = titles[0], titles[1]
+
+                    # heuristic: short first title = rubric
+                    if len(first.split()) <= 2:
+                        item_title = f"{first} : {second}"
+                    else:
+                        item_title = " — ".join(titles)
+                    
                 # Prepare ci metadata
                 metadata = {
                     "id": f"{self.id}-i{str(counter).zfill(4)}",
@@ -282,17 +323,19 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     parts = []
                     item_div = None
 
-                if item_title:
-                    metadata["t"] = item_title
-
+                if item_title and item_title.strip():
+                    metadata["t"] = item_title.strip()
                 # Finalize the item
-                item = {"m": metadata, "l": {"id": section_id, "parts": parts}}
-
-                # TODO: keep language (there may be more than one)
-                if item["m"]["tp"] == CONTENTITEM_TYPE_ARTICLE:
-                    lang = section.find_all("languageTerm")[0].getText()
+                item = {"m": metadata, "l": {"id": section_id, "parts": parts }} #"source": source}}
+                
+                langs = section.find(
+                    lambda t: t.name.endswith("languageTerm")
+                    and t.get("type") == "code"
+                )
+                lang = langs.get_text(strip=True) if langs else None
+                if lang:
                     item["m"]["lg"] = lang
-
+                    
                 # This has been added to not consider ads as pictures
                 if not (
                     (item_div is not None)
@@ -325,7 +368,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         divs = []
 
         for div_type in allowed_types:
-            divs += element.findAll("div", {"TYPE": div_type})
+            divs += element.find_all("div", {"TYPE": div_type})
 
         sorted_divs = sorted(divs, key=lambda elem: elem.get("ID"))
 
@@ -347,8 +390,11 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 "id": f"{self.id}-i{str(counter).zfill(4)}",
                 "tp": content_item_type,
                 "pp": [],
-                "t": div.get("LABEL"),
+                # "t": div.get("LABEL"),
             }
+            label = div.get("LABEL")
+            if label and label.strip():
+                metadata["t"] = label.strip()
 
             item = {
                 "m": metadata,
@@ -369,11 +415,26 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             ci (dict[str, Any]): Image content item to be processed.
             mets_doc (BeautifulSoup): Contents of Mets XML file.
         """
-        item_div = mets_doc.findAll("div", {"DMDID": ci["l"]["id"]})
+        item_div = mets_doc.find_all("div", {"DMDID": ci["l"]["id"]})
         if len(item_div) > 0:
             item_div = item_div[0]
         else:
             return
+        # --- set pOf (legacy parent DMDID) by walking up METS nesting ---
+        parent_div = item_div.parent
+        parent_dmdid = None
+
+        while parent_div is not None:
+            if getattr(parent_div, "name", None) == "div":
+                t = (parent_div.get("TYPE") or "").lower()
+                if t in {"article", "sect", "section"} and parent_div.get("DMDID"):
+                    parent_dmdid = parent_div.get("DMDID")
+                    break
+            parent_div = parent_div.parent
+
+        if parent_dmdid:
+            ci["pOf"] = parent_dmdid
+        
         legacy_id = item_div.get("ID")
         # Image is actually table
 
@@ -473,21 +534,44 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         Returns:
             dict[str, Any]: Content item of the reconstructed section.
         """
-        title_elements = section.find_all("titleInfo")
-
-        item_title = (
-            title_elements[0].getText().replace("\n", " ").strip()
-            if len(title_elements) > 0
-            else None
-        )
+        
+        title_elements = section.find_all(
+                    lambda tag: tag.name.endswith("titleInfo")
+                )
+        titles = [
+            ti.get_text(" ", strip=True)
+            for ti in title_elements
+            if ti.get_text(strip=True)
+        ]
+        
+        item_title = None
+        # if only one, take it
+        if len(titles) == 1:
+            item_title = titles[0]
+        # if more than 2, join them
+        elif len(titles) >= 2:
+            first, second = titles[0], titles[1]
+            # heuristic: short first title = rubric
+            if len(first.split()) <= 2:
+                item_title = f"{first} : {second}"
+            else:
+                item_title = " — ".join(titles)
 
         metadata = {
             "id": f"{self.id}-i{str(counter).zfill(4)}",
             "pp": [],
             "tp": CONTENTITEM_TYPE_ARTICLE,
         }
-        if item_title:
-            metadata["t"] = item_title
+        if item_title and item_title.strip():
+            metadata["t"] = item_title.strip()
+        
+        langs = section.find(
+            lambda t: t.name.endswith("languageTerm")
+            and t.get("type") == "code"
+        )
+        lang = langs.get_text(strip=True) if langs else None
+        if lang:
+            metadata["lg"] = lang
 
         parts = self._parse_mets_div(section_div)
 
@@ -519,7 +603,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             list[dict[str, Any]]: Updated content items
         """
         counter = start_counter
-        sections = mets_doc.findAll("dmdSec")
+        sections = mets_doc.find_all("dmdSec")
 
         sections = sorted(sections, key=lambda elem: elem.get("ID").split("_")[1])
         # First look for sections and get their ID
@@ -552,7 +636,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
 
         # explain
         self.image_properties = parse_mets_amdsec(
-            mets_doc, x_res="xOpticalResolution", y_res="yOpticalResolution"
+            mets_doc, x_res="xOpticalResolution", y_res="yOpticalResolution", img_width="imageWidth", img_height="imageHeight"
         )
 
         # First find `ARTICLE` and `PICTURE` content items
@@ -571,26 +655,54 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
         content_items += section_cis
         # Set ark_id
         ark_link = mets_doc.find("mets").get("OBJID")
-        self.ark_id = ark_link.replace("https://persist.lu/ark:/", "ark:")
-
-        # compute the reading order for the issue's items
-        reading_order_dict = get_reading_order(content_items)
+        
+        # replace ark_id, 2 cases depending on old or new data
+        self.ark_id = ark_link.replace("https://persist.lu/", "")
+        self.ark_id = self.ark_id.replace("ark:/", "ark:")
+        
+        
+        # Build legacy -> canonical lookup once
+        legacy_to_canonical = {
+            ci["l"]["id"]: ci["m"]["id"]
+            for ci in content_items
+            if ci.get("l", {}).get("id") and ci.get("m", {}).get("id")
+        }
 
         for ci in content_items:
-
-            # ci['l']['parts'] = self._parse_mets_div(item_div)
-
+            ci["l"]["ark_id"] = self.ark_id
+            ci["l"]["src_files"] = {
+                "mets_xml": os.path.basename(self.mets_file),
+                "alto_xml": [],
+                "image_tif": []
+            }                    
+                    
             if ci["m"]["tp"] == "image":
+                ci["pOf"] = None
                 self._process_image_ci(ci, mets_doc)
+                if ci["pOf"]:
+                    ci["pOf"] = legacy_to_canonical.get(ci["pOf"], ci["pOf"])
             elif ci["m"]["tp"]:
                 for part in ci["l"]["parts"]:
                     page_no = part["comp_page_no"]
                     if page_no not in ci["m"]["pp"]:
                         ci["m"]["pp"].append(page_no)
+                        ci["l"]["src_files"]["alto_xml"].append(
+                        self.page_files_by_number[page_no]
+                    )
+                        ci["l"]["src_files"]["image_tif"].append(self.image_files_by_number[page_no])
 
-            # add the reading order
+            
+
+        # now we can get the reading order, after all CIs have been processed
+        reading_order_dict = get_reading_order(content_items)
+        # add the reading order
+        for ci in content_items:
             ci["m"]["ro"] = reading_order_dict[ci["m"]["id"]]
 
+        for p in self.pages:
+            p.add_issue(self)
+            
+            
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),

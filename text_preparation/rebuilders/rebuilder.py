@@ -460,8 +460,9 @@ def main() -> None:
                 ).persist()
 
                 progress(future)
+
                 # clear memory of objects once computations are done
-                if n%10==0 and n>0:
+                if n % 5 == 0 and n > 0:
                     client.restart()
                     rstrt_msg = f"Restarted client after finishing processing batch {n + 1}"
                     print(rstrt_msg)

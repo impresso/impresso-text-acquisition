@@ -135,6 +135,11 @@ class MetsAltoCanonicalPage(CanonicalPage):
                     # we want to make sure to link the images to their original CI,
                     # if it was already assigned for the rest of the CI
                     # continue
+                    
+                    # ONLY map parts that are on THIS page to avoid BLOCK-ID collisions
+                    if part.get("comp_page_no") != self.number:
+                        continue
+                    
                     mappings[part["comp_id"]] = ci_id
 
         pselement = doc.find("PrintSpace")

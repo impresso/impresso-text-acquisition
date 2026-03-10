@@ -45,6 +45,8 @@ TYPE_MAPPINGS = {
     "death_notice": "ob",
     "weather": "w",
     "chronicle": "ch",
+    "radio_bulletin": "rb",
+    "radio_broadcast_episode": "rbe"
 }
 # TODO KB data: add familial announcement?
 
@@ -172,7 +174,16 @@ def read_issue_supports(
     )
     # print(f"IN SUPPORTS 1: Filename to be loaded for {alias}-{year}: {filename}")
 
-    supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
+    try: 
+        supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
+    except Exception as e:
+        # sometimes the page/audi files do not exist
+        msg = f"{issue_json['id']} - in read_issue_supports: There was an error fetching and reading the supports for this issue (skipping): {e}."
+        print(msg)
+        logger.warning(msg)
+        # prepare for filtering out after
+        issue_json['has_problem'] = True
+        return (issue, issue_json)
 
     # print(f"IN SUPPORTS 2: number of loaded files for {alias}-{year}: {len(supports)}")
     if is_audio:
@@ -357,6 +368,11 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
     logger.debug(msg)
     cis = []
     for ci in issue_json["i"]:
+
+        if "has_problem" in issue_json and issue_json['has_problem']:
+            #if the issue was listed as having problems (missing page), remove all articles for it.
+            ci["has_problem"] = True
+            continue
 
         ci["has_problem"] = False
 

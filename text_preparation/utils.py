@@ -23,6 +23,13 @@ CANONICAL_PAGE_SCHEMA = "schemas/json/canonical/page.schema.json"
 CANONICAL_ISSUE_SCHEMA = "schemas/json/canonical/issue.schema.json"
 CANONICAL_RECORD_SCHEMA = "schemas/json/canonical/audio_record.schema.json"
 
+TP_RO_PRIORITY = {
+    "article": 0,
+    "table": 1,
+    "image": 2,
+    "ad": 3,
+}
+
 
 def get_page_schema(
     schema_folder: str = f"impresso-{CANONICAL_PAGE_SCHEMA}",
@@ -136,8 +143,29 @@ def verify_imported_issues(
         )
 
 
+# def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
+#     """Generate a reading order for items based on their id and the pages they span.
+
+#     This reading order can be used to display the content items properly in a table
+#     of contents without skipping form page to page.
+
+#     Args:
+#         items (list[dict[str, Any]]): List of items to reorder for the ToC.
+
+#     Returns:
+#         dict[str, int]: A dictionary mapping item IDs to their reading order.
+#     """
+#     items_copy = copy.deepcopy(items)
+#     ids_and_pages = [(i["m"]["id"], i["m"]["pp"]) for i in items_copy]
+#     sorted_ids = sorted(
+#         sorted(ids_and_pages, key=lambda x: int(x[0].split("-i")[-1])),
+#         key=lambda x: x[1][0],
+#     )
+#     return {t[0]: index + 1 for index, t in enumerate(sorted_ids)}
+
+
 def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
-    """Generate a reading order for items based on their id and the pages they span.
+    """Generate a reading order for items based on type, pages, and CI id.
 
     This reading order can be used to display the content items properly in a table
     of contents without skipping form page to page.
@@ -148,14 +176,33 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
     Returns:
         dict[str, int]: A dictionary mapping item IDs to their reading order.
     """
-    items_copy = copy.deepcopy(items)
-    ids_and_pages = [(i["m"]["id"], i["m"]["pp"]) for i in items_copy]
-    sorted_ids = sorted(
-        sorted(ids_and_pages, key=lambda x: int(x[0].split("-i")[-1])),
-        key=lambda x: x[1],
-    )
 
-    return {t[0]: index + 1 for index, t in enumerate(sorted_ids)}
+    def ci_index(ci_id: str) -> int:
+        # luxwort-1866-05-08-a-i0017 -> 17
+        return int(ci_id.split("-i")[-1])
+
+    def first_page(pp: list[int]) -> int:
+        return min(pp) if pp else 10_000
+
+    def type_priority(tp: str) -> int:
+        return TP_RO_PRIORITY.get(tp, 99)
+
+    sortable = []
+    for item in items:
+        m = item["m"]
+        sortable.append(
+            (
+                type_priority(m.get("tp")),
+                first_page(m.get("pp", [])),
+                ci_index(m["id"]),
+                m["id"],
+            )
+        )
+
+    # single stable sort
+    sortable.sort()
+
+    return {ci_id: idx + 1 for idx, (*_, ci_id) in enumerate(sortable)}
 
 
 def add_property(
@@ -417,3 +464,20 @@ def rescale_coords(
         scale_factor = int(dest_res) / int(curr_res) if int_sc_factor else dest_res / curr_res
 
         return [c * scale_factor for c in coords]
+
+
+def edition_num_to_code(edition: int) -> str:
+    """Convert 1-based numeric edition into letters like a, b, ..., z, aa, ab, ..."""
+    if not isinstance(edition, int):
+        raise TypeError("edition must be an integer")
+    if edition < 1:
+        raise ValueError("edition must be >= 1")
+
+    parts = []
+    n = edition
+    while n > 0:
+        n -= 1
+        parts.append(chr(ord("a") + (n % 26)))
+        n //= 26
+
+    return "".join(reversed(parts))
