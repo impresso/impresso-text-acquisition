@@ -677,9 +677,8 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             }                    
                     
             if ci["m"]["tp"] == "image":
-                ci["pOf"] = None
                 self._process_image_ci(ci, mets_doc)
-                if ci["pOf"]:
+                if "pOf" in ci:
                     ci["pOf"] = legacy_to_canonical.get(ci["pOf"], ci["pOf"])
             elif ci["m"]["tp"]:
                 for part in ci["l"]["parts"]:
@@ -709,6 +708,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             "ts": timestamp(),
             "st": SourceType.NP.value,
             "sm": SourceMedium.PT.value,
+            "olr": True,
             "i": content_items,
             "pp": [p.id for p in self.pages],
         }

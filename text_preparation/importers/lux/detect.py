@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 BASE_DIR = "/mnt/project_impresso/original"
 
-JSON_FILE = "../../data/sample_data/BNL/issues_to_ingest.json"
+JSON_FILE = "../data/sample_data/BNL/issues_to_ingest.json"
 
 LuxIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
@@ -50,8 +50,7 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
     m = int(month)
     d = int(entry["day"])
 
-    edition_num = int(entry["edition"])
-    edition = edition_num_to_code(edition_num)
+    edition = entry["edition"]
 
     return LuxIssueDir(
         provider="BNL",
