@@ -72,12 +72,12 @@ def parse_mets_amdsec(
         heigth_val = int(amd_sect.find(img_height).text) if img_height and amd_sect.find(img_height) else None
         try:
             x_res_val = (
-                int(amd_sect.find(x_res).text)
+                float(amd_sect.find(x_res).text)
                 if amd_sect.find(x_res) is not None
                 else x_res_default
             )
             y_res_val = (
-                int(amd_sect.find(y_res).text)
+                float(amd_sect.find(y_res).text)
                 if amd_sect.find(y_res) is not None
                 else x_res_default
             )                
@@ -91,13 +91,16 @@ def parse_mets_amdsec(
                 
         # if it fails it's because of value < 1
         except Exception as e:
-            logger.debug("Error occured when parsing %s", e)
+            msg = f"Error occured when parsing {e}"
+            logger.debug(msg)
+            print(msg)
             image_properties_dict[image_no] = {
                 "x_resolution": x_res_default,
                 "y_resolution": y_res_default,
                 "width": width_val,
                 "height": heigth_val,
             }
+
     return image_properties_dict
 
 

@@ -1,9 +1,11 @@
 """This module contains helper functions to find BNL OCR data to import.
 """
-
+import os
 from typing import Any
 from bs4.element import Tag
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
+import requests
+from ast import literal_eval
 
 
 NON_ARTICLE = ["advertisement", "death_notice"]
@@ -147,3 +149,14 @@ def remove_section_cis(
             removed.append(ci["m"]["id"])
 
     return new_cis, list(to_remove)
+
+def fetch_fwh_from_iiif(iiif_uri: str) -> tuple[int, int]:
+    if 'info.json' not in iiif_uri:
+        iiif_uri = os.path.join(iiif_uri, 'info.json')
+
+    r = requests.get(iiif_uri, timeout=60)
+
+    #soup.findAll("width"), soup.findAll("height")
+    dict_output = literal_eval(r.content.decode('utf-8'))
+
+    return dict_output['width'], dict_output['height']

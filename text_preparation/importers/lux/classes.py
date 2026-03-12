@@ -13,7 +13,7 @@ from time import strftime
 from typing import Any
 
 from bs4 import BeautifulSoup
-from bs4.element import NavigableString, Tag
+from bs4.element import Tag
 
 from impresso_essentials.utils import SourceMedium, SourceType, timestamp
 from text_preparation.importers import (
@@ -31,6 +31,7 @@ from text_preparation.importers.lux.helpers import (
     div_has_body,
     find_section_articles,
     remove_section_cis,
+    fetch_fwh_from_iiif
 )
 from text_preparation.importers.mets_alto.alto import parse_style
 from text_preparation.importers.mets_alto import (
@@ -84,8 +85,13 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
         
         # add width and height from METS
         img_props = self.issue.image_properties[self.number]
-        self.page_data["fw"] = img_props["width"]
-        self.page_data["fh"] = img_props["height"]
+
+        # sometimes the width and height were not defined in the mets, then fetch it from IIIF
+        if not img_props["width"] or not img_props["height"]:
+            self.page_data["fw"], self.page_data["fh"] = fetch_fwh_from_iiif(self.page_data["iiif_img_base_uri"])
+        else:
+            self.page_data["fw"] = img_props["width"]
+            self.page_data["fh"] = img_props["height"]
         
         self._parse_font_styles()
 
