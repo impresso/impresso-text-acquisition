@@ -99,15 +99,17 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
         success = False
         try:
             img_props = self.issue.image_properties[self.number]
-            x_res = img_props["x_resolution"]
-            y_res = img_props["y_resolution"]
+            # hotfix: in many cases the resolution is 300 (conversion was correct) 
+            # in others it's floats (conversion was incorrect)
+            x_res = img_props["x_resolution"] if img_props["x_resolution"]>=1 else 300
+            y_res = img_props["y_resolution"] if img_props["x_resolution"]>=1 else 300
 
-            for region in page_regions:
+            for idx, region in enumerate(page_regions):
 
                 x, y, w, h = region["c"]
                 region["c"] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                msg = f"Page {self.number}: {x},{y},{w},{h} => {region['c']}"
+                msg = f"{self.id} - Page {self.number}: {x},{y},{w},{h} => {region['c']} - iiif: {self.page_data['iiif_img_base_uri']}"
                 logger.debug(msg)
 
                 for paragraph in region["p"]:
@@ -115,23 +117,23 @@ class LuxNewspaperPage(MetsAltoCanonicalPage):
                     x, y, w, h = paragraph["c"]
                     paragraph["c"] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                    msg = f"(para) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}"
-                    logger.debug(msg)
+                    #msg = f"(para) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}"
+                    #logger.debug(msg)
 
                     for line in paragraph["l"]:
 
                         x, y, w, h = line["c"]
                         line["c"] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                        msg = f"(line) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}"
-                        logger.debug(msg)
+                        #msg = f"(line) Page {self.number}: {x},{y},{w},{h} => {paragraph['c']}"
+                        #logger.debug(msg)
 
                         for token in line["t"]:
                             x, y, w, h = token["c"]
                             token["c"] = convert_coordinates(x, y, w, h, x_res, y_res)
 
-                            msg = f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}"
-                            logger.debug(msg)
+                            #msg = f"(token) Page {self.number}: {x},{y},{w},{h} => {token['c']}"
+                            #logger.debug(msg)
             success = True
         except Exception as e:
             logger.error("Error %s occurred when converting coordinates for %s", e, self.id)

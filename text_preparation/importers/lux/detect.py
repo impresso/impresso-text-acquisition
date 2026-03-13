@@ -123,7 +123,7 @@ def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
         and i.alias not in exclude_list
     ).compute()
-
+    
     exclude_flag = False if not exclude_list else True
     filtered_issues = (
         _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
@@ -135,4 +135,5 @@ def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
         f"after applying filter: {filtered_issues}"
     )
     logger.info(msg)
+
     return filtered_issues

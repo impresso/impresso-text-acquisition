@@ -706,13 +706,18 @@ def upload_issues(
         try:
             bucket = s3.Bucket(bucket_name)
             bucket.upload_file(filepath, key_name)
-            logger.info("Uploaded %s to %s", filepath, key_name)
+            msg = f"Uploaded {filepath} to {key_name} in bucket: {bucket_name}."
+            logger.debug(msg)
             return True, filepath
         except BotoCoreError as e:
-            logger.error("The upload of %s failed with error %s", filepath, e)
+            msg = f"The upload of {filepath} failed with error {e}"
+            print(msg)
+            logger.error(msg)
             write_error(filepath, e, failed_log)
     else:
-        logger.info("Bucket name is None, not uploading issue %s.", filepath)
+        msg = f"Bucket name is None, not uploading issue {filepath}."
+        print(msg)
+        logger.error(msg)
     return False, filepath
 
 
