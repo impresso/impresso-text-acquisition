@@ -20,10 +20,10 @@ def distill_coordinates(element: Tag) -> list[int]:
         list[int]: An ordered list of coordinates (``x``, ``y``, ``width``,
             ``height``).
     """
-    hpos = int(float(element.get("HPOS")))
-    vpos = int(float(element.get("VPOS")))
-    width = int(float(element.get("WIDTH")))
-    height = int(float(element.get("HEIGHT")))
+    hpos = int(element.get("HPOS"))
+    vpos = int(element.get("VPOS"))
+    width = int(element.get("WIDTH"))
+    height = int(element.get("HEIGHT"))
 
     # NB: these coordinates need to be converted
     return [hpos, vpos, width, height]
@@ -57,8 +57,14 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
                 notes.append(f"Token {child.get('ID')} does not have coordinates")
                 coords = None
                 continue
+            except ValueError:
+                msg = f"Token {child.get('ID')} does not have coordinates"
+                print(msg)
+                notes.append(msg)
+                coords = None
+                continue
 
-            token = {"c": coords, "tx": child.get("CONTENT")}
+            token = {"c": coords, "tx": child.get("CONTENT", "")}
 
             if child.get("SUBS_TYPE") == "HypPart1":
                 # token['tx'] += u"\u00AD"

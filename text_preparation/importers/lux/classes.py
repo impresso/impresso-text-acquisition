@@ -708,13 +708,13 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
 
         for p in self.pages:
             p.add_issue(self)
-            
+        
             
         self.issue_data = {
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
-            "st": SourceType.NP.value,
+            "st": SourceType.NP.value if self.alias not in "revue" else SourceType.RM.value,
             "sm": SourceMedium.PT.value,
             "olr": True,
             "i": content_items,

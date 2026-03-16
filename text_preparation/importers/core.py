@@ -73,20 +73,22 @@ def write_error(
     logger.error("Error when processing %s: %s", thing, error)
     logger.exception(error)
 
-    if isinstance(thing, str):
+    issuedir = None
+
+    if isinstance(thing, CanonicalPage):
+        issuedir = thing.issue.issuedir
+    if isinstance(thing, CanonicalAudioRecord):
+        issuedir = thing.issue.issuedir
+    elif isinstance(thing, CanonicalIssue):
+        issuedir = thing.issuedir
+    elif isinstance(thing, IssueDir):
+        # if it's neither an issue nor a page it must be an issuedir
+        issuedir = thing
+    else:
         # if thing is a string, it's the canonical id of the object
         note = f"{thing}: {error}"
-    else:
-        if isinstance(thing, CanonicalPage):
-            issuedir = thing.issue.issuedir
-        if isinstance(thing, CanonicalAudioRecord):
-            issuedir = thing.issue.issuedir
-        elif isinstance(thing, CanonicalIssue):
-            issuedir = thing.issuedir
-        else:
-            # if it's neither an issue nor a page it must be an issuedir
-            issuedir = thing
 
+    if issuedir is not None:
         note = f"{canonical_path(issuedir)}: {error}"
 
     if failed_log is not None:
