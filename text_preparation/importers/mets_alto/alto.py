@@ -20,10 +20,10 @@ def distill_coordinates(element: Tag) -> list[int]:
         list[int]: An ordered list of coordinates (``x``, ``y``, ``width``,
             ``height``).
     """
-    hpos = int(element.get("HPOS"))
-    vpos = int(element.get("VPOS"))
-    width = int(element.get("WIDTH"))
-    height = int(element.get("HEIGHT"))
+    hpos = int(float(element.get("HPOS")))
+    vpos = int(float(element.get("VPOS")))
+    width = int(float(element.get("WIDTH")))
+    height = int(float(element.get("HEIGHT")))
 
     # NB: these coordinates need to be converted
     return [hpos, vpos, width, height]

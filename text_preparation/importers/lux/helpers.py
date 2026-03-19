@@ -142,11 +142,16 @@ def remove_section_cis(
 
     to_remove = set(to_remove)
     new_cis = []
-    removed = []
+    not_removed = []
+
     for ci in content_items:
         if ci["m"]["id"] not in to_remove or ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
             new_cis.append(ci)
-            removed.append(ci["m"]["id"])
+            not_removed.append(ci["m"]["id"])
+
+    print(f"inside remove_section_cis CIs to remove AFTER: {to_remove}")
+    #print(f"inside remove_section_cis last CI: {new_cis[-1]}")
+    print(f"inside remove_section_cis not_removed: {not_removed}")
 
     return new_cis, list(to_remove)
 
