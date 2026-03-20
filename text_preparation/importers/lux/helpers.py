@@ -51,7 +51,7 @@ def encode_ark(ark: str) -> str:
     return ark.replace("/", "%2f")
 
 
-def div_has_body(div: Tag, body_type="body") -> bool:
+def div_has_body_or_article(div: Tag, body_type="body", article_type="article") -> bool:
     """Checks if the given `div` has a body in it's direct children.
 
     Args:
@@ -66,7 +66,7 @@ def div_has_body(div: Tag, body_type="body") -> bool:
         child_type = i.get("TYPE")
         if child_type is not None:
             children_types.add(child_type.lower())
-    return body_type in children_types
+    return body_type in children_types, article_type in children_types
 
 
 def section_is_article(section_div: Tag) -> bool:
