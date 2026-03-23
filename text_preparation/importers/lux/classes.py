@@ -550,29 +550,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 self._notes.append(err_msg)
                 logger.exception(e)
 
-    def _parse_section(
-        self,
-        section: Tag,
-        section_div: Tag,
-        content_items: list[dict[str, Any]],
-        counter: int,
-    ) -> dict[str, Any]:
-        """Reconstruct the section using the div and previously created CIs.
-
-        In the `l` field of the ci, an additional field `canonical_parts`
-        points to articles that were added to this section.
-        (Bugfix done by Edoardo)
-
-        Args:
-            section (Tag): `<dmdSec>` section of the Mets XML file.
-            section_div (Tag): `<div>` section with corresponding DMDID.
-            content_items (list[dict[str, Any]]): Incomplete content items.
-            counter (int): Content item counter.
-
-        Returns:
-            dict[str, Any]: Content item of the reconstructed section.
-        """
-        
+    def _pasrse_section_title(self, section:Tag) -> str:
         title_elements = section.find_all(
                     lambda tag: tag.name.endswith("titleInfo")
                 )
@@ -594,14 +572,48 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 item_title = f"{first} : {second}"
             else:
                 item_title = " — ".join(titles)
+        
+        if item_title and item_title.strip():
+            return item_title.strip()
+        else:
+            msg = f"{self.id} - Problem when parsing the title of section {section.get('ID')}: item_title={item_title}"
+            if item_title:
+                msg = msg + f", item_title.strip()={item_title.strip()}"
+            print(msg)
+            logger.warning(msg)
+            return None
+        
+    def _parse_section(
+        self,
+        section: Tag,
+        section_div: Tag,
+        section_title: str|None,
+        content_items: list[dict[str, Any]],
+        counter: int,
+    ) -> dict[str, Any]:
+        """Reconstruct the section using the div and previously created CIs.
+
+        In the `l` field of the ci, an additional field `canonical_parts`
+        points to articles that were added to this section.
+        (Bugfix done by Edoardo)
+
+        Args:
+            section (Tag): `<dmdSec>` section of the Mets XML file.
+            section_div (Tag): `<div>` section with corresponding DMDID.
+            content_items (list[dict[str, Any]]): Incomplete content items.
+            counter (int): Content item counter.
+
+        Returns:
+            dict[str, Any]: Content item of the reconstructed section.
+        """
 
         metadata = {
             "id": f"{self.id}-i{str(counter).zfill(4)}",
             "pp": [],
             "tp": CONTENTITEM_TYPE_ARTICLE,
         }
-        if item_title and item_title.strip():
-            metadata["t"] = item_title.strip()
+        if section_title:
+            metadata["t"] = section_title
         
         langs = section.find(
             lambda t: t.name.endswith("languageTerm")
@@ -657,16 +669,38 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     self._notes.append(err_msg)
                     logger.error(err_msg)
                     continue
-                has_body, has_artcle = div_has_body_or_article(div)
+
+                has_body, has_article = div_has_body_or_article(div)
+                section_title = self._pasrse_section_title(section)
+
                 if has_body and section_is_article(div):
-                    new_section = self._parse_section(section, div, content_items, counter)
+                    new_section = self._parse_section(section, div, section_title, content_items, counter)
                     new_sections.append(new_section)
                     counter += 1
+
                 # find all the content-items which are a section which is not reconstructed into a CI
                 # and take note of its title, and the articles which are part of it
-                elif has_artcle:
-                    # TODO create section title element and add it to the content items of all sub articles within this section
-                    continue
+                elif has_article and section_title is not None:
+                    section_heading_div = div.findChildren("div", {"TYPE": 'HEADING'}, recursive=False)
+                    section_heading_parts = [] #self._parse_mets_div(section_heading_div[0])
+                    for head_div in section_heading_div:
+                        section_heading_parts.extend(self._parse_mets_div(head_div))
+                    composing_cis = find_section_articles(div, content_items)
+
+                    section_title_obj = {
+                        "title_text": section_title,
+                        "composing_ci_ids": composing_cis,
+                        "section_id": section_id,
+                        "heading_legacy_parts": section_heading_parts
+                    }
+
+                    for ci in content_items:
+                        # add the section title info to the CI + the section title to its parts
+                        if ci['m']['id'] in composing_cis:
+                            ci['section_title'] = section_title_obj
+                            print(f"{self.id}: adding section title to CI {ci['m']['id']} - {ci}")
+                            ci['l']['parts'] = section_title_obj['heading_legacy_parts'] + ci['l']['parts']
+
         return new_sections
 
     def _parse_mets(self) -> None:

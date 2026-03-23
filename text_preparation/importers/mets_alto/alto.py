@@ -79,7 +79,7 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     return line, notes
 
 
-def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict], list[str]]:
+def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: None | dict[str, list[str]]=None) -> tuple[list[dict], list[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
     This element contains all the OCR information about the content items of
@@ -138,8 +138,14 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
 
             region = {"c": coordinates, "p": [paragraph]}
 
-            if part_of_contentitem:
+            if section_mappings is not None and block_id in section_mappings:
+                region["section_pOf"] = section_mappings[block_id]
+            elif part_of_contentitem:
                 region["pOf"] = part_of_contentitem
+                if 'SECT' in block_id and part_of_contentitem in ['freihet-1946-09-01-a-i0035', 'freihet-1946-09-01-a-i0036', 'freihet-1946-09-01-a-i0037', 'freihet-1946-09-01-a-i0038', 'freihet-1946-09-01-a-i0039', 'freihet-1946-09-01-a-i0040', 'freihet-1946-09-01-a-i0041', 'freihet-1946-09-01-a-i0042', 'freihet-1946-09-01-a-i0043', 'freihet-1946-09-01-a-i0044', 'freihet-1946-09-01-a-i0046', 'freihet-1946-09-01-a-i0047']:
+                    print(f"CI part {block_id} added pOf of ci {part_of_contentitem}: region['pOf']={region['pOf']}")
+
+            
             """else:
                 print(f"Block {block_id} not in mappings: {mappings}")"""
 
