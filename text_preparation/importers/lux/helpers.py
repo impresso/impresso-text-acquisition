@@ -65,6 +65,12 @@ def div_has_body_or_article(div: Tag, body_type="body", article_type="article") 
     for i in div.findChildren("div", recursive=False):
         child_type = i.get("TYPE")
         if child_type is not None:
+            # if the only body div only contains an illustration, consider it as a section
+            if child_type.lower() == 'body':
+                grandchild_divs = i.findChildren("div", recursive=False)
+                if len(grandchild_divs)==1 and grandchild_divs[0] is not None and grandchild_divs[0].get("TYPE") == "ILLUSTRATION":
+                    print(f"When cheking if the CIs of a section (id: {div.get('ID')})should be merged, came across the specific case of a 'body' div, which only contained an illustration, skipping it.")
+                    continue
             children_types.add(child_type.lower())
     return body_type in children_types, article_type in children_types
 
@@ -149,9 +155,9 @@ def remove_section_cis(
             new_cis.append(ci)
             not_removed.append(ci["m"]["id"])
 
-    print(f"inside remove_section_cis CIs to remove AFTER: {to_remove}")
+    #print(f"inside remove_section_cis CIs to remove AFTER: {to_remove}")
     #print(f"inside remove_section_cis last CI: {new_cis[-1]}")
-    print(f"inside remove_section_cis not_removed: {not_removed}")
+    #print(f"inside remove_section_cis not_removed: {not_removed}")
 
     return new_cis, list(to_remove)
 
