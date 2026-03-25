@@ -776,7 +776,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             "id": self.id,
             "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
-            "st": SourceType.NP.value if self.alias not in "revue" else SourceType.RM.value,
+            "st": SourceType.NP.value, # if self.alias not in "revue" else SourceType.RM.value,
             "sm": SourceMedium.PT.value,
             "olr": True,
             "i": content_items,
