@@ -143,12 +143,8 @@ class MetsAltoCanonicalPage(CanonicalPage):
                     
                     mappings[part["comp_id"]] = ci_id
             if 'section_title' in ci:
-                #print(f"{self.id} - section {ci['m']['section_title']['section_id']} ")
-                #section_mappings[ci['m']['section_title']['section_id']] = ci['m']['section_title']['composing_ci_ids']
                 for part in ci['section_title']["heading_legacy_parts"]:
                     if part.get("comp_page_no") == self.number:
-                        #print(f"{self.id} - {ci_id} - section {ci['section_title']['section_id']} - adding section mapping for part {part['comp_id']}, composiing_ci_ids={ci['section_title']['composing_ci_ids']}")
-                        #print(f"{self.id} - {ci_id} - part={part}, ci['section_title']['heading_legacy_parts']={ci['section_title']['heading_legacy_parts']}")
                         section_mappings[part['comp_id']] = ci['section_title']['composing_ci_ids']
 
         pselement = doc.find("PrintSpace")

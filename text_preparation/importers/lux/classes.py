@@ -327,7 +327,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     "id": f"{self.id}-i{str(counter).zfill(4)}",
                     "pp": [], # TODO why are the pages not listed here??
                     "tp": item_type
-,
                 }
 
                 # Find the parts
@@ -360,23 +359,9 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     and ("PICT" in section_id)
                     and (item_div.get("TYPE") == "ADVERTISEMENT")
                 ):  
-                    #print(f"(1 INSIDE _parse_dmdsec) - added item {counter} (from item_div {item_div} and section {section_id}) to the list of cis: {item}") # TODO
-                    #if "CHAP" in section_id:
-                    #    print(f"Chapter section: {section_id} - item {item['m']['id']} will be added to the issue")
                     content_items.append(item)
-                #elif "CHAP" in section_id:
-                    #print(f"Chapter section: {section_id} - item {item['m']['id']} NOT added to the issue")
-                    #print(f"(2 INSIDE _parse_dmdsec) - DID NOT ADD item (from item_div {item_div} and section {section_id}) to the list of cis: {item}") # TODO
-
-                """parent_div = section.parent
-                if parent_div.get("TYPE") is not None and parent_div.get("TYPE")
-                t = (parent_div.get("TYPE") or "").lower()
-                if t in {"article", "sect", "section"} and parent_div.get("DMDID"):
-                    parent_dmdid = parent_div.get("DMDID")"""
 
                 counter += 1
-            #else:
-                #print(f"(3 INSIDE _parse_dmdsec) - Section with ID {section_id} was skipped")
 
         return content_items, counter
 
@@ -449,7 +434,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             mets_doc (BeautifulSoup): Contents of Mets XML file.
         """
         #og_ci = ci
-        #print(f"0 processed image CI into table:\n original CI: {og_ci}")
         item_div = mets_doc.find_all("div", {"DMDID": ci["l"]["id"]})
         if len(item_div) > 0:
             item_div = item_div[0]
@@ -481,7 +465,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     ci["m"]["pp"].append(page_no)
                     ci["l"]["src_files"]["alto_xml"].append(self.page_files_by_number[page_no])
                     ci["l"]["src_files"]["image_tif"].append(self.image_files_by_number[page_no])
-            #print(f"1 processed image CI into table:\n original CI: {og_ci}\n newly processed CI: {ci}")
 
         elif item_div.get("TYPE").lower() == "illustration":
 
@@ -492,7 +475,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             except IndexError as e:
                 err_msg = f"{legacy_id} without image subpart"
                 err_msg += f"; {legacy_id} has {ci['l']['parts']}"
-                #print(f"2 processed image CI found err:\n original CI: {og_ci}\n newly processed CI: {ci}\n error: {err_msg}")
                 logger.error(err_msg)
                 self._notes.append(err_msg)
                 logger.exception(e)
@@ -522,7 +504,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
 
                 composed_block = page_xml.find("ComposedBlock", {"ID": part["comp_id"]})
 
-                #print(f"2.5 processed image CI:\n original CI: {og_ci}\n composed_block: {composed_block}")
                 if composed_block:
                     graphic_el = composed_block.find("GraphicalElement")
 
@@ -531,7 +512,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 else:
                     graphic_el = page_xml.find("Illustration", {"ID": part["comp_id"]})
                 
-                #print(f"2.5 processed image CI:\n original CI: {og_ci}\n graphic_el: {graphic_el}")
 
                 hpos = int(float(graphic_el.get("HPOS")))
                 vpos = int(float(graphic_el.get("VPOS")))
@@ -550,16 +530,14 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 ci["c"] = list(coordinates)
                 ## WHY remove the parts!!??
                 #del ci["l"]["parts"]
-                #print(f"3 processed image CI:\n original CI: {og_ci}\n newly processed CI: {ci}")
             except Exception as e:
                 err_msg = f"{self.id} An error occurred with {os.path.join(curr_page.basedir, curr_page.filename)}. "
                 err_msg += f"<ComposedBlock> @ID {part['comp_id']} not found"
-                #print(f"4 processed image CI:\n original CI: {og_ci}\n newly processed CI: {ci}\n error: {err_msg}")
                 logger.error(err_msg)
                 self._notes.append(err_msg)
                 logger.exception(e)
 
-    def _pasrse_section_title(self, section:Tag) -> str:
+    def _parse_section_title(self, section:Tag, section_div:Tag) -> str:
         title_elements = section.find_all(
                     lambda tag: tag.name.endswith("titleInfo")
                 )
@@ -581,7 +559,11 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 item_title = f"{first} : {second}"
             else:
                 item_title = " — ".join(titles)
-        
+
+        if item_title is None:
+            # if there is no "titleInfo" section in the dmdSec, try to see if the structMap div has it.
+            item_title = section_div.get("LABEL")
+
         if item_title and item_title.strip():
             return item_title.strip()
         else:
@@ -643,7 +625,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 "canonical_parts": old_cis,
             },
         }
-        #print(f" {self.id} - Reconstructed section CI: {item}")
+
         return item
 
     def _parse_sections(
@@ -680,7 +662,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     continue
 
                 has_body, has_article = div_has_body_or_article(div)
-                section_title = self._pasrse_section_title(section)
+                section_title = self._parse_section_title(section, div)
 
                 if has_body and section_is_article(div):
                     new_section = self._parse_section(section, div, section_title, content_items, counter)
@@ -695,7 +677,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                     for head_div in section_heading_div:
                         section_heading_parts.extend(self._parse_mets_div(head_div))
                     composing_cis = find_section_articles(div, content_items)
-                    #print(f"{self.id} - just after find_section_articles for section {section_id}, with div {div.get('ID')}, got composing_cis={composing_cis}")
 
                     section_title_obj = {
                         "title_text": section_title,
@@ -708,7 +689,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                         # add the section title info to the CI + the section title to its parts
                         if ci['m']['id'] in composing_cis:
                             ci['section_title'] = section_title_obj
-                            #print(f"{self.id}: adding section title to CI {ci['m']['id']} - {ci}")
                             ci['l']['parts'] = section_title_obj['heading_legacy_parts'] + ci['l']['parts']
 
         return new_sections
@@ -757,11 +737,8 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             for ci in content_items
             if ci.get("l", {}).get("id") and ci.get("m", {}).get("id")
         }
-        #print(f" A. legacy_to_canonical: {legacy_to_canonical}")
 
         for ci in content_items:
-            #if ci["m"]["tp"] == "image":
-            #    print(f" B. CI at moment of reconstruction and legacy addition: {ci}")
             ci["l"]["ark_id"] = self.ark_id
             ci["l"]["src_files"] = {
                 "mets_xml": os.path.basename(self.mets_file),
@@ -770,15 +747,11 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             }                    
                     
             if ci["m"]["tp"] == "image":
-                #print(f' C. inside parse_mets, about to process image CI {ci["m"]["id"]}')
                 self._process_image_ci(ci, mets_doc)
                 if "pOf" in ci:
                     ci["pOf"] = legacy_to_canonical.get(ci["pOf"], ci["pOf"])
-                #print(f' D. inside parse_mets, right after processing image CI {ci["m"]["id"]}: {ci}')
 
             if ci["m"]["tp"]:
-                #if ci["m"]["tp"] == "image":
-                    #print(f' E. inside parse_mets, about to add page and legacy to CI {ci["m"]["id"]}: {ci}')
                 for part in ci["l"]["parts"]:
                     page_no = part["comp_page_no"]
                     if page_no not in ci["m"]["pp"]:
@@ -788,8 +761,6 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                         )
                         ci["l"]["src_files"]["image_tif"].append(self.image_files_by_number[page_no])
 
-            #if ci["m"]["tp"] == "image":
-            #    print(f' F. processed CI {ci["m"]["id"]}, with pp: {ci["m"]["pp"]} and l: {ci["l"]}') 
 
         # now we can get the reading order, after all CIs have been processed
         reading_order_dict = get_reading_order(content_items)
