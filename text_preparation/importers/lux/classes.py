@@ -426,7 +426,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
 
         return content_items, counter
 
-    def _process_image_ci(self, ci: dict[str, Any], mets_doc: BeautifulSoup) -> None:
+    def _process_image_ci(self, ci: dict[str, Any], mets_doc: BeautifulSoup, legacy_to_canonical:dict[str, str]) -> None:
         """Process an image content item to complete its information.
 
         Args:
@@ -448,11 +448,14 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
                 t = (parent_div.get("TYPE") or "").lower()
                 if t in {"article", "sect", "section"} and parent_div.get("DMDID"):
                     parent_dmdid = parent_div.get("DMDID")
-                    break
+                    if parent_dmdid in legacy_to_canonical:
+                        # if the current dmdid found belongs to a CI, stop the search
+                        break
             parent_div = parent_div.parent
 
         if parent_dmdid:
-            ci["pOf"] = parent_dmdid
+            # if a corresponding CI was found, directly set it, otherwise keep the dmdid
+            ci["pOf"] = parent_dmdid if parent_dmdid not in legacy_to_canonical else legacy_to_canonical[parent_dmdid]
         
         legacy_id = item_div.get("ID")
         # Image is actually table
@@ -747,9 +750,7 @@ class LuxNewspaperIssue(MetsAltoCanonicalIssue):
             }                    
                     
             if ci["m"]["tp"] == "image":
-                self._process_image_ci(ci, mets_doc)
-                if "pOf" in ci:
-                    ci["pOf"] = legacy_to_canonical.get(ci["pOf"], ci["pOf"])
+                self._process_image_ci(ci, mets_doc, legacy_to_canonical)
 
             if ci["m"]["tp"]:
                 for part in ci["l"]["parts"]:
