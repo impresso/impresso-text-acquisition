@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 BASE_DIR = "/mnt/project_impresso/original"
 
-JSON_FILE = "../../data/sample_data/BNL/issues_to_ingest.json"
+JSON_FILE = "../data/sample_data/BNL/issues_to_ingest.json"
 
 LuxIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
@@ -50,8 +50,7 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
     m = int(month)
     d = int(entry["day"])
 
-    edition_num = int(entry["edition"])
-    edition = edition_num_to_code(edition_num)
+    edition = entry["edition"]
 
     return LuxIssueDir(
         provider="BNL",
@@ -124,7 +123,7 @@ def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
         and i.alias not in exclude_list
     ).compute()
-
+    
     exclude_flag = False if not exclude_list else True
     filtered_issues = (
         _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
@@ -136,4 +135,5 @@ def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
         f"after applying filter: {filtered_issues}"
     )
     logger.info(msg)
+
     return filtered_issues
