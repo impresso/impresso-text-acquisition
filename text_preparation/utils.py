@@ -30,6 +30,7 @@ TP_RO_PRIORITY = {
     "ad": 3,
 }
 
+
 def get_page_schema(
     schema_folder: str = f"impresso-{CANONICAL_PAGE_SCHEMA}",
 ) -> pjs.util.Namespace:
@@ -162,9 +163,10 @@ def verify_imported_issues(
 #     )
 #     return {t[0]: index + 1 for index, t in enumerate(sorted_ids)}
 
+
 def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
     """Generate a reading order for items based on type, pages, and CI id.
-    
+
     This reading order can be used to display the content items properly in a table
     of contents without skipping form page to page.
 
@@ -188,17 +190,20 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
     sortable = []
     for item in items:
         m = item["m"]
-        sortable.append((
-            type_priority(m.get("tp")),
-            first_page(m.get("pp", [])),
-            ci_index(m["id"]),
-            m["id"],
-        ))
+        sortable.append(
+            (
+                type_priority(m.get("tp")),
+                first_page(m.get("pp", [])),
+                ci_index(m["id"]),
+                m["id"],
+            )
+        )
 
     # single stable sort
     sortable.sort()
 
     return {ci_id: idx + 1 for idx, (*_, ci_id) in enumerate(sortable)}
+
 
 def add_property(
     object_dict: dict[str, Any],
@@ -459,3 +464,20 @@ def rescale_coords(
         scale_factor = int(dest_res) / int(curr_res) if int_sc_factor else dest_res / curr_res
 
         return [c * scale_factor for c in coords]
+
+
+def edition_num_to_code(edition: int) -> str:
+    """Convert 1-based numeric edition into letters like a, b, ..., z, aa, ab, ..."""
+    if not isinstance(edition, int):
+        raise TypeError("edition must be an integer")
+    if edition < 1:
+        raise ValueError("edition must be >= 1")
+
+    parts = []
+    n = edition
+    while n > 0:
+        n -= 1
+        parts.append(chr(ord("a") + (n % 26)))
+        n //= 26
+
+    return "".join(reversed(parts))

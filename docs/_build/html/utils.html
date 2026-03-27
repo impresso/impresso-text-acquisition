@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -7,15 +5,19 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Utilities &mdash; Impresso Text Preparation  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
   
-      <script src="_static/jquery.js?v=5d32c60e"></script>
-      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -53,6 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.coords_to_xy"><code class="docutils literal notranslate"><span class="pre">coords_to_xy()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.coords_to_xywh"><code class="docutils literal notranslate"><span class="pre">coords_to_xywh()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.draw_box_on_img"><code class="docutils literal notranslate"><span class="pre">draw_box_on_img()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.edition_num_to_code"><code class="docutils literal notranslate"><span class="pre">edition_num_to_code()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.empty_folder"><code class="docutils literal notranslate"><span class="pre">empty_folder()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.get_issue_schema"><code class="docutils literal notranslate"><span class="pre">get_issue_schema()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#text_preparation.utils.get_page_schema"><code class="docutils literal notranslate"><span class="pre">get_page_schema()</span></code></a></li>
@@ -164,7 +167,7 @@ Defaults to False.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.utils.draw_box_on_img">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">draw_box_on_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_img_path:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_xy:</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img:</span> <span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/rcp-scratch/iccluster040_scratch/piconti/.conda/envs/text_prep/lib/python3.11/site-packages/PIL/Image.py'&gt;</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'red'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/rcp-scratch/iccluster040_scratch/piconti/.conda/envs/text_prep/lib/python3.11/site-packages/PIL/Image.py'&gt;</span></span></span><a class="headerlink" href="#text_preparation.utils.draw_box_on_img" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">draw_box_on_img</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_img_path:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords_xy:</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img:</span> <span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/opt/homebrew/anaconda3/envs/text_prep/lib/python3.11/site-packages/PIL/Image.py'&gt;</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">'red'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/opt/homebrew/anaconda3/envs/text_prep/lib/python3.11/site-packages/PIL/Image.py'&gt;</span></span></span><a class="headerlink" href="#text_preparation.utils.draw_box_on_img" title="Link to this definition"></a></dt>
 <dd><p>Draw a bounding box on an image given coordinates in x1y1x2y2 format.</p>
 <p>The image can either be provided through its path, or as a PIL.Image object (specifically
 if other bboxes have already been drawn on it.)</p>
@@ -186,6 +189,12 @@ if other bboxes have already been drawn on it.)</p>
 <dd class="field-odd"><p>Image</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.utils.edition_num_to_code">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">edition_num_to_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.utils.edition_num_to_code" title="Link to this definition"></a></dt>
+<dd><p>Convert 1-based numeric edition into letters like a, b, …, z, aa, ab, …</p>
 </dd></dl>
 
 <dl class="py function">
@@ -238,7 +247,7 @@ if other bboxes have already been drawn on it.)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.utils.get_reading_order">
 <span class="sig-prename descclassname"><span class="pre">text_preparation.utils.</span></span><span class="sig-name descname"><span class="pre">get_reading_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.utils.get_reading_order" title="Link to this definition"></a></dt>
-<dd><p>Generate a reading order for items based on their id and the pages they span.</p>
+<dd><p>Generate a reading order for items based on type, pages, and CI id.</p>
 <p>This reading order can be used to display the content items properly in a table
 of contents without skipping form page to page.</p>
 <dl class="field-list simple">

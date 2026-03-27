@@ -1,9 +1,11 @@
 """This module contains helper functions to find BNL OCR data to import.
 """
-
+import os
 from typing import Any
 from bs4.element import Tag
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
+import requests
+from ast import literal_eval
 
 
 NON_ARTICLE = ["advertisement", "death_notice"]
@@ -49,7 +51,7 @@ def encode_ark(ark: str) -> str:
     return ark.replace("/", "%2f")
 
 
-def div_has_body(div: Tag, body_type="body") -> bool:
+def div_has_body_or_article(div: Tag, body_type="body", article_type="article") -> bool:
     """Checks if the given `div` has a body in it's direct children.
 
     Args:
@@ -63,8 +65,14 @@ def div_has_body(div: Tag, body_type="body") -> bool:
     for i in div.findChildren("div", recursive=False):
         child_type = i.get("TYPE")
         if child_type is not None:
+            # if the only body div only contains an illustration, consider it as a section
+            if child_type.lower() == 'body':
+                grandchild_divs = i.findChildren("div", recursive=False)
+                if len(grandchild_divs)==1 and grandchild_divs[0] is not None and grandchild_divs[0].get("TYPE") == "ILLUSTRATION":
+                    print(f"When cheking if the CIs of a section (id: {div.get('ID')}) should be merged, came across the specific case of a 'body' div, which only contained an illustration, skipping it.")
+                    continue
             children_types.add(child_type.lower())
-    return body_type in children_types
+    return body_type in children_types, article_type in children_types
 
 
 def section_is_article(section_div: Tag) -> bool:
@@ -140,10 +148,22 @@ def remove_section_cis(
 
     to_remove = set(to_remove)
     new_cis = []
-    removed = []
+    not_removed = []
+
     for ci in content_items:
         if ci["m"]["id"] not in to_remove or ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
             new_cis.append(ci)
-            removed.append(ci["m"]["id"])
+            not_removed.append(ci["m"]["id"])
 
     return new_cis, list(to_remove)
+
+def fetch_fwh_from_iiif(iiif_uri: str) -> tuple[int, int]:
+    if 'info.json' not in iiif_uri:
+        iiif_uri = os.path.join(iiif_uri, 'info.json')
+
+    r = requests.get(iiif_uri, timeout=60)
+
+    #soup.findAll("width"), soup.findAll("height")
+    dict_output = literal_eval(r.content.decode('utf-8'))
+
+    return dict_output['width'], dict_output['height']
