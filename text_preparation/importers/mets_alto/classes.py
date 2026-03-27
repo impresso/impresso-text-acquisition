@@ -126,6 +126,7 @@ class MetsAltoCanonicalPage(CanonicalPage):
             doc = self.alto_doc
 
         mappings = {}
+        section_mappings = {}
         for ci in self.issue.issue_data["i"]:
             ci_id = ci["m"]["id"]
             if "parts" in ci["l"]:
@@ -135,10 +136,19 @@ class MetsAltoCanonicalPage(CanonicalPage):
                     # we want to make sure to link the images to their original CI,
                     # if it was already assigned for the rest of the CI
                     # continue
+                    
+                    # ONLY map parts that are on THIS page to avoid BLOCK-ID collisions
+                    if part.get("comp_page_no") != self.number:
+                        continue
+                    
                     mappings[part["comp_id"]] = ci_id
+            if 'section_title' in ci:
+                for part in ci['section_title']["heading_legacy_parts"]:
+                    if part.get("comp_page_no") == self.number:
+                        section_mappings[part['comp_id']] = ci['section_title']['composing_ci_ids']
 
         pselement = doc.find("PrintSpace")
-        page_regions, notes = alto.parse_printspace(pselement, mappings)
+        page_regions, notes = alto.parse_printspace(pselement, mappings, section_mappings)
         self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(page_regions)
         # Add notes for missing coordinates in SWA
         if len(notes) > 0:

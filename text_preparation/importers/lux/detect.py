@@ -1,16 +1,19 @@
 """This module contains helper functions to find BNL OCR data to be imported."""
 
 import logging
-import os
+import json
 from collections import namedtuple
 from datetime import date
 
 from dask import bag as db
 from text_preparation.importers.detect import _apply_datefilter
+from text_preparation.utils import edition_num_to_code
 
 logger = logging.getLogger(__name__)
 
-EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
+BASE_DIR = "/mnt/project_impresso/original"
+
+JSON_FILE = "../data/sample_data/BNL/issues_to_ingest.json"
 
 LuxIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
@@ -36,29 +39,26 @@ Args:
 """
 
 
-def dir2issue(path: str) -> LuxIssueDir:
-    """Create a `LuxIssueDir` from a directory (BNL format).
-
-    Called internally by :func:`detect_issues`.
-
-    Args:
-        path (str): Path of issue.
-
-    Returns:
-        Rero2IssueDir: New `LuxIssueDir` object matching the path and rights.
+def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -> LuxIssueDir:
     """
-    issue_dir = os.path.basename(path)
-    local_id = issue_dir.split("_")[2]
-    issue_date = issue_dir.split("_")[3]
-    year, month, day = issue_date.split("-")
+    Convert a hierarchical JSON entry into a LuxIssueDir.
 
-    if len(issue_dir.split("_")) == 4:
-        edition = "a"
-    elif len(issue_dir.split("_")) == 5:
-        edition = issue_dir.split("_")[4]
-        edition = EDITIONS_MAPPINGS[int(edition)]
+    entry example:
+      { "day": "15", "edition": "01", "local_path": "..._01" }
+    """
+    y = int(year)
+    m = int(month)
+    d = int(entry["day"])
 
-    return LuxIssueDir("BNL", local_id, date(int(year), int(month), int(day)), edition, path)
+    edition = entry["edition"]
+
+    return LuxIssueDir(
+        provider="BNL",
+        alias=alias,
+        date=date(y, m, d),
+        edition=edition,
+        path=base_dir + entry["local_path"],
+    )
 
 
 def detect_issues(base_dir: str) -> list[LuxIssueDir]:
@@ -73,15 +73,22 @@ def detect_issues(base_dir: str) -> list[LuxIssueDir]:
     Returns:
         list[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
     """
-    dir_path, dirs, _ = next(os.walk(base_dir))
-    batches_dirs = [os.path.join(dir_path, dir) for dir in dirs]
-    issue_dirs = [
-        os.path.join(batch_dir, dir)
-        for batch_dir in batches_dirs
-        for dir in os.listdir(batch_dir)
-        if "newspaper" in dir
-    ]
-    return [dir2issue(_dir) for _dir in issue_dirs]
+    # 1. Ensure base_dir is what we expect
+    if base_dir != BASE_DIR:
+        raise ValueError(f"BNL importer expects base_dir='{BASE_DIR}', got '{base_dir}'")
+    with open(JSON_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    issues: list[LuxIssueDir] = []
+
+    for alias, years in data.items():
+        for year, months in years.items():
+            for month, entries in months.items():
+                for entry in entries:
+                    issue = entry2issue(alias, year, month, entry, base_dir)
+                    issues.append(issue)
+
+    return issues
 
 
 def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
@@ -116,7 +123,7 @@ def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
         and i.alias not in exclude_list
     ).compute()
-
+    
     exclude_flag = False if not exclude_list else True
     filtered_issues = (
         _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
@@ -128,4 +135,5 @@ def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
         f"after applying filter: {filtered_issues}"
     )
     logger.info(msg)
+
     return filtered_issues

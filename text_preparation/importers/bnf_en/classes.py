@@ -241,6 +241,7 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             if pge_no not in content_item["m"]["pp"]:
                 content_item["m"]["pp"].append(pge_no)
 
+        # TODO fix: why go fetch the coordinates for tables?
         if div_type in [CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE]:
             content_item["c"], content_item["m"]["iiif_link"] = self._get_image_info(content_item)
 
