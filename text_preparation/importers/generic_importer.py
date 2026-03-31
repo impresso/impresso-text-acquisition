@@ -220,7 +220,7 @@ def main(
     print_version = args["--version"]
     config_file = args["--config-file"]
     repo_path = args["--git-repo"]
-    num_workers = args["--num-workers"]
+    num_workers = args["--num-workers"] if args["--num-workers"] else 16
     dont_push_to_git = args["--dont-push-manifest"]
     is_audio = args["--is-audio"]
 

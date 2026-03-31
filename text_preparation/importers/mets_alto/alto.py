@@ -57,8 +57,14 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
                 notes.append(f"Token {child.get('ID')} does not have coordinates")
                 coords = None
                 continue
+            except ValueError:
+                msg = f"Token {child.get('ID')} does not have coordinates"
+                print(msg)
+                notes.append(msg)
+                coords = None
+                continue
 
-            token = {"c": coords, "tx": child.get("CONTENT")}
+            token = {"c": coords, "tx": child.get("CONTENT", "")}
 
             if child.get("SUBS_TYPE") == "HypPart1":
                 # token['tx'] += u"\u00AD"
@@ -73,7 +79,7 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     return line, notes
 
 
-def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict], list[str]]:
+def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: None | dict[str, list[str]]=None) -> tuple[list[dict], list[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
     This element contains all the OCR information about the content items of
@@ -105,9 +111,6 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
             if block.get("TYPE") and block.get("TYPE").lower() in IMG_COMP_LABELS:
                 # don't add the text from illustration regions
                 # because it's very often OCR none-sense.
-                """print(
-                    f"Block {block_id} is of an image: {block.get('TYPE')}, ignoring its textlines"
-                )"""
                 continue
 
             if block_id in mappings:
@@ -132,11 +135,11 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
 
             region = {"c": coordinates, "p": [paragraph]}
 
-            if part_of_contentitem:
+            if section_mappings is not None and block_id in section_mappings:
+                region["section_pOf"] = section_mappings[block_id]
+            elif part_of_contentitem:
                 region["pOf"] = part_of_contentitem
-            """else:
-                print(f"Block {block_id} not in mappings: {mappings}")"""
-
+            
             notes += new_notes
             regions.append(region)
     return regions, notes
