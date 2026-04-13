@@ -11,9 +11,9 @@ from text_preparation.utils import edition_num_to_code
 
 logger = logging.getLogger(__name__)
 
-BASE_DIR = "/mnt/project_impresso/original"
+BASE_DIRNAME = "original"
 
-JSON_FILE = "../data/sample_data/BNL/issues_to_ingest.json"
+JSON_FILE = "../data/sample_data/issue_indices/issue_index.bnl.json"
 
 LuxIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
@@ -61,7 +61,7 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
     )
 
 
-def detect_issues(base_dir: str) -> list[LuxIssueDir]:
+def detect_issues(base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None) -> list[LuxIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNL used to
@@ -74,14 +74,20 @@ def detect_issues(base_dir: str) -> list[LuxIssueDir]:
         list[LuxIssueDir]: List of `LuxIssueDir` instances, to be imported.
     """
     # 1. Ensure base_dir is what we expect
-    if base_dir != BASE_DIR:
-        raise ValueError(f"BNL importer expects base_dir='{BASE_DIR}', got '{base_dir}'")
+    if not base_dir.endswith(BASE_DIRNAME):
+        raise ValueError(f"BNL importer expects base_dir to en at '{BASE_DIRNAME}', got '{base_dir}'")
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     issues: list[LuxIssueDir] = []
 
-    for alias, years in data.items():
+    # Apply alias filters early
+    if alias_filter:
+        kept_data = {a:d for a,d in data.items() if a in alias_filter}
+    if exclude_list:
+        kept_data = {a:d for a,d in data.items() if a not in exclude_list}
+
+    for alias, years in kept_data.items():
         for year, months in years.items():
             for month, entries in months.items():
                 for entry in entries:
@@ -116,20 +122,21 @@ def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
             "The key [titles|exclude_titles|year_only] " "is missing in the config file."
         )
         return
+    
 
-    issues = detect_issues(base_dir)
-    issue_bag = db.from_sequence(issues)
+    # directly detect only the issues of interest
+    selected_issues = detect_issues(base_dir, filter_dict, exclude_list)
+    """issue_bag = db.from_sequence(issues)
     selected_issues = issue_bag.filter(
         lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
         and i.alias not in exclude_list
-    ).compute()
+    ).compute()"""
     
-    exclude_flag = False if not exclude_list else True
-    filtered_issues = (
-        _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
-        if not exclude_flag
-        else selected_issues
-    )
+    if filter_dict and not exclude_list:
+        filtered_issues = _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
+    else:
+        filtered_issues = selected_issues
+
     msg = (
         f"{len(filtered_issues)} newspaper issues remained "
         f"after applying filter: {filtered_issues}"

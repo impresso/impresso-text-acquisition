@@ -20,6 +20,7 @@ from text_preparation.importers.mets_alto import (
 )
 from text_preparation.importers.mets_alto import alto
 from text_preparation.importers.sub.detect import SubIssueDir
+from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +57,7 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
         filename: str,
         basedir: str,
         page_size: tuple[int, int],
+        file_id: str,
         iiif_img_base_uri: str | None = None,
         encoding: str = "utf-8",
     ) -> None:
@@ -64,10 +66,12 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
         # Add the facsimile height and width to the page data
         self.page_data["fw"] = page_size[0]
         self.page_data["fh"] = page_size[1]
+        self.file_id = file_id
+        self.iiif_img_base_uri = iiif_img_base_uri
         
         # Store page-level IIIF image base URI if provided
         if iiif_img_base_uri:
-            self.page_data["iiif_img_base_uri"] = iiif_img_base_uri
+            self.page_data["iiif_img_base_uri"] = self.iiif_img_base_uri
 
     def add_issue(self, issue: "SubNewspaperIssue") -> None:
         """Add the given `SubNewspaperIssue` as an attribute for this class.
@@ -186,10 +190,11 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 # Extract filename from URL
                 filename = href.split("/")[-1]
                 file_id = file_elem.get("ID", "")
+                print(f"{self.id} - adding page with filename {filename} and file_id {file_id}")
                 # Extract page number from file ID (e.g., FILE_0001_FULLTEXT -> 1)
                 try:
                     page_num = int(file_id.split("_")[1])
-                    page_files.append((page_num, filename))
+                    page_files.append((page_num, filename, file_id))
                 except (IndexError, ValueError):
                     logger.warning(f"Could not extract page number from {file_id}")
                     continue
@@ -198,7 +203,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         page_files.sort(key=lambda x: x[0])
 
         self.pages = []
-        for page_num, filename in page_files:
+        for page_num, filename, file_id in page_files:
             page_id = f"{self.id}-p{str(page_num).zfill(4)}"
 
             try:
@@ -213,6 +218,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     filename,
                     self.path,
                     page_size,
+                    file_id,
                     iiif_img_base_uri=iiif_link,
                 )
                 self.pages.append(page)
@@ -335,6 +341,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         # Non-page items counter starts after all page CIs (num_pages + 1)
         ci_counter = len(self.pages)
 
+        print(f"pages: {[p.id for p in sorted(self.pages, key=lambda x: x.number)]}")
         # Process each page to extract content items
         for page in sorted(self.pages, key=lambda x: x.number):
             page_num_str = str(page.number).zfill(4)
@@ -368,9 +375,9 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 "m": {
                     "id": page_ci_id,
                     "tp": "page",  # content type: page
-                    "l": alto_soup.find("Page").get("language", "de"),  # language
+                    "lg": alto_soup.find("Page").get("language", "de"),  # language
                     # for pp take last 4 strings and turn into digits
-                    "pp": [int(page.id[-4:])],
+                    "pp": [page.number],
                 },
                 # Legacy section - tracking ALTO components
                 "l": {
@@ -381,20 +388,25 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         {
                             "comp_id": tb.get("ID"),  # TextBlock ID from Alto
                             "comp_role": "body",  # role: body text
-                            "comp_fileid": page.filename,  # Alto filename
+                            "comp_fileid": page.file_id,  # Alto filename
                             "comp_page_no": page.number,  # page number
                         }
                         for tb in text_blocks
                         if tb.get("ID")
                     ],
                     # Source METS filename
-                    "source": os.path.basename(self.mets_file),
+                    "src_files": {
+                        "mets_xml": os.path.basename(self.mets_file),
+                        "alto_xml": page.filename,
+                        "image_tif": page.filename.replace('xml', 'tif')
+                    },
                     # Additional SUB-specific identifiers
-                    "ppn": self.ppn,  # Issue PPN with date
+                    "ppn": self.ppn_with_date,  # Issue PPN with date
                     "title_ppn": self.title_ppn,  # Title-level PPN
                 },
             }
             content_items.append(page_ci)
+            print(f"Adding CI {page_ci_id} to content_items: {content_items}")
 
             # === 2. Create content items for Illustrations (images) ===
             for illustration in print_space.find_all("Illustration"):
@@ -418,7 +430,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     "m": {
                         "id": image_ci_id,
                         "tp": "image",  # content type: image
-                        "pp": [int(page.id[-4:])],  # page this image appears on
+                        "pp": [page.number],  # page this image appears on
                         "iiif_link": os.path.join(page.iiif_img_base_uri, "info.json")
                     },
                     # Legacy section
@@ -430,11 +442,15 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                             {
                                 "comp_id": illus_id,  # Illustration ID from Alto
                                 "comp_role": "image",  # role: image
-                                "comp_fileid": page.filename,
+                                "comp_fileid": page.file_id,
                                 "comp_page_no": page.number,
                             }
                         ],
-                        "source": os.path.basename(self.mets_file),
+                        "src_files": {
+                            "mets_xml": os.path.basename(self.mets_file),
+                            "alto_xml": page.filename,
+                            "image_tif": page.filename.replace('xml', 'tif')
+                        },
                         "ppn": self.ppn,
                         "title_ppn": self.title_ppn,
                     },
@@ -445,6 +461,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     image_ci["m"]["c"] = coords
 
                 content_items.append(image_ci)
+                print(f"Adding CI {image_ci_id} to content_items: {content_items}")
 
             # === 3. Create content items for Tables ===
             for text_block in print_space.find_all("ComposedBlock"):
@@ -482,11 +499,15 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                                 {
                                     "comp_id": table_id,  # TextBlock ID from Alto
                                     "comp_role": "table",  # role: table
-                                    "comp_fileid": page.filename,
+                                    "comp_fileid": page.file_id,
                                     "comp_page_no": page.number,
                                 }
                             ],
-                            "source": os.path.basename(self.mets_file),
+                            "src_files": {
+                                "mets_xml": os.path.basename(self.mets_file),
+                                "alto_xml": page.filename,
+                                "image_tif": page.filename.replace('xml', 'tif')
+                            },
                             "ppn": self.ppn,
                             "title_ppn": self.title_ppn,
                         },
@@ -497,6 +518,8 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         table_ci["m"]["c"] = coords
 
                     content_items.append(table_ci)
+                    print(f"Adding CI {table_ci_id} to content_items: {content_items}")
+
 
         msg = (
             f"Created {len(content_items)} content items for issue {self.id}: "
@@ -528,6 +551,11 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         # This creates page-level CIs, image CIs, and table CIs
         content_items = self._find_content_items()
 
+        reading_order_dict = get_reading_order(content_items)
+        # add the reading order
+        for ci in content_items:
+            ci["m"]["ro"] = reading_order_dict[ci["m"]["id"]]
+
         # Construct the issue data according to canonical format
         self.issue_data = {
             "id": self.id,
@@ -543,7 +571,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
 
         # Add title if available
         if self.title:
-            self.issue_data["t"] = self.title
+            self.issue_data["media_title_variant"] = self.title
 
         logger.info(
             f"Parsed issue {self.id}: {len(self.pages)} pages, "

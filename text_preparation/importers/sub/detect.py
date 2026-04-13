@@ -4,10 +4,13 @@ import logging
 import os
 from collections import namedtuple
 from datetime import date
+import json
 
 from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
+
+JSON_FILE = "../data/sample_data/issue_indices/issue_index.sub.json"
 
 SubIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.
@@ -39,8 +42,8 @@ Args:
 """
 
 
-def dir2issue(path: str) -> SubIssueDir | None:
-    """Convert a directory path into a SubIssueDir object.
+"""def dir2issue(path: str) -> SubIssueDir | None:
+    ""Convert a directory path into a SubIssueDir object.
 
     Expected directory structure:
     [base]/[alias]/[yyyy]/[mm]/[dd]/[edition_name]
@@ -55,7 +58,7 @@ def dir2issue(path: str) -> SubIssueDir | None:
 
     Returns:
         SubIssueDir | None: The corresponding Issue, or None if path is invalid
-    """
+    ""
     try:
         parts = path.rstrip("/").split("/")
 
@@ -89,6 +92,28 @@ def dir2issue(path: str) -> SubIssueDir | None:
     except (ValueError, IndexError) as e:
         logger.warning(f"Failed to parse issue directory {path}: {e}")
         return None
+"""
+
+def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -> SubIssueDir:
+    """
+    Convert a hierarchical JSON entry into a LuxIssueDir.
+
+    entry example:
+      { "day": "15", "edition": "01", "local_path": "..._01" }
+    """
+    y = int(year)
+    m = int(month)
+    d = int(entry["day"])
+
+    edition = entry["edition"]
+
+    return SubIssueDir(
+        provider="SUB",
+        alias=alias,
+        date=date(y, m, d),
+        edition=edition,
+        path=base_dir + entry["local_path"],
+    )
 
 
 def detect_issues(
@@ -109,72 +134,27 @@ def detect_issues(
     Returns:
         list[SubIssueDir]: List of `SubIssueDir` instances to import.
     """
-    # Dictionary to track multiple issues per day: {(alias, date): [issues]}
-    issues_per_day = {}
+    with open(JSON_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-    # First, list alias directories in base_dir
-    try:
-        alias_dirs = [d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d))]
-    except OSError as e:
-        logger.error(f"Failed to list base directory {base_dir}: {e}")
-        return []
+    issues: list[SubIssueDir] = []
 
     # Apply alias filters early
     if alias_filter:
-        alias_dirs = [a for a in alias_dirs if a in alias_filter]
+        kept_data = {a:d for a,d in data.items() if a in alias_filter}
     if exclude_list:
-        alias_dirs = [a for a in alias_dirs if a not in exclude_list]
+        kept_data = {a:d for a,d in data.items() if a not in exclude_list}
 
-    # Walk through each alias directory
-    for alias in alias_dirs:
-        alias_path = os.path.join(base_dir, alias)
-        
-        for root, dirs, files in os.walk(alias_path):
-            # Check if this directory contains a METS XML file (indicates an issue)
-            mets_files = [f for f in files if f.endswith(".xml") and "PPN" in f]
+    for alias, years in kept_data.items():
+        for year, months in years.items():
+            for month, entries in months.items():
+                for entry in entries:
+                    issue = entry2issue(alias, year, month, entry, base_dir)
+                    issues.append(issue)
 
-            if mets_files:
-                # This appears to be an issue directory
-                issue = dir2issue(root)
-
-                if issue is None:
-                    continue
-
-                # Group issues by alias and date to handle multiple editions per day
-                day_key = (issue.alias, issue.date)
-                if day_key not in issues_per_day:
-                    issues_per_day[day_key] = []
-                issues_per_day[day_key].append(issue)
-
-    # Process and finalize issues in a single pass
-    issues = []
-    for day_key, day_issues in issues_per_day.items():
-        # Sort by the full path to ensure consistent ordering
-        sorted_issues = sorted(day_issues, key=lambda x: x.path)
-
-        # Assign editions: a, b, c, etc. based on sorted order
-        for idx, issue in enumerate(sorted_issues):
-            edition_letter = chr(97 + idx)  # 97 is ASCII for 'a'
-            # Create a new SubIssueDir with the corrected edition
-            corrected_issue = SubIssueDir(
-                provider=issue.provider,
-                alias=issue.alias,
-                date=issue.date,
-                edition=edition_letter,
-                path=issue.path,
-            )
-            issues.append(corrected_issue)
-            if len(sorted_issues) > 1:
-                logger.debug(
-                    f"Found issue: {corrected_issue.alias} - {corrected_issue.date} - "
-                    f"edition {corrected_issue.edition} (reassigned from multiple issues per day)"
-                )
-
-    # Sort final list by alias, date, and edition for consistent output
-    issues.sort(key=lambda x: (x.alias, x.date, x.edition))
-
-    logger.info(f"Found {len(issues)} issues in {base_dir}")
     return issues
+
+
 
 
 def select_issues(base_dir: str, config: dict) -> list[SubIssueDir] | None:

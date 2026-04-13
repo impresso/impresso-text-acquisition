@@ -24,10 +24,11 @@ CANONICAL_ISSUE_SCHEMA = "schemas/json/canonical/issue.schema.json"
 CANONICAL_RECORD_SCHEMA = "schemas/json/canonical/audio_record.schema.json"
 
 TP_RO_PRIORITY = {
-    "article": 0,
-    "table": 1,
-    "image": 2,
-    "ad": 3,
+    "page": 0,
+    "article": 1,
+    "table": 2,
+    "image": 3,
+    "ad": 4,
 }
 
 
