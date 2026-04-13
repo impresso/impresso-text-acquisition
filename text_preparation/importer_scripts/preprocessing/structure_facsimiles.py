@@ -4,8 +4,8 @@ Copies, converts (to JP2), renames, and reorganizes page facsimile images
 from any collection into the Impresso directory structure.
 
 Usage:
-    python structure_facsimiles.py --config config.yaml
-    python structure_facsimiles.py --config config.yaml --dry_run
+    impresso-structure-facsimiles --config config.yaml
+    impresso-structure-facsimiles --config config.yaml --dry_run
 """
 
 import io
@@ -72,7 +72,7 @@ class Config:
 
         # normalise source_format
         self.source_format = self.source_format.lower().strip()
-        valid_formats = {"jp2", "tif", "tiff", "png", "jpg", "jpeg", "pdf", ""}
+        valid_formats = {"jp2", "tif", "tiff", "png", "jpg", "jpeg", "pdf"}
         if self.source_format not in valid_formats:
             raise ValueError(
                 f"source_format must be one of {valid_formats - {''}}, got '{self.source_format}'"
@@ -877,7 +877,7 @@ def main(
     """
     if not config:
         print("Error: --config is required. Pass a path to a YAML config file.")
-        print("Example: python structure_facsimiles.py --config config.yaml")
+        print("Example: impresso-structure-facsimiles --config config.yaml")
         sys.exit(1)
 
     # --- load config with CLI overrides ---
@@ -1016,5 +1016,10 @@ def main(
             report.write_success(issue.issue_id, len(pages))
 
 
-if __name__ == "__main__":
+def cli():
+    """Entry point for the console_scripts wrapper."""
     fire.Fire(main)
+
+
+if __name__ == "__main__":
+    cli()

@@ -47,3 +47,4 @@ text_preparation = [
 [project.scripts]
 impresso-txt-importer = "text_preparation.importers.generic_importer:main"
 impresso-rebuilder = "text_preparation.rebuilders.rebuilder:main"
+impresso-structure-facsimiles = "text_preparation.importer_scripts.preprocessing.structure_facsimiles:cli"

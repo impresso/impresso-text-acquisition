@@ -1,8 +1,8 @@
-# structure_facsimiles.py — example configuration
+# structure_facsimiles — example configuration
 #
 # Copy this file, adjust paths and filters, then run:
-#   python structure_facsimiles.py --config my_config.yaml
-#   python structure_facsimiles.py --config my_config.yaml --dry_run=False
+#   impresso-structure-facsimiles --config my_config.yaml
+#   impresso-structure-facsimiles --config my_config.yaml --dry_run=False
 
 # --- Paths ---
 
@@ -31,8 +31,7 @@ aliases_exclude: []
 # SAFE DEFAULT: no files written. Set to false to actually process.
 dry_run: true
 
-# Delete source image files after verified copy. Use with caution.
-# Requires writable access to source directories.
+# Delete source image files after verified copy. NOT YET IMPLEMENTED — ignored.
 delete_source: false
 
 # Fallback source image format (used when JSON entries lack imgs_ext).
