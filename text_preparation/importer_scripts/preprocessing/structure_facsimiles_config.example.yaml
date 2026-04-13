@@ -1,0 +1,61 @@
+# structure_facsimiles.py — example configuration
+#
+# Copy this file, adjust paths and filters, then run:
+#   python structure_facsimiles.py --config my_config.yaml
+#   python structure_facsimiles.py --config my_config.yaml --dry_run=False
+
+# --- Paths ---
+
+# JSON file listing all issues for the collection (alias > year > month > issues).
+issues_json_path: /path/to/issues_to_ingest.json
+
+# Root of source data (read-only mount is fine).
+source_base_dir: /mnt/project_impresso/original
+
+# Root of the writable image output. Must be the rw mount, NOT the read-only
+# /mnt/project_impresso/images.
+target_base_dir: /mnt/impresso_images
+
+# --- Filtering ---
+
+# Process only these aliases (empty = all).
+aliases_include: []
+#  - BLB
+#  - actionfem
+
+# Skip these aliases (applied after aliases_include).
+aliases_exclude: []
+
+# --- Behaviour ---
+
+# SAFE DEFAULT: no files written. Set to false to actually process.
+dry_run: true
+
+# Delete source image files after verified copy. Use with caution.
+# Requires writable access to source directories.
+delete_source: false
+
+# Expected source image format. "auto" detects from file extensions.
+# Options: jp2, tif, tiff, png, jpg, jpeg, pdf, auto
+source_format: auto
+
+# --- Chunking (for parallel runs) ---
+
+# Split the alias list into chunks of this size. 0 = process all at once.
+chunk_size: 0
+chunk_idx: 0
+
+# --- Output / Logging ---
+
+# Log file path (empty = log to stdout).
+log_file: ""
+
+# Processing report (JSONL). Tracks successes, failures, skips.
+report_file: ""
+
+# Prior report to resume from. Issues marked "success" in this file are skipped.
+prior_report_file: ""
+
+# When true AND prior_report_file is set: only re-process issues that were
+# "failed" in the prior report. Ignores new and skipped issues.
+retry_failed_only: false
