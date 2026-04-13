@@ -6,16 +6,17 @@ from any collection into the Impresso directory structure.
 Usage:
     python structure_facsimiles.py --config config.yaml
     python structure_facsimiles.py --config config.yaml --dry_run
-    python structure_facsimiles.py --config config.yaml --chunk_size 50 --chunk_idx 0
 """
 
 import io
 import json
 import logging
 import os
+import re
 import shutil
+import sys
 from dataclasses import dataclass, field, asdict
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 import fire
@@ -36,6 +37,7 @@ logger = logging.getLogger(__name__)
 IMAGE_EXTENSIONS = {".jp2", ".tif", ".tiff", ".png", ".jpg", ".jpeg"}
 PDF_EXTENSIONS = {".pdf"}
 ALL_SOURCE_EXTENSIONS = IMAGE_EXTENSIONS | PDF_EXTENSIONS
+RENAMING_INFO_FILENAME = "renaming_info.json"
 
 
 @dataclass
@@ -54,7 +56,7 @@ class Config:
     # --- behaviour ---
     dry_run: bool = True
     delete_source: bool = False
-    source_format: str = "auto"  # jp2, tif, pdf, png, jpg, auto
+    source_format: str = ""  # jp2, tif, pdf, png, jpg (empty = rely on JSON imgs_ext)
 
     # --- output / logging ---
     log_file: str = ""
@@ -70,10 +72,10 @@ class Config:
 
         # normalise source_format
         self.source_format = self.source_format.lower().strip()
-        valid_formats = {"jp2", "tif", "tiff", "png", "jpg", "jpeg", "pdf", "auto"}
+        valid_formats = {"jp2", "tif", "tiff", "png", "jpg", "jpeg", "pdf", ""}
         if self.source_format not in valid_formats:
             raise ValueError(
-                f"source_format must be one of {valid_formats}, got '{self.source_format}'"
+                f"source_format must be one of {valid_formats - {''}}, got '{self.source_format}'"
             )
 
     def log_summary(self):
@@ -86,7 +88,7 @@ class Config:
 def load_config(config_path: str, **overrides) -> Config:
     """Load a YAML config file and apply CLI overrides.
 
-    Any key passed as a CLI flag (e.g. --dry_run, --chunk_size) takes
+    Any key passed as a CLI flag (e.g. --dry_run) takes
     precedence over the value in the config file.
     """
     path = Path(config_path)
@@ -102,6 +104,345 @@ def load_config(config_path: str, **overrides) -> Config:
             raw[key] = value
 
     return Config(**raw)
+
+
+# ---------------------------------------------------------------------------
+# Issue records
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class IssueRecord:
+    """A single newspaper issue to process, parsed from the input JSON."""
+
+    alias: str
+    date: date
+    edition: str
+    local_path: str  # relative to source_base_dir
+    imgs_subdir: str  # subfolder within local_path ("" = images directly in local_path)
+    imgs_ext: str  # e.g. ".tif", ".jp2", ".pdf" ("" = auto-detect)
+
+    @property
+    def issue_id(self) -> str:
+        """Canonical Impresso issue ID: {alias}-{YYYY}-{MM}-{DD}-{edition}."""
+        return f"{self.alias}-{self.date:%Y-%m-%d}-{self.edition}"
+
+
+def load_issues(
+    json_path: str,
+    aliases_include: list[str],
+    aliases_exclude: list[str],
+    source_format: str,
+) -> list[IssueRecord]:
+    """Parse the hierarchical issues JSON and return a flat list of IssueRecords.
+
+    The JSON schema is: alias > year > month > [{day, edition, local_path, ...}].
+
+    Args:
+        json_path: Path to the issues_to_ingest.{provider}.json file.
+        aliases_include: Only process these aliases (empty = all).
+        aliases_exclude: Skip these aliases (applied after include).
+        source_format: Fallback source format from config (e.g. "tif", "auto").
+            Used when the JSON entry lacks an ``imgs_ext`` field.
+
+    Returns:
+        Flat list of IssueRecord objects.
+    """
+    with open(json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # Pre-compute include/exclude sets for O(1) lookups
+    include_set = set(aliases_include) if aliases_include else None
+    exclude_set = set(aliases_exclude) if aliases_exclude else set()
+
+    # Derive fallback extension from source_format config
+    if source_format:
+        fallback_ext = f".{source_format}" if not source_format.startswith(".") else source_format
+    else:
+        fallback_ext = ""
+
+    issues: list[IssueRecord] = []
+
+    for alias, years in data.items():
+        # --- alias filtering ---
+        if include_set is not None and alias not in include_set:
+            continue
+        if alias in exclude_set:
+            continue
+
+        for year, months in years.items():
+            for month, entries in months.items():
+                for entry in entries:
+                    try:
+                        issues.append(
+                            IssueRecord(
+                                alias=alias,
+                                date=date(int(year), int(month), int(entry["day"])),
+                                edition=entry["edition"],
+                                local_path=entry["local_path"],
+                                imgs_subdir=entry.get("imgs_subdir", ""),
+                                imgs_ext=entry.get("imgs_ext", fallback_ext),
+                            )
+                        )
+                    except (KeyError, ValueError, TypeError) as e:
+                        logger.error(
+                            "Skipping malformed entry: alias=%s year=%s month=%s entry=%s — %s",
+                            alias, year, month, entry, e,
+                        )
+
+    return issues
+
+
+# ---------------------------------------------------------------------------
+# Page file discovery
+# ---------------------------------------------------------------------------
+
+_TRAILING_DIGITS_RE = re.compile(r"(\d+)$")
+
+
+@dataclass
+class PageFile:
+    """A single page image file discovered within an issue directory."""
+
+    source_path: Path
+    page_num: int
+    source_format: str  # without dot: "tif", "jp2" — matches convert_to_jp2() convention
+
+
+def discover_pages(issue: IssueRecord, source_base_dir: str) -> list[PageFile]:
+    """Discover page image files in an issue directory and extract page numbers.
+
+    Resolves the image directory from the issue record, filters files by
+    extension, and extracts page numbers from the trailing digits in each
+    filename stem (e.g. ``00000001.tif`` → page 1,
+    ``0002384_18420515_0001.jp2`` → page 1).
+
+    Args:
+        issue: The issue record describing where to find files.
+        source_base_dir: Root of the source data tree.
+
+    Returns:
+        List of PageFile objects sorted by page number.
+
+    Raises:
+        FileNotFoundError: If the image directory doesn't exist or contains
+            no valid page files.
+        NotImplementedError: If ``imgs_ext`` is a PDF extension (TODO).
+        ValueError: If duplicate page numbers are detected.
+    """
+    # --- resolve image directory ---
+    img_dir = Path(source_base_dir) / issue.local_path.lstrip("/")
+    if issue.imgs_subdir:
+        img_dir = img_dir / issue.imgs_subdir
+
+    if not img_dir.is_dir():
+        raise FileNotFoundError(
+            f"Image directory does not exist for {issue.issue_id}: {img_dir}"
+        )
+
+    # --- PDF: TODO stub ---
+    if issue.imgs_ext.lower() in PDF_EXTENSIONS:
+        raise NotImplementedError(
+            f"PDF page discovery not yet implemented for {issue.issue_id} "
+            f"(source: {img_dir})"
+        )
+
+    # --- filter files by extension ---
+    target_ext = issue.imgs_ext.lower()
+    matching_files = sorted(
+        f for f in img_dir.iterdir()
+        if f.is_file() and f.suffix.lower() == target_ext
+    )
+
+    if not matching_files:
+        raise FileNotFoundError(
+            f"No files with extension '{target_ext}' found in {img_dir} "
+            f"for {issue.issue_id}"
+        )
+
+    # --- extract page numbers from trailing digits in stem ---
+    pages: list[PageFile] = []
+    skipped: list[str] = []
+
+    for fpath in matching_files:
+        m = _TRAILING_DIGITS_RE.search(fpath.stem)
+        if m is None:
+            skipped.append(fpath.name)
+            continue
+        pages.append(PageFile(
+            source_path=fpath,
+            page_num=int(m.group(1)),
+            source_format=fpath.suffix.lstrip(".").lower(),
+        ))
+
+    if skipped:
+        logger.warning(
+            "%s: %d file(s) skipped — no trailing digits in stem: %s",
+            issue.issue_id,
+            len(skipped),
+            skipped[:5],
+        )
+
+    if not pages:
+        raise FileNotFoundError(
+            f"No valid page files found in {img_dir} for {issue.issue_id} "
+            f"(all {len(matching_files)} file(s) lacked trailing digits in stem)"
+        )
+
+    # --- check for duplicate page numbers ---
+    seen: dict[int, Path] = {}
+    duplicates: list[str] = []
+    for pf in pages:
+        if pf.page_num in seen:
+            duplicates.append(
+                f"page {pf.page_num}: {seen[pf.page_num].name} and {pf.source_path.name}"
+            )
+        else:
+            seen[pf.page_num] = pf.source_path
+
+    if duplicates:
+        raise ValueError(
+            f"Duplicate page numbers in {issue.issue_id}: {'; '.join(duplicates)}"
+        )
+
+    # --- sort by page number ---
+    pages.sort(key=lambda pf: pf.page_num)
+
+    # --- warn on page numbers exceeding 4-digit padding ---
+    oversized = [pf for pf in pages if pf.page_num > 9999]
+    if oversized:
+        logger.warning(
+            "%s: %d page(s) exceed 4-digit limit (max p9999) — "
+            "filenames will violate Impresso naming convention: %s",
+            issue.issue_id,
+            len(oversized),
+            [f"p{pf.page_num}" for pf in oversized[:5]],
+        )
+
+    logger.debug(
+        "%s: discovered %d pages (p%d–p%d) in %s",
+        issue.issue_id,
+        len(pages),
+        pages[0].page_num,
+        pages[-1].page_num,
+        img_dir,
+    )
+
+    return pages
+
+
+# ---------------------------------------------------------------------------
+# Renaming & target path construction
+# ---------------------------------------------------------------------------
+
+
+def build_target_path(
+    target_base_dir: str,
+    issue: IssueRecord,
+    page_num: int,
+) -> Path:
+    """Build the target JP2 path following Impresso conventions.
+
+    Directory:  {target_base_dir}/{alias}/{YYYY}/{MM}/{DD}/{edition}/
+    Filename:   {issue_id}-p{page_num:04d}.jp2
+
+    Args:
+        target_base_dir: Root of the writable image output tree.
+        issue: The issue being processed.
+        page_num: Page number (preserved from source filename, or 1-based
+            sequential for PDF extraction).  Zero-padded to 4 digits.
+
+    Returns:
+        Full target path as a Path object.
+    """
+    target_dir = Path(target_base_dir) / issue.alias / f"{issue.date:%Y/%m/%d}" / issue.edition
+    filename = f"{issue.issue_id}-p{page_num:04d}.jp2"
+    return target_dir / filename
+
+
+def write_renaming_info(
+    issue: IssueRecord,
+    pages: list[PageFile],
+    page_results: dict[int, dict],
+    target_base_dir: str,
+    source_base_dir: str,
+    dry_run: bool = False,
+) -> dict[str, dict]:
+    """Write per-issue metadata JSON documenting the copy/conversion process.
+
+    Assembles a dict mapping page number (as string) to per-page metadata,
+    then writes it as ``renaming_info.json`` in the issue's target directory.
+
+    Args:
+        issue: The issue record being processed.
+        pages: Page files discovered by ``discover_pages()``.
+        page_results: Mapping of page_num -> ``convert_to_jp2()`` return dict
+            (must contain ``width`` and ``height`` keys).
+        target_base_dir: Root of the writable image output tree.
+        source_base_dir: Root of the source data tree.
+        dry_run: If True, build and log the dict but do not write to disk.
+
+    Returns:
+        The assembled info dict (string keys -> per-page metadata).
+
+    Raises:
+        OSError: If writing the JSON file fails (logged before raising).
+    """
+    info_dict: dict[str, dict] = {}
+
+    ocr_dir_path = str(Path(source_base_dir) / issue.local_path.lstrip("/"))
+    target_dir = build_target_path(target_base_dir, issue, pages[0].page_num).parent
+
+    for page in pages:
+        filename = f"{issue.issue_id}-p{page.page_num:04d}.jp2"
+        result = page_results[page.page_num]
+
+        info_dict[str(page.page_num)] = {
+            "original_filename": page.source_path.name,
+            "new_filename": filename,
+            "issue_id": issue.issue_id,
+            "img_dir_path": str(target_dir),
+            "ocr_dir_path": ocr_dir_path,
+            "width": result["width"],
+            "height": result["height"],
+        }
+
+    logger.debug(
+        "%s: renaming_info with %d pages assembled",
+        issue.issue_id,
+        len(info_dict),
+    )
+
+    if dry_run:
+        logger.info(
+            "[DRY RUN] Would write %s for %s (%d pages)",
+            RENAMING_INFO_FILENAME,
+            issue.issue_id,
+            len(info_dict),
+        )
+        return info_dict
+
+    info_filepath = target_dir / RENAMING_INFO_FILENAME
+
+    try:
+        with open(info_filepath, "w", encoding="utf-8") as fout:
+            json.dump(info_dict, fout)
+        logger.info(
+            "%s: wrote %s (%d pages)",
+            issue.issue_id,
+            info_filepath,
+            len(info_dict),
+        )
+    except OSError:
+        logger.error(
+            "%s: failed to write %s",
+            issue.issue_id,
+            info_filepath,
+            exc_info=True,
+        )
+        raise
+
+    return info_dict
 
 
 # ---------------------------------------------------------------------------
@@ -145,6 +486,10 @@ class ReportWriter:
         # --- open report file for appending ---
         self._fh = None
         if report_path:
+            report_dir = os.path.dirname(report_path)
+            if report_dir and not os.path.isdir(report_dir):
+                os.makedirs(report_dir, exist_ok=True)
+                logger.info("Created report directory: %s", report_dir)
             self._fh = open(report_path, "a", encoding="utf-8")
             logger.info("Report file: %s (append mode)", report_path)
 
@@ -247,7 +592,14 @@ class ReportWriter:
             self._fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
             self._fh.flush()
 
-    # --- summary & cleanup ---
+    # --- context manager & cleanup ---
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        self.log_summary()
+        self.close()
 
     def log_summary(self) -> None:
         total = sum(self._counts.values())
@@ -280,17 +632,24 @@ def convert_image_to_jp2(
 
     Returns (width, height) of the image.
     """
-    with Image.open(str(source_path)) as img:
+    with Image.open(source_path) as img:
         width, height = img.size
+        # Force full pixel decode before conversion. Image.open() is lazy and
+        # only reads the header — a corrupted file (truncated scan, bad blocks)
+        # would report valid dimensions but fail or produce garbage during save.
+        # Loading here surfaces corruption early with a clear error.
+        img.load()
         if dry_run:
             logger.info(
                 "[DRY RUN] Would convert %s -> %s (%dx%d)",
                 source_path, target_path, width, height,
             )
         else:
-            img.save(str(target_path), format="JPEG2000")
+            img.save(target_path, format="JPEG2000", irreversible=False)
+            if os.path.getsize(target_path) == 0:
+                raise OSError(f"Written file is zero bytes: {target_path}")
             # Verify dimensions match after conversion
-            with Image.open(str(target_path)) as saved:
+            with Image.open(target_path) as saved:
                 tw, th = saved.size
             if (tw, th) != (width, height):
                 raise ValueError(
@@ -333,7 +692,7 @@ def extract_pdf_page_to_jp2(
 
     # --- Approach (a): extract embedded raster ---
     try:
-        doc = pymupdf.open(str(pdf_path))
+        doc = pymupdf.open(pdf_path)
         try:
             page = doc.load_page(page_num)
             image_list = page.get_images(full=True)
@@ -359,7 +718,7 @@ def extract_pdf_page_to_jp2(
             pdf_path, page_num, e,
         )
         images = convert_from_path(
-            str(pdf_path),
+            pdf_path,
             first_page=page_num + 1,
             last_page=page_num + 1,
             dpi=fallback_dpi,
@@ -367,30 +726,36 @@ def extract_pdf_page_to_jp2(
         img = images[0]
         method = "rasterized"
 
-    width, height = img.size
+    try:
+        width, height = img.size
 
-    # --- Optional validation against expected dimensions ---
-    if expected_dimensions is not None:
-        exp_w, exp_h = expected_dimensions
-        if (width, height) != (exp_w, exp_h):
-            logger.warning(
-                "Dimension mismatch for %s page %d: "
-                "extracted (%dx%d) vs expected (%dx%d), method=%s",
-                pdf_path, page_num, width, height, exp_w, exp_h, method,
+        # --- Optional validation against expected dimensions ---
+        if expected_dimensions is not None:
+            exp_w, exp_h = expected_dimensions
+            if (width, height) != (exp_w, exp_h):
+                logger.warning(
+                    "Dimension mismatch for %s page %d: "
+                    "extracted (%dx%d) vs expected (%dx%d), method=%s",
+                    pdf_path, page_num, width, height, exp_w, exp_h, method,
+                )
+
+        # --- Save ---
+        if dry_run:
+            logger.info(
+                "[DRY RUN] Would save %s page %d -> %s (%dx%d, %s)",
+                pdf_path, page_num, target_path, width, height, method,
             )
-
-    # --- Save ---
-    if dry_run:
-        logger.info(
-            "[DRY RUN] Would save %s page %d -> %s (%dx%d, %s)",
-            pdf_path, page_num, target_path, width, height, method,
-        )
-    else:
-        img.save(str(target_path), format="JPEG2000")
-        logger.info(
-            "Saved %s page %d -> %s (%dx%d, %s)",
-            pdf_path, page_num, target_path, width, height, method,
-        )
+        else:
+            img.save(target_path, format="JPEG2000", irreversible=False)
+            if os.path.getsize(target_path) == 0:
+                raise OSError(f"Written file is zero bytes: {target_path}")
+            logger.info(
+                "Saved %s page %d -> %s (%dx%d, %s)",
+                pdf_path, page_num, target_path, width, height, method,
+            )
+    finally:
+        if img is not None:
+            img.close()
 
     return width, height, method
 
@@ -404,7 +769,7 @@ def copy_jp2(
 
     Uses shutil.copy2 for a bit-identical copy (no dimension verification needed).
     """
-    with Image.open(str(source_path)) as img:
+    with Image.open(source_path) as img:
         width, height = img.size
 
     if dry_run:
@@ -413,7 +778,9 @@ def copy_jp2(
             source_path, target_path, width, height,
         )
     else:
-        shutil.copy2(str(source_path), str(target_path))
+        shutil.copy2(source_path, target_path)
+        if os.path.getsize(target_path) == 0:
+            raise OSError(f"Copied file is zero bytes: {target_path}")
         logger.info(
             "Copied JP2 %s -> %s (%dx%d)",
             source_path, target_path, width, height,
@@ -445,7 +812,7 @@ def convert_to_jp2(
         Dict with keys: width, height, converted, method, source_format.
     """
     # Create target directory
-    target_dir = os.path.dirname(str(target_path))
+    target_dir = os.path.dirname(target_path)
     if not dry_run and target_dir:
         os.makedirs(target_dir, exist_ok=True)
 
@@ -511,7 +878,7 @@ def main(
     if not config:
         print("Error: --config is required. Pass a path to a YAML config file.")
         print("Example: python structure_facsimiles.py --config config.yaml")
-        return
+        sys.exit(1)
 
     # --- load config with CLI overrides ---
     cfg = load_config(
@@ -520,6 +887,11 @@ def main(
     )
 
     # --- logging ---
+    if cfg.log_file:
+        log_dir = os.path.dirname(cfg.log_file)
+        if log_dir and not os.path.isdir(log_dir):
+            os.makedirs(log_dir, exist_ok=True)
+
     log_level = logging.DEBUG if verbose else logging.INFO
     init_logger(logger, log_level, cfg.log_file or None)
 
@@ -531,30 +903,117 @@ def main(
     # --- validate paths ---
     if not os.path.isfile(cfg.issues_json_path):
         logger.error("Issues JSON not found: %s", cfg.issues_json_path)
-        return
+        sys.exit(1)
 
     if not cfg.dry_run and not os.path.isdir(cfg.target_base_dir):
         logger.error("Target base dir does not exist: %s", cfg.target_base_dir)
-        return
+        sys.exit(1)
 
     # --- initialize report ---
-    report = ReportWriter(
+    with ReportWriter(
         report_path=cfg.report_file or None,
         prior_report_path=cfg.prior_report_file or None,
         retry_failed_only=cfg.retry_failed_only,
-    )
+    ) as report:
 
-    # --- placeholder: steps 2–6, 8 will plug in here ---
-    # The processing loop will use:
-    #   report.should_process(issue_id) — to decide whether to process or skip
-    #   report.write_success(issue_id, num_pages) — after successful processing
-    #   report.write_failure(issue_id, num_pages, pages_ok, errors) — on failure
-    #   report.write_skip(issue_id, reason) — when skipping
-    logger.info("Configuration OK. Ready to process.")
-    logger.info("(Steps 2-6, 8 not yet implemented)")
+        # --- step 2: load issue list ---
+        issues = load_issues(
+            cfg.issues_json_path,
+            cfg.aliases_include,
+            cfg.aliases_exclude,
+            cfg.source_format,
+        )
+        logger.info("Loaded %d issues from %s", len(issues), cfg.issues_json_path)
 
-    report.log_summary()
-    report.close()
+        # --- validate source path ---
+        if not os.path.isdir(cfg.source_base_dir):
+            logger.error("Source base dir does not exist: %s", cfg.source_base_dir)
+            sys.exit(1)
+
+        if cfg.delete_source:
+            logger.warning(
+                "delete_source=True but source deletion is not yet implemented. Ignoring."
+            )
+
+        # --- process issues (steps 3–6) ---
+        for issue in tqdm(issues, desc="Processing", unit="issue"):
+            # --- resume check (step 7) ---
+            if not report.should_process(issue.issue_id):
+                report.write_skip(issue.issue_id, "already processed")
+                continue
+
+            # --- discover pages (step 3) ---
+            try:
+                pages = discover_pages(issue, cfg.source_base_dir)
+            except (FileNotFoundError, NotImplementedError, ValueError) as e:
+                logger.error("%s: %s", issue.issue_id, e)
+                report.write_failure(
+                    issue.issue_id, 0, 0, [{"page": 0, "error": str(e)}]
+                )
+                continue
+
+            # --- convert pages (steps 4+5) ---
+            page_results: dict[int, dict] = {}
+            errors: list[dict] = []
+
+            for page in pages:
+                target_path = build_target_path(
+                    cfg.target_base_dir, issue, page.page_num
+                )
+                try:
+                    result = convert_to_jp2(
+                        page.source_path,
+                        target_path,
+                        page.source_format,
+                        dry_run=cfg.dry_run,
+                    )
+                    page_results[page.page_num] = result
+                except Exception as e:
+                    logger.error(
+                        "%s page %d: %s", issue.issue_id, page.page_num, e
+                    )
+                    errors.append({"page": page.page_num, "error": str(e)})
+
+            if errors:
+                # Clean up orphan JP2s from successfully-converted pages.
+                # The issue is marked failed, so renaming_info.json won't be
+                # written — leaving JP2 files without metadata is inconsistent.
+                # They will be re-created on retry.
+                if not cfg.dry_run:
+                    for pg_num in page_results:
+                        orphan = build_target_path(cfg.target_base_dir, issue, pg_num)
+                        try:
+                            orphan.unlink(missing_ok=True)
+                        except OSError as cleanup_err:
+                            logger.warning(
+                                "%s: could not remove orphan %s: %s",
+                                issue.issue_id, orphan, cleanup_err,
+                            )
+                report.write_failure(
+                    issue.issue_id, len(pages), len(page_results), errors
+                )
+                continue
+
+            # --- write metadata (step 6) ---
+            try:
+                write_renaming_info(
+                    issue,
+                    pages,
+                    page_results,
+                    cfg.target_base_dir,
+                    cfg.source_base_dir,
+                    dry_run=cfg.dry_run,
+                )
+            except OSError as e:
+                report.write_failure(
+                    issue.issue_id,
+                    len(pages),
+                    len(page_results),
+                    [{"page": 0, "error": f"Failed to write renaming_info.json: {e}"}],
+                )
+                continue
+
+            report.write_success(issue.issue_id, len(pages))
 
 
 if __name__ == "__main__":

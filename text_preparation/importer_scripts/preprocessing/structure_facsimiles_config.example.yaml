@@ -35,15 +35,10 @@ dry_run: true
 # Requires writable access to source directories.
 delete_source: false
 
-# Expected source image format. "auto" detects from file extensions.
-# Options: jp2, tif, tiff, png, jpg, jpeg, pdf, auto
-source_format: auto
-
-# --- Chunking (for parallel runs) ---
-
-# Split the alias list into chunks of this size. 0 = process all at once.
-chunk_size: 0
-chunk_idx: 0
+# Fallback source image format (used when JSON entries lack imgs_ext).
+# Leave empty if imgs_ext is always present in the JSON.
+# Options: jp2, tif, tiff, png, jpg, jpeg, pdf
+source_format: ""
 
 # --- Output / Logging ---
 
