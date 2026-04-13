@@ -56,7 +56,6 @@ class Config:
     # --- behaviour ---
     dry_run: bool = True
     delete_source: bool = False
-    source_format: str = ""  # jp2, tif, pdf, png, jpg (empty = rely on JSON imgs_ext)
 
     # --- output / logging ---
     log_file: str = ""
@@ -69,14 +68,6 @@ class Config:
             raise ValueError("issues_json_path is required in config")
         if not self.target_base_dir:
             raise ValueError("target_base_dir is required in config")
-
-        # normalise source_format
-        self.source_format = self.source_format.lower().strip()
-        valid_formats = {"jp2", "tif", "tiff", "png", "jpg", "jpeg", "pdf"}
-        if self.source_format not in valid_formats:
-            raise ValueError(
-                f"source_format must be one of {valid_formats - {''}}, got '{self.source_format}'"
-            )
 
     def log_summary(self):
         """Log the resolved configuration."""
@@ -132,18 +123,16 @@ def load_issues(
     json_path: str,
     aliases_include: list[str],
     aliases_exclude: list[str],
-    source_format: str,
 ) -> list[IssueRecord]:
     """Parse the hierarchical issues JSON and return a flat list of IssueRecords.
 
     The JSON schema is: alias > year > month > [{day, edition, local_path, ...}].
+    Each entry must include an ``imgs_ext`` field.
 
     Args:
         json_path: Path to the issues_to_ingest.{provider}.json file.
         aliases_include: Only process these aliases (empty = all).
         aliases_exclude: Skip these aliases (applied after include).
-        source_format: Fallback source format from config (e.g. "tif", "auto").
-            Used when the JSON entry lacks an ``imgs_ext`` field.
 
     Returns:
         Flat list of IssueRecord objects.
@@ -154,12 +143,6 @@ def load_issues(
     # Pre-compute include/exclude sets for O(1) lookups
     include_set = set(aliases_include) if aliases_include else None
     exclude_set = set(aliases_exclude) if aliases_exclude else set()
-
-    # Derive fallback extension from source_format config
-    if source_format:
-        fallback_ext = f".{source_format}" if not source_format.startswith(".") else source_format
-    else:
-        fallback_ext = ""
 
     issues: list[IssueRecord] = []
 
@@ -181,7 +164,7 @@ def load_issues(
                                 edition=entry["edition"],
                                 local_path=entry["local_path"],
                                 imgs_subdir=entry.get("imgs_subdir", ""),
-                                imgs_ext=entry.get("imgs_ext", fallback_ext),
+                                imgs_ext=entry["imgs_ext"],
                             )
                         )
                     except (KeyError, ValueError, TypeError) as e:
@@ -921,7 +904,6 @@ def main(
             cfg.issues_json_path,
             cfg.aliases_include,
             cfg.aliases_exclude,
-            cfg.source_format,
         )
         logger.info("Loaded %d issues from %s", len(issues), cfg.issues_json_path)
 
