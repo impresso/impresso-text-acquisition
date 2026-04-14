@@ -11,7 +11,7 @@ from time import strftime
 from typing import Any
 
 from bs4 import BeautifulSoup
-from bs4.element import Tag
+from bs4.element import Tag, NavigableString
 
 from impresso_essentials.utils import SourceType, SourceMedium, timestamp
 from text_preparation.importers.mets_alto import (
@@ -80,6 +80,113 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
             issue (SubNewspaperIssue): Issue this page is from
         """
         self.issue = issue
+
+    def parse(self) -> None:
+        if self.alto_doc is None:
+            doc = self.xml
+        else:
+            doc = self.alto_doc
+
+        #print(f"{self.id} - self.issue.issue_data={self.issue.issue_data}")
+        mappings = {}
+        for ci in self.issue.issue_data["i"]:
+            ci_id = ci["m"]["id"]
+            if "parts" in ci["l"]:
+                #print(f'{self.id} - {ci["l"]["parts"]}, mappings:{mappings}')
+                for part in ci["l"]["parts"]:
+                    # TODO check what needs to be done there
+                    # if part["comp_id"] in mappings and ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
+                    # we want to make sure to link the images to their original CI,
+                    # if it was already assigned for the rest of the CI
+                    # continue
+                    
+                    # ONLY map parts that are on THIS page to avoid BLOCK-ID collisions
+                    if part.get("comp_page_no") != self.number:
+                        continue
+                    
+                    mappings[part["comp_id"]] = ci_id
+            
+
+        print(f"{self.id} - mappings before parsing printspace {mappings}")
+        pselement = doc.find("PrintSpace")
+        page_regions, notes = self.parse_printspace(pselement, mappings)
+        self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(page_regions)
+        # Add notes for missing coordinates in SWA
+        if len(notes) > 0:
+            self.page_data["n"] = notes
+
+    def parse_printspace(self, element: Tag, mappings: dict[str, str]) -> tuple[list[dict], list[str]]:
+        """Parse the ``<PrintSpace>`` element of an ALTO XML document.
+
+        This element contains all the OCR information about the content items of
+        a page, up to the lowest level of the hierarchy: the regions, paragraphs,
+        lines and tokens, each with their corresponding coordinates.
+
+        Args:
+            element (Tag): Input XML element (``<PrintSpace>``).
+            mappings (dict[str, str]): Mapping from OCR component ids to their
+                corresponding canonicalw Content Item ID.
+
+        Returns:
+            tuple[list[dict], list[str]]: List of page regions in the canonical
+                format and notes about potential parsing problems.
+        """
+
+        regions = []
+        notes = []
+        # in case of a blank page, the PrintSpace element is not found thus
+        # it will be none
+        if element:
+            for block in element.children:
+
+                if isinstance(block, NavigableString) or block.name == "Shape":
+                    continue
+                
+                block_id = block.get("ID")
+                #print(f"1. {self.id} - block_id {block_id} in parse_printspace: {block}")
+
+                if (block.get("TYPE") and block.get("TYPE").lower() in alto.IMG_COMP_LABELS) or block.name.lower() in alto.IMG_COMP_LABELS:
+                    # don't add the text from illustration regions
+                    # because it's very often OCR none-sense.
+                    continue
+
+                if block_id in mappings:
+                    #print(f"2. {self.id} - block_id {block_id} IN mappings - regions will be fetched")
+                    part_of_contentitem = mappings[block_id]
+                elif block.name=="ComposedBlock" and len(block.findAll("TextBlock"))!=0:
+                    #print(f"3. {self.id} - block_id {block_id} NOT in mappings - collecting sub_regions from block {block}")
+                    sub_regions, sub_notes = self.parse_printspace(block, mappings)
+                    regions.extend(sub_regions)
+                    notes += sub_notes
+                    continue
+                else:
+                    part_of_contentitem = None
+
+                coordinates = alto.distill_coordinates(block)
+
+                tmp = [alto.parse_textline(line_element) for line_element in block.findAll("TextLine")]
+
+                if len(tmp) > 0:
+                    lines, new_notes = list(zip(*tmp))
+                    new_notes = [i for n in new_notes for i in n]
+                    if isinstance(lines, tuple):
+                        # formatting problem
+                        lines = list(lines)
+                else:
+                    lines, new_notes = [], []
+
+                paragraph = {"c": coordinates, "l": lines}
+
+                region = {"c": coordinates, "p": [paragraph]}
+
+                if part_of_contentitem:
+                    region["pOf"] = part_of_contentitem
+                
+                notes += new_notes
+                regions.append(region)
+
+        return regions, notes
+
 
 
 class SubNewspaperIssue(MetsAltoCanonicalIssue):
@@ -406,7 +513,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 },
             }
             content_items.append(page_ci)
-            print(f"Adding CI {page_ci_id} to content_items: {content_items}")
+            print(f"Adding PAGE CI {page_ci_id} to content_items ({len(content_items)} CIs): page_ci={page_ci}")
 
             # === 2. Create content items for Illustrations (images) ===
             for illustration in print_space.find_all("Illustration"):
@@ -458,10 +565,10 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
 
                 # Add coordinates if available
                 if coords:
-                    image_ci["m"]["c"] = coords
+                    image_ci["c"] = coords
 
                 content_items.append(image_ci)
-                print(f"Adding CI {image_ci_id} to content_items: {content_items}")
+                print(f"Adding IMAGE CI {image_ci_id} to content_items ({len(content_items)} CIs): page_ci={image_ci}")
 
             # === 3. Create content items for Tables ===
             for text_block in print_space.find_all("ComposedBlock"):
@@ -518,7 +625,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         table_ci["m"]["c"] = coords
 
                     content_items.append(table_ci)
-                    print(f"Adding CI {table_ci_id} to content_items: {content_items}")
+                    print(f"Adding TABLE CI {table_ci_id} to content_items ({len(content_items)} CIs): page_ci={table_ci}")
 
 
         msg = (
