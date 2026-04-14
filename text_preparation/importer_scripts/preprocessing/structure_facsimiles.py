@@ -14,7 +14,10 @@ import logging
 import os
 import re
 import shutil
+import subprocess
 import sys
+import tempfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field, asdict
 from datetime import date, datetime
 from pathlib import Path
@@ -57,7 +60,11 @@ class Config:
     dry_run: bool = True
     delete_source: bool = False
 
+    # --- performance ---
+    workers: int = 1  # 1 = sequential; >1 = parallel page conversion
+
     # --- output / logging ---
+    log_level: str = "INFO"  # DEBUG, INFO, WARNING, ERROR, CRITICAL
     log_file: str = ""
     report_file: str = ""
     prior_report_file: str = ""
@@ -68,6 +75,13 @@ class Config:
             raise ValueError("issues_json_path is required in config")
         if not self.target_base_dir:
             raise ValueError("target_base_dir is required in config")
+        if self.workers < 1:
+            raise ValueError(f"workers must be >= 1, got {self.workers}")
+        valid_levels = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+        if self.log_level.upper() not in valid_levels:
+            raise ValueError(
+                f"log_level must be one of {valid_levels}, got '{self.log_level}'"
+            )
 
     def log_summary(self):
         """Log the resolved configuration."""
@@ -486,6 +500,9 @@ class ReportWriter:
         entry wins.
         """
         prior: dict[str, dict] = {}
+        if not os.path.isfile(path):
+            logger.info("Prior report not found, starting fresh: %s", path)
+            return prior
         with open(path, "r", encoding="utf-8") as f:
             for line_num, line in enumerate(f, 1):
                 line = line.strip()
@@ -504,6 +521,14 @@ class ReportWriter:
                 if issue_id:
                     prior[issue_id] = entry
         return prior
+
+    @property
+    def has_prior(self) -> bool:
+        return bool(self._prior)
+
+    def add_skipped(self, count: int) -> None:
+        """Bulk-increment the skipped counter (for pre-filtered issues)."""
+        self._counts["skipped"] += count
 
     # --- resume decision ---
 
@@ -572,6 +597,10 @@ class ReportWriter:
             self._counts[status] += 1
 
         if self._fh is not None:
+            issue_id = entry.get("issue_id")
+            prior = self._prior.get(issue_id) if issue_id else None
+            if prior and status == "skipped":
+                return
             self._fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
             self._fh.flush()
 
@@ -605,44 +634,75 @@ class ReportWriter:
 # ---------------------------------------------------------------------------
 
 
+def _run_opj_compress(
+    source_path: str | Path,
+    target_path: str | Path,
+) -> None:
+    """Run opj_compress for lossless JP2 conversion.
+
+    Raises RuntimeError on non-zero exit and OSError on missing/empty output.
+    """
+    cmd = [
+        "opj_compress",
+        "-i", str(source_path),
+        "-o", str(target_path),
+        "-r", "1",
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"opj_compress failed (exit {result.returncode}) for "
+            f"{source_path}: {result.stderr.strip()}"
+        )
+    if not os.path.exists(target_path) or os.path.getsize(target_path) == 0:
+        raise OSError(f"opj_compress produced no output: {target_path}")
+
 
 def convert_image_to_jp2(
     source_path: str | Path,
     target_path: str | Path,
     dry_run: bool = False,
 ) -> tuple[int, int]:
-    """Convert a TIF/PNG/JPG image to JP2 (lossless).
+    """Convert a TIF/PNG/JPG image to lossless JP2 via opj_compress.
 
     Returns (width, height) of the image.
     """
     with Image.open(source_path) as img:
         width, height = img.size
-        # Force full pixel decode before conversion. Image.open() is lazy and
-        # only reads the header — a corrupted file (truncated scan, bad blocks)
-        # would report valid dimensions but fail or produce garbage during save.
-        # Loading here surfaces corruption early with a clear error.
-        img.load()
-        if dry_run:
-            logger.info(
-                "[DRY RUN] Would convert %s -> %s (%dx%d)",
-                source_path, target_path, width, height,
-            )
-        else:
-            img.save(target_path, format="JPEG2000", irreversible=False)
-            if os.path.getsize(target_path) == 0:
-                raise OSError(f"Written file is zero bytes: {target_path}")
-            # Verify dimensions match after conversion
-            with Image.open(target_path) as saved:
-                tw, th = saved.size
-            if (tw, th) != (width, height):
-                raise ValueError(
-                    f"Dimension mismatch after conversion: "
-                    f"source ({width}x{height}) vs target ({tw}x{th})"
-                )
-            logger.info(
-                "Converted %s -> %s (%dx%d)",
-                source_path, target_path, width, height,
-            )
+
+    if dry_run:
+        logger.info(
+            "[DRY RUN] Would convert %s -> %s (%dx%d)",
+            source_path, target_path, width, height,
+        )
+        return width, height
+
+    # opj_compress can't read JPEG — convert to a temp TIF first
+    src = Path(source_path)
+    if src.suffix.lower() in {".jpg", ".jpeg"}:
+        with tempfile.NamedTemporaryFile(suffix=".tif", delete=False) as tmp:
+            tmp_path = tmp.name
+        try:
+            with Image.open(source_path) as img:
+                img.save(tmp_path, format="TIFF")
+            _run_opj_compress(tmp_path, target_path)
+        finally:
+            os.unlink(tmp_path)
+    else:
+        _run_opj_compress(source_path, target_path)
+
+    # Verify dimensions match after conversion
+    with Image.open(target_path) as saved:
+        tw, th = saved.size
+    if (tw, th) != (width, height):
+        raise ValueError(
+            f"Dimension mismatch after conversion: "
+            f"source ({width}x{height}) vs target ({tw}x{th})"
+        )
+    logger.info(
+        "Converted %s -> %s (%dx%d)",
+        source_path, target_path, width, height,
+    )
     return width, height
 
 
@@ -722,16 +782,20 @@ def extract_pdf_page_to_jp2(
                     pdf_path, page_num, width, height, exp_w, exp_h, method,
                 )
 
-        # --- Save ---
+        # --- Save via temp TIF + opj_compress ---
         if dry_run:
             logger.info(
                 "[DRY RUN] Would save %s page %d -> %s (%dx%d, %s)",
                 pdf_path, page_num, target_path, width, height, method,
             )
         else:
-            img.save(target_path, format="JPEG2000", irreversible=False)
-            if os.path.getsize(target_path) == 0:
-                raise OSError(f"Written file is zero bytes: {target_path}")
+            with tempfile.NamedTemporaryFile(suffix=".tif", delete=False) as tmp:
+                tmp_path = tmp.name
+            try:
+                img.save(tmp_path, format="TIFF")
+                _run_opj_compress(tmp_path, target_path)
+            finally:
+                os.unlink(tmp_path)
             logger.info(
                 "Saved %s page %d -> %s (%dx%d, %s)",
                 pdf_path, page_num, target_path, width, height, method,
@@ -807,7 +871,7 @@ def convert_to_jp2(
             "width": width,
             "height": height,
             "converted": True,
-            "method": "pillow",
+            "method": "opj_compress",
             "source_format": fmt,
         }
 
@@ -849,14 +913,18 @@ def convert_to_jp2(
 def main(
     config: str = "",
     dry_run: bool = None,
-    verbose: bool = False,
+    workers: int = None,
+    log_level: str = None,
 ):
     """Prepare page facsimile images for the Impresso image server.
 
     Args:
         config: Path to the YAML configuration file (required).
         dry_run: Override dry_run from config. When True, no files are written.
-        verbose: If True, set logging to DEBUG; otherwise INFO.
+        workers: Override workers from config. Number of threads for parallel
+            page conversion (1 = sequential).
+        log_level: Override log_level from config. One of DEBUG, INFO, WARNING,
+            ERROR, CRITICAL.
     """
     if not config:
         print("Error: --config is required. Pass a path to a YAML config file.")
@@ -866,7 +934,9 @@ def main(
     # --- load config with CLI overrides ---
     cfg = load_config(
         config,
-        dry_run=dry_run
+        dry_run=dry_run,
+        workers=workers,
+        log_level=log_level,
     )
 
     # --- logging ---
@@ -875,13 +945,24 @@ def main(
         if log_dir and not os.path.isdir(log_dir):
             os.makedirs(log_dir, exist_ok=True)
 
-    log_level = logging.DEBUG if verbose else logging.INFO
-    init_logger(logger, log_level, cfg.log_file or None)
+    level = getattr(logging, cfg.log_level.upper())
+    init_logger(logger, level, cfg.log_file or None)
 
     cfg.log_summary()
 
     if cfg.dry_run:
         logger.info("DRY RUN — no files will be written or modified.")
+
+    # --- check opj_compress ---
+    opj_path = shutil.which("opj_compress")
+    if opj_path is None:
+        logger.error(
+            "opj_compress not found on PATH. "
+            "Install OpenJPEG: brew install openjpeg (macOS) "
+            "/ apt install libopenjp2-tools (Debian/Ubuntu)"
+        )
+        sys.exit(1)
+    logger.info("Using opj_compress: %s (workers: %d)", opj_path, cfg.workers)
 
     # --- validate paths ---
     if not os.path.isfile(cfg.issues_json_path):
@@ -917,85 +998,104 @@ def main(
                 "delete_source=True but source deletion is not yet implemented. Ignoring."
             )
 
+        # --- resume filter ---
+        already_done = 0
+        if report.has_prior:
+            issues_to_process = [i for i in issues if report.should_process(i.issue_id)]
+            already_done = len(issues) - len(issues_to_process)
+            if already_done:
+                logger.info(
+                    "Resuming: %d issues already processed, %d to process",
+                    already_done, len(issues_to_process),
+                )
+                report.add_skipped(already_done)
+        else:
+            issues_to_process = issues
+
         # --- process issues (steps 3–6) ---
-        for issue in tqdm(issues, desc="Processing", unit="issue"):
-            # --- resume check (step 7) ---
-            if not report.should_process(issue.issue_id):
-                report.write_skip(issue.issue_id, "already processed")
-                continue
+        with ThreadPoolExecutor(max_workers=cfg.workers) as executor:
+            pbar = tqdm(issues_to_process, desc="Processing", unit="issue",
+                        total=len(issues), initial=already_done)
+            for issue in pbar:
 
-            # --- discover pages (step 3) ---
-            try:
-                pages = discover_pages(issue, cfg.source_base_dir)
-            except (FileNotFoundError, NotImplementedError, ValueError) as e:
-                logger.error("%s: %s", issue.issue_id, e)
-                report.write_failure(
-                    issue.issue_id, 0, 0, [{"page": 0, "error": str(e)}]
-                )
-                continue
-
-            # --- convert pages (steps 4+5) ---
-            page_results: dict[int, dict] = {}
-            errors: list[dict] = []
-
-            for page in pages:
-                target_path = build_target_path(
-                    cfg.target_base_dir, issue, page.page_num
-                )
+                # --- discover pages (step 3) ---
                 try:
-                    result = convert_to_jp2(
+                    pages = discover_pages(issue, cfg.source_base_dir)
+                except (FileNotFoundError, NotImplementedError, ValueError) as e:
+                    logger.error("%s: %s", issue.issue_id, e)
+                    report.write_failure(
+                        issue.issue_id, 0, 0, [{"page": 0, "error": str(e)}]
+                    )
+                    continue
+
+                # --- convert pages in parallel (steps 4+5) ---
+                page_results: dict[int, dict] = {}
+                errors: list[dict] = []
+
+                future_to_page = {}
+                for page in pages:
+                    target_path = build_target_path(
+                        cfg.target_base_dir, issue, page.page_num
+                    )
+                    future = executor.submit(
+                        convert_to_jp2,
                         page.source_path,
                         target_path,
                         page.source_format,
                         dry_run=cfg.dry_run,
                     )
-                    page_results[page.page_num] = result
-                except Exception as e:
-                    logger.error(
-                        "%s page %d: %s", issue.issue_id, page.page_num, e
+                    future_to_page[future] = page
+
+                for future in as_completed(future_to_page):
+                    page = future_to_page[future]
+                    try:
+                        page_results[page.page_num] = future.result()
+                    except Exception as e:
+                        logger.error(
+                            "%s page %d: %s", issue.issue_id, page.page_num, e
+                        )
+                        errors.append({"page": page.page_num, "error": str(e)})
+
+                if errors:
+                    # Clean up orphan JP2s from successfully-converted pages.
+                    # The issue is marked failed, so renaming_info.json won't be
+                    # written — leaving JP2 files without metadata is inconsistent.
+                    # They will be re-created on retry.
+                    if not cfg.dry_run:
+                        for pg_num in page_results:
+                            orphan = build_target_path(cfg.target_base_dir, issue, pg_num)
+                            try:
+                                orphan.unlink(missing_ok=True)
+                            except OSError as cleanup_err:
+                                logger.warning(
+                                    "%s: could not remove orphan %s: %s",
+                                    issue.issue_id, orphan, cleanup_err,
+                                )
+                    report.write_failure(
+                        issue.issue_id, len(pages), len(page_results), errors
                     )
-                    errors.append({"page": page.page_num, "error": str(e)})
+                    continue
 
-            if errors:
-                # Clean up orphan JP2s from successfully-converted pages.
-                # The issue is marked failed, so renaming_info.json won't be
-                # written — leaving JP2 files without metadata is inconsistent.
-                # They will be re-created on retry.
-                if not cfg.dry_run:
-                    for pg_num in page_results:
-                        orphan = build_target_path(cfg.target_base_dir, issue, pg_num)
-                        try:
-                            orphan.unlink(missing_ok=True)
-                        except OSError as cleanup_err:
-                            logger.warning(
-                                "%s: could not remove orphan %s: %s",
-                                issue.issue_id, orphan, cleanup_err,
-                            )
-                report.write_failure(
-                    issue.issue_id, len(pages), len(page_results), errors
-                )
-                continue
+                # --- write metadata (step 6) ---
+                try:
+                    write_renaming_info(
+                        issue,
+                        pages,
+                        page_results,
+                        cfg.target_base_dir,
+                        cfg.source_base_dir,
+                        dry_run=cfg.dry_run,
+                    )
+                except OSError as e:
+                    report.write_failure(
+                        issue.issue_id,
+                        len(pages),
+                        len(page_results),
+                        [{"page": 0, "error": f"Failed to write renaming_info.json: {e}"}],
+                    )
+                    continue
 
-            # --- write metadata (step 6) ---
-            try:
-                write_renaming_info(
-                    issue,
-                    pages,
-                    page_results,
-                    cfg.target_base_dir,
-                    cfg.source_base_dir,
-                    dry_run=cfg.dry_run,
-                )
-            except OSError as e:
-                report.write_failure(
-                    issue.issue_id,
-                    len(pages),
-                    len(page_results),
-                    [{"page": 0, "error": f"Failed to write renaming_info.json: {e}"}],
-                )
-                continue
-
-            report.write_success(issue.issue_id, len(pages))
+                report.write_success(issue.issue_id, len(pages))
 
 
 def cli():

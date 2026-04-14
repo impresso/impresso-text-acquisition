@@ -33,6 +33,11 @@ Documentation = "https://impresso-text-importer.readthedocs.io/en/latest/index.h
 version = {attr = "text_preparation.__version__"}
 dependencies = {file = ["requirements.txt"]}
 
+[tool.pytest.ini_options]
+markers = [
+    "benchmark: slow benchmark tests comparing JP2 encoding methods",
+]
+
 [tool.setuptools.packages.find]
 include = ["text_preparation*"]
 namespaces = false

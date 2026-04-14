@@ -34,7 +34,17 @@ dry_run: true
 # Delete source image files after verified copy. NOT YET IMPLEMENTED — ignored.
 delete_source: false
 
+# --- Performance ---
+
+# Number of threads for parallel page conversion within each issue.
+# 1 = sequential (default); higher values convert pages concurrently via
+# opj_compress subprocesses. Typical sweet spot: number of CPU cores.
+workers: 1
+
 # --- Output / Logging ---
+
+# Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL (default: INFO).
+log_level: INFO
 
 # Log file path (empty = log to stdout).
 log_file: ""
@@ -43,6 +53,9 @@ log_file: ""
 report_file: ""
 
 # Prior report to resume from. Issues marked "success" in this file are skipped.
+# Can be the same path as report_file — in that case the script reads existing
+# entries before appending, and only writes a new line when the status changes
+# (e.g. failed → success on retry). This keeps the file from growing on re-runs.
 prior_report_file: ""
 
 # When true AND prior_report_file is set: only re-process issues that were

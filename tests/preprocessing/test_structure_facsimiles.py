@@ -10,6 +10,7 @@ from datetime import date
 from pathlib import Path
 from unittest.mock import patch
 
+import numpy as np
 import pymupdf
 import pytest
 from PIL import Image
@@ -38,6 +39,12 @@ requires_poppler = pytest.mark.skipif(
     reason="poppler (pdftoppm) not installed",
 )
 
+requires_opj_compress = pytest.mark.skipif(
+    shutil.which("opj_compress") is None,
+    reason="opj_compress not installed (brew install openjpeg)" \
+    "apt install libopenjp2-tools (Debian/Ubuntu)",
+)
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -47,6 +54,14 @@ requires_poppler = pytest.mark.skipif(
 def sample_image():
     """Create a fresh PIL Image (not saved to disk)."""
     return Image.new("RGB", (IMG_WIDTH, IMG_HEIGHT), color=IMG_COLOR)
+
+
+@pytest.fixture
+def noisy_image():
+    """Create a PIL Image with random pixel data (worst case for lossless)."""
+    rng = np.random.RandomState(42)
+    arr = rng.randint(0, 256, (IMG_HEIGHT, IMG_WIDTH, 3), dtype=np.uint8)
+    return Image.fromarray(arr)
 
 
 @pytest.fixture
@@ -125,6 +140,7 @@ def _assert_valid_jp2(path: Path, expected_size: tuple[int, int] | None = None):
 # ---------------------------------------------------------------------------
 
 
+@requires_opj_compress
 class TestConvertImageToJp2:
 
     def test_convert_tif_to_jp2(self, tif_image, tmp_path):
@@ -165,12 +181,63 @@ class TestConvertImageToJp2:
         with pytest.raises(FileNotFoundError):
             convert_image_to_jp2(source, target)
 
+    def test_lossless_tif(self, noisy_image, tmp_path):
+        """Verify opj_compress produces pixel-identical output for TIF."""
+        source = tmp_path / "noisy.tif"
+        noisy_image.save(str(source), format="TIFF")
+        target = tmp_path / "noisy.jp2"
+        convert_image_to_jp2(source, target)
+        src_pixels = np.array(noisy_image)
+        with Image.open(str(target)) as dst:
+            dst_pixels = np.array(dst)
+        assert src_pixels.shape == dst_pixels.shape
+        assert np.array_equal(src_pixels, dst_pixels), (
+            f"Pixel mismatch — max diff: "
+            f"{np.abs(src_pixels.astype(int) - dst_pixels.astype(int)).max()}"
+        )
+
+    def test_lossless_png(self, noisy_image, tmp_path):
+        """Verify opj_compress produces pixel-identical output for PNG."""
+        source = tmp_path / "noisy.png"
+        noisy_image.save(str(source), format="PNG")
+        target = tmp_path / "noisy.jp2"
+        convert_image_to_jp2(source, target)
+        src_pixels = np.array(noisy_image)
+        with Image.open(str(target)) as dst:
+            dst_pixels = np.array(dst)
+        assert np.array_equal(src_pixels, dst_pixels), (
+            f"Pixel mismatch — max diff: "
+            f"{np.abs(src_pixels.astype(int) - dst_pixels.astype(int)).max()}"
+        )
+
+    def test_lossless_jpg(self, noisy_image, tmp_path):
+        """Verify opj_compress produces pixel-identical output for JPG.
+
+        Note: JPEG is lossy, so we compare the decoded JPEG pixels (not the
+        original) against the JP2 output — the TIF→JP2 step must be lossless.
+        """
+        source = tmp_path / "noisy.jpg"
+        noisy_image.save(str(source), format="JPEG", quality=95)
+        # Re-read the JPEG to get the lossy-decoded pixels as ground truth
+        with Image.open(str(source)) as jpg:
+            jpg_pixels = np.array(jpg)
+        target = tmp_path / "noisy.jp2"
+        convert_image_to_jp2(source, target)
+        with Image.open(str(target)) as dst:
+            dst_pixels = np.array(dst)
+        assert jpg_pixels.shape == dst_pixels.shape
+        assert np.array_equal(jpg_pixels, dst_pixels), (
+            f"Pixel mismatch — max diff: "
+            f"{np.abs(jpg_pixels.astype(int) - dst_pixels.astype(int)).max()}"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Tests: extract_pdf_page_to_jp2
 # ---------------------------------------------------------------------------
 
 
+@requires_opj_compress
 class TestExtractPdfPageToJp2:
 
     def test_embedded_raster(self, pdf_with_image, tmp_path):
@@ -278,13 +345,14 @@ class TestCopyJp2:
 # ---------------------------------------------------------------------------
 
 
+@requires_opj_compress
 class TestConvertToJp2:
 
     def test_tif(self, tif_image, tmp_path):
         target = tmp_path / "output.jp2"
         result = convert_to_jp2(tif_image, target, source_format="tif")
         assert result["converted"] is True
-        assert result["method"] == "pillow"
+        assert result["method"] == "opj_compress"
         assert result["source_format"] == "tif"
         assert result["width"] == IMG_WIDTH
         assert result["height"] == IMG_HEIGHT
@@ -294,14 +362,14 @@ class TestConvertToJp2:
         target = tmp_path / "output.jp2"
         result = convert_to_jp2(tif_image, target, source_format="tiff")
         assert result["converted"] is True
-        assert result["method"] == "pillow"
+        assert result["method"] == "opj_compress"
         assert result["source_format"] == "tiff"
 
     def test_png(self, png_image, tmp_path):
         target = tmp_path / "output.jp2"
         result = convert_to_jp2(png_image, target, source_format="png")
         assert result["converted"] is True
-        assert result["method"] == "pillow"
+        assert result["method"] == "opj_compress"
         assert result["source_format"] == "png"
         _assert_valid_jp2(target, (IMG_WIDTH, IMG_HEIGHT))
 
@@ -309,7 +377,7 @@ class TestConvertToJp2:
         target = tmp_path / "output.jp2"
         result = convert_to_jp2(jpg_image, target, source_format="jpg")
         assert result["converted"] is True
-        assert result["method"] == "pillow"
+        assert result["method"] == "opj_compress"
         assert result["source_format"] == "jpg"
         _assert_valid_jp2(target, (IMG_WIDTH, IMG_HEIGHT))
 
@@ -392,7 +460,7 @@ class TestConvertToJp2:
         assert result["width"] == IMG_WIDTH
         assert result["height"] == IMG_HEIGHT
         assert result["converted"] is True
-        assert result["method"] == "pillow"
+        assert result["method"] == "opj_compress"
         assert result["source_format"] == "tif"
         assert not target.exists()
 
