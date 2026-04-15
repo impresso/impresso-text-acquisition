@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 BASE_DIRNAME = "original"
 
-JSON_FILE = "../data/sample_data/issue_indices/issue_index.bnl.json"
+JSON_FILE = "../data/issue_indices/issue_index.bnl.json"
 
 LuxIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.

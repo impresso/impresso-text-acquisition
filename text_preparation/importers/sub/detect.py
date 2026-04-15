@@ -10,7 +10,7 @@ from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 
-JSON_FILE = "../data/sample_data/issue_indices/issue_index.sub.json"
+JSON_FILE = "../data/issue_indices/issue_index.sub.json"
 
 SubIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path"])
 """A light-weight data structure to represent a newspaper issue.

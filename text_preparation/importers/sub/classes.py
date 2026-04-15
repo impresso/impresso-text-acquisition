@@ -107,7 +107,7 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
                     mappings[part["comp_id"]] = ci_id
             
 
-        print(f"{self.id} - mappings before parsing printspace {mappings}")
+        #print(f"{self.id} - mappings before parsing printspace {mappings}")
         pselement = doc.find("PrintSpace")
         page_regions, notes = self.parse_printspace(pselement, mappings)
         self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(page_regions)
@@ -286,6 +286,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         # Find all page files from FULLTEXT fileGrp
         file_grp = mets_soup.find("fileGrp", {"USE": "FULLTEXT"})
         if not file_grp:
+            # TODO rerun 1899 for cases when no fulltext is found, finding pages in another way
             logger.warning(f"No FULLTEXT fileGrp found in {self.mets_file}")
             return
 
@@ -297,7 +298,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 # Extract filename from URL
                 filename = href.split("/")[-1]
                 file_id = file_elem.get("ID", "")
-                print(f"{self.id} - adding page with filename {filename} and file_id {file_id}")
+                #print(f"{self.id} - adding page with filename {filename} and file_id {file_id}")
                 # Extract page number from file ID (e.g., FILE_0001_FULLTEXT -> 1)
                 try:
                     page_num = int(file_id.split("_")[1])
@@ -448,7 +449,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         # Non-page items counter starts after all page CIs (num_pages + 1)
         ci_counter = len(self.pages)
 
-        print(f"pages: {[p.id for p in sorted(self.pages, key=lambda x: x.number)]}")
+        #print(f"pages: {[p.id for p in sorted(self.pages, key=lambda x: x.number)]}")
         # Process each page to extract content items
         for page in sorted(self.pages, key=lambda x: x.number):
             page_num_str = str(page.number).zfill(4)
@@ -513,7 +514,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 },
             }
             content_items.append(page_ci)
-            print(f"Adding PAGE CI {page_ci_id} to content_items ({len(content_items)} CIs): page_ci={page_ci}")
+            #print(f"Adding PAGE CI {page_ci_id} to content_items ({len(content_items)} CIs): page_ci={page_ci}")
 
             # === 2. Create content items for Illustrations (images) ===
             for illustration in print_space.find_all("Illustration"):
@@ -568,7 +569,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     image_ci["c"] = coords
 
                 content_items.append(image_ci)
-                print(f"Adding IMAGE CI {image_ci_id} to content_items ({len(content_items)} CIs): page_ci={image_ci}")
+                #print(f"Adding IMAGE CI {image_ci_id} to content_items ({len(content_items)} CIs): page_ci={image_ci}")
 
             # === 3. Create content items for Tables ===
             for text_block in print_space.find_all("ComposedBlock"):
@@ -625,7 +626,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         table_ci["m"]["c"] = coords
 
                     content_items.append(table_ci)
-                    print(f"Adding TABLE CI {table_ci_id} to content_items ({len(content_items)} CIs): page_ci={table_ci}")
+                    #print(f"Adding TABLE CI {table_ci_id} to content_items ({len(content_items)} CIs): page_ci={table_ci}")
 
 
         msg = (
