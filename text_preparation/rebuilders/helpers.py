@@ -45,6 +45,8 @@ TYPE_MAPPINGS = {
     "death_notice": "ob",
     "weather": "w",
     "chronicle": "ch",
+    "radio_bulletin": "rb",
+    "radio_broadcast_episode": "rbe"
 }
 # TODO KB data: add familial announcement?
 
@@ -172,10 +174,18 @@ def read_issue_supports(
     )
     # print(f"IN SUPPORTS 1: Filename to be loaded for {alias}-{year}: {filename}")
 
-    supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
+    try: 
+        supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
+    except Exception as e:
+        # sometimes the page/audi files do not exist
+        msg = f"{issue_json['id']} - in read_issue_supports: There was an error fetching and reading the supports for this issue (skipping): {e}."
+        print(msg)
+        logger.warning(msg)
+        # prepare for filtering out after
+        issue_json['has_problem'] = True
+        return (issue, issue_json)
 
     # print(f"IN SUPPORTS 2: number of loaded files for {alias}-{year}: {len(supports)}")
-
     if is_audio:
         issue_json["rr"] = supports
     else:
@@ -275,6 +285,11 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     if "rp" in content_item:
         solr_ci["rp"] = content_item["rp"]
 
+    # special case for BNL when there is a section title associated to this CI: also extract it
+    if "section_title" in content_item:
+        # remove the list of legacy parts to only keep the title text, composing CI IDs and section ID
+        del content_item["section_title"]["heading_legacy_parts"]
+        solr_ci["section_title"] = content_item["section_title"]
     # special case for BL and SWISSINFO data - when there can be period-specific titles
     if "var_t" in content_item["m"] and "media_title_variant" not in solr_ci:
         solr_ci["media_title_variant"] = content_item["m"]["var_t"]
@@ -359,6 +374,11 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
     cis = []
     for ci in issue_json["i"]:
 
+        if "has_problem" in issue_json and issue_json['has_problem']:
+            #if the issue was listed as having problems (missing page), remove all articles for it.
+            ci["has_problem"] = True
+            continue
+
         ci["has_problem"] = False
 
         # check if the canonical used was consolidated (to be used later)
@@ -370,8 +390,15 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
             ci["media_title_variant"] = issue_json["media_title_variant"]
 
         # fetch the information relative to the source type and medium to know how to process the data
-        ci["sm"] = issue_json["sm"]
-        ci["st"] = issue_json["st"]
+        # if the values are not defined, it's by default newspaper and print (ensure to set it in issue_json)
+        if "sm" not in issue_json or "st" not in issue_json:
+            ci["sm"] = "print"
+            issue_json['sm'] = "print"
+            ci['st'] = 'newspaper'
+            issue_json["st"] = 'newspaper'
+        else:
+            ci["sm"] = issue_json.get("sm", "print")
+            ci["st"] = issue_json.get("st", "newspaper")
 
         if issue_json["st"] == "radio_broadcast":
             # if the radio channel and program are defined, add them to the content item

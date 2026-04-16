@@ -65,3 +65,5 @@ html_theme = "sphinx_rtd_theme"
 
 
 # -- Extension configuration -------------------------------------------------
+
+suppress_warnings = ["ref.python"]

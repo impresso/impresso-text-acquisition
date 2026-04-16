@@ -1,18 +1,7 @@
 {
     "titles": {
-        "actionfem": [],
-        "armeteufel": [],
-        "avenirgdl": [],
-        "buergerbeamten": [],
-        "courriergdl": [],
-        "demitock": [],
-        "gazgrdlux": [],
-        "landwortbild": [],
-        "luxland": [],
-        "luxwort": [],
-        "onsjongen": [],
-        "schmiede": []
+        "tageblatt": []
     },
     "exclude_titles": [],
-    "year_only": false
+    "year_only": true
 }

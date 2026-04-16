@@ -73,20 +73,22 @@ def write_error(
     logger.error("Error when processing %s: %s", thing, error)
     logger.exception(error)
 
-    if isinstance(thing, str):
+    issuedir = None
+
+    if isinstance(thing, CanonicalPage):
+        issuedir = thing.issue.issuedir
+    if isinstance(thing, CanonicalAudioRecord):
+        issuedir = thing.issue.issuedir
+    elif isinstance(thing, CanonicalIssue):
+        issuedir = thing.issuedir
+    elif isinstance(thing, IssueDir):
+        # if it's neither an issue nor a page it must be an issuedir
+        issuedir = thing
+    else:
         # if thing is a string, it's the canonical id of the object
         note = f"{thing}: {error}"
-    else:
-        if isinstance(thing, CanonicalPage):
-            issuedir = thing.issue.issuedir
-        if isinstance(thing, CanonicalAudioRecord):
-            issuedir = thing.issue.issuedir
-        elif isinstance(thing, CanonicalIssue):
-            issuedir = thing.issuedir
-        else:
-            # if it's neither an issue nor a page it must be an issuedir
-            issuedir = thing
 
+    if issuedir is not None:
         note = f"{canonical_path(issuedir)}: {error}"
 
     if failed_log is not None:
@@ -706,13 +708,18 @@ def upload_issues(
         try:
             bucket = s3.Bucket(bucket_name)
             bucket.upload_file(filepath, key_name)
-            logger.info("Uploaded %s to %s", filepath, key_name)
+            msg = f"Uploaded {filepath} to {key_name} in bucket: {bucket_name}."
+            logger.debug(msg)
             return True, filepath
         except BotoCoreError as e:
-            logger.error("The upload of %s failed with error %s", filepath, e)
+            msg = f"The upload of {filepath} failed with error {e}"
+            print(msg)
+            logger.error(msg)
             write_error(filepath, e, failed_log)
     else:
-        logger.info("Bucket name is None, not uploading issue %s.", filepath)
+        msg = f"Bucket name is None, not uploading issue {filepath}."
+        print(msg)
+        logger.error(msg)
     return False, filepath
 
 

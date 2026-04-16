@@ -373,6 +373,10 @@ def main() -> None:
     logger.info(dask_cluster_msg)
     print(dask_cluster_msg)
 
+    msg = f"Config used for this run: {arguments}"
+    logger.info(msg)
+    print(msg)
+
     if compute_mft:
         print("The Manifest will be computed for this rebuilt run!")
         logger.info("The Manifest will be computed for this rebuilt run!")
@@ -460,11 +464,13 @@ def main() -> None:
                 ).persist()
 
                 progress(future)
+
                 # clear memory of objects once computations are done
-                client.restart()
-                rstrt_msg = f"Restarted client after finishing processing batch {n + 1}"
-                print(rstrt_msg)
-                logger.info(rstrt_msg)
+                if n % 5 == 0 and n > 0:
+                    client.restart()
+                    rstrt_msg = f"Restarted client after finishing processing batch {n + 1}"
+                    print(rstrt_msg)
+                    logger.info(rstrt_msg)
 
         except Exception as e:
             traceback.print_tb(e.__traceback__)
