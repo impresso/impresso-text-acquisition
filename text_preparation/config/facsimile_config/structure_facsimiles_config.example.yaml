@@ -31,6 +31,11 @@ aliases_exclude: []
 # SAFE DEFAULT: no files written. Set to false to actually process.
 dry_run: true
 
+# Process only the first N issues end-to-end (with actual writes).
+# Useful to smoke-test conversions before a full run. Overrides dry_run.
+# 0 = disabled (default).
+sample: 0
+
 # Delete source image files after verified copy. NOT YET IMPLEMENTED — ignored.
 delete_source: false
 

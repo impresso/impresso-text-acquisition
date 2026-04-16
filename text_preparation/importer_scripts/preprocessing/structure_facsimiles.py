@@ -58,6 +58,7 @@ class Config:
 
     # --- behaviour ---
     dry_run: bool = True
+    sample: int = 0  # 0 = disabled; >0 = process first N issues end-to-end
     delete_source: bool = False
 
     # --- performance ---
@@ -77,6 +78,8 @@ class Config:
             raise ValueError("target_base_dir is required in config")
         if self.workers < 1:
             raise ValueError(f"workers must be >= 1, got {self.workers}")
+        if self.sample < 0:
+            raise ValueError(f"sample must be >= 0, got {self.sample}")
         valid_levels = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
         if self.log_level.upper() not in valid_levels:
             raise ValueError(
@@ -915,6 +918,7 @@ def main(
     dry_run: bool = None,
     workers: int = None,
     log_level: str = None,
+    sample: int = None,
 ):
     """Prepare page facsimile images for the Impresso image server.
 
@@ -925,6 +929,8 @@ def main(
             page conversion (1 = sequential).
         log_level: Override log_level from config. One of DEBUG, INFO, WARNING,
             ERROR, CRITICAL.
+        sample: Override sample from config. Process only the first N issues
+            end-to-end (overrides dry_run to False).
     """
     if not config:
         print("Error: --config is required. Pass a path to a YAML config file.")
@@ -937,6 +943,7 @@ def main(
         dry_run=dry_run,
         workers=workers,
         log_level=log_level,
+        sample=sample,
     )
 
     # --- logging ---
@@ -948,7 +955,25 @@ def main(
     level = getattr(logging, cfg.log_level.upper())
     init_logger(logger, level, cfg.log_file or None)
 
+    # When logging to a file, also show ERROR+ on the terminal.
+    if cfg.log_file:
+        stderr_handler = logging.StreamHandler()
+        stderr_handler.setLevel(logging.ERROR)
+        stderr_handler.setFormatter(
+            logging.Formatter("%(asctime)s %(name)-12s %(levelname)-8s %(message)s")
+        )
+        logger.addHandler(stderr_handler)
+
     cfg.log_summary()
+
+    # --- sample mode: override dry_run ---
+    if cfg.sample > 0:
+        if cfg.dry_run:
+            logger.info(
+                "Sample mode (N=%d): overriding dry_run → False.",
+                cfg.sample,
+            )
+            cfg.dry_run = False
 
     if cfg.dry_run:
         logger.info("DRY RUN — no files will be written or modified.")
@@ -1012,10 +1037,26 @@ def main(
         else:
             issues_to_process = issues
 
+        # --- sample mode: take first N issues ---
+        if cfg.sample > 0:
+            if cfg.sample >= len(issues_to_process):
+                logger.warning(
+                    "Sample size (%d) >= available issues (%d) — processing all.",
+                    cfg.sample, len(issues_to_process),
+                )
+            else:
+                issues_to_process = issues_to_process[:cfg.sample]
+                logger.info(
+                    "Sample mode: processing first %d issue(s).",
+                    len(issues_to_process),
+                )
+
         # --- process issues (steps 3–6) ---
+        desc = "Processing (SAMPLE)" if cfg.sample > 0 else "Processing"
         with ThreadPoolExecutor(max_workers=cfg.workers) as executor:
-            pbar = tqdm(issues_to_process, desc="Processing", unit="issue",
-                        total=len(issues), initial=already_done)
+            pbar = tqdm(issues_to_process, desc=desc, unit="issue",
+                        total=len(issues_to_process) + already_done,
+                        initial=already_done)
             for issue in pbar:
 
                 # --- discover pages (step 3) ---
