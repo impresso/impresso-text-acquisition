@@ -82,23 +82,26 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
         self.issue = issue
 
     def parse(self) -> None:
+        """Parse the page's Alto XML and extract regions, paragraphs, lines, and tokens.
+
+        This method processes the SUB Alto XML document to extract all OCR information
+        and structure it into the canonical page format. It maps OCR component IDs
+        to Content Item IDs and extracts page regions with their coordinates.
+
+        The parsed data is stored in the `page_data` attribute under keys:
+        - "r": List of page regions with paragraphs, lines, and tokens
+        - "n": Optional notes about parsing problems (e.g., missing coordinates)
+        """
         if self.alto_doc is None:
             doc = self.xml
         else:
             doc = self.alto_doc
 
-        #print(f"{self.id} - self.issue.issue_data={self.issue.issue_data}")
         mappings = {}
         for ci in self.issue.issue_data["i"]:
             ci_id = ci["m"]["id"]
             if "parts" in ci["l"]:
-                #print(f'{self.id} - {ci["l"]["parts"]}, mappings:{mappings}')
                 for part in ci["l"]["parts"]:
-                    # TODO check what needs to be done there
-                    # if part["comp_id"] in mappings and ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
-                    # we want to make sure to link the images to their original CI,
-                    # if it was already assigned for the rest of the CI
-                    # continue
                     
                     # ONLY map parts that are on THIS page to avoid BLOCK-ID collisions
                     if part.get("comp_page_no") != self.number:
@@ -106,18 +109,21 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
                     
                     mappings[part["comp_id"]] = ci_id
             
-
-        #print(f"{self.id} - mappings before parsing printspace {mappings}")
         pselement = doc.find("PrintSpace")
         page_regions, notes = self.parse_printspace(pselement, mappings)
         self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(page_regions)
-        # Add notes for missing coordinates in SWA
+ 
         if len(notes) > 0:
             self.page_data["n"] = notes
 
     def parse_printspace(self, element: Tag, mappings: dict[str, str]) -> tuple[list[dict], list[str]]:
-        """Parse the ``<PrintSpace>`` element of an ALTO XML document.
+        """Parse the ``<PrintSpace>`` element of an SUB ALTO XML document.
 
+        This function closely resembles the one inside importers.alto, but slightly
+        adapts to the SUB case, where we have an additional layer of "ComposedBlocks"
+        on top of the "TextBlocks". 
+        The original function could be used if the SubNewspaperPage.parse() method is
+        slightly adapted (potential future work).
         This element contains all the OCR information about the content items of
         a page, up to the lowest level of the hierarchy: the regions, paragraphs,
         lines and tokens, each with their corresponding coordinates.
@@ -143,7 +149,6 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
                     continue
                 
                 block_id = block.get("ID")
-                #print(f"1. {self.id} - block_id {block_id} in parse_printspace: {block}")
 
                 if (block.get("TYPE") and block.get("TYPE").lower() in alto.IMG_COMP_LABELS) or block.name.lower() in alto.IMG_COMP_LABELS:
                     # don't add the text from illustration regions
@@ -151,10 +156,8 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
                     continue
 
                 if block_id in mappings:
-                    #print(f"2. {self.id} - block_id {block_id} IN mappings - regions will be fetched")
                     part_of_contentitem = mappings[block_id]
                 elif block.name=="ComposedBlock" and len(block.findAll("TextBlock"))!=0:
-                    #print(f"3. {self.id} - block_id {block_id} NOT in mappings - collecting sub_regions from block {block}")
                     sub_regions, sub_notes = self.parse_printspace(block, mappings)
                     regions.extend(sub_regions)
                     notes += sub_notes
@@ -174,6 +177,13 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
                         lines = list(lines)
                 else:
                     lines, new_notes = [], []
+
+                if lines == []:
+                    msg = f"{self.id} - empty lines, not adding them"
+                    if logger.level == "DEBUG":
+                        print(msg)
+                    logger.debug(msg)
+                    continue
 
                 paragraph = {"c": coordinates, "l": lines}
 
@@ -249,7 +259,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         mets_filename = mets_files[0]
         ppn = mets_filename.split("_")[0]  # Gets "PPN1754726119"
 
-        return ppn
+        return ppn, mets_filename
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
@@ -261,14 +271,13 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
             Exception: If creating a `SubNewspaperPage` raises an exception.
         """
         # Find the METS file and extract PPN
-        self.ppn = self._extract_ppn_from_mets()
+        self.ppn, mets_filename = self._extract_ppn_from_mets()
 
         # The title-level PPN is the PPN without any date-specific suffix
         # For SUB, the PPN itself serves as the title identifier
         self.title_ppn = self.ppn
 
         # Get the full path to the METS file and extract full PPN with date
-        mets_filename = [f for f in os.listdir(self.path) if f.startswith("PPN") and f.endswith(".xml")][0]
         self.mets_file = os.path.join(self.path, mets_filename)
         # Extract full PPN with date suffix (e.g., PPN1754726119_18880202)
         self.ppn_with_date = mets_filename.replace(".xml", "")
@@ -282,30 +291,49 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
 
         # Extract IIIF links from fileGrp IIIF
         self._extract_page_iiif_links(mets_soup)
-
+        
+        page_files = []
         # Find all page files from FULLTEXT fileGrp
         file_grp = mets_soup.find("fileGrp", {"USE": "FULLTEXT"})
         if not file_grp:
-            # TODO rerun 1899 for cases when no fulltext is found, finding pages in another way
-            logger.warning(f"No FULLTEXT fileGrp found in {self.mets_file}")
-            return
-
-        page_files = []
-        for file_elem in file_grp.find_all("file"):
-            flocat = file_elem.find("FLocat")
-            if flocat and "xlink:href" in flocat.attrs:
-                href = flocat["xlink:href"]
-                # Extract filename from URL
-                filename = href.split("/")[-1]
-                file_id = file_elem.get("ID", "")
-                #print(f"{self.id} - adding page with filename {filename} and file_id {file_id}")
-                # Extract page number from file ID (e.g., FILE_0001_FULLTEXT -> 1)
+            msg = f"{self.id} - No FULLTEXT fileGrp found in {self.mets_file}, finding all the page XML files present in the issuedir"
+            print(msg)
+            logger.warning(msg)
+            # if there is no FULLTEXT fileGrp in the mets file, simply check the contents of the issuedir
+            pages_filenames = [f for f in os.listdir(self.path) if "PPN" not in f and f.endswith(".xml")]
+            
+            if len(pages_filenames) != len(self.page_iiif_links):
+                msg = f"{self.id} - Found a different number of page ALTO files ({len(pages_filenames)}) than the number of iiif links ({len(self.page_iiif_links)})!"
+                print(msg)
+                logger.warning(msg)
+            # fix 1895, 1899, 1933
+            # in this case use by default file IDs mathcing the structure of the rest
+            for filename in pages_filenames:
                 try:
-                    page_num = int(file_id.split("_")[1])
+                    page_num = int(filename.replace('.xml', ''))
+                    file_id = f"FILE_{str(page_num).zfill(4)}_FULLTEXT"
                     page_files.append((page_num, filename, file_id))
                 except (IndexError, ValueError):
-                    logger.warning(f"Could not extract page number from {file_id}")
+                    logger.warning(f"Problem when extracting page number from {filename}")
                     continue
+
+        # if the FULLTEXT fileGrp is present in the mets, use it to identify the pages info.
+        else:
+            for file_elem in file_grp.find_all("file"):
+                flocat = file_elem.find("FLocat")
+                if flocat and "xlink:href" in flocat.attrs:
+                    href = flocat["xlink:href"]
+                    # Extract filename from URL
+                    filename = href.split("/")[-1]
+                    file_id = file_elem.get("ID", "")
+                    #print(f"{self.id} - adding page with filename {filename} and file_id {file_id}")
+                    # Extract page number from file ID (e.g., FILE_0001_FULLTEXT -> 1)
+                    try:
+                        page_num = int(file_id.split("_")[1])
+                        page_files.append((page_num, filename, file_id))
+                    except (IndexError, ValueError):
+                        logger.warning(f"Could not extract page number from {file_id}")
+                        continue
 
         # Sort by page number
         page_files.sort(key=lambda x: x[0])
@@ -490,7 +518,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 # Legacy section - tracking ALTO components
                 "l": {
                     # Composite ID: {title_ppn}-{issue_ppn}-{page_filename}
-                    "id": f"{self.title_ppn}-{self.ppn}-{page.filename}",
+                    "id": f"{self.ppn_with_date}-{page.filename}",
                     # List of parts (ALTO elements) composing this CI
                     "parts": [
                         {
@@ -514,7 +542,6 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                 },
             }
             content_items.append(page_ci)
-            #print(f"Adding PAGE CI {page_ci_id} to content_items ({len(content_items)} CIs): page_ci={page_ci}")
 
             # === 2. Create content items for Illustrations (images) ===
             for illustration in print_space.find_all("Illustration"):
@@ -544,7 +571,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     # Legacy section
                     "l": {
                         # Composite ID format for images
-                        "id": f"{self.title_ppn}-{self.ppn}-{page.filename}",
+                        "id": f"{self.ppn_with_date}-{page.filename}",
                         # Single part for the illustration element
                         "parts": [
                             {
@@ -569,7 +596,6 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     image_ci["c"] = coords
 
                 content_items.append(image_ci)
-                #print(f"Adding IMAGE CI {image_ci_id} to content_items ({len(content_items)} CIs): page_ci={image_ci}")
 
             # === 3. Create content items for Tables ===
             for text_block in print_space.find_all("ComposedBlock"):
@@ -601,7 +627,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         # Legacy section
                         "l": {
                             # Composite ID format for tables
-                            "id": f"{self.title_ppn}-{self.ppn}-{page.filename}",
+                            "id": f"{self.ppn_with_date}-{page.filename}",
                             # Single part for the table TextBlock
                             "parts": [
                                 {
@@ -626,7 +652,6 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         table_ci["m"]["c"] = coords
 
                     content_items.append(table_ci)
-                    #print(f"Adding TABLE CI {table_ci_id} to content_items ({len(content_items)} CIs): page_ci={table_ci}")
 
 
         msg = (
