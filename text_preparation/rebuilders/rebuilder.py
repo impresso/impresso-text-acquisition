@@ -373,6 +373,10 @@ def main() -> None:
     logger.info(dask_cluster_msg)
     print(dask_cluster_msg)
 
+    msg = f"Config used for this run: {arguments}"
+    logger.info(msg)
+    print(msg)
+
     if compute_mft:
         print("The Manifest will be computed for this rebuilt run!")
         logger.info("The Manifest will be computed for this rebuilt run!")
