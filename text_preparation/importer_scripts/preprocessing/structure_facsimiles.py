@@ -8,7 +8,6 @@ Usage:
     impresso-structure-facsimiles --config config.yaml --dry_run
 """
 
-import io
 import json
 import logging
 import os
@@ -23,9 +22,7 @@ from datetime import date, datetime
 from pathlib import Path
 
 import fire
-import pymupdf
 import yaml
-from pdf2image import convert_from_path
 from PIL import Image
 from tqdm import tqdm
 
@@ -733,81 +730,8 @@ def extract_pdf_page_to_jp2(
     Returns:
         (width, height, method) where method is "embedded_raster" or "rasterized".
     """
-    img = None
-    method = None
-
-    # --- Approach (a): extract embedded raster ---
-    try:
-        doc = pymupdf.open(pdf_path)
-        try:
-            page = doc.load_page(page_num)
-            image_list = page.get_images(full=True)
-            if len(image_list) != 1:
-                raise ValueError(
-                    f"Expected 1 embedded image on page {page_num}, "
-                    f"found {len(image_list)}"
-                )
-            xref = image_list[0][0]
-            base_image = doc.extract_image(xref)
-            img = Image.open(io.BytesIO(base_image["image"]))
-            method = "embedded_raster"
-            logger.debug(
-                "Extracted embedded raster from %s page %d (%dx%d)",
-                pdf_path, page_num, img.size[0], img.size[1],
-            )
-        finally:
-            doc.close()
-    except Exception as e:
-        # --- Approach (b): rasterize fallback ---
-        logger.info(
-            "Falling back to rasterization for %s page %d (reason: %s)",
-            pdf_path, page_num, e,
-        )
-        images = convert_from_path(
-            pdf_path,
-            first_page=page_num + 1,
-            last_page=page_num + 1,
-            dpi=fallback_dpi,
-        )
-        img = images[0]
-        method = "rasterized"
-
-    try:
-        width, height = img.size
-
-        # --- Optional validation against expected dimensions ---
-        if expected_dimensions is not None:
-            exp_w, exp_h = expected_dimensions
-            if (width, height) != (exp_w, exp_h):
-                logger.warning(
-                    "Dimension mismatch for %s page %d: "
-                    "extracted (%dx%d) vs expected (%dx%d), method=%s",
-                    pdf_path, page_num, width, height, exp_w, exp_h, method,
-                )
-
-        # --- Save via temp TIF + opj_compress ---
-        if dry_run:
-            logger.info(
-                "[DRY RUN] Would save %s page %d -> %s (%dx%d, %s)",
-                pdf_path, page_num, target_path, width, height, method,
-            )
-        else:
-            with tempfile.NamedTemporaryFile(suffix=".tif", delete=False) as tmp:
-                tmp_path = tmp.name
-            try:
-                img.save(tmp_path, format="TIFF")
-                _run_opj_compress(tmp_path, target_path)
-            finally:
-                os.unlink(tmp_path)
-            logger.info(
-                "Saved %s page %d -> %s (%dx%d, %s)",
-                pdf_path, page_num, target_path, width, height, method,
-            )
-    finally:
-        if img is not None:
-            img.close()
-
-    return width, height, method
+    # TODO: implement once PDF page-discovery is in place
+    raise NotImplementedError("PDF page extraction is not yet implemented")
 
 
 def copy_jp2(
