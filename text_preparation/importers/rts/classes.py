@@ -142,15 +142,20 @@ class RTSBroadcastIssue(CanonicalIssue):
 
     def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
-        self.metadata_file = issue_dir.metadata_file
+
+        self.proc_info = issue_dir.issue_metadata["processed_metadata"]
+        # recover and add all the provider given metadata which will be included almost "as-is" in the issues
+        self.provided_metadata = issue_dir.issue_metadata["partner_provided_metadata"]
+        # recover and lightly clean all the provider given metadata which will be included almost "as-is" in the issues
+        self.provided_metadata = self._clean_provided_metadata(issue_dir.issue_metadata)
+
         self._notes = []
         self.audio_records = []
 
+        # parse all the boradcast!!
         self._find_asr_files()
         self._find_audios()
         self._parse_content_item()
-
-        program, channel = self._fetch_broadcast_metadata()
 
         self.issue_data = {
             "id": self.id,
@@ -159,13 +164,17 @@ class RTSBroadcastIssue(CanonicalIssue):
             "sm": SourceMedium.AO.value,
             "i": self.content_items,
             "rr": [r.id for r in self.audio_records],
+            # keep track of braodcasts for which the data is known to be inexact
+            "is_exact_date": self.proc_info["exact_date"],
         }
 
         # add the radio program and channel to the data if they were not None
-        if program:
-            self.issue_data["rp"] = program
-        if channel:
-            self.issue_data["rc"] = channel
+        if self.provided_metadata["broadcast_program_name"]:
+            self.issue_data["rp"] = self.provided_metadata["broadcast_program_name"]
+        if self.proc_info["radio_channel"]:
+            self.issue_data["rc"] = self.proc_info["radio_channel"]
+
+        self.issue_data["provided_metadata"] = self.provided_metadata
 
         self.issue_data["n"] = self._notes
 
@@ -173,7 +182,8 @@ class RTSBroadcastIssue(CanonicalIssue):
         # Not defined in this context
         pass
 
-    def _find_asr_files(self) -> None:
+    """def _find_asr_files(self) -> None:
+
         # TODO modifiy this once we have more context
         # the key of this rb is the directory
         self.rb_issue_key = os.path.basename(self.path)
@@ -208,47 +218,49 @@ class RTSBroadcastIssue(CanonicalIssue):
 
         self.xml_file_path = os.path.join(self.path, xml_filename)
         self.json_file_path = self.xml_file_path.replace(".xml", ".json")
+    """
 
     def _find_audios(self) -> None:
-        # currently nothing but once we have put the audios in a IIIF server
-        # TODO change to go fetch the actual final audio MP3 file
-        # There is only one audio for each issue
-        audio_id = self.metadata["Audio Record ID"]
-        self.audio_file_path = self.xml_file_path.replace(".xml", ".MP3")
 
-        if not os.path.exists(self.audio_file_path):
-            msg = f"{self.id} - The issue's audio record MP3 file {self.audio_file_path} cannot be found!"
+        # define the base mp3 and xml paths
+        self.xml_filepath = os.path.join(
+            self.path, self.proc_info["processed_metadata"]["xml_filepath"]
+        )
+        self.audio_filepath = os.path.join(
+            self.path, self.proc_info["processed_metadata"]["mp3_filepath"]
+        )
+
+        audio_id = f"{self.id}-r0001"
+
+        if not os.path.exists(self.audio_filepath):
+            msg = f"{self.id} - The issue's audio record MP3 file {self.audio_filepath} cannot be found!"
             print(msg)
             logger.warning(msg)
             self._notes.append(msg)
 
-        self.audio_records.append(RTSBroadcastAudioRecord(audio_id, 1, self.xml_file_path))
+        self.audio_records.append(RTSBroadcastAudioRecord(audio_id, 1, self.xml_filepath))
 
     def _find_lang(self) -> str:
 
-        # sometimes the language is given inside the metadata
-        if self.metadata["Résumé"] is not None and "En anglais" in self.metadata["Résumé"]:
-            return "en"
-
-        else:
-            xml_doc = self.audio_records[0].xml
-            # identify all the languages found in the xml (speakers or speechsegments)
-            langs = Counter(
-                [s.get("lang") for s in xml_doc.find_all("Speaker")]
-                + [ss.get("lang") for ss in xml_doc.find_all("SpeechSegment")]
+        xml_doc = self.audio_records[0].xml
+        # identify all the languages found in the xml (speakers or speechsegments)
+        langs = Counter(
+            [s.get("lang") for s in xml_doc.find_all("Speaker")]
+            + [ss.get("lang") for ss in xml_doc.find_all("SpeechSegment")]
+        )
+        if len(langs) > 1:
+            msg = (
+                f"{self.id} - Warning, more than one language was found in the ASR XML. "
+                f"Choosing the most frequent one: {langs}."
             )
-            if len(langs) > 1:
-                msg = (
-                    f"{self.id} - Warning, more than one language was found in the ASR XML. "
-                    f"Choosing the most frequent one: {langs}."
-                )
-                logger.warning(msg)
-                print(msg)
-                self._notes.append(msg)
+            logger.warning(msg)
+            print(msg)
+            self._notes.append(msg)
 
-            return LANG_MAPPING[max(langs)]
+        return LANG_MAPPING[max(langs)]
 
     def _parse_content_item(self) -> None:
+        # TODO Continue update from here
 
         ci_metadata = {
             "id": f"{self.id}-i{str(1).zfill(4)}",
@@ -276,14 +288,12 @@ class RTSBroadcastIssue(CanonicalIssue):
 
         self.content_items = [{"m": ci_metadata, "l": ci_legacy}]
 
-    def _fetch_broadcast_metadata(self) -> tuple[str | None, str | None]:
+    def _clean_provided_metadata(self, issue_metadata) -> dict[str, Any]:
 
-        program, channel = None, None
-        if self.metadata["Titre collection"] is not None:
-            program = self.metadata["Titre collection"]
-        if self.metadata["Canal de diffusion"] is not None:
-            channel = self.metadata["Canal de diffusion"]
-            if self.metadata["Société de programmes"] is not None:
-                channel = f"{channel} ({self.metadata['Société de programmes']})"
+        clean_meta = {}
+        for k, v in issue_metadata["partner_provided_metadata"].items():
+            if v is not None and not (isinstance(v, list) and not v):
+                # set all the non-null and non-empty values
+                clean_meta[k] = v
 
-        return program, channel
+        return clean_meta

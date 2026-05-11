@@ -94,9 +94,10 @@ Args:
         return None
 """
 
+
 def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -> SubIssueDir:
     """
-    Convert a hierarchical JSON entry into a LuxIssueDir.
+    Convert a hierarchical JSON entry into a SubIssueDir.
 
     entry example:
       { "day": "15", "edition": "01", "local_path": "..._01" }
@@ -112,7 +113,7 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
         alias=alias,
         date=date(y, m, d),
         edition=edition,
-        path=base_dir + entry["local_path"],
+        path=base_dir + entry["local_path"][0],
     )
 
 
@@ -141,9 +142,9 @@ def detect_issues(
 
     # Apply alias filters early
     if alias_filter:
-        kept_data = {a:d for a,d in data.items() if a in alias_filter}
+        kept_data = {a: d for a, d in data.items() if a in alias_filter}
     if exclude_list:
-        kept_data = {a:d for a,d in data.items() if a not in exclude_list}
+        kept_data = {a: d for a, d in data.items() if a not in exclude_list}
 
     for alias, years in kept_data.items():
         for year, months in years.items():
@@ -153,8 +154,6 @@ def detect_issues(
                     issues.append(issue)
 
     return issues
-
-
 
 
 def select_issues(base_dir: str, config: dict) -> list[SubIssueDir] | None:
