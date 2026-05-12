@@ -40,12 +40,10 @@ class RTSBroadcastAudioRecord(CanonicalAudioRecord):
         issue (CanonicalIssue | None): Issue this page is from.
     """
 
-    def __init__(self, _id: str, number: int, xml_filepath: str) -> None:
+    def __init__(self, _id: str, number: int, xml_filepath: str, mp3_filepath: str) -> None:
         super().__init__(_id, number)
         self.xml_filepath = xml_filepath
-        self.json_filepath = xml_filepath.replace(".xml", ".json")
-        # TODO change once the mp3 files are moved and renamed
-        self.mp3_filepath = xml_filepath.replace(".xml", ".MP3")
+        self.mp3_filepath = mp3_filepath
         self.iiif_base_uri = self.create_iiif()
         self.notes = []
 
@@ -68,7 +66,7 @@ class RTSBroadcastAudioRecord(CanonicalAudioRecord):
             str: Created IIIF URI for this audio record.
         """
         internal_path = os.path.dirname(self.id.replace("-", "/"))
-        return os.path.join(IIIF_ENDPOINT_URI, "INA", internal_path, f"{self.id}.mp3")
+        return os.path.join(IIIF_ENDPOINT_URI, "RTS", internal_path, f"{self.id}.mp3")
 
     def add_issue(self, issue: CanonicalIssue) -> None:
         self.issue = issue
@@ -103,7 +101,17 @@ class RTSBroadcastAudioRecord(CanonicalAudioRecord):
 
     def _get_duration(self) -> str:
         dur_in_sec = MP3(self.mp3_filepath).info.length
-        return strftime("%H:%M:%S", gmtime(dur_in_sec))
+        formatted_dur = strftime("%H:%M:%S", gmtime(dur_in_sec))
+        # also extract the milliseconds
+        milliseconds = int((dur_in_sec % 1) * 1000)
+        millisecs_dur = f"{formatted_dur}.{milliseconds:03d}"
+
+        if self.issue.duration is not None and self.issue.duration != millisecs_dur:
+            msg = f"audio {self.id} - The found duration {millisecs_dur} does not match the on from the metadata {self.issue.duration}!"
+            print(msg)
+            logger.info(msg)
+
+        return formatted_dur
 
     def parse(self) -> None:
 
@@ -230,17 +238,19 @@ class RTSBroadcastIssue(CanonicalIssue):
 
         # define the base mp3 and xml paths
         self.xml_filepath = os.path.join(self.path, self.metadata["xml_filepath"])
-        self.audio_filepath = os.path.join(self.path, self.metadata["mp3_filepath"])
+        self.mp3_filepath = os.path.join(self.path, self.metadata["mp3_filepath"])
 
         audio_id = f"{self.id}-r0001"
 
-        if not os.path.exists(self.audio_filepath):
-            msg = f"{self.id} - The issue's audio record MP3 file {self.audio_filepath} cannot be found!"
+        if not os.path.exists(self.mp3_filepath):
+            msg = f"{self.id} - The issue's audio record MP3 file {self.mp3_filepath} cannot be found!"
             print(msg)
             logger.warning(msg)
             self._notes.append(msg)
 
-        self.audio_records.append(RTSBroadcastAudioRecord(audio_id, 1, self.xml_filepath))
+        self.audio_records.append(
+            RTSBroadcastAudioRecord(audio_id, 1, self.xml_filepath, self.mp3_filepath)
+        )
 
     def _find_lang(self) -> str:
 
