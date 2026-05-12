@@ -143,17 +143,15 @@ class RTSBroadcastIssue(CanonicalIssue):
     def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
 
-        self.proc_info = issue_dir.issue_metadata["processed_metadata"]
+        self.metadata = issue_dir.issue_metadata
         # recover and add all the provider given metadata which will be included almost "as-is" in the issues
-        self.provided_metadata = issue_dir.issue_metadata["partner_provided_metadata"]
-        # recover and lightly clean all the provider given metadata which will be included almost "as-is" in the issues
-        self.provided_metadata = self._clean_provided_metadata(issue_dir.issue_metadata)
+        # self.provided_metadata = issue_dir.issue_metadata["partner_provided_metadata"]
 
         self._notes = []
         self.audio_records = []
 
         # parse all the boradcast!!
-        self._find_asr_files()
+        # self._find_asr_files()
         self._find_audios()
         self._parse_content_item()
 
@@ -162,19 +160,27 @@ class RTSBroadcastIssue(CanonicalIssue):
             "ts": timestamp(),
             "st": SourceType.RB.value,
             "sm": SourceMedium.AO.value,
+            "orl": False,
             "i": self.content_items,
             "rr": [r.id for r in self.audio_records],
             # keep track of braodcasts for which the data is known to be inexact
-            "is_exact_date": self.proc_info["exact_date"],
+            "is_exact_date": self.metadata["exact_date"],
         }
 
         # add the radio program and channel to the data if they were not None
-        if self.provided_metadata["broadcast_program_name"]:
-            self.issue_data["rp"] = self.provided_metadata["broadcast_program_name"]
-        if self.proc_info["radio_channel"]:
-            self.issue_data["rc"] = self.proc_info["radio_channel"]
+        if self.metadata["broadcast_program_name"]:
+            self.issue_data["rp"] = self.metadata["broadcast_program_name"]
+        if self.metadata["radio_channel"]:
+            self.issue_data["rc"] = self.metadata["radio_channel"]
+        if (
+            self.metadata["work_duration"] is not None
+            and self.metadata["work_duration"] != "00:00:00.000"
+        ):
+            # if we know the full duration of the record, save it
+            self.duration = self.metadata["work_duration"]
 
-        self.issue_data["provided_metadata"] = self.provided_metadata
+        # recover and lightly clean all the provider given metadata which will be included almost "as-is" in the issues
+        self.issue_data["provided_metadata"] = self._clean_provided_metadata(self.metadata)
 
         self.issue_data["n"] = self._notes
 
@@ -223,12 +229,8 @@ class RTSBroadcastIssue(CanonicalIssue):
     def _find_audios(self) -> None:
 
         # define the base mp3 and xml paths
-        self.xml_filepath = os.path.join(
-            self.path, self.proc_info["processed_metadata"]["xml_filepath"]
-        )
-        self.audio_filepath = os.path.join(
-            self.path, self.proc_info["processed_metadata"]["mp3_filepath"]
-        )
+        self.xml_filepath = os.path.join(self.path, self.metadata["xml_filepath"])
+        self.audio_filepath = os.path.join(self.path, self.metadata["mp3_filepath"])
 
         audio_id = f"{self.id}-r0001"
 
@@ -266,34 +268,72 @@ class RTSBroadcastIssue(CanonicalIssue):
             "id": f"{self.id}-i{str(1).zfill(4)}",
             "lg": self._find_lang(),
             "rr": [r.number for r in self.audio_records],
-            # only this type for now
-            "tp": "radio_broadcast_episode",
+            # assign the pre-normalized type
+            "tp": self.metadata["broadcast_type"],
             "ro": 1,
         }
 
-        if self.metadata["Titre propre"] is not None:
-            ci_metadata["t"] = self.metadata["Titre propre"]
+        if self.metadata["broadcast_episode_title"] is not None:
+            ci_metadata["t"] = self.metadata["broadcast_episode_title"]
 
-        if self.metadata["Résumé"] is not None:
-            ci_metadata["archival_note"] = self.metadata["Résumé"]
+        if self.metadata["participants"] is not None:
+            # process and set the speakers
+            ci_metadata["speakers"] = self._prepare_speakers()
+
+        if self.metadata["content_summary"] is not None:
+            # set the summary or the thematical descriptors?
+            ci_metadata["archival_note"] = self.metadata["content_summary"]
 
         # the legacy we can provide is the original notice ID and filename in the metadata
         ci_legacy = {
-            "source": [
-                f"Identifiant de la notice (in metadata): {self.metadata['Identifiant de la notice']}",
-                f"Noms fichers (in metadata): {self.metadata['Noms fichers']}",
-                f"Noms fichers (in practice): {os.path.basename(self.xml_file_path).replace('.xml', '')}",
-            ]
+            "OID": self.metadata["OID"],
+            "src_files": {
+                "audio_xml": self.metadata["xml_filepath"],
+                "audio_mp3": self.metadata["mp3_filepath"],
+            },
         }
 
         self.content_items = [{"m": ci_metadata, "l": ci_legacy}]
+
+    def _prepare_speakers(self) -> list[str | dict]:
+        """Parse the speakers objects.
+        The speakers are typically in the format:
+        {
+            "name": "Schwok, René",
+            "function": "Interviewé/e",
+            "role": "chargé de recherche à l'Institut universitaire des Hautes Etudes Internationales de Genève"
+        }
+        """
+        # For now we will just set the names and surnames in the "speakers" field.
+        # If necessary, the full dict will still be available in the "participants" entry
+        full_names = []
+        for s_dict in self.metadata["participants"]:
+            # the name will always be formatted as [surname], [firstname] unless we don't know it ("inconnu").
+            name = (
+                # separate the first and last name, swapp them and rejoin them.
+                " ".join(s_dict["name"].split(", ")[::-1])
+                if ", " in s_dict["name"]
+                else s_dict["name"]
+            )
+            full_names.append(name)
+
+        return full_names
 
     def _clean_provided_metadata(self, issue_metadata) -> dict[str, Any]:
 
         clean_meta = {}
         for k, v in issue_metadata["partner_provided_metadata"].items():
-            if v is not None and not (isinstance(v, list) and not v):
-                # set all the non-null and non-empty values
-                clean_meta[k] = v
+            # filter out some unnecessary keys
+            if k not in [
+                "mp3_filepath",
+                "xml_filepath",
+                "exact_date",
+                "radio_channel",
+                "broadcast_type",
+                "OID",
+            ]:
+                if v is not None and not (isinstance(v, list) and not v):
+                    # set all the non-null and non-empty values
+                    clean_meta[k] = v
 
         return clean_meta
