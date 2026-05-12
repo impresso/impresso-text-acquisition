@@ -48,7 +48,7 @@ def get_utterances(xml_doc: BeautifulSoup) -> list[dict]:
     for idx, xml_ss in enumerate(xml_speech_segs):
 
         tokens = [
-            {"tc": extract_time_coords_from_elem(word), "tx": word.get_text()}
+            {"tc": extract_time_coords_from_elem(word), "tx": word.get_text().strip()}
             for word in xml_ss.findAll("Word")
         ]
 

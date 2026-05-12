@@ -37,9 +37,9 @@ from typing import Any, Type, Callable
 from dask.distributed import Client
 from docopt import docopt
 import git
-from impresso_essentials.utils import IssueDir, PARTNER_TO_MEDIA
+from impresso_essentials.utils import IssueDir, PARTNER_TO_MEDIA, init_logger, SourceMedium
 from impresso_essentials.versioning.data_manifest import DataManifest
-from impresso_essentials.utils import init_logger
+from impresso_essentials.utils import SOURCE_MEDIUMS_TO_PARTNERS_TO_MEDIA as MEDIUM_FOR_PROV
 
 from text_preparation import __version__
 
@@ -47,7 +47,6 @@ from text_preparation.importers.classes import CanonicalIssue
 from text_preparation.importers.bl.omni.classes import BlOmniNewspaperIssue
 from text_preparation.importers.core import import_issues
 from text_preparation.importers.detect import detect_issues
-
 
 __author__ = "Matteo Romanello"
 __email__ = "matteo.romanello@epfl.ch"
@@ -296,6 +295,13 @@ def main(
         only_counting=False,
         push_to_git=not dont_push_to_git,
     )
+
+    # small check to ensure is_audio is set when necessary!
+    if not is_audio and provider in MEDIUM_FOR_PROV[SourceMedium.AO]:
+        is_audio = True
+        msg = f"Based on the provider ({provider}) this is audio data, setting it!"
+        print(msg)
+        logger.info(msg)
 
     print("Right before import issues")
     import_issues(

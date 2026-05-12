@@ -9,6 +9,7 @@ import logging
 import json
 from time import strftime, gmtime
 from collections import Counter
+from typing import Any
 
 from bs4 import BeautifulSoup
 from mutagen.mp3 import MP3
@@ -23,7 +24,7 @@ logger = logging.getLogger(__name__)
 IIIF_ENDPOINT_URI = "https://impresso-project.ch/media/audio/"
 
 # TODO update and add new languages once they are found in the data.
-LANG_MAPPING = {"fre": "fr"}
+LANG_MAPPING = {"fre": "fr", "fre-rts": "fr"}
 
 
 class RTSBroadcastAudioRecord(CanonicalAudioRecord):
@@ -168,7 +169,6 @@ class RTSBroadcastIssue(CanonicalIssue):
             "ts": timestamp(),
             "st": SourceType.RB.value,
             "sm": SourceMedium.AO.value,
-            "orl": False,
             "i": self.content_items,
             "rr": [r.id for r in self.audio_records],
             # keep track of braodcasts for which the data is known to be inexact
@@ -180,15 +180,19 @@ class RTSBroadcastIssue(CanonicalIssue):
             self.issue_data["rp"] = self.metadata["broadcast_program_name"]
         if self.metadata["radio_channel"]:
             self.issue_data["rc"] = self.metadata["radio_channel"]
-        if (
-            self.metadata["work_duration"] is not None
-            and self.metadata["work_duration"] != "00:00:00.000"
-        ):
-            # if we know the full duration of the record, save it
-            self.duration = self.metadata["work_duration"]
+
+        # if we know the full duration of the record, save it
+        self.duration = (
+            None
+            if (
+                self.metadata["work_duration"] is None
+                or self.metadata["work_duration"] == "00:00:00.000"
+            )
+            else self.metadata["work_duration"]
+        )
 
         # recover and lightly clean all the provider given metadata which will be included almost "as-is" in the issues
-        self.issue_data["provided_metadata"] = self._clean_provided_metadata(self.metadata)
+        self.issue_data["provided_metadata"] = self._clean_provided_metadata()
 
         self.issue_data["n"] = self._notes
 
@@ -252,13 +256,17 @@ class RTSBroadcastIssue(CanonicalIssue):
             RTSBroadcastAudioRecord(audio_id, 1, self.xml_filepath, self.mp3_filepath)
         )
 
-    def _find_lang(self) -> str:
+    def _find_lang(self) -> str | None:
 
         xml_doc = self.audio_records[0].xml
         # identify all the languages found in the xml (speakers or speechsegments)
         langs = Counter(
-            [s.get("lang") for s in xml_doc.find_all("Speaker")]
-            + [ss.get("lang") for ss in xml_doc.find_all("SpeechSegment")]
+            [s.get("lang") for s in xml_doc.find_all("Speaker") if s.get("lang") is not None]
+            + [
+                ss.get("lang")
+                for ss in xml_doc.find_all("SpeechSegment")
+                if ss.get("lang") is not None
+            ]
         )
         if len(langs) > 1:
             msg = (
@@ -269,10 +277,12 @@ class RTSBroadcastIssue(CanonicalIssue):
             print(msg)
             self._notes.append(msg)
 
-        return LANG_MAPPING[max(langs)]
+        if not langs:
+            return None
+
+        return LANG_MAPPING[max(langs, key=langs.get)]
 
     def _parse_content_item(self) -> None:
-        # TODO Continue update from here
 
         ci_metadata = {
             "id": f"{self.id}-i{str(1).zfill(4)}",
@@ -329,10 +339,10 @@ class RTSBroadcastIssue(CanonicalIssue):
 
         return full_names
 
-    def _clean_provided_metadata(self, issue_metadata) -> dict[str, Any]:
+    def _clean_provided_metadata(self) -> dict[str, Any]:
 
         clean_meta = {}
-        for k, v in issue_metadata["partner_provided_metadata"].items():
+        for k, v in self.metadata.items():
             # filter out some unnecessary keys
             if k not in [
                 "mp3_filepath",

@@ -12,7 +12,7 @@ from text_preparation.importers.detect import _apply_datefilter
 logger = logging.getLogger(__name__)
 
 JSON_FILE = "../data/issue_indices/issue_index.rts.json"
-METADATA_FILE = "../data/sample_data/RTS/issue_metadata.rts.json"
+METADATA_FILE = "../data/sample_data/RTS/issues_metadata.rts.json"
 
 RTSIssueDir = namedtuple(
     "IssueDirectory", ["provider", "alias", "date", "edition", "path", "issue_metadata"]
@@ -93,7 +93,7 @@ def entry2issue(
     """
     y = int(year)
     m = int(month)
-    d = int(entry["day"])
+    d = entry["day"]
 
     edition = entry["edition"]
 
@@ -102,7 +102,7 @@ def entry2issue(
     return RTSIssueDir(
         provider="RTS",
         alias=alias,
-        date=date(y, m, d),
+        date=date(y, m, int(d)),
         edition=edition,
         path=base_dir,
         issue_metadata=alias_issues[issue_id],
@@ -129,11 +129,16 @@ def detect_issues(
 
     issues: list[RTSIssueDir] = []
 
+    msg = f"INSIDE RTS DETECT ISSUES: alias_filter: {alias_filter}"
+    print(msg)
+
     # Apply alias filters early
     if alias_filter:
         kept_data = {a: d for a, d in issues_data.items() if a in alias_filter}
     if exclude_list:
         kept_data = {a: d for a, d in issues_data.items() if a not in exclude_list}
+    else:
+        kept_data = issues_data
 
     for alias, years in kept_data.items():
         alias_issues = issues_metadata[alias]
