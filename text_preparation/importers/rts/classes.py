@@ -16,6 +16,7 @@ from mutagen.mp3 import MP3
 
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
+from text_preparation.importers import CONTENTITEM_TYPE_ARTICLE
 from text_preparation.importers.classes import CanonicalIssue, CanonicalAudioRecord
 from text_preparation.importers.rts.helpers import get_utterances
 
@@ -121,7 +122,11 @@ class RTSBroadcastAudioRecord(CanonicalAudioRecord):
 
         utterances = get_utterances(xml_doc)
 
-        section_stime = utterances[0]["tc"][0]
+        if len(utterances) != 0:
+            section_stime = utterances[0]["tc"][0]
+        else:
+            section_stime = 0
+
         section_etime = max(float(ss.get("etime")) for ss in xml_doc.findAll("SpeechSegment"))
 
         self.record_data["s"] = [
@@ -259,6 +264,16 @@ class RTSBroadcastIssue(CanonicalIssue):
     def _find_lang(self) -> str | None:
 
         xml_doc = self.audio_records[0].xml
+
+        # sometimes there is no contents to the xml (no speechsegments)
+        # --> directly identify this and raise an error!
+        xml_speech_segs = xml_doc.findAll("SpeechSegment")
+        if not xml_speech_segs:
+            msg = f"{self.id} - No SpeechSegments were found in the xml file! Raising an error as this issue cannot be processed."
+            print(msg)
+            logger.error(msg)
+            raise Exception(msg)
+
         # identify all the languages found in the xml (speakers or speechsegments)
         langs = Counter(
             [s.get("lang") for s in xml_doc.find_all("Speaker") if s.get("lang") is not None]
@@ -288,8 +303,12 @@ class RTSBroadcastIssue(CanonicalIssue):
             "id": f"{self.id}-i{str(1).zfill(4)}",
             "lg": self._find_lang(),
             "rr": [r.number for r in self.audio_records],
-            # assign the pre-normalized type
-            "tp": self.metadata["broadcast_type"],
+            # assign the pre-normalized type, and "article" by default if it's not defined
+            "tp": (
+                self.metadata["broadcast_type"]
+                if self.metadata["broadcast_type"]
+                else CONTENTITEM_TYPE_ARTICLE
+            ),
             "ro": 1,
         }
 
