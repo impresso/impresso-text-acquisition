@@ -44,50 +44,50 @@ Base modules for formats represented in multiple sources:
   - Wrapper: `tetmlimporter.py` | Package: [`text_preparation/importers/tetml`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/tetml)
 
 Per-provider submodules:
-- **SNL** - Swiss National Library + LeTemps 
+- 🇨🇭 **SNL** - Swiss National Library + LeTemps 
   — Olive XML format (with OLR ✅) - First set of shared data
     - Wrapper: `oliveimporter.py` | Package: [`text_preparation/importers/olive`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/olive)
   - Mets/Alto - RERO variant (with OLR ✅) - second and third sets of shared data
     - Wrapper: `reroimporter.py` | Package: [`text_preparation/importers/rero`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/rero)
-- **LUX** — National Library of Luxembourg
+- 🇱🇺 **LUX** — National Library of Luxembourg
   - Mets/Alto - BNL variant (with OLR ✅)
   - Wrapper: `luximporter.py` | Package: [`text_preparation/importers/lux`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/lux)
-- **BNF** — Bibliothèque Nationale de France
+- 🇫🇷 **BNF** — Bibliothèque Nationale de France
   - Mets/Alto - BNF variant (with OLR ✅)
     - Wrapper: `bnfimporter.py` | Package: [`text_preparation/importers/bnf`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/bnf)
   - Mets/Alto - BNF-Europeana variant (with OLR ✅)
     - Wrapper: `bnfen_importer.py` | Package: [`text_preparation/importers/bnf_en`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/bnf_en)
-- **BCUL** — Bibliothèque Cantonale Universitaire de Lausanne
+- 🇨🇭 **BCUL** — Bibliothèque Cantonale Universitaire de Lausanne
   - ABBYY format (No OLR ❌)
   - Wrapper: `bculimporter.py` | Package: [`text_preparation/importers/bcul`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/bcul)
-- **BL** — British Library 
+- 🇬🇧 **BL** — British Library 
   - Mets/Alto format - OmniPage variant (with OLR ✅)
   - Wrapper: `blomnimporter.py` | Package: [`text_preparation/importers/bl/omni`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/bl/omni)
-- **KBR** — Royal Library of Belgium 
+- 🇧🇪 **KBR** — Royal Library of Belgium 
   - ALTO - KBR format (No OLR ❌)
   - Wrapper: `kbrimporter.py` | Package: [`text_preparation/importers/kbr`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/kbr)
-- **SUB** — Hamburg State Library
+- 🇩🇪 **SUB** — Hamburg State Library
   - ALTO - SUB format (No OLR ❌)
   - Wrapper: `subimporter.py` | Package: [`text_preparation/importers/sub`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/sub)
-- **SWA** — Schweizerisches Wirtschaftsarchiv 
+- 🇨🇭 **SWA** — Schweizerisches Wirtschaftsarchiv 
   - ALTO - SWA format (No OLR ❌)
   - Wrapper: `swaimporter.py` | Package: [`text_preparation/importers/swa`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/swa)
-- **FedGaz** — Swiss Federal Gazette
+- 🇨🇭 **FedGaz** — Swiss Federal Gazette
   - PDF-embedded OCR format converted to Tetml (No OLR ❌)
   - Wrapper: `fedgazimporter.py` | Package: [`text_preparation/importers/fedgaz`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/fedgaz)
 - Coming soon 🕦
-  - **ONB** — Austrian National Library
-  - **KB** — National Library of the Netherlands
-  - **SBB** - Berlin State Library
+  - 🇦🇹 **ONB** — Austrian National Library
+  - 🇳🇱 **KB** — National Library of the Netherlands
+  - 🇩🇪 **SBB** - Berlin State Library
 
 #### 📻 Radio - Radio bulletins (image-based) and Audio Broadcasts (audio based)
-- **SWISSINFO** — Swissinfo radio bulletin format
+- 🇨🇭 **SWISSINFO** — Swissinfo radio bulletin format
   - PDF-embedded OCR originally, extracted, and converted to a custom format for import (No OLR ❌)
   - Wrapper: `swissinfoimporter.py` | Package: [`text_preparation/importers/swissinfo`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/swissinfo)
-- **RTS** — Radio Télévision Suisse
+- 🇨🇭 **RTS** — Radio Télévision Suisse
   - AudioDoc ASR format
   - Wrapper: `rtsimporter.py` | Package: [`text_preparation/importers/rts`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/rts)
-- **INA** — Institut National de l'Audiovisuel (France) 
+- 🇫🇷 **INA** — Institut National de l'Audiovisuel (France) 
   - Custom JSON-based format extracted from Whisper outputs
   - Wrapper: `inaimporter.py` | Package: [`text_preparation/importers/ina`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/ina)
 
