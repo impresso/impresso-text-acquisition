@@ -45,7 +45,7 @@ Base modules for formats represented in multiple sources:
 
 Per-provider submodules:
 - 🇨🇭 **SNL** - Swiss National Library + LeTemps
-  — Olive XML format (with OLR ✅) - First set of shared data
+  - Olive XML format (with OLR ✅) - First set of shared data
     - Wrapper: `oliveimporter.py` | Package: [`text_preparation/importers/olive`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/olive)
   - Mets/Alto - RERO variant (with OLR ✅) - second and third sets of shared data
     - Wrapper: `reroimporter.py` | Package: [`text_preparation/importers/rero`](https://github.com/impresso/impresso-text-acquisition/tree/master/text_preparation/importers/rero)
