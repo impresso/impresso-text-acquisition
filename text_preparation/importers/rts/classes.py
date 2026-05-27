@@ -58,7 +58,6 @@ class RTSBroadcastAudioRecord(CanonicalAudioRecord):
             "dur": "",
             "st": SourceType.RB.value,
             "sm": SourceMedium.AO.value,
-            "cc": True,  # kept for conformity but not very relevant
         }
 
     def create_iiif(self) -> str:
