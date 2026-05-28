@@ -336,8 +336,8 @@ def filter_provided_metadata(add_metadata, ci):
         "participants",
     ]
 
-    additional_metadata = {}
-    for key, val in add_metadata.items:
+    additional_metadata = []
+    for key, val in add_metadata.items():
         if key in field_list:
             if key == "participants":
                 participants = []
@@ -350,8 +350,11 @@ def filter_provided_metadata(add_metadata, ci):
                         else s_dict["name"]
                     )
                     participants.append(f"{name} ({s_dict['function']}), {s_dict['role']}")
-                additional_metadata[key] = participants
+                additional_metadata.append({"key": key, "value": participants})
             else:
-                additional_metadata[key] = val
+                additional_metadata.append({"key": key, "value": val})
+        elif logger.level == logger.debug:
+            msg = f"{ci['m']['id']} - Field '{key}' present in provider_metadata is not in the list of kept field, not keeping its value."
+            print(msg)
 
     return additional_metadata

@@ -416,7 +416,7 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
             # sometimes, additional metadata is provided for radio data
             if "provided_metadata" in issue_json:
                 ci["additional_metadata"] = filter_provided_metadata(
-                    issue_json["additional_metadata"], ci
+                    issue_json["provided_metadata"], ci
                 )
             if "rr" in issue_json:
                 # TODO update in the case we can have >1 record per CI or vice-versa
