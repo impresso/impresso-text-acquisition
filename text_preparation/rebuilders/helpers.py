@@ -17,6 +17,7 @@ from text_preparation.rebuilders.audio_rebuilders import (
     reconstruct_audios,
     recompose_ci_from_audio_passim,
     recompose_ci_from_audio_solr,
+    filter_provided_metadata,
 )
 from text_preparation.rebuilders.paper_rebuilders import (
     reconstruct_pages,
@@ -46,7 +47,9 @@ TYPE_MAPPINGS = {
     "weather": "w",
     "chronicle": "ch",
     "radio_bulletin": "rb",
-    "radio_broadcast_episode": "rbe"
+    "radio_broadcast_episode": "rbe",
+    "discussion": "dsc",
+    "entertainment": "ent",
 }
 # TODO KB data: add familial announcement?
 
@@ -174,7 +177,7 @@ def read_issue_supports(
     )
     # print(f"IN SUPPORTS 1: Filename to be loaded for {alias}-{year}: {filename}")
 
-    try: 
+    try:
         supports = [json.loads(s) for s in alternative_read_text(filename, IMPRESSO_STORAGEOPT)]
     except Exception as e:
         # sometimes the page/audi files do not exist
@@ -182,7 +185,7 @@ def read_issue_supports(
         print(msg)
         logger.warning(msg)
         # prepare for filtering out after
-        issue_json['has_problem'] = True
+        issue_json["has_problem"] = True
         return (issue, issue_json)
 
     # print(f"IN SUPPORTS 2: number of loaded files for {alias}-{year}: {len(supports)}")
@@ -243,8 +246,6 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
         "ts": timestamp(),
         support_field: content_item["m"][support_field],
         "d": d.isoformat(),
-        # for audio, cc is true by default
-        "cc": True if content_item["sm"] == "audio" else content_item["m"]["cc"],
         "olr": has_olr,
         "st": content_item["st"],
         "sm": content_item["sm"],
@@ -272,18 +273,10 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     if mapped_type == "img":
         solr_ci["iiif_link"] = reconstruct_iiif_link(content_item)
 
-    if content_item["sm"] == "audio":
-        solr_ci["stt"] = content_item["stt"]
-        solr_ci["dur"] = content_item["dur"]
-
     ## CI METADATA
     # add the metadata on the content item if it's available
     if "t" in content_item["m"]:
         solr_ci["title"] = content_item["m"]["t"]
-    if "rc" in content_item:
-        solr_ci["rc"] = content_item["rc"]
-    if "rp" in content_item:
-        solr_ci["rp"] = content_item["rp"]
 
     # special case for BNL when there is a section title associated to this CI: also extract it
     if "section_title" in content_item:
@@ -293,9 +286,24 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     # special case for BL and SWISSINFO data - when there can be period-specific titles
     if "var_t" in content_item["m"] and "media_title_variant" not in solr_ci:
         solr_ci["media_title_variant"] = content_item["m"]["var_t"]
-    # special case for INA data
+    # special case for INA/RTS data
     if "archival_note" in content_item["m"]:
         solr_ci["archival_note"] = content_item["m"]["archival_note"]
+    if "is_exact_date" in content_item:
+        solr_ci["is_exact_date"] = content_item["is_exact_date"]
+
+    if content_item["sm"] == "audio":
+        # add the additional metadata which we can find specifically in the radio data
+        solr_ci["stt"] = content_item["stt"]
+        solr_ci["dur"] = content_item["dur"]
+        if "rc" in content_item:
+            solr_ci["rc"] = content_item["rc"]
+        if "rp" in content_item:
+            solr_ci["rp"] = content_item["rp"]
+        if "additional_metadata" in content_item:
+            solr_ci["additional_metadata"] = content_item["additional_metadata"]
+    else:
+        solr_ci["cc"] = content_item["m"]["cc"]
 
     if mapped_type != "img":
         if content_item["sm"] == "audio":
@@ -374,8 +382,8 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
     cis = []
     for ci in issue_json["i"]:
 
-        if "has_problem" in issue_json and issue_json['has_problem']:
-            #if the issue was listed as having problems (missing page), remove all articles for it.
+        if "has_problem" in issue_json and issue_json["has_problem"]:
+            # if the issue was listed as having problems (missing page), remove all articles for it.
             ci["has_problem"] = True
             continue
 
@@ -393,19 +401,23 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
         # if the values are not defined, it's by default newspaper and print (ensure to set it in issue_json)
         if "sm" not in issue_json or "st" not in issue_json:
             ci["sm"] = "print"
-            issue_json['sm'] = "print"
-            ci['st'] = 'newspaper'
-            issue_json["st"] = 'newspaper'
+            issue_json["sm"] = "print"
+            ci["st"] = "newspaper"
+            issue_json["st"] = "newspaper"
         else:
             ci["sm"] = issue_json.get("sm", "print")
             ci["st"] = issue_json.get("st", "newspaper")
 
         if issue_json["st"] == "radio_broadcast":
             # if the radio channel and program are defined, add them to the content item
-            if "rc" in issue_json:
-                ci["rc"] = issue_json["rc"]
-            if "rp" in issue_json:
-                ci["rp"] = issue_json["rp"]
+            for field in ["rc", "rp", "is_exact_date"]:
+                if field in issue_json:
+                    ci[field] = issue_json[field]
+            # sometimes, additional metadata is provided for radio data
+            if "provided_metadata" in issue_json:
+                ci["additional_metadata"] = filter_provided_metadata(
+                    issue_json["provided_metadata"], ci
+                )
             if "rr" in issue_json:
                 # TODO update in the case we can have >1 record per CI or vice-versa
                 if len(ci["m"]["rr"]) > 1:

@@ -307,3 +307,54 @@ def reconstruct_audios(
     cis.append(ci)
 
     return cis
+
+
+def filter_provided_metadata(add_metadata, ci):
+    """Process the additional metadata provided for radio audio boradcasts,
+
+    Only keep a small selection of the provided metadata,
+    which is not already part of the CI (channel, program name, and content summary)
+    The first version of this additional metadata list is based on what the RTS is
+    providing us.
+
+    We are keeping:
+        - whether the date is the first broadcast date (as opposed to recording date)
+        - the type of production (self produced of by a 3rd party)
+        - the place of recording of the broadcast
+        - whether the recording was broadcast live
+        - a list of geographical descriptors regarding the audio
+        - a list of thematic descriptors
+        - a list of participants, formatted as '[name] [surname] ([function within the boradcast]), [role or occupation]'
+    """
+    field_list = [
+        "date_is_broadcast_date",
+        "production_type",
+        "recording_place",
+        "live",
+        "geographical_descriptors",
+        "thematical_descriptors",
+        "participants",
+    ]
+
+    additional_metadata = []
+    for key, val in add_metadata.items():
+        if key in field_list:
+            if key == "participants":
+                participants = []
+                for s_dict in val:
+                    # the name will always be formatted as [surname], [firstname] unless we don't know it ("inconnu").
+                    name = (
+                        # separate the first and last name, swapp them and rejoin them.
+                        " ".join(s_dict["name"].split(", ")[::-1])
+                        if ", " in s_dict["name"]
+                        else s_dict["name"]
+                    )
+                    participants.append(f"{name} ({s_dict['function']}), {s_dict['role']}")
+                additional_metadata.append({"key": key, "value": participants})
+            else:
+                additional_metadata.append({"key": key, "value": val})
+        elif logger.level == logger.debug:
+            msg = f"{ci['m']['id']} - Field '{key}' present in provider_metadata is not in the list of kept field, not keeping its value."
+            print(msg)
+
+    return additional_metadata
