@@ -1,7 +1,7 @@
-"""This module contains the definition of INA importer classes.
+"""This module contains the definition of RTS importer classes.
 
-The classes define Issues and Audio record objects which convert ASR data
-to a unified canoncial format.
+The classes define Issues and audio record objects which convert RTS ASR data
+to a unified canonical format.
 """
 
 import os
