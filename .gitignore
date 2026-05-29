@@ -31,6 +31,7 @@ build/
 docs/node_modules
 old_text_importer/*
 text_preparation/data/sample_data/BCUL/257179/*
+text_preparation/data/sample_data/RTS/programs_metadata.rts.csv
 *.jp2
 *.pdf
 text_preparation/data/sample_data/BCUL/*/*/*/*/*/solr/*
