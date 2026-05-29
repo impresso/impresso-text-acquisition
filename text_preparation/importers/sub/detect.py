@@ -136,15 +136,16 @@ def detect_issues(
         list[SubIssueDir]: List of `SubIssueDir` instances to import.
     """
     with open(JSON_FILE, "r", encoding="utf-8") as f:
-        data = json.load(f)
+        issues_data = json.load(f)
 
     issues: list[SubIssueDir] = []
 
     # Apply alias filters early
+    kept_data = issues_data
     if alias_filter:
-        kept_data = {a: d for a, d in data.items() if a in alias_filter}
+        kept_data = {a: d for a, d in kept_data.items() if a in alias_filter}
     if exclude_list:
-        kept_data = {a: d for a, d in data.items() if a not in exclude_list}
+        kept_data = {a: d for a, d in kept_data.items() if a not in exclude_list}
 
     for alias, years in kept_data.items():
         for year, months in years.items():
