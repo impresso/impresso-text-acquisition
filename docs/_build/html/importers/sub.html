@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SUB Alto importer &mdash; Impresso Text Preparation  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RTS AudioDoc importer" href="rts.html" />
+    <link rel="prev" title="SWISSINFO PDF-embedded importer" href="swissinfo.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Impresso Text Preparation
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessing.html">Preprocessing</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../importers.html">Importers</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../importers.html#available-importers">Available importers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="olive.html">Olive XML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mets-alto.html">Generic Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lux.html">BNL Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bl.html">British Library importers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">SUB Alto importer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.sub.classes">SUB Custom classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.sub.detect">SUB Detect functions</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="rts.html">RTS AudioDoc importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ina.html">INA AudioDoc importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tetml.html">Generic TETML importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fedgaz.html">FedGaz TETML importer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#configuration-file">Configuration file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../importers.html#writing-a-new-importer">Writing a new importer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../rebuilders.html">Rebuilders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../utils.html">Utilities</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Impresso Text Preparation</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../importers.html">Importers</a></li>
+      <li class="breadcrumb-item active">SUB Alto importer</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/importers/sub.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sub-alto-importer">
+<h1>SUB Alto importer<a class="headerlink" href="#sub-alto-importer" title="Link to this heading"></a></h1>
+<p>This importer is a special case of Mets/Alto. Here, most information is only stored in ALTO.xml files, so only the Pages are in alto format.
+It was developed to handle OCR newspaper data in the format provided by the <a class="reference external" href="https://www.sub.uni-hamburg.de">Hamburg State Library (SUB)</a>.</p>
+<section id="module-text_preparation.importers.sub.classes">
+<span id="sub-custom-classes"></span><h2>SUB Custom classes<a class="headerlink" href="#module-text_preparation.importers.sub.classes" title="Link to this heading"></a></h2>
+<p>This module contains the definition of SUB importer classes.</p>
+<p>The classes define newspaper Issues and Pages objects which convert OCR data in
+the SUB version of the Mets/Alto format to a unified canonical format.
+These classes are subclasses of generic Mets/Alto importer classes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.sub.classes.</span></span><span class="sig-name descname"><span class="pre">SubNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDirectory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue" title="Link to this definition"></a></dt>
+<dd><p>Newspaper Issue in SUB (Mets/Alto) format.</p>
+<p>All functions defined in this child class are specific to parsing SUB
+Mets/Alto format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<a class="reference internal" href="#text_preparation.importers.sub.detect.SubIssueDir" title="text_preparation.importers.sub.detect.SubIssueDir"><em>SubIssueDir</em></a>) – Identifying information about the issue.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">hamb_echo-1888-02-01-a</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dd><p>Lower case letter ordering issues of the same day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.alias" title="Link to this definition"></a></dt>
+<dd><p>Newspaper unique alias (identifier or name).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.path" title="Link to this definition"></a></dt>
+<dd><p>Path to directory containing the issue’s OCR data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.date" title="Link to this definition"></a></dt>
+<dd><p>Publication date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dd><p>Issue data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.pages" title="Link to this definition"></a></dt>
+<dd><p>list of <a class="reference internal" href="#text_preparation.importers.sub.classes.SubNewspaperPage" title="text_preparation.importers.sub.classes.SubNewspaperPage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SubNewspaperPage</span></code></a> instances from this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.ppn">
+<span class="sig-name descname"><span class="pre">ppn</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.ppn" title="Link to this definition"></a></dt>
+<dd><p>PPN identifier from the METS filename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.title_ppn">
+<span class="sig-name descname"><span class="pre">title_ppn</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.title_ppn" title="Link to this definition"></a></dt>
+<dd><p>Title-level PPN identifier (PPN without date).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.title">
+<span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.title" title="Link to this definition"></a></dt>
+<dd><p>Newspaper title extracted from METS metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperIssue.mets_file">
+<span class="sig-name descname"><span class="pre">mets_file</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperIssue.mets_file" title="Link to this definition"></a></dt>
+<dd><p>Path to the METS XML file for this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.sub.classes.</span></span><span class="sig-name descname"><span class="pre">SubNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iiif_img_base_uri</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'utf-8'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage" title="Link to this definition"></a></dt>
+<dd><p>Newspaper page in SUB (Mets/Alto) format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Name of the Alto XML page file.</p></li>
+<li><p><strong>basedir</strong> (<em>str</em>) – Base directory where Alto files are located.</p></li>
+<li><p><strong>page_size</strong> (<em>tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – Width and height of the page image.</p></li>
+<li><p><strong>encoding</strong> (<em>str</em><em>, </em><em>optional</em>) – Encoding of XML file. Defaults to ‘utf-8’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">hamb_echo-1888-02-01-a-p0001</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.number" title="Link to this definition"></a></dt>
+<dd><p>Page number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dd><p>Page data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#text_preparation.importers.sub.classes.SubNewspaperIssue" title="text_preparation.importers.sub.classes.SubNewspaperIssue">SubNewspaperIssue</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.filename" title="Link to this definition"></a></dt>
+<dd><p>Name of the Alto XML page file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.basedir">
+<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.basedir" title="Link to this definition"></a></dt>
+<dd><p>Base directory where Alto files are located.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.encoding" title="Link to this definition"></a></dt>
+<dd><p>Encoding of XML file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.add_issue">
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#text_preparation.importers.sub.classes.SubNewspaperIssue" title="text_preparation.importers.sub.classes.SubNewspaperIssue"><span class="pre">SubNewspaperIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add the given <cite>SubNewspaperIssue</cite> as an attribute for this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.sub.classes.SubNewspaperIssue" title="text_preparation.importers.sub.classes.SubNewspaperIssue"><em>SubNewspaperIssue</em></a>) – Issue this page is from</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.parse" title="Link to this definition"></a></dt>
+<dd><p>Parse the page’s Alto XML and extract regions, paragraphs, lines, and tokens.</p>
+<p>This method processes the SUB Alto XML document to extract all OCR information
+and structure it into the canonical page format. It maps OCR component IDs
+to Content Item IDs and extracts page regions with their coordinates.</p>
+<p>The parsed data is stored in the <cite>page_data</cite> attribute under keys:
+- “r”: List of page regions with paragraphs, lines, and tokens
+- “n”: Optional notes about parsing problems (e.g., missing coordinates)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.classes.SubNewspaperPage.parse_printspace">
+<span class="sig-name descname"><span class="pre">parse_printspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mappings</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.sub.classes.SubNewspaperPage.parse_printspace" title="Link to this definition"></a></dt>
+<dd><p>Parse the <code class="docutils literal notranslate"><span class="pre">&lt;PrintSpace&gt;</span></code> element of an SUB ALTO XML document.</p>
+<p>This function closely resembles the one inside importers.alto, but slightly
+adapts to the SUB case, where we have an additional layer of “ComposedBlocks”
+on top of the “TextBlocks”.
+The original function could be used if the SubNewspaperPage.parse() method is
+slightly adapted (potential future work).
+This element contains all the OCR information about the content items of
+a page, up to the lowest level of the hierarchy: the regions, paragraphs,
+lines and tokens, each with their corresponding coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element</strong> (<em>Tag</em>) – Input XML element (<code class="docutils literal notranslate"><span class="pre">&lt;PrintSpace&gt;</span></code>).</p></li>
+<li><p><strong>mappings</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Mapping from OCR component ids to their
+corresponding canonicalw Content Item ID.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>List of page regions in the canonical</dt><dd><p>format and notes about potential parsing problems.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[list[dict], list[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-text_preparation.importers.sub.detect">
+<span id="sub-detect-functions"></span><h2>SUB Detect functions<a class="headerlink" href="#module-text_preparation.importers.sub.detect" title="Link to this heading"></a></h2>
+<p>This module contains helper functions to find SUB OCR data to import.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.detect.SubIssueDir">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.sub.detect.</span></span><span class="sig-name descname"><span class="pre">SubIssueDir</span></span><a class="headerlink" href="#text_preparation.importers.sub.detect.SubIssueDir" title="Link to this definition"></a></dt>
+<dd><p>A light-weight data structure to represent a newspaper issue.</p>
+<p>This named tuple contains basic metadata about a newspaper issue. They
+can then be used to locate the relevant data in the filesystem or to create
+canonical identifiers for the issue and its pages.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In case of newspaper published multiple times per day, a lowercase letter
+is used to indicate the edition number: ‘a’ for the first, ‘b’ for the
+second, etc.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>provider</strong> (<em>str</em>) – Provider for this alias, here always “SUB”</p></li>
+<li><p><strong>alias</strong> (<em>str</em>) – Newspaper alias.</p></li>
+<li><p><strong>date</strong> (<em>datetime.date</em>) – Publication date of issue.</p></li>
+<li><p><strong>edition</strong> (<em>str</em>) – Edition of the newspaper issue (‘a’, ‘b’, ‘c’, etc.).</p></li>
+<li><p><strong>path</strong> (<em>str</em>) – Path to the directory containing the issue’s OCR data.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">SubIssueDir</span><span class="p">(</span>
+<span class="go">    provider=&#39;SUB&#39;,</span>
+<span class="go">    alias=&#39;hamb_echo&#39;,</span>
+<span class="go">    date=date(1888, 2, 1),</span>
+<span class="go">    edition=&#39;a&#39;,</span>
+<span class="go">    path=&#39;./SUB/hamb_echo/1888/02/01/Abend-Ausgabe&#39;</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.detect.detect_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.sub.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.sub.detect.detect_issues" title="Link to this definition"></a></dt>
+<dd><p>Detect SUB issues to import within the filesystem.</p>
+<p>Traverses the directory structure looking for METS XML files that indicate
+a valid issue directory. Handles multiple issues per day by assigning editions
+‘a’, ‘b’, ‘c’, etc. based on alphabetical order of directory names.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data,
+this directory should contain directories corresponding to newspaper aliases.</p></li>
+<li><p><strong>alias_filter</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Aliases to consider. Defaults to None.</p></li>
+<li><p><strong>exclude_list</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Aliases to exclude. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of <cite>SubIssueDir</cite> instances to import.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#text_preparation.importers.sub.detect.SubIssueDir" title="text_preparation.importers.sub.detect.SubIssueDir">SubIssueDir</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.detect.entry2issue">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.sub.detect.</span></span><span class="sig-name descname"><span class="pre">entry2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span></span></span><a class="headerlink" href="#text_preparation.importers.sub.detect.entry2issue" title="Link to this definition"></a></dt>
+<dd><p>Convert a hierarchical JSON entry into a SubIssueDir.</p>
+<dl class="simple">
+<dt>entry example:</dt><dd><p>{ “day”: “15”, “edition”: “01”, “local_path”: “…_01” }</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.sub.detect.select_issues">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.sub.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.sub.detect.select_issues" title="Link to this definition"></a></dt>
+<dd><p>Detect selectively newspaper issues to import.</p>
+<p>The behavior is very similar to <a class="reference internal" href="#text_preparation.importers.sub.detect.detect_issues" title="text_preparation.importers.sub.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
+difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
+import. See the configuration documentation for details on filtering.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data,
+this directory should contain directories corresponding to newspaper aliases.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary containing ‘titles’, ‘exclude_titles’,
+and ‘year_only’ keys for filtering.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of <cite>SubIssueDir</cite> instances to import.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#text_preparation.importers.sub.detect.SubIssueDir" title="text_preparation.importers.sub.detect.SubIssueDir">SubIssueDir</a>] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="swissinfo.html" class="btn btn-neutral float-left" title="SWISSINFO PDF-embedded importer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rts.html" class="btn btn-neutral float-right" title="RTS AudioDoc importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Impresso - Media Monitoring of the Past - EPFL-DHLAB, UZH-ICL, UNILU-C2DH, UNIL-History..</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
