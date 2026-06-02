@@ -265,8 +265,8 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
                 solr_ci["consolidated_reocr_model_id"] = content_item["m"][
                     "consolidated_reocr_model_id"
                 ]
-            if "consolidated_ocrqa" in content_item["m"]:
-                solr_ci["consolidated_ocrqa"] = content_item["m"]["consolidated_ocrqa"]
+        if "consolidated_ocrqa" in content_item["m"]:
+            solr_ci["consolidated_ocrqa"] = content_item["m"]["consolidated_ocrqa"]
         # if cons_lang is not None:
         solr_ci["lg_original"] = og_lang
 
