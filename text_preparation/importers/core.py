@@ -297,6 +297,7 @@ def serialize_supports(
             logger.error(msg)
             print(msg)
             write_error(out_file, e, failed_log)
+            continue
 
         with open(out_file, "w", encoding="utf-8") as jsonfile:
             json.dump(validated_data, jsonfile)
@@ -661,9 +662,10 @@ def compress_issues(
         logger.error(msg)
         write_error(filepath, e, failed_log)
     else:
-        # Once the issues were written without problems, add their info to the manifest
-        # src mediuem can be something else, but it does not affect here
-        src_medium = get_src_info_for_alias(alias)
+        try:
+            src_medium = get_src_info_for_alias(alias)
+        except ValueError:
+            src_medium = 'audio' if is_audio else 'print'
         for i in items:
             yearly_stats.append(counts_for_canonical_issue(i, src_medium=src_medium))
 
