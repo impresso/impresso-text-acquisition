@@ -102,6 +102,18 @@ def test_lccn_regex(candidate: str, is_lccn: bool) -> None:
     assert bool(LCCN_RE.match(candidate)) == is_lccn
 
 
+def test_parse_directory_links_ignores_parent() -> None:
+    from text_preparation.importers.chronicling_america.bulk import _parse_directory_links
+
+    html = """
+    <html><body><table>
+    <tr><td><a href="../">Parent Directory</a></td></tr>
+    <tr><td><a href="00280600854/">00280600854</a></td></tr>
+    </table></body></html>
+    """
+    assert _parse_directory_links(html) == ["00280600854"]
+
+
 def test_batches_for_lccns() -> None:
     index = {
         "dlc_ferguson_ver01": ["sn83045462", "sn830030214"],

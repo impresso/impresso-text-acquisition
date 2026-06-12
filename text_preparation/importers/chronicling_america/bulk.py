@@ -228,8 +228,14 @@ def _parse_directory_links(html: str) -> list[str]:
     links: list[str] = []
     for anchor in soup.find_all("a"):
         text = anchor.text.strip().rstrip("/")
-        if text and text not in (".", "..", "../"):
-            links.append(text)
+        href = anchor.get("href", "").strip()
+        if not text:
+            continue
+        if text in (".", "..", "../", "Parent Directory"):
+            continue
+        if href in ("../", "./", "/"):
+            continue
+        links.append(text)
     return links
 
 
@@ -286,18 +292,24 @@ def list_all_batches(client: HttpClient) -> list[str]:
     )
 
 
+def batch_contains_lccn(client: HttpClient, batch: str, lccn: str) -> bool:
+    url = f"{BATCHES_URL}{batch}/data/{lccn}/"
+    response = client.request(url)
+    if response.status_code == 404:
+        return False
+    response.raise_for_status()
+    return bool(_parse_directory_links(response.text))
+
+
 def find_first_batch_for_lccn(client: HttpClient, lccn: str) -> str | None:
-    """Cheap HEAD scan over batches, stopping at the first one containing the LCCN.
+    """Find the first batch whose data directory actually lists reels for the LCCN.
 
     Only suitable for sampling; the bulk pipeline uses the full cached index instead.
     """
-    for batch in list_all_batches(client):
-        url = f"{BATCHES_URL}{batch}/data/{lccn}/"
-        try:
-            response = client.request(url, method="HEAD")
-        except RuntimeError:
-            continue
-        if response.status_code == 200:
+    batches = list_all_batches(client)
+    ordered = sorted(batches, key=lambda b: (0 if b.startswith("dlc_") else 1, b))
+    for batch in ordered:
+        if batch_contains_lccn(client, batch, lccn):
             return batch
     return None
 
