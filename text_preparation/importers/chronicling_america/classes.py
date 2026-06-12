@@ -104,6 +104,10 @@ class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
                 break
         if not self.mets_file and xml_files:
             self.mets_file = os.path.join(self.path, xml_files[0])
+        if not self.mets_file:
+            raise FileNotFoundError(
+                f"No METS XML file found in issue directory: {self.path}"
+            )
 
         mets_doc = self.xml
         
