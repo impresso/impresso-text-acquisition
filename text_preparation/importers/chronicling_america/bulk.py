@@ -493,6 +493,23 @@ def download_file(
                         handle.write(chunk)
             os.replace(tmp_path, dest_path)
             return
+        except requests.exceptions.HTTPError as exc:
+            status = exc.response.status_code if exc.response is not None else None
+            if status is not None and is_transient_status(status):
+                last_exc = exc
+                logger.warning(
+                    "Download of %s failed with HTTP %s (attempt %d/%d)",
+                    url,
+                    status,
+                    attempt,
+                    max_retries,
+                )
+                if os.path.exists(tmp_path):
+                    os.remove(tmp_path)
+                time.sleep(backoff)
+                backoff *= 2.0
+                continue
+            raise
         except (
             requests.exceptions.ChunkedEncodingError,
             requests.exceptions.ConnectionError,

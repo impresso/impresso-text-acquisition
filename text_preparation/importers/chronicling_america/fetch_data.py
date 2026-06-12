@@ -8,10 +8,15 @@ Bulk mode (recommended for server runs):
     --state-dir /data/ca/state \\
     --dry-run
 
-Legacy single-title mode (small samples):
+Legacy single-title mode (small samples, uses loc.gov JSON API by default):
   python -m text_preparation.importers.chronicling_america.fetch_data \\
     --output-dir text_preparation/data/sample_data \\
-    --lccn sn83045462 --alias eveningstar --limit 1
+    --lccn sn83045462 --alias eveningstar --date 1932-06-20
+
+  # Or use the older batch-directory crawler:
+  python -m text_preparation.importers.chronicling_america.fetch_data \\
+    --output-dir text_preparation/data/sample_data \\
+    --lccn sn83045462 --alias eveningstar --limit 1 --use-crawl
 """
 
 from __future__ import annotations
@@ -21,7 +26,7 @@ import logging
 import os
 import sys
 
-from text_preparation.importers.chronicling_america import bulk
+from text_preparation.importers.chronicling_america import api, bulk
 from text_preparation.importers.chronicling_america.bulk import (
     HttpClient,
     build_download_plan,
@@ -75,7 +80,24 @@ def _download_issue_legacy(
     return issue_dir
 
 
-def _run_legacy(args: argparse.Namespace) -> None:
+def _run_legacy_api(args: argparse.Namespace) -> None:
+    client = HttpClient(delay=args.delay)
+    title = title_from_legacy(args.lccn, args.alias)
+    downloaded = api.run_api_download(
+        client,
+        title,
+        args.output_dir,
+        issue_date=args.date,
+        edition=args.edition,
+        limit=args.limit,
+    )
+    if not downloaded:
+        logger.error("No issues found matching parameters.")
+        sys.exit(1)
+    logger.info("Download completed successfully!")
+
+
+def _run_legacy_crawl(args: argparse.Namespace) -> None:
     client = HttpClient(delay=args.delay)
     title = title_from_legacy(args.lccn, args.alias)
 
@@ -195,7 +217,18 @@ def main() -> None:
     parser.add_argument(
         "--batch",
         type=str,
-        help="Batch name for legacy mode (skip batch search)",
+        help="Batch name for legacy crawl mode (skip batch search)",
+    )
+    parser.add_argument(
+        "--edition",
+        type=str,
+        default="ed-1",
+        help="Edition folder for legacy API mode (default: ed-1)",
+    )
+    parser.add_argument(
+        "--use-crawl",
+        action="store_true",
+        help="Use batch-directory crawling instead of the loc.gov JSON API",
     )
 
     args = parser.parse_args()
@@ -225,7 +258,10 @@ def main() -> None:
         print_dry_run_report(plan)
         return
 
-    _run_legacy(args)
+    if args.use_crawl:
+        _run_legacy_crawl(args)
+    else:
+        _run_legacy_api(args)
 
 
 if __name__ == "__main__":
