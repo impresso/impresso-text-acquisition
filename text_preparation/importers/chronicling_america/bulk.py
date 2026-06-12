@@ -34,6 +34,12 @@ HEADERS = {
     )
 }
 
+# Includes Cloudflare-specific 52x codes (e.g. 525 SSL handshake failed) which
+# tile.loc.gov intermittently returns and which are safe to retry.
+def is_transient_status(status_code: int) -> bool:
+    return status_code == 429 or status_code >= 500
+
+
 ISSUE_DIR_RE = re.compile(r"^\d{10}$")
 TARBALL_BATCH_RE = re.compile(r"^batch_(.+)\.tar\.bz2$")
 BATCH_VERSION_RE = re.compile(r"^(.+)_ver(\d+)$")
@@ -136,7 +142,7 @@ class HttpClient:
                         if method == "GET"
                         else self.session.head(url, **kwargs)
                     )
-                if response.status_code in (429, 503):
+                if is_transient_status(response.status_code):
                     logger.warning(
                         "HTTP %s for %s; sleeping %.0fs before retry",
                         response.status_code,
