@@ -63,10 +63,13 @@ def _download_issue_legacy(
         href_names = bulk.parse_mets_alto_filenames(handle.read())
 
     for filename in href_names:
+        alto_path = os.path.join(alto_dir, filename)
+        if os.path.exists(alto_path) and os.path.getsize(alto_path) > 0:
+            continue
         download_file(
             client,
             f"{issue.url}{filename}",
-            os.path.join(alto_dir, filename),
+            alto_path,
         )
 
     return issue_dir

@@ -21,6 +21,7 @@ from text_preparation.importers.chronicling_america.bulk import (
     build_download_plan,
     dedupe_batch_versions,
     dedupe_issues,
+    download_file,
     extract_alto_members,
     issue_in_date_range,
     parse_mets_alto_filenames,
@@ -306,3 +307,49 @@ def test_print_dry_run_report(capsys) -> None:
     output = capsys.readouterr().out
     assert "eveningstar" in output
     assert "Tarballs: 1" in output
+
+
+def test_download_file_retries_on_chunked_error(tmp_path) -> None:
+    import requests
+
+    dest = tmp_path / "out.xml"
+
+    good_response = MagicMock()
+    good_response.raise_for_status.return_value = None
+    good_response.iter_content.return_value = iter([b"<alto/>"])
+
+    bad_response = MagicMock()
+    bad_response.raise_for_status.return_value = None
+    bad_response.iter_content.side_effect = requests.exceptions.ChunkedEncodingError(
+        "Response ended prematurely"
+    )
+
+    client = MagicMock()
+    client.request.side_effect = [bad_response, good_response]
+
+    with patch("text_preparation.importers.chronicling_america.bulk.time.sleep"):
+        download_file(client, "http://example/ocr.xml", str(dest), max_retries=3)
+
+    assert dest.read_bytes() == b"<alto/>"
+    assert client.request.call_count == 2
+    # No leftover partial file
+    assert not (tmp_path / "out.xml.part").exists()
+
+
+def test_download_file_raises_after_max_retries(tmp_path) -> None:
+    import requests
+
+    dest = tmp_path / "out.xml"
+    bad_response = MagicMock()
+    bad_response.raise_for_status.return_value = None
+    bad_response.iter_content.side_effect = requests.exceptions.ConnectionError("boom")
+
+    client = MagicMock()
+    client.request.return_value = bad_response
+
+    with patch("text_preparation.importers.chronicling_america.bulk.time.sleep"):
+        with pytest.raises(RuntimeError, match="Failed to download"):
+            download_file(client, "http://example/ocr.xml", str(dest), max_retries=2)
+
+    assert not dest.exists()
+    assert not (tmp_path / "out.xml.part").exists()

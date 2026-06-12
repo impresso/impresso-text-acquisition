@@ -462,14 +462,51 @@ def verify_sha1(path: str, expected: str) -> bool:
     return digest.hexdigest() == expected.lower()
 
 
-def download_file(client: HttpClient, url: str, dest_path: str) -> None:
+def download_file(
+    client: HttpClient,
+    url: str,
+    dest_path: str,
+    max_retries: int = 5,
+) -> None:
+    """Stream a URL to disk, retrying on mid-stream connection drops.
+
+    Downloads to a temporary file first and renames on success so partially
+    written files never look complete to the resume logic.
+    """
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-    response = client.request(url, stream=True)
-    response.raise_for_status()
-    with open(dest_path, "wb") as handle:
-        for chunk in response.iter_content(chunk_size=1024 * 1024):
-            if chunk:
-                handle.write(chunk)
+    tmp_path = f"{dest_path}.part"
+    backoff = 2.0
+    last_exc: Exception | None = None
+    for attempt in range(1, max_retries + 1):
+        try:
+            response = client.request(url, stream=True)
+            response.raise_for_status()
+            with open(tmp_path, "wb") as handle:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        handle.write(chunk)
+            os.replace(tmp_path, dest_path)
+            return
+        except (
+            requests.exceptions.ChunkedEncodingError,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+        ) as exc:
+            last_exc = exc
+            logger.warning(
+                "Download of %s interrupted (attempt %d/%d): %s",
+                url,
+                attempt,
+                max_retries,
+                exc,
+            )
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+            time.sleep(backoff)
+            backoff *= 2.0
+    raise RuntimeError(
+        f"Failed to download {url} after {max_retries} attempts"
+    ) from last_exc
 
 
 def extract_alto_members(
