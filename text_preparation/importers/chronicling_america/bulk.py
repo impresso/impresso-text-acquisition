@@ -104,6 +104,7 @@ class TarballInfo:
     url: str
     sha1: str
     size: int
+    lccns: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -359,15 +360,30 @@ def parse_ocr_manifest(payload: Any) -> list[TarballInfo]:
         size = entry.get("size")
         if not url or not sha1 or size is None:
             continue
+        raw_lccns = entry.get("lccns") or []
         tarballs.append(
             TarballInfo(
                 batch=batch,
                 url=url,
                 sha1=sha1,
                 size=int(size),
+                lccns=tuple(
+                    lccn
+                    for lccn in raw_lccns
+                    if isinstance(lccn, str) and LCCN_RE.match(lccn)
+                ),
             )
         )
     return tarballs
+
+
+def index_from_tarball_manifest(tarballs: list[TarballInfo]) -> dict[str, list[str]]:
+    """Build a batch→LCCN index from OCR manifest metadata (no HTTP crawl)."""
+    index: dict[str, list[str]] = {}
+    for info in tarballs:
+        if info.lccns:
+            index[info.batch] = sorted(info.lccns)
+    return index
 
 
 def fetch_ocr_tarballs(client: HttpClient) -> list[TarballInfo]:
@@ -432,6 +448,7 @@ def build_or_load_batch_index(
     client: HttpClient,
     index_path: str,
     batches: list[str] | None = None,
+    manifest_index: dict[str, list[str]] | None = None,
 ) -> dict[str, list[str]]:
     if os.path.exists(index_path):
         with open(index_path, encoding="utf-8") as f:
@@ -447,9 +464,15 @@ def build_or_load_batch_index(
             if "_ver" in link
         ]
 
-    index: dict[str, list[str]] = {}
-    for idx, batch in enumerate(sorted(batches), start=1):
-        logger.info("Indexing batch %s (%d/%d)", batch, idx, len(batches))
+    index: dict[str, list[str]] = dict(manifest_index or {})
+    batches_to_crawl = [batch for batch in sorted(batches) if batch not in index]
+    if not batches_to_crawl:
+        logger.info(
+            "Built batch index from OCR manifest metadata for %d batches (no crawl)",
+            len(index),
+        )
+    for idx, batch in enumerate(batches_to_crawl, start=1):
+        logger.info("Indexing batch %s (%d/%d)", batch, idx, len(batches_to_crawl))
         lccns = fetch_batch_lccns(client, batch)
         if lccns:
             index[batch] = sorted(lccns)
@@ -580,10 +603,12 @@ def build_download_plan(
     # #endregion
     tarballs = fetch_ocr_tarballs(client)
     tarball_by_batch = {info.batch: info for info in tarballs}
+    manifest_index = index_from_tarball_manifest(tarballs)
     index = build_or_load_batch_index(
         client,
         index_path,
         batches=sorted(tarball_by_batch.keys()),
+        manifest_index=manifest_index,
     )
 
     selected_batches = batches_for_lccns(
