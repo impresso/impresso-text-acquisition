@@ -125,6 +125,7 @@ class DownloadPlan:
     tarballs: list[TarballInfo]
     issues: list[IssueInfo]
     total_tarball_bytes: int = 0
+    estimated_issues: int | None = None
 
 
 @dataclass
@@ -588,7 +589,11 @@ def build_download_plan(
     client: HttpClient,
     titles: list[TitleSpec],
     index_path: str,
+    *,
+    dry_run: bool = False,
 ) -> DownloadPlan:
+    from text_preparation.importers.chronicling_america import api
+
     # #region agent log
     _agent_debug_log(
         hypothesis_id="H1",
@@ -598,6 +603,7 @@ def build_download_plan(
             "titles": [t.alias for t in titles],
             "index_cached": os.path.exists(index_path),
             "index_path": index_path,
+            "dry_run": dry_run,
         },
     )
     # #endregion
@@ -621,15 +627,22 @@ def build_download_plan(
         if batch in tarball_by_batch
     ]
 
+    estimated_issues: int | None = None
     all_issues: list[IssueInfo] = []
-    for title in titles:
-        title_batches = [
-            batch
-            for batch in selected_batches
-            if title.lccn in index.get(batch, [])
-        ]
-        for batch in title_batches:
-            all_issues.extend(list_issues_in_batch(client, batch, title))
+    if dry_run:
+        estimated_issues = 0
+        for title in titles:
+            count = api.estimate_issue_count_via_api(client, title)
+            if count is not None:
+                estimated_issues += count
+        logger.info(
+            "Dry-run: skipping per-issue discovery (%s issues estimated via loc.gov API)",
+            estimated_issues if estimated_issues else "unknown",
+        )
+    else:
+        for title in titles:
+            logger.info("Discovering issues for %s via loc.gov API", title.alias)
+            all_issues.extend(api.discover_issues_for_bulk_plan(client, title))
 
     issues = dedupe_issues(all_issues)
     total_bytes = sum(info.size for info in selected_tarballs)
@@ -641,8 +654,10 @@ def build_download_plan(
         data={
             "selected_batches": len(selected_batches),
             "issues": len(issues),
+            "estimated_issues": estimated_issues,
             "tarballs": len(selected_tarballs),
             "total_requests_so_far": _DEBUG_REQUEST_COUNT,
+            "discovery_mode": "api_estimate" if dry_run else "api_search",
         },
     )
     # #endregion
@@ -652,6 +667,7 @@ def build_download_plan(
         tarballs=selected_tarballs,
         issues=issues,
         total_tarball_bytes=total_bytes,
+        estimated_issues=estimated_issues,
     )
 
 
@@ -673,7 +689,12 @@ def print_dry_run_report(plan: DownloadPlan) -> None:
         print(f"- {title.alias} [{title.lccn}]{date_range}")
     print(f"Batches: {len(plan.batches)}")
     print(f"Tarballs: {len(plan.tarballs)} ({format_bytes(plan.total_tarball_bytes)} compressed)")
-    print(f"Issues (METS files): {len(plan.issues)}")
+    if plan.issues:
+        print(f"Issues (METS files): {len(plan.issues)}")
+    elif plan.estimated_issues is not None:
+        print(f"Issues (METS files): ~{plan.estimated_issues} (loc.gov API estimate)")
+    else:
+        print("Issues (METS files): unknown (loc.gov API estimate unavailable)")
     if plan.batches:
         print("\nBatch list:")
         for batch in plan.batches:
@@ -854,6 +875,8 @@ def download_issue_mets(
     issue: IssueInfo,
     output_dir: str,
 ) -> None:
+    from text_preparation.importers.chronicling_america import api
+
     issue_dir = issue_local_dir(output_dir, issue)
     mets_name = f"{issue.issue_dir_name}.xml"
     mets_path = os.path.join(issue_dir, mets_name)
@@ -861,9 +884,13 @@ def download_issue_mets(
         return
 
     os.makedirs(issue_dir, exist_ok=True)
-    mets_url = urljoin(issue.url, mets_name)
     logger.info("Downloading METS for %s", issue_state_key(issue))
-    download_file(client, mets_url, mets_path)
+    if "loc.gov/item/" in issue.url:
+        files = api.fetch_issue_files(client, issue.url)
+        download_file(client, files.mets_url, mets_path)
+    else:
+        mets_url = urljoin(issue.url, mets_name)
+        download_file(client, mets_url, mets_path)
 
 
 def finalize_issue_from_tarball(
@@ -953,7 +980,7 @@ def run_bulk_download(
     os.makedirs(state_dir, exist_ok=True)
     os.makedirs(scratch_dir, exist_ok=True)
 
-    plan = build_download_plan(http, titles, index_path)
+    plan = build_download_plan(http, titles, index_path, dry_run=dry_run)
     if dry_run:
         print_dry_run_report(plan)
         return plan

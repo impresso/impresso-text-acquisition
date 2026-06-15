@@ -241,6 +241,53 @@ def fetch_issue_files(
     )
 
 
+def discover_issues_for_bulk_plan(
+    client: HttpClient,
+    title: TitleSpec,
+) -> list[IssueInfo]:
+    """Discover issues via loc.gov API search (official path, avoids batch reel crawls)."""
+    item_urls = discover_issue_item_urls(client, title)
+    issues: list[IssueInfo] = []
+    for item_url in item_urls:
+        normalized = item_url.replace("http://", "https://")
+        parsed = parse_item_url(normalized)
+        if parsed is None:
+            continue
+        lccn, issue_date, edition = parsed
+        issues.append(
+            IssueInfo(
+                batch="",
+                lccn=lccn,
+                alias=title.alias,
+                date=issue_date,
+                edition=edition,
+                issue_dir_name=issue_dir_name_from_parts(issue_date, edition),
+                url=normalized,
+            )
+        )
+    return issues
+
+
+def estimate_issue_count_via_api(
+    client: HttpClient,
+    title: TitleSpec,
+) -> int | None:
+    """Return the loc.gov search hit count for a title without paginating all results."""
+    search_url = build_collection_search_url(
+        title.lccn,
+        start_date=title.start_date,
+        end_date=title.end_date,
+    )
+    response = client.request(
+        search_url,
+        params={"fo": "json", "c": 1, "at": "results,pagination"},
+    )
+    if not response.ok:
+        return None
+    total = response.json().get("pagination", {}).get("total")
+    return int(total) if total is not None else None
+
+
 def api_issue_to_issue_info(files: ApiIssueFiles, alias: str) -> IssueInfo:
     return IssueInfo(
         batch=files.batch,

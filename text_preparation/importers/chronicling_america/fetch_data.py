@@ -176,8 +176,8 @@ def main() -> None:
     parser.add_argument(
         "--delay",
         type=float,
-        default=1.0,
-        help="Delay in seconds between HTTP requests",
+        default=3.0,
+        help="Delay in seconds between HTTP requests (LOC JSON API: 20/min)",
     )
     parser.add_argument(
         "--dry-run",
@@ -254,7 +254,7 @@ def main() -> None:
     if args.dry_run:
         client = HttpClient(delay=args.delay)
         titles = [title_from_legacy(args.lccn, args.alias)]
-        plan = build_download_plan(client, titles, index_path)
+        plan = build_download_plan(client, titles, index_path, dry_run=True)
         print_dry_run_report(plan)
         return
 
