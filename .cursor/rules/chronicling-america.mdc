@@ -1,0 +1,21 @@
+---
+description: Chronicling America importer — read the agent knowledge base before editing CA code
+globs: text_preparation/importers/chronicling_america/**,tests/importers/test_ca*.py,text_preparation/config/download_config/chronicling_america_titles.json,text_preparation/config/importer_config/import_LOC.json
+alwaysApply: false
+---
+
+# Chronicling America
+
+Before changing Chronicling America download or import code, read
+**`.cursor/docs/chronicling-america.md`**.
+
+Critical constraints (verified 2026-06-15):
+
+- **Bulk mode (`--config`)** is the only fully working unattended path; use
+  `chroniclingamerica.loc.gov` only.
+- **`www.loc.gov` JSON API** returns Cloudflare `403`; use `--use-crawl` for single
+  issues instead of the default API mode.
+- OCR manifest URL is **`/data/ocr/ocr.json`** (legacy `/ocr.json` is dead).
+- Default **`--delay` is 3.0 s**; rate limiting runs inside the request lock.
+- Set **`start_date`/`end_date`** in download config for pilots; use writable scratch
+  paths on clusters (not `/data`).

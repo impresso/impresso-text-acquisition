@@ -2,6 +2,8 @@
 
 This package contains the pipeline modules and scripts to download, detect, and import newspaper issues from the Library of Congress's **Chronicling America** archive into the Impresso canonical format.
 
+**Agent / developer knowledge base:** [`.cursor/docs/chronicling-america.md`](../../../.cursor/docs/chronicling-america.md)
+
 ---
 
 ## Submodule Structure
