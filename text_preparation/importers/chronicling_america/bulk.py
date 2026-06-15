@@ -61,7 +61,12 @@ def _agent_debug_log(
 # #endregion
 
 BASE_URL = "https://chroniclingamerica.loc.gov"
-OCR_JSON_URL = f"{BASE_URL}/ocr.json"
+# LOC migrated OCR manifests in 2025: /ocr.json now 404s after redirect; the live
+# manifest is at /data/ocr/ocr.json with a list-shaped schema (archive_name, batch).
+OCR_JSON_URLS = (
+    f"{BASE_URL}/data/ocr/ocr.json",
+    f"{BASE_URL}/ocr.json",
+)
 BATCHES_URL = f"{BASE_URL}/data/batches/"
 
 HEADERS = {
@@ -79,6 +84,7 @@ def is_transient_status(status_code: int) -> bool:
 
 ISSUE_DIR_RE = re.compile(r"^\d{10}$")
 TARBALL_BATCH_RE = re.compile(r"^batch_(.+)\.tar\.bz2$")
+PLAIN_TARBALL_RE = re.compile(r"^(.+_ver\d+)\.tar\.bz2$")
 BATCH_VERSION_RE = re.compile(r"^(.+)_ver(\d+)$")
 # LCCNs are either prefixed (sn83045462, mn99999999) or purely numeric (2010218500)
 LCCN_RE = re.compile(r"^[a-z]{0,3}\d{8,12}$")
@@ -321,27 +327,76 @@ def dedupe_batch_versions(batches: list[str]) -> list[str]:
 
 def tarball_batch_name(filename: str) -> str | None:
     match = TARBALL_BATCH_RE.match(filename)
-    return match.group(1) if match else None
+    if match:
+        return match.group(1)
+    plain = PLAIN_TARBALL_RE.match(filename)
+    return plain.group(1) if plain else None
 
 
-def fetch_ocr_tarballs(client: HttpClient) -> list[TarballInfo]:
-    response = client.request(OCR_JSON_URL)
-    response.raise_for_status()
-    payload = response.json()
+def parse_ocr_manifest(payload: Any) -> list[TarballInfo]:
+    """Parse OCR tarball metadata from legacy or post-migration loc.gov manifests."""
+    if isinstance(payload, dict):
+        entries = payload.get("ocr", [])
+    elif isinstance(payload, list):
+        entries = payload
+    else:
+        return []
+
     tarballs: list[TarballInfo] = []
-    for entry in payload.get("ocr", []):
-        batch = tarball_batch_name(entry["name"])
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        batch = entry.get("batch")
         if not batch:
+            archive_name = entry.get("name") or entry.get("archive_name", "")
+            batch = tarball_batch_name(archive_name) or archive_name.removesuffix(
+                ".tar.bz2"
+            )
+        if not batch:
+            continue
+        url = entry.get("url")
+        sha1 = entry.get("sha1")
+        size = entry.get("size")
+        if not url or not sha1 or size is None:
             continue
         tarballs.append(
             TarballInfo(
                 batch=batch,
-                url=entry["url"],
-                sha1=entry["sha1"],
-                size=int(entry["size"]),
+                url=url,
+                sha1=sha1,
+                size=int(size),
             )
         )
     return tarballs
+
+
+def fetch_ocr_tarballs(client: HttpClient) -> list[TarballInfo]:
+    last_error: Exception | None = None
+    for manifest_url in OCR_JSON_URLS:
+        try:
+            response = client.request(manifest_url)
+            response.raise_for_status()
+            tarballs = parse_ocr_manifest(response.json())
+            if tarballs:
+                # #region agent log
+                _agent_debug_log(
+                    hypothesis_id="H6",
+                    location="bulk.py:fetch_ocr_tarballs",
+                    message="ocr_manifest_loaded",
+                    data={
+                        "manifest_url": manifest_url,
+                        "tarball_count": len(tarballs),
+                        "sample_batch": tarballs[0].batch,
+                    },
+                )
+                # #endregion
+                return tarballs
+        except (requests.RequestException, ValueError, KeyError) as exc:
+            last_error = exc
+            logger.warning("Failed to load OCR manifest from %s: %s", manifest_url, exc)
+    raise RuntimeError(
+        "Could not load Chronicling America OCR tarball manifest from any known URL"
+    ) from last_error
 
 
 def _parse_directory_links(html: str) -> list[str]:
