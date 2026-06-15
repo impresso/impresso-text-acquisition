@@ -24,42 +24,6 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
-# #region agent log
-_REPO_ROOT = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-)
-_DEBUG_LOG_PATH = os.path.join(_REPO_ROOT, ".cursor", "debug-5a3354.log")
-_DEBUG_REQUEST_COUNT = 0
-_DEBUG_LAST_REQUEST_TS: float | None = None
-
-
-def _agent_debug_log(
-    *,
-    hypothesis_id: str,
-    location: str,
-    message: str,
-    data: dict[str, Any],
-    run_id: str = "pre-fix",
-) -> None:
-    payload = {
-        "sessionId": "5a3354",
-        "runId": run_id,
-        "hypothesisId": hypothesis_id,
-        "location": location,
-        "message": message,
-        "data": data,
-        "timestamp": int(time.time() * 1000),
-    }
-    try:
-        os.makedirs(os.path.dirname(_DEBUG_LOG_PATH), exist_ok=True)
-        with open(_DEBUG_LOG_PATH, "a", encoding="utf-8") as handle:
-            handle.write(json.dumps(payload) + "\n")
-    except OSError:
-        pass
-
-
-# #endregion
-
 BASE_URL = "https://chroniclingamerica.loc.gov"
 # LOC migrated OCR manifests in 2025: /ocr.json now 404s after redirect; the live
 # manifest is at /data/ocr/ocr.json with a list-shaped schema (archive_name, batch).
@@ -105,6 +69,7 @@ class TarballInfo:
     sha1: str
     size: int
     lccns: tuple[str, ...] = ()
+    issue_count: int = 0
 
 
 @dataclass(frozen=True)
@@ -194,68 +159,19 @@ class HttpClient:
         return max(backoff, 60.0)
 
     def request(self, url: str, method: str = "GET", **kwargs: Any) -> requests.Response:
-        global _DEBUG_REQUEST_COUNT, _DEBUG_LAST_REQUEST_TS
         retries = 0
         backoff = 2.0
         kwargs.setdefault("timeout", self.timeout)
         while retries < self.max_retries:
             try:
                 with self._lock:
-                    wait_elapsed = self._rate_limit_wait()
-                    lock_acquired = time.monotonic()
-                    gap_since_last = (
-                        None
-                        if _DEBUG_LAST_REQUEST_TS is None
-                        else lock_acquired - _DEBUG_LAST_REQUEST_TS
-                    )
+                    self._rate_limit_wait()
                     response = (
                         self.session.get(url, **kwargs)
                         if method == "GET"
                         else self.session.head(url, **kwargs)
                     )
-                    request_finished = time.monotonic()
-                    self._last_request_at = request_finished
-                    _DEBUG_REQUEST_COUNT += 1
-                    _DEBUG_LAST_REQUEST_TS = request_finished
-                    # #region agent log
-                    _agent_debug_log(
-                        hypothesis_id="H5",
-                        location="bulk.py:HttpClient.request",
-                        message="http_request_completed",
-                        data={
-                            "request_num": _DEBUG_REQUEST_COUNT,
-                            "status": response.status_code,
-                            "method": method,
-                            "url_host": url.split("/")[2] if "://" in url else url,
-                            "url_path_prefix": "/".join(url.split("/")[3:6]),
-                            "thread": threading.current_thread().name,
-                            "retry": retries,
-                            "delay_setting": self.delay,
-                            "rate_limit_wait_s": round(wait_elapsed, 3),
-                            "gap_since_last_request_s": (
-                                None
-                                if gap_since_last is None
-                                else round(gap_since_last, 3)
-                            ),
-                            "request_duration_s": round(
-                                request_finished - lock_acquired,
-                                3,
-                            ),
-                        },
-                    )
-                    if response.status_code == 429:
-                        _agent_debug_log(
-                            hypothesis_id="H3",
-                            location="bulk.py:HttpClient.request",
-                            message="rate_limit_429",
-                            data={
-                                "url": url,
-                                "retry": retries,
-                                "backoff_s": backoff,
-                                "retry_after": response.headers.get("Retry-After"),
-                            },
-                        )
-                    # #endregion
+                    self._last_request_at = time.monotonic()
                 if is_transient_status(response.status_code):
                     backoff = self._backoff_for_status(response, backoff)
                     logger.warning(
@@ -271,14 +187,6 @@ class HttpClient:
                 return response
             except requests.RequestException as exc:
                 logger.warning("Request failed for %s: %s", url, exc)
-                # #region agent log
-                _agent_debug_log(
-                    hypothesis_id="H3",
-                    location="bulk.py:HttpClient.request",
-                    message="request_exception",
-                    data={"url": url, "error": str(exc), "retry": retries},
-                )
-                # #endregion
                 time.sleep(backoff)
                 backoff *= 2.0
                 retries += 1
@@ -362,6 +270,7 @@ def parse_ocr_manifest(payload: Any) -> list[TarballInfo]:
         if not url or not sha1 or size is None:
             continue
         raw_lccns = entry.get("lccns") or []
+        issue_count = entry.get("issue_count") or 0
         tarballs.append(
             TarballInfo(
                 batch=batch,
@@ -373,6 +282,7 @@ def parse_ocr_manifest(payload: Any) -> list[TarballInfo]:
                     for lccn in raw_lccns
                     if isinstance(lccn, str) and LCCN_RE.match(lccn)
                 ),
+                issue_count=int(issue_count),
             )
         )
     return tarballs
@@ -395,18 +305,6 @@ def fetch_ocr_tarballs(client: HttpClient) -> list[TarballInfo]:
             response.raise_for_status()
             tarballs = parse_ocr_manifest(response.json())
             if tarballs:
-                # #region agent log
-                _agent_debug_log(
-                    hypothesis_id="H6",
-                    location="bulk.py:fetch_ocr_tarballs",
-                    message="ocr_manifest_loaded",
-                    data={
-                        "manifest_url": manifest_url,
-                        "tarball_count": len(tarballs),
-                        "sample_batch": tarballs[0].batch,
-                    },
-                )
-                # #endregion
                 return tarballs
         except (requests.RequestException, ValueError, KeyError) as exc:
             last_error = exc
@@ -592,21 +490,6 @@ def build_download_plan(
     *,
     dry_run: bool = False,
 ) -> DownloadPlan:
-    from text_preparation.importers.chronicling_america import api
-
-    # #region agent log
-    _agent_debug_log(
-        hypothesis_id="H1",
-        location="bulk.py:build_download_plan",
-        message="plan_start",
-        data={
-            "titles": [t.alias for t in titles],
-            "index_cached": os.path.exists(index_path),
-            "index_path": index_path,
-            "dry_run": dry_run,
-        },
-    )
-    # #endregion
     tarballs = fetch_ocr_tarballs(client)
     tarball_by_batch = {info.batch: info for info in tarballs}
     manifest_index = index_from_tarball_manifest(tarballs)
@@ -630,37 +513,30 @@ def build_download_plan(
     estimated_issues: int | None = None
     all_issues: list[IssueInfo] = []
     if dry_run:
-        estimated_issues = 0
-        for title in titles:
-            count = api.estimate_issue_count_via_api(client, title)
-            if count is not None:
-                estimated_issues += count
+        # Estimate from the OCR manifest's per-batch issue_count (no extra HTTP).
+        # This is a batch-level upper bound: batches are not date-filtered and may
+        # bundle multiple LCCNs. The loc.gov JSON API cannot be used here because
+        # www.loc.gov is behind a Cloudflare bot challenge (403 for API clients).
+        estimated_issues = sum(info.issue_count for info in selected_tarballs)
         logger.info(
-            "Dry-run: skipping per-issue discovery (%s issues estimated via loc.gov API)",
-            estimated_issues if estimated_issues else "unknown",
+            "Dry-run: estimated up to %d issues from OCR manifest (batch-level upper bound)",
+            estimated_issues,
         )
     else:
         for title in titles:
-            logger.info("Discovering issues for %s via loc.gov API", title.alias)
-            all_issues.extend(api.discover_issues_for_bulk_plan(client, title))
+            title_batches = [
+                batch
+                for batch in selected_batches
+                if title.lccn in index.get(batch, [])
+            ]
+            for batch in title_batches:
+                logger.info(
+                    "Enumerating issues for %s in batch %s", title.alias, batch
+                )
+                all_issues.extend(list_issues_in_batch(client, batch, title))
 
     issues = dedupe_issues(all_issues)
     total_bytes = sum(info.size for info in selected_tarballs)
-    # #region agent log
-    _agent_debug_log(
-        hypothesis_id="H1",
-        location="bulk.py:build_download_plan",
-        message="plan_complete",
-        data={
-            "selected_batches": len(selected_batches),
-            "issues": len(issues),
-            "estimated_issues": estimated_issues,
-            "tarballs": len(selected_tarballs),
-            "total_requests_so_far": _DEBUG_REQUEST_COUNT,
-            "discovery_mode": "api_estimate" if dry_run else "api_search",
-        },
-    )
-    # #endregion
     return DownloadPlan(
         titles=titles,
         batches=selected_batches,
@@ -692,9 +568,12 @@ def print_dry_run_report(plan: DownloadPlan) -> None:
     if plan.issues:
         print(f"Issues (METS files): {len(plan.issues)}")
     elif plan.estimated_issues is not None:
-        print(f"Issues (METS files): ~{plan.estimated_issues} (loc.gov API estimate)")
+        print(
+            f"Issues (METS files): ~{plan.estimated_issues} "
+            "(OCR manifest estimate, batch-level upper bound)"
+        )
     else:
-        print("Issues (METS files): unknown (loc.gov API estimate unavailable)")
+        print("Issues (METS files): unknown")
     if plan.batches:
         print("\nBatch list:")
         for batch in plan.batches:
@@ -875,8 +754,6 @@ def download_issue_mets(
     issue: IssueInfo,
     output_dir: str,
 ) -> None:
-    from text_preparation.importers.chronicling_america import api
-
     issue_dir = issue_local_dir(output_dir, issue)
     mets_name = f"{issue.issue_dir_name}.xml"
     mets_path = os.path.join(issue_dir, mets_name)
@@ -884,13 +761,9 @@ def download_issue_mets(
         return
 
     os.makedirs(issue_dir, exist_ok=True)
+    mets_url = urljoin(issue.url, mets_name)
     logger.info("Downloading METS for %s", issue_state_key(issue))
-    if "loc.gov/item/" in issue.url:
-        files = api.fetch_issue_files(client, issue.url)
-        download_file(client, files.mets_url, mets_path)
-    else:
-        mets_url = urljoin(issue.url, mets_name)
-        download_file(client, mets_url, mets_path)
+    download_file(client, mets_url, mets_path)
 
 
 def finalize_issue_from_tarball(
@@ -995,19 +868,6 @@ def run_bulk_download(
     pending_mets = [
         issue for issue in plan.issues if issue_state_key(issue) not in state.completed_issues
     ]
-    # #region agent log
-    _agent_debug_log(
-        hypothesis_id="H5",
-        location="bulk.py:run_bulk_download",
-        message="mets_phase_start",
-        data={
-            "pending_mets": len(pending_mets),
-            "workers": workers,
-            "delay": delay,
-            "requests_before_mets": _DEBUG_REQUEST_COUNT,
-        },
-    )
-    # #endregion
     with ThreadPoolExecutor(max_workers=max(1, workers)) as executor:
         futures = [
             executor.submit(download_issue_mets, http, issue, output_dir)
