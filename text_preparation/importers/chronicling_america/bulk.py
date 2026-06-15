@@ -25,7 +25,10 @@ from bs4 import BeautifulSoup
 logger = logging.getLogger(__name__)
 
 # #region agent log
-_DEBUG_LOG_PATH = "/Users/corentinsteinhauser/EPFL/SHS-DH/impresso/impresso-text-acquisition/.cursor/debug-5a3354.log"
+_REPO_ROOT = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
+_DEBUG_LOG_PATH = os.path.join(_REPO_ROOT, ".cursor", "debug-5a3354.log")
 _DEBUG_REQUEST_COUNT = 0
 _DEBUG_LAST_REQUEST_TS: float | None = None
 
@@ -48,6 +51,7 @@ def _agent_debug_log(
         "timestamp": int(time.time() * 1000),
     }
     try:
+        os.makedirs(os.path.dirname(_DEBUG_LOG_PATH), exist_ok=True)
         with open(_DEBUG_LOG_PATH, "a", encoding="utf-8") as handle:
             handle.write(json.dumps(payload) + "\n")
     except OSError:
@@ -160,7 +164,26 @@ class HttpClient:
         self.timeout = timeout
         self.session = session or requests.Session()
         self.session.headers.update(HEADERS)
-        self._lock = __import__("threading").Lock()
+        self._lock = threading.Lock()
+        self._last_request_at = 0.0
+
+    def _rate_limit_wait(self) -> float:
+        """Sleep until the configured delay has elapsed since the last request."""
+        now = time.monotonic()
+        wait = self.delay - (now - self._last_request_at)
+        if wait > 0:
+            time.sleep(wait)
+            return wait
+        return 0.0
+
+    def _backoff_for_status(self, response: requests.Response, backoff: float) -> float:
+        if response.status_code != 429:
+            return backoff
+        retry_after = response.headers.get("Retry-After")
+        if retry_after and retry_after.isdigit():
+            return max(backoff, float(retry_after))
+        # LOC documents a 1-hour block when rate limits are exceeded.
+        return max(backoff, 60.0)
 
     def request(self, url: str, method: str = "GET", **kwargs: Any) -> requests.Response:
         global _DEBUG_REQUEST_COUNT, _DEBUG_LAST_REQUEST_TS
@@ -168,11 +191,9 @@ class HttpClient:
         backoff = 2.0
         kwargs.setdefault("timeout", self.timeout)
         while retries < self.max_retries:
-            sleep_started = time.monotonic()
-            time.sleep(self.delay)
-            sleep_elapsed = time.monotonic() - sleep_started
             try:
                 with self._lock:
+                    wait_elapsed = self._rate_limit_wait()
                     lock_acquired = time.monotonic()
                     gap_since_last = (
                         None
@@ -185,6 +206,7 @@ class HttpClient:
                         else self.session.head(url, **kwargs)
                     )
                     request_finished = time.monotonic()
+                    self._last_request_at = request_finished
                     _DEBUG_REQUEST_COUNT += 1
                     _DEBUG_LAST_REQUEST_TS = request_finished
                     # #region agent log
@@ -201,7 +223,7 @@ class HttpClient:
                             "thread": threading.current_thread().name,
                             "retry": retries,
                             "delay_setting": self.delay,
-                            "sleep_elapsed_s": round(sleep_elapsed, 3),
+                            "rate_limit_wait_s": round(wait_elapsed, 3),
                             "gap_since_last_request_s": (
                                 None
                                 if gap_since_last is None
@@ -227,6 +249,7 @@ class HttpClient:
                         )
                     # #endregion
                 if is_transient_status(response.status_code):
+                    backoff = self._backoff_for_status(response, backoff)
                     logger.warning(
                         "HTTP %s for %s; sleeping %.0fs before retry",
                         response.status_code,
