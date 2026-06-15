@@ -11,6 +11,7 @@ import logging
 import os
 import re
 import tarfile
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
@@ -22,6 +23,38 @@ import requests
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
+
+# #region agent log
+_DEBUG_LOG_PATH = "/Users/corentinsteinhauser/EPFL/SHS-DH/impresso/impresso-text-acquisition/.cursor/debug-5a3354.log"
+_DEBUG_REQUEST_COUNT = 0
+_DEBUG_LAST_REQUEST_TS: float | None = None
+
+
+def _agent_debug_log(
+    *,
+    hypothesis_id: str,
+    location: str,
+    message: str,
+    data: dict[str, Any],
+    run_id: str = "pre-fix",
+) -> None:
+    payload = {
+        "sessionId": "5a3354",
+        "runId": run_id,
+        "hypothesisId": hypothesis_id,
+        "location": location,
+        "message": message,
+        "data": data,
+        "timestamp": int(time.time() * 1000),
+    }
+    try:
+        with open(_DEBUG_LOG_PATH, "a", encoding="utf-8") as handle:
+            handle.write(json.dumps(payload) + "\n")
+    except OSError:
+        pass
+
+
+# #endregion
 
 BASE_URL = "https://chroniclingamerica.loc.gov"
 OCR_JSON_URL = f"{BASE_URL}/ocr.json"
@@ -130,18 +163,69 @@ class HttpClient:
         self._lock = __import__("threading").Lock()
 
     def request(self, url: str, method: str = "GET", **kwargs: Any) -> requests.Response:
+        global _DEBUG_REQUEST_COUNT, _DEBUG_LAST_REQUEST_TS
         retries = 0
         backoff = 2.0
         kwargs.setdefault("timeout", self.timeout)
         while retries < self.max_retries:
+            sleep_started = time.monotonic()
             time.sleep(self.delay)
+            sleep_elapsed = time.monotonic() - sleep_started
             try:
                 with self._lock:
+                    lock_acquired = time.monotonic()
+                    gap_since_last = (
+                        None
+                        if _DEBUG_LAST_REQUEST_TS is None
+                        else lock_acquired - _DEBUG_LAST_REQUEST_TS
+                    )
                     response = (
                         self.session.get(url, **kwargs)
                         if method == "GET"
                         else self.session.head(url, **kwargs)
                     )
+                    request_finished = time.monotonic()
+                    _DEBUG_REQUEST_COUNT += 1
+                    _DEBUG_LAST_REQUEST_TS = request_finished
+                    # #region agent log
+                    _agent_debug_log(
+                        hypothesis_id="H5",
+                        location="bulk.py:HttpClient.request",
+                        message="http_request_completed",
+                        data={
+                            "request_num": _DEBUG_REQUEST_COUNT,
+                            "status": response.status_code,
+                            "method": method,
+                            "url_host": url.split("/")[2] if "://" in url else url,
+                            "url_path_prefix": "/".join(url.split("/")[3:6]),
+                            "thread": threading.current_thread().name,
+                            "retry": retries,
+                            "delay_setting": self.delay,
+                            "sleep_elapsed_s": round(sleep_elapsed, 3),
+                            "gap_since_last_request_s": (
+                                None
+                                if gap_since_last is None
+                                else round(gap_since_last, 3)
+                            ),
+                            "request_duration_s": round(
+                                request_finished - lock_acquired,
+                                3,
+                            ),
+                        },
+                    )
+                    if response.status_code == 429:
+                        _agent_debug_log(
+                            hypothesis_id="H3",
+                            location="bulk.py:HttpClient.request",
+                            message="rate_limit_429",
+                            data={
+                                "url": url,
+                                "retry": retries,
+                                "backoff_s": backoff,
+                                "retry_after": response.headers.get("Retry-After"),
+                            },
+                        )
+                    # #endregion
                 if is_transient_status(response.status_code):
                     logger.warning(
                         "HTTP %s for %s; sleeping %.0fs before retry",
@@ -156,6 +240,14 @@ class HttpClient:
                 return response
             except requests.RequestException as exc:
                 logger.warning("Request failed for %s: %s", url, exc)
+                # #region agent log
+                _agent_debug_log(
+                    hypothesis_id="H3",
+                    location="bulk.py:HttpClient.request",
+                    message="request_exception",
+                    data={"url": url, "error": str(exc), "retry": retries},
+                )
+                # #endregion
                 time.sleep(backoff)
                 backoff *= 2.0
                 retries += 1
@@ -396,6 +488,18 @@ def build_download_plan(
     titles: list[TitleSpec],
     index_path: str,
 ) -> DownloadPlan:
+    # #region agent log
+    _agent_debug_log(
+        hypothesis_id="H1",
+        location="bulk.py:build_download_plan",
+        message="plan_start",
+        data={
+            "titles": [t.alias for t in titles],
+            "index_cached": os.path.exists(index_path),
+            "index_path": index_path,
+        },
+    )
+    # #endregion
     tarballs = fetch_ocr_tarballs(client)
     tarball_by_batch = {info.batch: info for info in tarballs}
     index = build_or_load_batch_index(
@@ -426,6 +530,19 @@ def build_download_plan(
 
     issues = dedupe_issues(all_issues)
     total_bytes = sum(info.size for info in selected_tarballs)
+    # #region agent log
+    _agent_debug_log(
+        hypothesis_id="H1",
+        location="bulk.py:build_download_plan",
+        message="plan_complete",
+        data={
+            "selected_batches": len(selected_batches),
+            "issues": len(issues),
+            "tarballs": len(selected_tarballs),
+            "total_requests_so_far": _DEBUG_REQUEST_COUNT,
+        },
+    )
+    # #endregion
     return DownloadPlan(
         titles=titles,
         batches=selected_batches,
@@ -748,6 +865,19 @@ def run_bulk_download(
     pending_mets = [
         issue for issue in plan.issues if issue_state_key(issue) not in state.completed_issues
     ]
+    # #region agent log
+    _agent_debug_log(
+        hypothesis_id="H5",
+        location="bulk.py:run_bulk_download",
+        message="mets_phase_start",
+        data={
+            "pending_mets": len(pending_mets),
+            "workers": workers,
+            "delay": delay,
+            "requests_before_mets": _DEBUG_REQUEST_COUNT,
+        },
+    )
+    # #endregion
     with ThreadPoolExecutor(max_workers=max(1, workers)) as executor:
         futures = [
             executor.submit(download_issue_mets, http, issue, output_dir)
