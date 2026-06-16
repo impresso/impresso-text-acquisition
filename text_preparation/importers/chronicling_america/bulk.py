@@ -33,6 +33,14 @@ OCR_JSON_URLS = (
 )
 BATCHES_URL = f"{BASE_URL}/data/batches/"
 
+# Official LOC rate limits (https://www.loc.gov/apis/json-and-yaml/working-within-limits/):
+# JSON/YAML API: 20 req/min; storage/text/image: 150 req/min; block time: 1 hour.
+# chroniclingamerica.loc.gov bulk crawls are throttled similarly in practice; stay
+# under the JSON API limit to avoid 429 / CAPTCHA blocks.
+LOC_JSON_API_REQUESTS_PER_MINUTE = 20
+LOC_RATE_LIMIT_BLOCK_SECONDS = 3600
+DEFAULT_REQUEST_DELAY = 60.0 / LOC_JSON_API_REQUESTS_PER_MINUTE  # 3.0 s
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (compatible; ImpressoTextPreparation/1.0; "
@@ -40,10 +48,29 @@ HEADERS = {
     )
 }
 
+CHALLENGE_MARKERS = (
+    "captcha",
+    "just a moment",
+    "challenge-platform",
+    "cloudflare",
+)
+
+
 # Includes Cloudflare-specific 52x codes (e.g. 525 SSL handshake failed) which
 # tile.loc.gov intermittently returns and which are safe to retry.
 def is_transient_status(status_code: int) -> bool:
     return status_code == 429 or status_code >= 500
+
+
+def is_challenge_response(response: requests.Response) -> bool:
+    """True when LOC/Cloudflare returns an HTML bot challenge instead of data."""
+    if response.status_code not in (403, 429):
+        return False
+    content_type = response.headers.get("Content-Type", "")
+    if "text/html" not in content_type.lower():
+        return False
+    snippet = response.text[:4096].lower()
+    return any(marker in snippet for marker in CHALLENGE_MARKERS)
 
 
 ISSUE_DIR_RE = re.compile(r"^\d{10}$")
@@ -127,7 +154,7 @@ class HttpClient:
 
     def __init__(
         self,
-        delay: float = 1.0,
+        delay: float = DEFAULT_REQUEST_DELAY,
         max_retries: int = 5,
         timeout: float = 120.0,
         session: requests.Session | None = None,
@@ -150,13 +177,13 @@ class HttpClient:
         return 0.0
 
     def _backoff_for_status(self, response: requests.Response, backoff: float) -> float:
-        if response.status_code != 429:
+        if response.status_code != 429 and not is_challenge_response(response):
             return backoff
         retry_after = response.headers.get("Retry-After")
         if retry_after and retry_after.isdigit():
             return max(backoff, float(retry_after))
         # LOC documents a 1-hour block when rate limits are exceeded.
-        return max(backoff, 60.0)
+        return max(backoff, float(LOC_RATE_LIMIT_BLOCK_SECONDS))
 
     def request(self, url: str, method: str = "GET", **kwargs: Any) -> requests.Response:
         retries = 0
@@ -172,11 +199,18 @@ class HttpClient:
                         else self.session.head(url, **kwargs)
                     )
                     self._last_request_at = time.monotonic()
-                if is_transient_status(response.status_code):
+                if is_transient_status(response.status_code) or is_challenge_response(
+                    response
+                ):
                     backoff = self._backoff_for_status(response, backoff)
+                    reason = (
+                        "CAPTCHA/challenge"
+                        if is_challenge_response(response)
+                        else f"HTTP {response.status_code}"
+                    )
                     logger.warning(
-                        "HTTP %s for %s; sleeping %.0fs before retry",
-                        response.status_code,
+                        "%s for %s; sleeping %.0fs before retry",
+                        reason,
                         url,
                         backoff,
                     )
@@ -860,8 +894,8 @@ def run_bulk_download(
     scratch_dir: str,
     dry_run: bool = False,
     keep_tarballs: bool = False,
-    workers: int = 6,
-    delay: float = 1.0,
+    workers: int = 1,
+    delay: float = DEFAULT_REQUEST_DELAY,
     client: HttpClient | None = None,
 ) -> DownloadPlan:
     http = client or HttpClient(delay=delay)

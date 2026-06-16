@@ -16,6 +16,7 @@ Critical constraints (verified 2026-06-15):
 - **`www.loc.gov` JSON API** returns Cloudflare `403`; use `--use-crawl` for single
   issues instead of the default API mode.
 - OCR manifest URL is **`/data/ocr/ocr.json`** (legacy `/ocr.json` is dead).
-- Default **`--delay` is 3.0 s**; rate limiting runs inside the request lock.
-- Set **`start_date`/`end_date`** in download config for pilots; use writable scratch
-  paths on clusters (not `/data`).
+- Default **`--delay` is 3.0 s** (LOC JSON API: 20/min); rate limiting runs inside the request lock.
+- On **`429` or CAPTCHA HTML**, the client waits **3600 s** (LOC 1-hour block) or `Retry-After`.
+- Default **`--workers` is 1**; requests are globally serialized anyway.
+- Pilot titles: **`chronicling_america_pilot_titles.json`**; batch lists in **`download_plans/`**.

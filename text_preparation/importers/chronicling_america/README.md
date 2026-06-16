@@ -14,7 +14,11 @@ This package contains the pipeline modules and scripts to download, detect, and 
 - `fetch_data.py`: CLI for bulk and legacy single-title downloads.
 - `chronicling_america_importer.py`: Main launcher under `text_preparation/importer_scripts/`.
 
-Title registry config: `text_preparation/config/download_config/chronicling_america_titles.json`
+Title registry config: `text_preparation/importers/chronicling_america/chronicling_america_pilot_titles.json`
+
+Per-title download plans (batch lists, sizes): `text_preparation/importers/chronicling_america/download_plans/`
+
+Regenerate plans: `python -m text_preparation.importers.chronicling_america.generate_plans`
 
 ---
 
@@ -68,7 +72,7 @@ mkdir -p "$CA_ROOT/raw" "$CA_ROOT/state"
 
 # Inspect disk needs first (instant: estimate comes from the OCR manifest, no crawl)
 python -m text_preparation.importers.chronicling_america.fetch_data \
-  --config text_preparation/config/download_config/chronicling_america_titles.json \
+  --config text_preparation/importers/chronicling_america/chronicling_america_pilot_titles.json \
   --output-dir "$CA_ROOT/raw" \
   --state-dir "$CA_ROOT/state" \
   --dry-run
@@ -76,10 +80,10 @@ python -m text_preparation.importers.chronicling_america.fetch_data \
 # Run the download (resumable)
 tmux new -s ca-download
 python -m text_preparation.importers.chronicling_america.fetch_data \
-  --config text_preparation/config/download_config/chronicling_america_titles.json \
+  --config text_preparation/importers/chronicling_america/chronicling_america_pilot_titles.json \
   --output-dir "$CA_ROOT/raw" \
   --state-dir "$CA_ROOT/state" \
-  --workers 6 \
+  --workers 1 \
   --delay 3.0
 ```
 
@@ -114,11 +118,13 @@ run** — a single title with no range can mean tens of thousands of issues and
 
 Re-running the same command resumes from `state-dir/download_state.json`.
 
-> **Rate limits.** `chroniclingamerica.loc.gov` throttles aggressively
-> (we observed `429` after ≈60 directory requests in a minute). The HTTP client
-> enforces a single global delay between requests (serialized across worker
-> threads) and, on `429`, backs off for at least 60 s (or the `Retry-After`
-> value). The default `--delay` is **3.0 s** (≈20 req/min). Lower it cautiously.
+> **Rate limits.** LOC documents [20 requests/minute for the JSON API](https://www.loc.gov/apis/json-and-yaml/working-within-limits/)
+> with a **1-hour block** on breach. `chroniclingamerica.loc.gov` directory crawls
+> are throttled similarly in practice. The HTTP client enforces a single global
+> delay between requests (serialized across worker threads) and, on `429` or HTML
+> CAPTCHA/challenge pages, backs off for **3600 s** (or the `Retry-After` value).
+> The default `--delay` is **3.0 s** (≈20 req/min). Increase it (e.g. `--delay 5.0`)
+> if you still hit rate limits. Default `--workers` is **1**.
 
 ### 2. Download a single sample issue (local dev or server)
 
@@ -210,8 +216,9 @@ pytest -vv tests/importers/test_chronicling_america_importer.py
   worker threads can never burst past the configured rate (previously the sleep
   happened outside the lock and 6 workers fired near-simultaneously).
 - Transient statuses (`429` and all `5xx`, including Cloudflare `52x` such as
-  `525`) are retried with exponential backoff. On `429` the client waits at least
-  **60 s** (LOC blocks for up to an hour) or honors the `Retry-After` header.
+  `525`) and HTML CAPTCHA/challenge pages (`403` with "Just a moment…") are retried.
+  On rate limit the client waits **3600 s** ([LOC official block time](https://www.loc.gov/apis/json-and-yaml/working-within-limits/))
+  or honors the `Retry-After` header.
 - `404` is not retried (callers use it to probe existence).
 
 Output layout matches what the importer expects:

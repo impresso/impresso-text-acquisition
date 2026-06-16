@@ -38,6 +38,7 @@ from text_preparation.importers.chronicling_america.bulk import (
     run_bulk_download,
     title_from_legacy,
 )
+from text_preparation.importers.chronicling_america.bulk import DEFAULT_REQUEST_DELAY
 
 logging.basicConfig(
     level=logging.INFO,
@@ -170,14 +171,20 @@ def main() -> None:
     parser.add_argument(
         "--workers",
         type=int,
-        default=6,
-        help="Parallel workers for METS downloads",
+        default=1,
+        help=(
+            "Parallel workers for METS downloads (requests are still rate-limited "
+            "globally; keep at 1 unless you know what you are doing)"
+        ),
     )
     parser.add_argument(
         "--delay",
         type=float,
-        default=3.0,
-        help="Delay in seconds between HTTP requests (LOC JSON API: 20/min)",
+        default=DEFAULT_REQUEST_DELAY,
+        help=(
+            "Minimum seconds between HTTP requests (LOC JSON API: 20/min → 3.0 s; "
+            "see https://www.loc.gov/apis/json-and-yaml/working-within-limits/)"
+        ),
     )
     parser.add_argument(
         "--dry-run",

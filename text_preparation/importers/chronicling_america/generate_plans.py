@@ -22,6 +22,7 @@ from text_preparation.importers.chronicling_america.bulk import (
     format_dry_run_report,
     load_titles_config,
 )
+from text_preparation.importers.chronicling_america.bulk import DEFAULT_REQUEST_DELAY
 
 _PACKAGE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_CONFIG = os.path.join(_PACKAGE_DIR, "chronicling_america_pilot_titles.json")
@@ -63,7 +64,7 @@ def generate_plans(
     titles: list[TitleSpec],
     output_dir: str,
     index_path: str,
-    delay: float = 1.0,
+    delay: float = DEFAULT_REQUEST_DELAY,
 ) -> list[str]:
     client = HttpClient(delay=delay)
     written: list[str] = []
@@ -107,8 +108,8 @@ def main() -> None:
     parser.add_argument(
         "--delay",
         type=float,
-        default=1.0,
-        help="Delay in seconds between HTTP requests",
+        default=DEFAULT_REQUEST_DELAY,
+        help="Minimum seconds between HTTP requests (LOC: 20/min → 3.0 s)",
     )
     args = parser.parse_args()
     index_path = args.index_path or os.path.join(

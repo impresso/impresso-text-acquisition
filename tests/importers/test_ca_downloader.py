@@ -510,6 +510,87 @@ def test_http_client_does_not_retry_404() -> None:
     assert session.get.call_count == 1
 
 
+def test_http_client_enforces_minimum_delay_between_requests() -> None:
+    from text_preparation.importers.chronicling_america.bulk import HttpClient
+
+    session = MagicMock()
+    session.get.return_value = MagicMock(status_code=200)
+    client = HttpClient(delay=1.0, session=session)
+
+    sleeps: list[float] = []
+    with patch(
+        "text_preparation.importers.chronicling_america.bulk.time.monotonic",
+        side_effect=[0.0, 0.0, 0.2, 0.2],
+    ):
+        with patch(
+            "text_preparation.importers.chronicling_america.bulk.time.sleep",
+            side_effect=lambda seconds: sleeps.append(seconds),
+        ):
+            client.request("http://example/a/")
+            client.request("http://example/b/")
+
+    assert sleeps[0] == pytest.approx(1.0)
+    assert sleeps[1] == pytest.approx(0.8)
+
+
+def test_http_client_429_waits_one_hour() -> None:
+    from text_preparation.importers.chronicling_america.bulk import (
+        HttpClient,
+        LOC_RATE_LIMIT_BLOCK_SECONDS,
+    )
+
+    bad_response = MagicMock(status_code=429, headers={})
+    good_response = MagicMock(status_code=200)
+    session = MagicMock()
+    session.get.side_effect = [bad_response, good_response]
+
+    client = HttpClient(delay=0, session=session)
+    sleeps: list[float] = []
+    with patch(
+        "text_preparation.importers.chronicling_america.bulk.time.sleep",
+        side_effect=lambda seconds: sleeps.append(seconds),
+    ):
+        response = client.request("http://example/")
+
+    assert response is good_response
+    assert sleeps[0] >= LOC_RATE_LIMIT_BLOCK_SECONDS
+
+
+def test_is_challenge_response_detects_cloudflare_html() -> None:
+    from text_preparation.importers.chronicling_america.bulk import is_challenge_response
+
+    response = MagicMock(
+        status_code=403,
+        headers={"Content-Type": "text/html; charset=UTF-8"},
+    )
+    response.text = "<html><title>Just a moment...</title></html>"
+    assert is_challenge_response(response)
+
+    ok_response = MagicMock(status_code=403, headers={"Content-Type": "application/json"})
+    ok_response.text = '{"error": "forbidden"}'
+    assert not is_challenge_response(ok_response)
+
+
+def test_http_client_retries_captcha_403() -> None:
+    from text_preparation.importers.chronicling_america.bulk import HttpClient
+
+    bad_response = MagicMock(
+        status_code=403,
+        headers={"Content-Type": "text/html"},
+    )
+    bad_response.text = "<html>Just a moment...</html>"
+    good_response = MagicMock(status_code=200)
+    session = MagicMock()
+    session.get.side_effect = [bad_response, good_response]
+
+    client = HttpClient(delay=0, session=session)
+    with patch("text_preparation.importers.chronicling_america.bulk.time.sleep"):
+        response = client.request("http://example/item")
+
+    assert response is good_response
+    assert session.get.call_count == 2
+
+
 def test_download_file_retries_on_chunked_error(tmp_path) -> None:
     import requests
 
