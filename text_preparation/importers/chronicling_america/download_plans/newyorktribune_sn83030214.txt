@@ -1,0 +1,27 @@
+Chronicling America bulk download plan
+========================================
+- newyorktribune [sn83030214]
+Batches: 17
+ALTO (OCR tarballs): 17 (11.7 GB compressed)
+  Source: chroniclingamerica.loc.gov/data/ocr/*.tar.bz2 (per-page ALTO XML, extracted and renamed to METS hrefs)
+METS (per-issue crawl): ~4127 (OCR manifest estimate, batch-level upper bound)
+  Source: chroniclingamerica.loc.gov/data/batches/{batch}/data/…/{issue}.xml
+
+Batch list:
+  - dlc_eustachy_ver01
+  - dlc_fogler_ver01
+  - dlc_fortran_ver01
+  - dlc_gottfried_ver01
+  - dlc_haskins_ver01
+  - dlc_iba_ver01
+  - dlc_jones_ver01
+  - dlc_keady_ver01
+  - dlc_lewis_ver01
+  - dlc_menze_ver01
+  - dlc_naismith_ver01
+  - dlc_olson_ver01
+  - dlc_parkins_ver01
+  - dlc_rupp_ver02
+  - dlc_self_ver02
+  - dlc_volvo_ver01
+  - dlc_willys_ver01

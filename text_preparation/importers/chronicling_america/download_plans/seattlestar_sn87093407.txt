@@ -1,0 +1,21 @@
+Chronicling America bulk download plan
+========================================
+- seattlestar [sn87093407]
+Batches: 11
+ALTO (OCR tarballs): 11 (9.3 GB compressed)
+  Source: chroniclingamerica.loc.gov/data/ocr/*.tar.bz2 (per-page ALTO XML, extracted and renamed to METS hrefs)
+METS (per-issue crawl): ~10622 (OCR manifest estimate, batch-level upper bound)
+  Source: chroniclingamerica.loc.gov/data/batches/{batch}/data/…/{issue}.xml
+
+Batch list:
+  - wa_alki_ver01
+  - wa_bainbridge_ver01
+  - wa_camas_ver01
+  - wa_hemlock_ver02
+  - wa_indianplum_ver02
+  - wa_juanita_ver01
+  - wa_kingfisher_ver02
+  - wa_klickitat_ver01
+  - wa_lacamas_ver01
+  - wa_longspur_ver02
+  - wa_muddy_ver02

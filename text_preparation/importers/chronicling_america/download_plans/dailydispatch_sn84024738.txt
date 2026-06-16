@@ -1,0 +1,16 @@
+Chronicling America bulk download plan
+========================================
+- dailydispatch [sn84024738]
+Batches: 6
+ALTO (OCR tarballs): 6 (8.5 GB compressed)
+  Source: chroniclingamerica.loc.gov/data/ocr/*.tar.bz2 (per-page ALTO XML, extracted and renamed to METS hrefs)
+METS (per-issue crawl): ~9347 (OCR manifest estimate, batch-level upper bound)
+  Source: chroniclingamerica.loc.gov/data/batches/{batch}/data/…/{issue}.xml
+
+Batch list:
+  - vi_indy_ver01
+  - vi_johnhenry_ver01
+  - vi_kelso_ver01
+  - vi_kors_ver02
+  - vi_lauren_ver02
+  - vi_manowar_ver01

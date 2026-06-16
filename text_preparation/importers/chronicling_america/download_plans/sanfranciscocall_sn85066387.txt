@@ -1,0 +1,40 @@
+Chronicling America bulk download plan
+========================================
+- sanfranciscocall [sn85066387]
+Batches: 30
+ALTO (OCR tarballs): 30 (21.3 GB compressed)
+  Source: chroniclingamerica.loc.gov/data/ocr/*.tar.bz2 (per-page ALTO XML, extracted and renamed to METS hrefs)
+METS (per-issue crawl): ~8890 (OCR manifest estimate, batch-level upper bound)
+  Source: chroniclingamerica.loc.gov/data/batches/{batch}/data/…/{issue}.xml
+
+Batch list:
+  - curiv_ahwahnee_ver01
+  - curiv_albion_ver01
+  - curiv_angwin_ver02
+  - curiv_betteravia_ver02
+  - curiv_brea_ver01
+  - curiv_calipatria_ver03
+  - curiv_carlsbad_ver01
+  - curiv_carmel_ver01
+  - curiv_dardanelle_ver01
+  - curiv_darwin_ver01
+  - curiv_dogtown_ver01
+  - curiv_elderwood_ver02
+  - curiv_etna_ver01
+  - curiv_exeter_ver01
+  - curiv_felix_ver01
+  - curiv_fredsplace_ver01
+  - curiv_grimes_ver01
+  - curiv_gualala_ver01
+  - curiv_hercules_ver01
+  - curiv_idyllwild_ver01
+  - curiv_indio_ver01
+  - curiv_jenner_ver01
+  - curiv_joshuaTree_ver01
+  - curiv_klamath_ver01
+  - curiv_llano_ver01
+  - curiv_mecca_ver01
+  - curiv_needles_ver01
+  - curiv_oasis_ver01
+  - curiv_plasse_ver01
+  - curiv_quincy_ver01

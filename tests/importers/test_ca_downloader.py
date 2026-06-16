@@ -15,15 +15,19 @@ from text_preparation.importers.chronicling_america.bulk import (
     DownloadState,
     IssueInfo,
     TitleSpec,
+    TarballInfo,
     batch_family,
     batch_version,
     batches_for_lccns,
     build_download_plan,
+    build_or_load_batch_index,
     dedupe_batch_versions,
     dedupe_issues,
     download_file,
     extract_alto_members,
+    index_from_tarball_manifest,
     issue_in_date_range,
+    parse_ocr_manifest,
     parse_mets_alto_filenames,
     print_dry_run_report,
     tarball_batch_name,
@@ -84,7 +88,41 @@ def test_dedupe_batch_versions() -> None:
 
 def test_tarball_batch_name() -> None:
     assert tarball_batch_name("batch_dlc_ferguson_ver01.tar.bz2") == "dlc_ferguson_ver01"
+    assert tarball_batch_name("dlc_ferguson_ver01.tar.bz2") == "dlc_ferguson_ver01"
     assert tarball_batch_name("invalid.txt") is None
+
+
+def test_parse_ocr_manifest_legacy_shape() -> None:
+    tarballs = parse_ocr_manifest(
+        {
+            "ocr": [
+                {
+                    "name": "batch_dlc_test_ver01.tar.bz2",
+                    "url": "https://example/batch_dlc_test_ver01.tar.bz2",
+                    "sha1": "abc",
+                    "size": 100,
+                }
+            ]
+        }
+    )
+    assert len(tarballs) == 1
+    assert tarballs[0].batch == "dlc_test_ver01"
+
+
+def test_parse_ocr_manifest_migration_shape() -> None:
+    tarballs = parse_ocr_manifest(
+        [
+            {
+                "archive_name": "ak_albatross_ver01.tar.bz2",
+                "batch": "ak_albatross_ver01",
+                "url": "https://chroniclingamerica.loc.gov/data/ocr/ak_albatross_ver01.tar.bz2",
+                "sha1": "abc",
+                "size": 768843638,
+            }
+        ]
+    )
+    assert len(tarballs) == 1
+    assert tarballs[0].batch == "ak_albatross_ver01"
 
 
 @pytest.mark.parametrize(
@@ -242,6 +280,43 @@ def test_verify_sha1(tmp_path) -> None:
     assert not verify_sha1(str(file_path), "0" * 40)
 
 
+def test_index_from_tarball_manifest() -> None:
+    tarballs = [
+        TarballInfo(
+            batch="dlc_test_ver01",
+            url="https://example/batch.tar.bz2",
+            sha1="abc",
+            size=100,
+            lccns=("sn83045462", "sn99999999"),
+        )
+    ]
+    assert index_from_tarball_manifest(tarballs) == {
+        "dlc_test_ver01": ["sn83045462", "sn99999999"],
+    }
+
+
+def test_build_or_load_batch_index_uses_manifest_without_crawl(tmp_path) -> None:
+    index_path = tmp_path / "batch_index.json"
+    client = MagicMock()
+
+    index = build_or_load_batch_index(
+        client,
+        str(index_path),
+        batches=["dlc_test_ver01", "ak_other_ver01"],
+        manifest_index={
+            "dlc_test_ver01": ["sn83045462"],
+            "ak_other_ver01": ["sn99999999"],
+        },
+    )
+
+    assert index == {
+        "dlc_test_ver01": ["sn83045462"],
+        "ak_other_ver01": ["sn99999999"],
+    }
+    client.request.assert_not_called()
+    assert index_path.exists()
+
+
 def test_build_download_plan_uses_cached_index(tmp_path) -> None:
     index_path = tmp_path / "batch_index.json"
     index_path.write_text(
@@ -286,6 +361,84 @@ def test_build_download_plan_uses_cached_index(tmp_path) -> None:
     assert plan.total_tarball_bytes == 100
 
 
+def test_build_download_plan_dry_run_estimates_from_manifest(tmp_path) -> None:
+    """Dry-run must estimate issues from manifest issue_count, never crawl reels."""
+    index_path = tmp_path / "batch_index.json"
+    index_path.write_text(
+        json.dumps({"dlc_test_ver01": ["sn83045462"]}),
+        encoding="utf-8",
+    )
+    client = MagicMock()
+    client.request.return_value.json.return_value = [
+        {
+            "archive_name": "dlc_test_ver01.tar.bz2",
+            "batch": "dlc_test_ver01",
+            "url": "https://chroniclingamerica.loc.gov/data/ocr/dlc_test_ver01.tar.bz2",
+            "sha1": "abc",
+            "size": 100,
+            "lccns": ["sn83045462"],
+            "issue_count": 312,
+        }
+    ]
+
+    with patch(
+        "text_preparation.importers.chronicling_america.bulk.list_issues_in_batch",
+    ) as mock_crawl:
+        plan = build_download_plan(
+            client,
+            [TitleSpec(lccn="sn83045462", alias="eveningstar")],
+            str(index_path),
+            dry_run=True,
+        )
+
+    mock_crawl.assert_not_called()
+    assert plan.estimated_issues == 312
+    assert plan.issues == []
+    assert plan.batches == ["dlc_test_ver01"]
+
+
+def test_parse_ocr_manifest_captures_issue_count() -> None:
+    tarballs = parse_ocr_manifest(
+        [
+            {
+                "archive_name": "dlc_test_ver01.tar.bz2",
+                "batch": "dlc_test_ver01",
+                "url": "https://example/dlc_test_ver01.tar.bz2",
+                "sha1": "abc",
+                "size": 100,
+                "lccns": ["sn83045462"],
+                "issue_count": 312,
+            }
+        ]
+    )
+    assert tarballs[0].issue_count == 312
+    assert tarballs[0].lccns == ("sn83045462",)
+
+
+def test_print_dry_run_report_shows_estimate(capsys) -> None:
+    from text_preparation.importers.chronicling_america.bulk import DownloadPlan, TarballInfo
+
+    plan = DownloadPlan(
+        titles=[TitleSpec(lccn="sn83045462", alias="eveningstar")],
+        batches=["dlc_test_ver01"],
+        tarballs=[
+            TarballInfo(
+                batch="dlc_test_ver01",
+                url="https://example/batch.tar.bz2",
+                sha1="abc",
+                size=1024 * 1024,
+                issue_count=312,
+            )
+        ],
+        issues=[],
+        total_tarball_bytes=1024 * 1024,
+        estimated_issues=312,
+    )
+    print_dry_run_report(plan)
+    output = capsys.readouterr().out
+    assert "~312" in output
+
+
 def test_print_dry_run_report(capsys) -> None:
     from text_preparation.importers.chronicling_america.bulk import DownloadPlan, TarballInfo
 
@@ -306,7 +459,55 @@ def test_print_dry_run_report(capsys) -> None:
     print_dry_run_report(plan)
     output = capsys.readouterr().out
     assert "eveningstar" in output
-    assert "Tarballs: 1" in output
+    assert "ALTO (OCR tarballs): 1" in output
+    assert "METS (per-issue crawl)" in output
+
+
+def test_http_client_retries_transient_5xx() -> None:
+    """Cloudflare-style 525 errors from tile.loc.gov must be retried, not returned."""
+    from text_preparation.importers.chronicling_america.bulk import HttpClient
+
+    bad_response = MagicMock(status_code=525)
+    good_response = MagicMock(status_code=200)
+
+    session = MagicMock()
+    session.get.side_effect = [bad_response, good_response]
+
+    client = HttpClient(delay=0, session=session)
+    with patch("text_preparation.importers.chronicling_america.bulk.time.sleep"):
+        response = client.request("http://example/0017.xml")
+
+    assert response is good_response
+    assert session.get.call_count == 2
+
+
+def test_http_client_raises_after_persistent_5xx() -> None:
+    from text_preparation.importers.chronicling_america.bulk import HttpClient
+
+    session = MagicMock()
+    session.get.return_value = MagicMock(status_code=525)
+
+    client = HttpClient(delay=0, max_retries=3, session=session)
+    with patch("text_preparation.importers.chronicling_america.bulk.time.sleep"):
+        with pytest.raises(RuntimeError, match="Failed to fetch"):
+            client.request("http://example/0017.xml")
+
+    assert session.get.call_count == 3
+
+
+def test_http_client_does_not_retry_404() -> None:
+    """404s are meaningful to callers (batch/LCCN probing) and must pass through."""
+    from text_preparation.importers.chronicling_america.bulk import HttpClient
+
+    session = MagicMock()
+    session.get.return_value = MagicMock(status_code=404)
+
+    client = HttpClient(delay=0, session=session)
+    with patch("text_preparation.importers.chronicling_america.bulk.time.sleep"):
+        response = client.request("http://example/missing/")
+
+    assert response.status_code == 404
+    assert session.get.call_count == 1
 
 
 def test_download_file_retries_on_chunked_error(tmp_path) -> None:

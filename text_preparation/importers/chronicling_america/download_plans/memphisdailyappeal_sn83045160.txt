@@ -1,0 +1,18 @@
+Chronicling America bulk download plan
+========================================
+- memphisdailyappeal [sn83045160]
+Batches: 8
+ALTO (OCR tarballs): 8 (11.7 GB compressed)
+  Source: chroniclingamerica.loc.gov/data/ocr/*.tar.bz2 (per-page ALTO XML, extracted and renamed to METS hrefs)
+METS (per-issue crawl): ~15599 (OCR manifest estimate, batch-level upper bound)
+  Source: chroniclingamerica.loc.gov/data/batches/{batch}/data/…/{issue}.xml
+
+Batch list:
+  - tu_archie_ver01
+  - tu_bonnielou_ver01
+  - tu_charlie_ver01
+  - tu_chet_ver01
+  - tu_dolly_ver01
+  - tu_dottie_ver01
+  - tu_elvis_ver01
+  - tu_ernie_ver01

@@ -555,29 +555,45 @@ def format_bytes(num_bytes: int) -> str:
     return f"{num_bytes:.1f} PB"
 
 
-def print_dry_run_report(plan: DownloadPlan) -> None:
-    print("Chronicling America bulk download plan")
-    print("=" * 40)
+def format_dry_run_report(plan: DownloadPlan) -> str:
+    lines = [
+        "Chronicling America bulk download plan",
+        "=" * 40,
+    ]
     for title in plan.titles:
         date_range = ""
         if title.start_date or title.end_date:
             date_range = f" ({title.start_date or '...'} to {title.end_date or '...'})"
-        print(f"- {title.alias} [{title.lccn}]{date_range}")
-    print(f"Batches: {len(plan.batches)}")
-    print(f"Tarballs: {len(plan.tarballs)} ({format_bytes(plan.total_tarball_bytes)} compressed)")
+        lines.append(f"- {title.alias} [{title.lccn}]{date_range}")
+    lines.append(f"Batches: {len(plan.batches)}")
+    lines.append(
+        f"ALTO (OCR tarballs): {len(plan.tarballs)} "
+        f"({format_bytes(plan.total_tarball_bytes)} compressed)"
+    )
+    lines.append(
+        "  Source: chroniclingamerica.loc.gov/data/ocr/*.tar.bz2 "
+        "(per-page ALTO XML, extracted and renamed to METS hrefs)"
+    )
     if plan.issues:
-        print(f"Issues (METS files): {len(plan.issues)}")
+        lines.append(f"METS (per-issue crawl): {len(plan.issues)}")
     elif plan.estimated_issues is not None:
-        print(
-            f"Issues (METS files): ~{plan.estimated_issues} "
+        lines.append(
+            f"METS (per-issue crawl): ~{plan.estimated_issues} "
             "(OCR manifest estimate, batch-level upper bound)"
         )
     else:
-        print("Issues (METS files): unknown")
+        lines.append("METS (per-issue crawl): unknown")
+    lines.append(
+        "  Source: chroniclingamerica.loc.gov/data/batches/{batch}/data/…/{issue}.xml"
+    )
     if plan.batches:
-        print("\nBatch list:")
-        for batch in plan.batches:
-            print(f"  - {batch}")
+        lines.extend(["", "Batch list:"])
+        lines.extend(f"  - {batch}" for batch in plan.batches)
+    return "\n".join(lines) + "\n"
+
+
+def print_dry_run_report(plan: DownloadPlan) -> None:
+    print(format_dry_run_report(plan), end="")
 
 
 def verify_sha1(path: str, expected: str) -> bool:
