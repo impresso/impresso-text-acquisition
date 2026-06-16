@@ -280,34 +280,32 @@ Pipeline in `run_bulk_download`:
    - build or load the **batch index** (`{batch: [lccns]}`) cached at
      `state_dir/batch_index.json`. It is now derived **from the manifest's per-batch
      `lccns`** (`index_from_tarball_manifest`) — **no crawling**, instant for all
-     ~2,600 batches. Only batches absent from the manifest fall back to a `/data/`
-     crawl. (Historically this step crawled every batch and took hours.)
+     ~2,600 batches.
    - select batches containing any configured LCCN, deduped to the highest `_verNN`
      per family (`dedupe_batch_versions`);
    - **dry-run** (`--dry-run`): estimate issue count by summing manifest
-     `issue_count` over selected batches — a **batch-level upper bound**, zero extra
-     HTTP, and crucially **no `www.loc.gov`**. Reported as
-     `Issues (METS files): ~N (OCR manifest estimate, batch-level upper bound)`.
-   - **real run**: crawl each selected batch's `/data/{lccn}/{reel}/` listings to
-     enumerate issues (`list_issues_in_batch`), filter by title date range, dedupe
-     per `lccn/date/edition` keeping the highest batch version (`dedupe_issues`).
-2. **METS crawl**: one METS file per pending issue (`download_issue_mets`),
-   downloaded in a `ThreadPoolExecutor` (`--workers`, default 6). Skips files
-   already on disk.
-3. **Tarball processing** (sequential): download `.tar.bz2` (manifest `url`) to
-   `--scratch-dir`, **verify SHA-1**, stream-extract ALTO members for selected
-   LCCNs only (`extract_alto_members`, expects exactly 7 path parts
-   `lccn/YYYY/MM/DD/ed-N/seq-N/*.xml`), then `write_issue_layout` renames `seq-N`
-   files to the METS `fileSec` href names (falling back to `seq-N.xml` if the METS
-   lists fewer pages). Tarball deleted afterwards unless `--keep-tarballs`.
-4. **Resume state**: `state_dir/download_state.json` holds `completed_tarballs`
-   (by SHA-1) and `completed_issues` (`alias/date/edition` keys), saved after each
-   unit of work. Re-running the same command resumes.
+     `issue_count` over selected batches — no crawl, no upfront enumeration.
+   - **real run**: **no upfront issue enumeration** (that crawl triggered CAPTCHA
+     blocks). Issues are discovered per tarball instead (see step 2).
+2. **Per-batch processing** (`process_tarball`, one batch at a time):
+   - download the OCR `.tar.bz2`, verify SHA-1, extract ALTO for configured LCCNs;
+   - derive the issue list from tarball paths (`lccn/YYYY/MM/DD/ed-N/seq-N/ocr.xml`);
+   - resolve METS base URLs via a **lazy, cached reel crawl**
+     (`state_dir/issue_urls/{batch}_{lccn}.json`), stopping as soon as all tarball
+     issues for that batch are mapped;
+   - download METS per issue, then write the local layout (`write_issue_layout`).
+3. **Resume state**: `state_dir/download_state.json` holds `completed_tarballs`
+   (by SHA-1) and `completed_issues` (`alias/date/edition` keys). Issue URL caches
+   are separate JSON files under `state_dir/issue_urls/`.
 
 Robustness: `HttpClient` enforces a polite per-request delay (**default 3.0 s**,
 ≈20 req/min per [LOC official limits](https://www.loc.gov/apis/json-and-yaml/working-within-limits/))
-**inside the request lock**, so concurrent workers cannot burst past the rate.
-Official LOC limits (2025):
+**and** a sliding-window cap (**default 10 req/min**) **inside the request lock**.
+Official LOC guidance for bulk access: use the batch/OCR datasets at
+`chroniclingamerica.loc.gov/data/batches/` and split large jobs by title or date
+(see [NDNP examples](https://www.loc.gov/ndnp/guidelines/examples.html) and the
+[researcher guide](https://guides.loc.gov/chronicling-america/additional-features)).
+Contact `ndnptech@loc.gov` for high-volume research downloads.
 
 | Service | Requests/min | Block if exceeded |
 |---|---|---|

@@ -337,27 +337,17 @@ def test_build_download_plan_uses_cached_index(tmp_path) -> None:
 
     with patch(
         "text_preparation.importers.chronicling_america.bulk.list_issues_in_batch",
-        return_value=[
-            IssueInfo(
-                batch="dlc_test_ver01",
-                lccn="sn83045462",
-                alias="eveningstar",
-                date="1932-06-20",
-                edition="ed-1",
-                issue_dir_name="1932062001",
-                url="http://example/issue/",
-            )
-        ],
-    ):
+    ) as mock_crawl:
         plan = build_download_plan(
             client,
             [TitleSpec(lccn="sn83045462", alias="eveningstar")],
             str(index_path),
         )
 
+    mock_crawl.assert_not_called()
     assert plan.batches == ["dlc_test_ver01"]
     assert len(plan.tarballs) == 1
-    assert len(plan.issues) == 1
+    assert plan.issues == []
     assert plan.total_tarball_bytes == 100
 
 
@@ -589,6 +579,47 @@ def test_http_client_retries_captcha_403() -> None:
 
     assert response is good_response
     assert session.get.call_count == 2
+
+
+def test_issue_dir_name_from_date_edition() -> None:
+    from text_preparation.importers.chronicling_america.bulk import (
+        issue_dir_name_from_date_edition,
+        issue_info_from_tarball_key,
+    )
+
+    assert issue_dir_name_from_date_edition("1932-06-20", "ed-1") == "1932062001"
+    issue = issue_info_from_tarball_key(
+        "dlc_test_ver01",
+        "sn83045462/1932-06-20/ed-1",
+        {"sn83045462": "eveningstar"},
+    )
+    assert issue.issue_dir_name == "1932062001"
+    assert issue.alias == "eveningstar"
+
+
+def test_enumerate_issue_urls_uses_cache_and_stops_early(tmp_path) -> None:
+    from text_preparation.importers.chronicling_america.bulk import (
+        enumerate_issue_urls,
+        issue_url_cache_path,
+    )
+
+    cache_path = issue_url_cache_path(str(tmp_path), "vi_test_ver01", "sn84024738")
+    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+    with open(cache_path, "w", encoding="utf-8") as handle:
+        json.dump({"1932062001": "http://example/reel/1932062001/"}, handle)
+
+    client = MagicMock()
+    title = TitleSpec(lccn="sn84024738", alias="dailydispatch")
+    mapping = enumerate_issue_urls(
+        client,
+        "vi_test_ver01",
+        title,
+        cache_path,
+        needed={"1932062001"},
+    )
+
+    client.request.assert_not_called()
+    assert mapping["1932062001"].startswith("http://example/")
 
 
 def test_download_file_retries_on_chunked_error(tmp_path) -> None:

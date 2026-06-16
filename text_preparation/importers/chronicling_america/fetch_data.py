@@ -39,6 +39,9 @@ from text_preparation.importers.chronicling_america.bulk import (
     title_from_legacy,
 )
 from text_preparation.importers.chronicling_america.bulk import DEFAULT_REQUEST_DELAY
+from text_preparation.importers.chronicling_america.bulk import (
+    DEFAULT_MAX_REQUESTS_PER_MINUTE,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -187,6 +190,15 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--max-rpm",
+        type=int,
+        default=DEFAULT_MAX_REQUESTS_PER_MINUTE,
+        help=(
+            "Maximum HTTP requests per rolling 60 s window (default 10; LOC JSON "
+            "API limit is 20/min)"
+        ),
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print download plan without fetching data",
@@ -255,6 +267,7 @@ def main() -> None:
             keep_tarballs=args.keep_tarballs,
             workers=args.workers,
             delay=args.delay,
+            max_requests_per_minute=args.max_rpm,
         )
         return
 
