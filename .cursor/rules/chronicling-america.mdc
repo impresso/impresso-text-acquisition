@@ -19,4 +19,6 @@ Critical constraints (verified 2026-06-15):
 - Default **`--delay` is 3.0 s** (LOC JSON API: 20/min); rate limiting runs inside the request lock.
 - On **`429` or CAPTCHA HTML**, the client waits **3600 s** (LOC 1-hour block) or `Retry-After`.
 - Default **`--workers` is 1**; requests are globally serialized anyway.
+- Default **`--max-rpm` is 8**; directory listings use **`--directory-delay 6`**.
+- **`--batch-cooldown 180`** between tarballs; **`--mets-burst-size 15`** / **`--mets-burst-pause 90`**.
 - Pilot titles: **`chronicling_america_pilot_titles.json`**; batch lists in **`download_plans/`**.

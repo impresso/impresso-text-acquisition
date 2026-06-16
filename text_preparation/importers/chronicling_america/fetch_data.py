@@ -42,6 +42,12 @@ from text_preparation.importers.chronicling_america.bulk import DEFAULT_REQUEST_
 from text_preparation.importers.chronicling_america.bulk import (
     DEFAULT_MAX_REQUESTS_PER_MINUTE,
 )
+from text_preparation.importers.chronicling_america.bulk import (
+    DEFAULT_DIRECTORY_DELAY,
+    METS_BURST_PAUSE,
+    METS_BURST_SIZE,
+    TARBALL_COOLDOWN,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -194,9 +200,36 @@ def main() -> None:
         type=int,
         default=DEFAULT_MAX_REQUESTS_PER_MINUTE,
         help=(
-            "Maximum HTTP requests per rolling 60 s window (default 10; LOC JSON "
+            "Maximum HTTP requests per rolling 60 s window (default 8; LOC JSON "
             "API limit is 20/min)"
         ),
+    )
+    parser.add_argument(
+        "--directory-delay",
+        type=float,
+        default=DEFAULT_DIRECTORY_DELAY,
+        help=(
+            "Minimum seconds between batch directory listing requests "
+            "(HTML /data/batches/ crawls; default 6.0 s)"
+        ),
+    )
+    parser.add_argument(
+        "--batch-cooldown",
+        type=float,
+        default=TARBALL_COOLDOWN,
+        help="Seconds to pause between OCR tarballs (default 180)",
+    )
+    parser.add_argument(
+        "--mets-burst-size",
+        type=int,
+        default=METS_BURST_SIZE,
+        help="Pause after this many METS downloads (default 15; 0 disables)",
+    )
+    parser.add_argument(
+        "--mets-burst-pause",
+        type=float,
+        default=METS_BURST_PAUSE,
+        help="Seconds to pause after each METS burst (default 90)",
     )
     parser.add_argument(
         "--dry-run",
@@ -268,6 +301,10 @@ def main() -> None:
             workers=args.workers,
             delay=args.delay,
             max_requests_per_minute=args.max_rpm,
+            directory_delay=args.directory_delay,
+            tarball_cooldown=args.batch_cooldown,
+            mets_burst_size=args.mets_burst_size,
+            mets_burst_pause=args.mets_burst_pause,
         )
         return
 

@@ -41,10 +41,17 @@ LOC_JSON_API_REQUESTS_PER_MINUTE = 20
 LOC_RATE_LIMIT_BLOCK_SECONDS = 3600
 DEFAULT_REQUEST_DELAY = 60.0 / LOC_JSON_API_REQUESTS_PER_MINUTE  # 3.0 s
 # Stay well under the official 20/min ceiling; directory crawls trigger CAPTCHA
-# faster than tarball downloads in practice.
-DEFAULT_MAX_REQUESTS_PER_MINUTE = 10
-# Pause after enumerating reels for one batch/LCCN before moving on.
-BATCH_ENUMERATION_COOLDOWN = 30.0
+# faster than tarball or XML file downloads in practice.
+DEFAULT_MAX_REQUESTS_PER_MINUTE = 8
+# Extra minimum spacing for HTML directory listings under /data/batches/.
+DEFAULT_DIRECTORY_DELAY = 6.0
+# Pause after enumerating reels for one batch/LCCN before METS downloads.
+BATCH_ENUMERATION_COOLDOWN = 120.0
+# Pause between finishing one OCR tarball and starting the next.
+TARBALL_COOLDOWN = 180.0
+# After this many METS downloads, pause to avoid sustained crawl bursts.
+METS_BURST_SIZE = 15
+METS_BURST_PAUSE = 90.0
 
 HEADERS = {
     "User-Agent": (
@@ -76,6 +83,16 @@ def is_challenge_response(response: requests.Response) -> bool:
         return False
     snippet = response.text[:4096].lower()
     return any(marker in snippet for marker in CHALLENGE_MARKERS)
+
+
+def is_batch_directory_listing(url: str) -> bool:
+    """True for batch index pages (HTML listings), not METS/ALTO/tarball files."""
+    if "/data/batches/" not in url:
+        return False
+    last_segment = url.rstrip("/").rsplit("/", 1)[-1]
+    if not last_segment:
+        return True
+    return "." not in last_segment
 
 
 ISSUE_DIR_RE = re.compile(r"^\d{10}$")
@@ -163,22 +180,30 @@ class HttpClient:
         max_retries: int = 5,
         timeout: float = 120.0,
         max_requests_per_minute: int = DEFAULT_MAX_REQUESTS_PER_MINUTE,
+        directory_delay: float = DEFAULT_DIRECTORY_DELAY,
         session: requests.Session | None = None,
     ) -> None:
         self.delay = delay
         self.max_retries = max_retries
         self.timeout = timeout
         self.max_requests_per_minute = max_requests_per_minute
+        self.directory_delay = directory_delay
         self.session = session or requests.Session()
         self.session.headers.update(HEADERS)
         self._lock = threading.Lock()
         self._last_request_at = 0.0
         self._request_times: deque[float] = deque()
 
-    def _rate_limit_wait(self) -> float:
+    def _effective_delay(self, url: str) -> float:
+        if is_batch_directory_listing(url):
+            return max(self.delay, self.directory_delay)
+        return self.delay
+
+    def _rate_limit_wait(self, url: str) -> float:
         """Enforce minimum spacing and a sliding-window requests/minute cap."""
         total_wait = 0.0
         now = time.monotonic()
+        min_spacing = self._effective_delay(url)
 
         while self._request_times and now - self._request_times[0] >= 60.0:
             self._request_times.popleft()
@@ -191,7 +216,7 @@ class HttpClient:
             while self._request_times and now - self._request_times[0] >= 60.0:
                 self._request_times.popleft()
 
-        spacing = self.delay - (now - self._last_request_at)
+        spacing = min_spacing - (now - self._last_request_at)
         if spacing > 0:
             time.sleep(spacing)
             total_wait += spacing
@@ -214,7 +239,7 @@ class HttpClient:
         while retries < self.max_retries:
             try:
                 with self._lock:
-                    self._rate_limit_wait()
+                    self._rate_limit_wait(url)
                     response = (
                         self.session.get(url, **kwargs)
                         if method == "GET"
@@ -983,6 +1008,28 @@ def download_issue_mets(
     download_file(client, mets_url, mets_path)
 
 
+def download_mets_with_pacing(
+    client: HttpClient,
+    issues: list[IssueInfo],
+    output_dir: str,
+    *,
+    burst_size: int = METS_BURST_SIZE,
+    burst_pause: float = METS_BURST_PAUSE,
+) -> None:
+    """Download METS files with periodic pauses to avoid sustained request bursts."""
+    pending = list(issues)
+    for index, issue in enumerate(pending, start=1):
+        download_issue_mets(client, issue, output_dir)
+        if burst_size > 0 and burst_pause > 0 and index % burst_size == 0:
+            if index < len(pending):
+                logger.info(
+                    "Pausing %.0fs after %d METS downloads (burst limit)",
+                    burst_pause,
+                    index,
+                )
+                time.sleep(burst_pause)
+
+
 def finalize_issue_from_tarball(
     output_dir: str,
     issue: IssueInfo,
@@ -1016,6 +1063,9 @@ def process_tarball(
     state: DownloadState,
     state_path: str,
     keep_tarballs: bool,
+    *,
+    mets_burst_size: int = METS_BURST_SIZE,
+    mets_burst_pause: float = METS_BURST_PAUSE,
 ) -> None:
     if tarball.sha1 in state.completed_tarballs:
         logger.info("Skipping tarball %s (already completed)", tarball.batch)
@@ -1028,8 +1078,13 @@ def process_tarball(
         scratch_dir,
         os.path.basename(tarball.url.rstrip("/").split("/")[-1]),
     )
-    logger.info("Downloading tarball %s (%s)", tarball.batch, format_bytes(tarball.size))
-    download_file(client, tarball.url, tarball_path)
+    if os.path.exists(tarball_path) and verify_sha1(tarball_path, tarball.sha1):
+        logger.info("Reusing cached tarball %s at %s", tarball.batch, tarball_path)
+    else:
+        logger.info(
+            "Downloading tarball %s (%s)", tarball.batch, format_bytes(tarball.size)
+        )
+        download_file(client, tarball.url, tarball_path)
 
     if not verify_sha1(tarball_path, tarball.sha1):
         os.remove(tarball_path)
@@ -1056,8 +1111,13 @@ def process_tarball(
             resolve_issue_urls(client, tarball.batch, title, lccn_issues, state_dir)
         )
 
-    for issue in resolved_issues:
-        download_issue_mets(client, issue, output_dir)
+    download_mets_with_pacing(
+        client,
+        resolved_issues,
+        output_dir,
+        burst_size=mets_burst_size,
+        burst_pause=mets_burst_pause,
+    )
 
     issue_lookup = {
         f"{issue.lccn}/{issue.date}/{issue.edition}": issue
@@ -1093,11 +1153,16 @@ def run_bulk_download(
     workers: int = 1,
     delay: float = DEFAULT_REQUEST_DELAY,
     max_requests_per_minute: int = DEFAULT_MAX_REQUESTS_PER_MINUTE,
+    directory_delay: float = DEFAULT_DIRECTORY_DELAY,
+    tarball_cooldown: float = TARBALL_COOLDOWN,
+    mets_burst_size: int = METS_BURST_SIZE,
+    mets_burst_pause: float = METS_BURST_PAUSE,
     client: HttpClient | None = None,
 ) -> DownloadPlan:
     http = client or HttpClient(
         delay=delay,
         max_requests_per_minute=max_requests_per_minute,
+        directory_delay=directory_delay,
     )
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(state_dir, exist_ok=True)
@@ -1111,7 +1176,18 @@ def run_bulk_download(
     state_path = os.path.join(state_dir, "download_state.json")
     state = DownloadState.load(state_path)
 
+    pending_started = False
     for tarball in plan.tarballs:
+        if tarball.sha1 in state.completed_tarballs:
+            continue
+        if pending_started and tarball_cooldown > 0:
+            logger.info(
+                "Pausing %.0fs before starting tarball %s",
+                tarball_cooldown,
+                tarball.batch,
+            )
+            time.sleep(tarball_cooldown)
+        pending_started = True
         process_tarball(
             http,
             tarball,
@@ -1122,6 +1198,8 @@ def run_bulk_download(
             state,
             state_path,
             keep_tarballs,
+            mets_burst_size=mets_burst_size,
+            mets_burst_pause=mets_burst_pause,
         )
 
     logger.info("Bulk download completed for %d titles", len(titles))

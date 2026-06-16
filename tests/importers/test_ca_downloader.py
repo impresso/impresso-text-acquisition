@@ -597,6 +597,60 @@ def test_issue_dir_name_from_date_edition() -> None:
     assert issue.alias == "eveningstar"
 
 
+def test_is_batch_directory_listing() -> None:
+    from text_preparation.importers.chronicling_america.bulk import (
+        is_batch_directory_listing,
+    )
+
+    assert is_batch_directory_listing(
+        "https://chroniclingamerica.loc.gov/data/batches/curiv_albion_ver01/data/sn85066387/190002251/"
+    )
+    assert not is_batch_directory_listing(
+        "https://chroniclingamerica.loc.gov/data/batches/curiv_albion_ver01/data/sn85066387/190002251/1898123101.xml"
+    )
+    assert not is_batch_directory_listing(
+        "https://chroniclingamerica.loc.gov/data/ocr/curiv_albion_ver01.tar.bz2"
+    )
+
+
+def test_download_mets_with_pacing_pauses_on_burst() -> None:
+    from text_preparation.importers.chronicling_america.bulk import (
+        download_mets_with_pacing,
+    )
+
+    issues = [
+        IssueInfo(
+            batch="b",
+            lccn="sn85066387",
+            alias="sanfranciscocall",
+            date=f"1898-01-{day:02d}",
+            edition="ed-1",
+            issue_dir_name=f"189801{day:02d}01",
+            url="http://example/",
+        )
+        for day in range(1, 17)
+    ]
+    client = MagicMock()
+    sleeps: list[float] = []
+
+    with patch(
+        "text_preparation.importers.chronicling_america.bulk.download_issue_mets",
+    ):
+        with patch(
+            "text_preparation.importers.chronicling_america.bulk.time.sleep",
+            side_effect=lambda seconds: sleeps.append(seconds),
+        ):
+            download_mets_with_pacing(
+                client,
+                issues,
+                "/tmp/out",
+                burst_size=15,
+                burst_pause=90.0,
+            )
+
+    assert sleeps == [90.0]
+
+
 def test_enumerate_issue_urls_uses_cache_and_stops_early(tmp_path) -> None:
     from text_preparation.importers.chronicling_america.bulk import (
         enumerate_issue_urls,
