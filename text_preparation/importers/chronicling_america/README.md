@@ -9,7 +9,7 @@ This package contains the pipeline modules and scripts to download, detect, and 
 ## Submodule Structure
 
 - `classes.py`: Parser models for Chronicling America issues and pages (subclasses of `MetsAltoCanonicalIssue` / `MetsAltoCanonicalPage`).
-- `detect.py`: Scans the local filesystem to discover issues and registers the `LOC` provider dynamically.
+- `detect.py`: Scans the local filesystem to discover issues (LOC aliases are defined in `impresso_essentials`).
 - `bulk.py`: Resumable bulk downloader (OCR tarballs + METS crawl).
 - `fetch_data.py`: CLI for bulk and legacy single-title downloads.
 - `chronicling_america_importer.py`: Main launcher under `text_preparation/importer_scripts/`.
@@ -237,4 +237,4 @@ $CA_ROOT/raw/eveningstar/1932/06/20/ed-1/
 
 - ALTO coordinates are in `inch1200` units; divide by 3 for 400 DPI pixels.
 - No OLR/article structure: page-level content items plus separate image/table items.
-- `LOC` provider and aliases are registered at detect time in `impresso_essentials`.
+- `LOC` provider and pilot aliases are defined in `impresso_essentials` (≥1.4.4).

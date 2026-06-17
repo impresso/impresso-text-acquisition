@@ -53,9 +53,6 @@ def test_import_chronicling_america_issues():
     es_issues = [i for i in issues if i.alias == "eveningstar"]
     assert len(es_issues) > 0, "Should detect at least one eveningstar sample issue"
 
-    from impresso_essentials.utils import PARTNER_TO_MEDIA
-    logger.info(f"PARTNER_TO_MEDIA at test runtime: {PARTNER_TO_MEDIA}")
-
     # Run the import loop
     from unittest.mock import patch
     with patch("impresso_essentials.versioning.data_manifest.read_manifest_from_s3", return_value=(None, None)):
