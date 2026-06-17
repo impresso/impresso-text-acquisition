@@ -28,35 +28,6 @@ def detect_issues(
 
     aliases = [d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d)) and not d.startswith(".")]
 
-    # Register LOC aliases to satisfy impresso_essentials utilities
-    from impresso_essentials.utils import (
-        PARTNER_TO_MEDIA,
-        PARTNERS_TO_SRC_MEDIUM_TO_MEDIA,
-        PARTNERS_TO_SRC_TYPE_TO_MEDIA,
-        PARTNER_TO_COUNTRY,
-        MEDIA_TO_COUNTRY,
-        ALL_MEDIA,
-        SourceMedium,
-        SourceType,
-    )
-    if "LOC" not in PARTNER_TO_MEDIA:
-        PARTNER_TO_MEDIA["LOC"] = []
-    if "LOC" not in PARTNERS_TO_SRC_MEDIUM_TO_MEDIA:
-        PARTNERS_TO_SRC_MEDIUM_TO_MEDIA["LOC"] = {SourceMedium.PT: "all"}
-    if "LOC" not in PARTNERS_TO_SRC_TYPE_TO_MEDIA:
-        PARTNERS_TO_SRC_TYPE_TO_MEDIA["LOC"] = {SourceType.NP: "all"}
-    if "LOC" not in PARTNER_TO_COUNTRY:
-        PARTNER_TO_COUNTRY["LOC"] = "US"
-
-    for alias in aliases:
-        if alias not in PARTNER_TO_MEDIA["LOC"]:
-            PARTNER_TO_MEDIA["LOC"].append(alias)
-        if alias not in MEDIA_TO_COUNTRY:
-            MEDIA_TO_COUNTRY[alias] = "US"
-        if alias not in ALL_MEDIA:
-            ALL_MEDIA.append(alias)
-    ALL_MEDIA.sort()
-
     # Apply alias filter
     if alias_filter:
         aliases = [a for a in aliases if a in alias_filter]

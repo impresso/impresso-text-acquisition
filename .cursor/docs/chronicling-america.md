@@ -116,7 +116,7 @@ directory crawling (see §6).
 | Path | Role |
 |---|---|
 | `text_preparation/importers/chronicling_america/classes.py` | `ChroniclingAmericaNewspaperIssue` / `ChroniclingAmericaNewspaperPage` parser classes |
-| `text_preparation/importers/chronicling_america/detect.py` | `detect_issues` / `select_issues` + dynamic `LOC` provider registration |
+| `text_preparation/importers/chronicling_america/detect.py` | `detect_issues` / `select_issues` |
 | `text_preparation/importers/chronicling_america/bulk.py` | Resumable bulk downloader (tarballs + METS crawl), all pure functions + `run_bulk_download` |
 | `text_preparation/importers/chronicling_america/api.py` | loc.gov JSON API discovery + tile.loc.gov URL resolution (official LOC approach for sampling) |
 | `text_preparation/importers/chronicling_america/fetch_data.py` | CLI entry point for bulk, API, and crawl download modes |
@@ -133,8 +133,8 @@ directory crawling (see §6).
 | `text_preparation/data/sample_data/eveningstar/1932/06/20/ed-1/` | Sample issue (Evening Star, 1932-06-20) used by the test |
 
 Untracked working artifacts at repo root (not part of the code): `output.txt` and
-`pytest_out.log` are old logs from a June 10 run that failed with `KeyError: 'LOC'`
-(since fixed, see §7); `scratch/` holds ad-hoc debug scripts; `uv.lock` is a stub.
+`pytest_out.log` are old logs from a June 10 run; `scratch/` holds ad-hoc debug
+scripts; `uv.lock` is a stub.
 
 ---
 
@@ -362,31 +362,14 @@ python -m text_preparation.importers.chronicling_america.fetch_data \
 
 ---
 
-## 7. Provider registration: the `LOC` hack (important)
+## 7. Provider registration (`impresso_essentials`)
 
-`impresso_essentials` (v1.4.2 installed in `.venv`) has **no built-in knowledge of the
-`LOC` provider or CA aliases**. Its module-level registries
+`impresso_essentials` ≥1.4.4 defines the `LOC` provider and the six pilot aliases
+(`dailydispatch`, `eveningstar`, `memphisdailyappeal`, `newyorktribune`,
+`sanfranciscocall`, `seattlestar`) in its module-level registries
 (`PARTNER_TO_MEDIA`, `PARTNERS_TO_SRC_MEDIUM_TO_MEDIA`, `PARTNERS_TO_SRC_TYPE_TO_MEDIA`,
-`PARTNER_TO_COUNTRY`, `MEDIA_TO_COUNTRY`, `ALL_MEDIA`) are mutated **at detect time** by
-`detect.py::detect_issues`:
-
-- registers `LOC` with `{SourceMedium.PT: "all"}` / `{SourceType.NP: "all"}` and
-  country `US`;
-- registers **every subdirectory of `base_dir`** as a `LOC` alias with country `US`.
-
-Consequences to keep in mind:
-
-- `detect_issues` **must run in the same process** before anything calls
-  `get_src_info_for_alias` / `get_provider_for_alias` (e.g. `core.compress_issues`).
-  The old `pytest_out.log` / `output.txt` at repo root document a `KeyError: 'LOC'`
-  from before the `"all"` registrations were complete; current code passes. As a
-  second safety net, `core.compress_issues` now falls back to `print`/`audio` when
-  `get_src_info_for_alias` raises `ValueError`.
-- When pointed at the shared `sample_data/` directory, the registration sweeps in
-  **other importers' sample folders** (RERO2, Luxembourg, BL, …) as fake LOC aliases.
-  Harmless for tests (the test filters to `alias == "eveningstar"`), but don't rely on
-  `PARTNER_TO_MEDIA["LOC"]` contents being meaningful.
-- A proper fix would be upstreaming `LOC` + aliases into `impresso_essentials`.
+`PARTNER_TO_COUNTRY`, `MEDIA_TO_COUNTRY`, `ALL_MEDIA`). No runtime registration is
+needed in `detect.py`.
 
 `select_issues` reads the importer config (`titles` dict keyed by alias, with optional
 date ranges; `exclude_titles`; `year_only`) and applies
@@ -486,8 +469,6 @@ Local end-to-end verification (2026-06-15): dry-run for Evening Star returns
 - The dry-run estimate is a **batch-level upper bound** (manifest `issue_count` is
   not date-filtered and may bundle multiple LCCNs). A date-accurate count would
   require crawling (the thing we avoid) — acceptable trade-off for sizing.
-- Upstream `LOC` provider + alias registration into `impresso_essentials` instead of
-  runtime mutation in `detect.py`.
 - The `language` attribute read from ALTO `<Page>` defaults to `"en"`; CA also hosts
   non-English titles, so language handling may need revisiting per title.
 - IIIF: the page `iiif_img_base_uri` points at the Impresso proxy; LOC native IIIF
