@@ -30,6 +30,7 @@ from text_preparation.importers.chronicling_america.bulk import (
     parse_ocr_manifest,
     parse_mets_alto_filenames,
     print_dry_run_report,
+    process_tarball,
     tarball_batch_name,
     verify_sha1,
     write_issue_layout,
@@ -720,3 +721,73 @@ def test_download_file_raises_after_max_retries(tmp_path) -> None:
 
     assert not dest.exists()
     assert not (tmp_path / "out.xml.part").exists()
+
+
+def test_process_tarball_keeps_or_deletes_bz2(tmp_path) -> None:
+    import hashlib
+
+    members = {
+        "sn83045462/1932/06/20/ed-1/seq-1/ocr.xml": b"<alto seq='1'/>",
+    }
+    tarball_bytes = _make_tarball_bytes(members)
+    tarball_sha1 = hashlib.sha1(tarball_bytes).hexdigest()
+
+    scratch_dir = tmp_path / "tarballs"
+    scratch_dir.mkdir()
+    tarball_path = scratch_dir / "dlc_test_ver01.tar.bz2"
+    tarball_path.write_bytes(tarball_bytes)
+
+    tarball = TarballInfo(
+        batch="dlc_test_ver01",
+        url="https://example/dlc_test_ver01.tar.bz2",
+        sha1=tarball_sha1,
+        size=len(tarball_bytes),
+        lccns=("sn83045462",),
+    )
+    titles = [TitleSpec(lccn="sn83045462", alias="eveningstar")]
+    state_path = tmp_path / "state.json"
+    state = DownloadState()
+    client = MagicMock()
+
+    with patch(
+        "text_preparation.importers.chronicling_america.bulk.resolve_issue_urls",
+        return_value=[],
+    ):
+        with patch(
+            "text_preparation.importers.chronicling_america.bulk.download_mets_with_pacing",
+        ):
+            process_tarball(
+                client,
+                tarball,
+                titles,
+                str(tmp_path / "out"),
+                str(scratch_dir),
+                str(tmp_path / "state"),
+                state,
+                str(state_path),
+                keep_tarballs=True,
+            )
+
+    assert tarball_path.exists()
+
+    state = DownloadState()
+    with patch(
+        "text_preparation.importers.chronicling_america.bulk.resolve_issue_urls",
+        return_value=[],
+    ):
+        with patch(
+            "text_preparation.importers.chronicling_america.bulk.download_mets_with_pacing",
+        ):
+            process_tarball(
+                client,
+                tarball,
+                titles,
+                str(tmp_path / "out"),
+                str(scratch_dir),
+                str(tmp_path / "state"),
+                state,
+                str(state_path),
+                keep_tarballs=False,
+            )
+
+    assert not tarball_path.exists()

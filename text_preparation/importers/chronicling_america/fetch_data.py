@@ -169,7 +169,7 @@ def main() -> None:
         "--scratch-dir",
         type=str,
         default=None,
-        help="Temporary directory for tarball downloads",
+        help="Directory for OCR .tar.bz2 downloads (default: {state-dir}/tarballs)",
     )
     parser.add_argument(
         "--index-path",
@@ -236,11 +236,20 @@ def main() -> None:
         action="store_true",
         help="Print download plan without fetching data",
     )
-    parser.add_argument(
+    tarball_group = parser.add_mutually_exclusive_group()
+    tarball_group.add_argument(
         "--keep-tarballs",
+        dest="keep_tarballs",
         action="store_true",
-        help="Keep downloaded .tar.bz2 files after extraction",
+        help="Keep downloaded .tar.bz2 files after ALTO extraction (default)",
     )
+    tarball_group.add_argument(
+        "--delete-tarballs",
+        dest="keep_tarballs",
+        action="store_false",
+        help="Delete downloaded .tar.bz2 files after ALTO extraction",
+    )
+    parser.set_defaults(keep_tarballs=True)
 
     # Legacy single-title options
     parser.add_argument(
@@ -285,7 +294,7 @@ def main() -> None:
 
     args = parser.parse_args()
     state_dir = args.state_dir or os.path.join(args.output_dir, ".ca_state")
-    scratch_dir = args.scratch_dir or os.path.join(state_dir, "scratch")
+    scratch_dir = args.scratch_dir or os.path.join(state_dir, "tarballs")
     index_path = args.index_path or os.path.join(state_dir, "batch_index.json")
 
     if args.config:

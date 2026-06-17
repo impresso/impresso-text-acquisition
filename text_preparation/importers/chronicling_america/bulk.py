@@ -1149,7 +1149,7 @@ def run_bulk_download(
     index_path: str,
     scratch_dir: str,
     dry_run: bool = False,
-    keep_tarballs: bool = False,
+    keep_tarballs: bool = True,
     workers: int = 1,
     delay: float = DEFAULT_REQUEST_DELAY,
     max_requests_per_minute: int = DEFAULT_MAX_REQUESTS_PER_MINUTE,
