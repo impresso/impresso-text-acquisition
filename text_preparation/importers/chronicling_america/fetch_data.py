@@ -48,6 +48,9 @@ from text_preparation.importers.chronicling_america.bulk import (
     METS_BURST_SIZE,
     TARBALL_COOLDOWN,
 )
+from text_preparation.importers.chronicling_america.telegram_notify import (
+    TelegramNotifier,
+)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -152,6 +155,12 @@ def main() -> None:
         "--config",
         type=str,
         help="JSON file listing LCCN/alias titles for bulk download",
+    )
+    parser.add_argument(
+        "--env-file",
+        type=str,
+        default=".env",
+        help="Path to .env file with TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID",
     )
     parser.add_argument(
         "--output-dir",
@@ -293,6 +302,9 @@ def main() -> None:
     )
 
     args = parser.parse_args()
+    telegram_notifier = TelegramNotifier.from_env(args.env_file)
+    if telegram_notifier:
+        logger.info("Telegram notifications enabled")
     state_dir = args.state_dir or os.path.join(args.output_dir, ".ca_state")
     scratch_dir = args.scratch_dir or os.path.join(state_dir, "tarballs")
     index_path = args.index_path or os.path.join(state_dir, "batch_index.json")
@@ -314,6 +326,7 @@ def main() -> None:
             tarball_cooldown=args.batch_cooldown,
             mets_burst_size=args.mets_burst_size,
             mets_burst_pause=args.mets_burst_pause,
+            telegram_notifier=telegram_notifier,
         )
         return
 

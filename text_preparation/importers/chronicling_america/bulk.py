@@ -22,6 +22,10 @@ from urllib.parse import urljoin
 import requests
 from bs4 import BeautifulSoup
 
+from text_preparation.importers.chronicling_america.telegram_notify import (
+    TelegramNotifier,
+)
+
 logger = logging.getLogger(__name__)
 
 BASE_URL = "https://chroniclingamerica.loc.gov"
@@ -182,12 +186,14 @@ class HttpClient:
         max_requests_per_minute: int = DEFAULT_MAX_REQUESTS_PER_MINUTE,
         directory_delay: float = DEFAULT_DIRECTORY_DELAY,
         session: requests.Session | None = None,
+        notifier: TelegramNotifier | None = None,
     ) -> None:
         self.delay = delay
         self.max_retries = max_retries
         self.timeout = timeout
         self.max_requests_per_minute = max_requests_per_minute
         self.directory_delay = directory_delay
+        self.notifier = notifier
         self.session = session or requests.Session()
         self.session.headers.update(HEADERS)
         self._lock = threading.Lock()
@@ -257,6 +263,8 @@ class HttpClient:
                         if is_challenge_response(response)
                         else f"HTTP {response.status_code}"
                     )
+                    if is_challenge_response(response) and self.notifier:
+                        self.notifier.notify_captcha(url, sleep_seconds=backoff)
                     logger.warning(
                         "%s for %s; sleeping %.0fs before retry",
                         reason,
@@ -1066,6 +1074,7 @@ def process_tarball(
     *,
     mets_burst_size: int = METS_BURST_SIZE,
     mets_burst_pause: float = METS_BURST_PAUSE,
+    notifier: TelegramNotifier | None = None,
 ) -> None:
     if tarball.sha1 in state.completed_tarballs:
         logger.info("Skipping tarball %s (already completed)", tarball.batch)
@@ -1123,10 +1132,12 @@ def process_tarball(
         f"{issue.lccn}/{issue.date}/{issue.edition}": issue
         for issue in resolved_issues
     }
+    issues_finalized = 0
     for issue_key, alto_by_seq in extracted.items():
         issue = issue_lookup.get(issue_key)
         if issue is None:
             continue
+        before_count = len(state.completed_issues)
         finalize_issue_from_tarball(
             output_dir,
             issue,
@@ -1134,9 +1145,18 @@ def process_tarball(
             state,
             state_path,
         )
+        if len(state.completed_issues) > before_count:
+            issues_finalized += 1
 
     state.completed_tarballs[tarball.sha1] = tarball.batch
     state.save(state_path)
+
+    if notifier:
+        notifier.notify_batch_complete(
+            tarball.batch,
+            issues_finalized=issues_finalized,
+            tarball_size=tarball.size,
+        )
 
     if not keep_tarballs and os.path.exists(tarball_path):
         os.remove(tarball_path)
@@ -1158,12 +1178,16 @@ def run_bulk_download(
     mets_burst_size: int = METS_BURST_SIZE,
     mets_burst_pause: float = METS_BURST_PAUSE,
     client: HttpClient | None = None,
+    telegram_notifier: TelegramNotifier | None = None,
 ) -> DownloadPlan:
     http = client or HttpClient(
         delay=delay,
         max_requests_per_minute=max_requests_per_minute,
         directory_delay=directory_delay,
+        notifier=telegram_notifier,
     )
+    if client is not None and telegram_notifier is not None and http.notifier is None:
+        http.notifier = telegram_notifier
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(state_dir, exist_ok=True)
     os.makedirs(scratch_dir, exist_ok=True)
@@ -1200,6 +1224,7 @@ def run_bulk_download(
             keep_tarballs,
             mets_burst_size=mets_burst_size,
             mets_burst_pause=mets_burst_pause,
+            notifier=telegram_notifier,
         )
 
     logger.info("Bulk download completed for %d titles", len(titles))
