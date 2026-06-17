@@ -637,7 +637,24 @@ def enumerate_issue_urls(
     """
     cached = load_issue_url_cache(cache_path)
     if needed and needed.issubset(cached):
+        logger.info(
+            "Issue URL cache hit for %s/%s (%d/%d)",
+            batch,
+            title.lccn,
+            len(needed),
+            len(needed),
+        )
         return cached
+
+    needed_count = len(needed) if needed else 0
+    already_cached = len(needed.intersection(cached)) if needed else len(cached)
+    logger.info(
+        "Crawling batch listings for %s/%s (%d issue URL(s) needed, %d already cached)",
+        batch,
+        title.lccn,
+        needed_count,
+        already_cached,
+    )
 
     lccn_url = f"{BATCHES_URL}{batch}/data/{title.lccn}/"
     response = client.request(lccn_url)
@@ -646,8 +663,19 @@ def enumerate_issue_urls(
         return cached
     response.raise_for_status()
 
-    for reel in _parse_directory_links(response.text):
+    reels = _parse_directory_links(response.text)
+    logger.info("Scanning up to %d reel listing(s) for %s/%s", len(reels), batch, title.lccn)
+    started_at = time.monotonic()
+    last_log_at = started_at
+    for reel_index, reel in enumerate(reels, start=1):
         if needed and needed.issubset(cached):
+            logger.info(
+                "Found all %d needed issue URL(s) after %d/%d reel(s) (%.0fs)",
+                needed_count,
+                reel_index - 1,
+                len(reels),
+                time.monotonic() - started_at,
+            )
             break
         reel_url = f"{lccn_url}{reel}/"
         reel_response = client.request(reel_url)
@@ -658,6 +686,29 @@ def enumerate_issue_urls(
             if issue_dir not in cached:
                 cached[issue_dir] = f"{reel_url}{issue_dir}/"
         save_issue_url_cache(cache_path, cached)
+
+        now = time.monotonic()
+        if reel_index % 10 == 0 or now - last_log_at >= 60.0:
+            matched = len(needed.intersection(cached)) if needed else len(cached)
+            logger.info(
+                "Reel crawl: %d/%d reel(s), %d/%d issue URL(s) resolved (%.0fs)",
+                reel_index,
+                len(reels),
+                matched,
+                needed_count,
+                now - started_at,
+            )
+            last_log_at = now
+    else:
+        if needed:
+            matched = len(needed.intersection(cached))
+            logger.warning(
+                "Reel crawl finished without all issue URLs: %d/%d for %s/%s",
+                matched,
+                needed_count,
+                batch,
+                title.lccn,
+            )
 
     if BATCH_ENUMERATION_COOLDOWN > 0:
         logger.info(
