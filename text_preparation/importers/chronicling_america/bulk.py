@@ -901,9 +901,29 @@ def extract_alto_members(
     lccns: set[str],
 ) -> dict[str, dict[int, bytes]]:
     """Return {issue_key: {seq_num: alto_xml_bytes}} extracted from tarball."""
+    tarball_size = os.path.getsize(tarball_path)
+    logger.info(
+        "Streaming ALTO from %s (%s)",
+        os.path.basename(tarball_path),
+        format_bytes(tarball_size),
+    )
     extracted: dict[str, dict[int, bytes]] = {}
+    member_count = 0
+    alto_count = 0
+    started_at = time.monotonic()
+    last_log_at = started_at
     with tarfile.open(tarball_path, mode="r:bz2") as archive:
-        for member in archive.getmembers():
+        for member in archive:
+            member_count += 1
+            now = time.monotonic()
+            if member_count % 5000 == 0 or now - last_log_at >= 60.0:
+                logger.info(
+                    "Tarball scan: %d members scanned, %d ALTO files kept (%.0fs)",
+                    member_count,
+                    alto_count,
+                    now - started_at,
+                )
+                last_log_at = now
             if not member.isfile():
                 continue
             # Expected layout: lccn/YYYY/MM/DD/ed-N/seq-N/ocr.xml
@@ -924,6 +944,14 @@ def extract_alto_members(
                 continue
             content = file_obj.read()
             extracted.setdefault(issue_key, {})[int(seq_match.group(1))] = content
+            alto_count += 1
+    logger.info(
+        "Tarball extraction done: %d issue(s), %d ALTO file(s) from %d member(s) (%.0fs)",
+        len(extracted),
+        alto_count,
+        member_count,
+        time.monotonic() - started_at,
+    )
     return extracted
 
 
@@ -1087,17 +1115,31 @@ def process_tarball(
         scratch_dir,
         os.path.basename(tarball.url.rstrip("/").split("/")[-1]),
     )
-    if os.path.exists(tarball_path) and verify_sha1(tarball_path, tarball.sha1):
-        logger.info("Reusing cached tarball %s at %s", tarball.batch, tarball_path)
-    else:
+    tarball_ready = False
+    if os.path.exists(tarball_path):
+        logger.info(
+            "Verifying cached tarball %s (%s)",
+            tarball.batch,
+            format_bytes(os.path.getsize(tarball_path)),
+        )
+        if verify_sha1(tarball_path, tarball.sha1):
+            logger.info("Reusing cached tarball %s at %s", tarball.batch, tarball_path)
+            tarball_ready = True
+        else:
+            logger.warning(
+                "Cached tarball %s failed SHA-1 check; re-downloading",
+                tarball.batch,
+            )
+            os.remove(tarball_path)
+
+    if not tarball_ready:
         logger.info(
             "Downloading tarball %s (%s)", tarball.batch, format_bytes(tarball.size)
         )
         download_file(client, tarball.url, tarball_path)
-
-    if not verify_sha1(tarball_path, tarball.sha1):
-        os.remove(tarball_path)
-        raise RuntimeError(f"SHA-1 mismatch for tarball {tarball.batch}")
+        if not verify_sha1(tarball_path, tarball.sha1):
+            os.remove(tarball_path)
+            raise RuntimeError(f"SHA-1 mismatch for tarball {tarball.batch}")
 
     extracted = extract_alto_members(tarball_path, lccns)
     batch_issues = issues_from_tarball_extraction(
@@ -1116,10 +1158,21 @@ def process_tarball(
     for lccn in sorted({issue.lccn for issue in batch_issues}):
         title = titles_by_lccn[lccn]
         lccn_issues = [issue for issue in batch_issues if issue.lccn == lccn]
+        logger.info(
+            "Resolving METS URLs for %d issue(s) in %s/%s",
+            len(lccn_issues),
+            tarball.batch,
+            lccn,
+        )
         resolved_issues.extend(
             resolve_issue_urls(client, tarball.batch, title, lccn_issues, state_dir)
         )
 
+    logger.info(
+        "Downloading METS for %d issue(s) from batch %s",
+        len(resolved_issues),
+        tarball.batch,
+    )
     download_mets_with_pacing(
         client,
         resolved_issues,
