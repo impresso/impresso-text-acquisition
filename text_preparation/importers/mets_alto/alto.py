@@ -118,7 +118,13 @@ def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: N
             else:
                 part_of_contentitem = None
 
-            coordinates = distill_coordinates(block)
+            # A malformed block missing HPOS/VPOS/WIDTH/HEIGHT must not abort the
+            # whole page: skip it and record a note instead.
+            try:
+                coordinates = distill_coordinates(block)
+            except (TypeError, ValueError):
+                notes.append(f"Block {block_id} does not have coordinates")
+                continue
 
             tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
 
