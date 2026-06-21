@@ -6,6 +6,7 @@ These classes are subclasses of generic Mets/Alto importer classes.
 """
 
 import os
+import re
 import logging
 from time import strftime
 from typing import Any
@@ -27,6 +28,122 @@ from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
+# Working pixel resolution that Impresso's IIIF proxy serves images at. All ALTO
+# coordinates (expressed in physical units) are normalized to this DPI so that
+# region boxes line up with the served image. See the project knowledge base
+# (.cursor/docs/chronicling-america.md §coordinates) for why this is 400.
+TARGET_DPI = 400
+
+# ComposedBlock TYPE values (lowercased) that denote a picture rather than text.
+IMG_COMPOSED_TYPES = {"illustration", "image"}
+
+# Default coordinate divisor when the ALTO measurement unit is unknown: NDNP
+# ALTO is overwhelmingly inch1200, which at 400 DPI divides by 3.
+DEFAULT_COORD_DIVISOR = 1200.0 / TARGET_DPI
+
+# Spelled-out language names occasionally found in MODS languageTerm.
+_LANG_NAME_TO_ISO = {
+    "english": "en",
+    "french": "fr",
+    "german": "de",
+    "spanish": "es",
+    "italian": "it",
+    "dutch": "nl",
+    "portuguese": "pt",
+    "polish": "pl",
+    "swedish": "sv",
+    "norwegian": "no",
+    "danish": "da",
+    "finnish": "fi",
+    "czech": "cs",
+}
+
+
+def measurement_divisor(unit: str | None, target_dpi: int = TARGET_DPI) -> float:
+    """Value to divide raw ALTO coordinates by to reach ``target_dpi`` pixels.
+
+    NDNP ALTO is usually in ``inch1200`` (1/1200 inch); some batches use
+    ``mm10`` (1/10 mm) or ``pixel``. ``pixel`` coordinates are already in image
+    pixels at the (unknown) scan resolution, so they cannot be rescaled without
+    the source DPI — we leave them as-is (divisor 1.0) and rely on internal
+    consistency with the page dimensions, which are in the same unit.
+    """
+    u = (unit or "").strip().lower()
+    if u == "inch1200":
+        return 1200.0 / target_dpi
+    if u == "mm10":
+        # 1 inch = 25.4 mm = 254 units of 1/10 mm
+        return 254.0 / target_dpi
+    if u in ("pixel", "pixels"):
+        return 1.0
+    if u in ("", "<none>"):
+        return DEFAULT_COORD_DIVISOR
+    logger.warning("Unknown ALTO MeasurementUnit %r; assuming inch1200.", unit)
+    return DEFAULT_COORD_DIVISOR
+
+
+def alto_measurement_unit(alto_soup: BeautifulSoup) -> str | None:
+    """Read the ``<MeasurementUnit>`` value from an ALTO document, if present."""
+    mu = alto_soup.find("MeasurementUnit")
+    if mu and mu.text and mu.text.strip():
+        return mu.text.strip()
+    return None
+
+
+def normalize_language(value: str | None) -> str | None:
+    """Map an ALTO/MODS language string to a 2-3 letter ISO-639 code or None."""
+    if not value:
+        return None
+    v = value.strip().lower()
+    if re.fullmatch(r"[a-z]{2,3}", v):
+        return v
+    return _LANG_NAME_TO_ISO.get(v)
+
+
+def _has_image_ancestor(tag: Tag) -> bool:
+    """True if ``tag`` is nested inside an Illustration / image ComposedBlock.
+
+    Used to avoid emitting a duplicate image content item for a
+    ``<GraphicalElement>`` that already lives inside a captured image block.
+    """
+    parent = tag.parent
+    while parent is not None and getattr(parent, "name", None):
+        if parent.name == "Illustration":
+            return True
+        if parent.name == "ComposedBlock" and (parent.get("TYPE") or "").lower() in IMG_COMPOSED_TYPES:
+            return True
+        parent = parent.parent
+    return False
+
+
+def collect_image_elements(print_space: Tag) -> list[Tag]:
+    """Return all picture regions on a page, deduplicated by element ID.
+
+    Captures native ``<Illustration>`` elements, ``<ComposedBlock TYPE=...>``
+    blocks whose type denotes a picture, and standalone ``<GraphicalElement>``
+    regions that are not already inside one of the above.
+    """
+    elements: list[Tag] = []
+    seen_ids: set[str] = set()
+
+    def _add(el: Tag) -> None:
+        el_id = el.get("ID")
+        if el_id and el_id in seen_ids:
+            return
+        if el_id:
+            seen_ids.add(el_id)
+        elements.append(el)
+
+    for illus in print_space.find_all("Illustration"):
+        _add(illus)
+    for cb in print_space.find_all("ComposedBlock"):
+        if (cb.get("TYPE") or "").lower() in IMG_COMPOSED_TYPES:
+            _add(cb)
+    for ge in print_space.find_all("GraphicalElement"):
+        if not _has_image_ancestor(ge):
+            _add(ge)
+    return elements
+
 class ChroniclingAmericaNewspaperPage(MetsAltoCanonicalPage):
     """Newspaper page in Chronicling America (Mets/Alto) format."""
 
@@ -41,6 +158,10 @@ class ChroniclingAmericaNewspaperPage(MetsAltoCanonicalPage):
     ) -> None:
         super().__init__(_id, number, filename, basedir, encoding)
         self.file_id = file_id
+        # Divisor to normalize this page's coordinates to TARGET_DPI pixels.
+        # Resolved from the ALTO MeasurementUnit in add_issue(); defaults to the
+        # inch1200 value so behaviour is unchanged when the unit is missing.
+        self.coord_divisor = DEFAULT_COORD_DIVISOR
 
     def add_issue(self, issue: "ChroniclingAmericaNewspaperIssue") -> None:
         """Add the parent issue and extract page dimensions from ALTO XML Page tag."""
@@ -49,13 +170,14 @@ class ChroniclingAmericaNewspaperPage(MetsAltoCanonicalPage):
         self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.id)
         try:
             doc = self.xml
+            self.coord_divisor = measurement_divisor(alto_measurement_unit(doc))
             page_tag = doc.find("Page")
             if page_tag:
-                raw_w = int(page_tag.get("WIDTH", 0))
-                raw_h = int(page_tag.get("HEIGHT", 0))
-                # Convert from inch1200 to 400 DPI pixels (divide by 3)
-                self.page_data["fw"] = round(raw_w / 3)
-                self.page_data["fh"] = round(raw_h / 3)
+                raw_w = int(float(page_tag.get("WIDTH", 0)))
+                raw_h = int(float(page_tag.get("HEIGHT", 0)))
+                # Normalize physical units to TARGET_DPI pixels.
+                self.page_data["fw"] = round(raw_w / self.coord_divisor)
+                self.page_data["fh"] = round(raw_h / self.coord_divisor)
             else:
                 self.page_data["fw"] = 0
                 self.page_data["fh"] = 0
@@ -67,22 +189,23 @@ class ChroniclingAmericaNewspaperPage(MetsAltoCanonicalPage):
     def _convert_coordinates(
         self, page_regions: list[dict[str, Any]]
     ) -> tuple[bool, list[dict[str, Any]]]:
-        """Convert coordinates from inch1200 (1/1200th of an inch) to 400 DPI pixels."""
+        """Normalize region coordinates to TARGET_DPI pixels (see coord_divisor)."""
+        d = self.coord_divisor
         for region in page_regions:
             if "c" in region:
-                region["c"] = [round(val / 3) for val in region["c"]]
+                region["c"] = [round(val / d) for val in region["c"]]
             if "p" in region:
                 for paragraph in region["p"]:
                     if "c" in paragraph:
-                        paragraph["c"] = [round(val / 3) for val in paragraph["c"]]
+                        paragraph["c"] = [round(val / d) for val in paragraph["c"]]
                     if "l" in paragraph:
                         for line in paragraph["l"]:
                             if "c" in line:
-                                line["c"] = [round(val / 3) for val in line["c"]]
+                                line["c"] = [round(val / d) for val in line["c"]]
                             if "t" in line:
                                 for token in line["t"]:
                                     if "c" in token:
-                                        token["c"] = [round(val / 3) for val in token["c"]]
+                                        token["c"] = [round(val / d) for val in token["c"]]
         return True, page_regions
 
 class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
@@ -185,6 +308,9 @@ class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
             if not print_space:
                 continue
 
+            # Coordinate divisor for this page's measurement unit.
+            divisor = measurement_divisor(alto_measurement_unit(alto_soup))
+
             # 1. Create page-level content item
             text_blocks = []
             for text_block in print_space.find_all("TextBlock"):
@@ -192,12 +318,18 @@ class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
                 if block_type.lower() != "table":
                     text_blocks.append(text_block)
 
+            # Resolve language: ALTO <Page language>, then issue-level MODS
+            # language, then the conventional English fallback for US titles.
+            page_tag = alto_soup.find("Page")
+            page_lang = normalize_language(page_tag.get("language") if page_tag else None)
+            page_lang = page_lang or self._issue_language or "en"
+
             page_ci_id = f"{self.id}-i{page_num_str}"
             page_ci = {
                 "m": {
                     "id": page_ci_id,
                     "tp": "page",
-                    "lg": alto_soup.find("Page").get("language", "en") if alto_soup.find("Page") else "en",
+                    "lg": page_lang,
                     "pp": [page.number],
                 },
                 "l": {
@@ -220,17 +352,17 @@ class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
             }
             content_items.append(page_ci)
 
-            # 2. Extract Illustrations (images)
-            for illustration in print_space.find_all("Illustration"):
-                illus_id = illustration.get("ID")
+            # 2. Extract pictures: native <Illustration>, image ComposedBlocks,
+            #    and standalone <GraphicalElement> (deduplicated, no nesting).
+            for image_el in collect_image_elements(print_space):
+                illus_id = image_el.get("ID")
                 if not illus_id:
                     continue
 
                 coords = None
                 try:
-                    coords = alto.distill_coordinates(illustration)
-                    # Convert to pixels (divide by 3)
-                    coords = [round(val / 3) for val in coords]
+                    coords = alto.distill_coordinates(image_el)
+                    coords = [round(val / divisor) for val in coords]
                 except Exception:
                     pass
 
@@ -240,6 +372,7 @@ class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
                     "m": {
                         "id": image_ci_id,
                         "tp": "image",
+                        "lg": None,
                         "pp": [page.number],
                     },
                     "l": {
@@ -273,7 +406,7 @@ class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
                     coords = None
                     try:
                         coords = alto.distill_coordinates(block)
-                        coords = [round(val / 3) for val in coords]
+                        coords = [round(val / divisor) for val in coords]
                     except Exception:
                         pass
 
@@ -283,6 +416,7 @@ class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
                         "m": {
                             "id": table_ci_id,
                             "tp": "table",
+                            "lg": None,
                             "pp": [page.number],
                         },
                         "l": {
@@ -309,12 +443,25 @@ class ChroniclingAmericaNewspaperIssue(MetsAltoCanonicalIssue):
 
     def _parse_mets(self) -> None:
         """Parse METS to construct the canonical issue representation."""
-        # Extract title variant from mods in METS if present
-        title = None
         mets_soup = self.xml
-        title_tag = mets_soup.find("title")
+
+        # Issue-level language from MODS <languageTerm> (used as page-CI default).
+        lang_tag = mets_soup.find("languageTerm")
+        self._issue_language = normalize_language(lang_tag.text if lang_tag else None)
+
+        # Title variant: prefer a MODS <title> element (namespace-agnostic),
+        # else derive from the METS LABEL by stripping a trailing date.
+        title = None
+        title_tag = mets_soup.find(
+            lambda t: getattr(t, "name", None) == "title" and t.get_text(strip=True)
+        )
         if title_tag:
-            title = title_tag.text.strip()
+            title = title_tag.get_text(strip=True)
+        else:
+            mets_tag = mets_soup.find("mets")
+            label = mets_tag.get("LABEL") if mets_tag else None
+            if label:
+                title = re.sub(r",\s*\d{4}(-\d{2}-\d{2})?\s*$", "", label).strip() or None
 
         # Extract content items
         content_items = self._find_content_items()
