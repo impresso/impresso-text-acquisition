@@ -477,3 +477,76 @@ Local end-to-end verification (2026-06-15): dry-run for Evening Star returns
   config (per alias) — keep them consistent when adding titles.
 - `eveningstar` is currently the only configured title (`sn83045462`); add entries to
   `chronicling_america_titles.json` and `import_LOC.json` to scale up.
+
+## 13. Generalizing to the full CA corpus (2026-06-21)
+
+CA is a single format (NDNP METS/ALTO) that varies along a few axes; the converter
+now drives those from the data instead of hardcoding them. New/changed pieces:
+
+| Path | Role |
+|---|---|
+| `chronicling_america/canonicalize.py` | Convert downloads **in place** to canonical JSON. Discovers issues by walking any directory, builds `IssueDir`s from the METS, and feeds them to `core.import_issues` (which schema-validates). Layout-agnostic; CA-gated by LCCN. |
+| `chronicling_america/audit.py` | **Read-only** corpus probe. Tabulates the variation axes (layout, MeasurementUnit, block flavors, structMap TYPEs, MODS language/title, LCCNs) so you fix what actually occurs. No conversion, no network. |
+| `tests/importers/test_ca_canonicalize.py` | Unit tests for the helpers + discovery (synthetic fixtures, no network). |
+
+**Measure first.** Before a large import, run the audit; if pointed at mixed-provider
+data it will *also* show non-CA METS (the audit does not LCCN-gate), so scope it or
+read the LCCN count. The converter, by contrast, **requires an LCCN** in the METS, so
+it never picks up other providers' data even if run over a shared tree.
+
+### Coordinate scaling — no longer a hardcoded ÷3
+`classes.py` now derives the divisor from the ALTO `MeasurementUnit`
+(`measurement_divisor`): `inch1200 → ÷3`, `mm10 → ÷0.635`, `pixel → ÷1` (already in
+pixels; cannot rescale without the scan DPI). All values normalize to
+`TARGET_DPI = 400` pixels — the **assumption** is that Impresso's IIIF proxy serves
+images at 400-DPI-equivalent. If that resolution differs, change `TARGET_DPI` in one
+place. `pixel`-unit ALTO is the one case that needs the source DPI to be correct.
+
+### Image content items — all flavors
+`_find_content_items` now creates `image` CIs from `<Illustration>` **and**
+`<ComposedBlock TYPE="Illustration"|"Image">` **and** standalone `<GraphicalElement>`
+(`collect_image_elements`), deduplicated and skipping GraphicalElements nested inside a
+captured image block. Previously only `<Illustration>` elements were captured — the
+SF Call pilot encodes pictures as `ComposedBlock TYPE="Illustration"`, so images were
+silently dropped. (Tables: `ComposedBlock TYPE="table"`, unchanged.)
+
+### Language & title
+Page-CI `lg` resolves ALTO `<Page language>` → MODS `<languageTerm>` (normalized to
+ISO-639 via `normalize_language`, handles spelled-out names) → `"en"` fallback.
+`media_title_variant` reads a MODS `<title>` element, else strips the trailing date
+from the METS `LABEL` (the SF Call METS has no `<title>` element — title lives in
+`LABEL`).
+
+### Robustness
+`mets_alto/alto.py parse_printspace` now guards the block-level
+`distill_coordinates` call: a block missing `HPOS/VPOS/WIDTH/HEIGHT` is skipped with a
+note instead of crashing the whole page. **Shared change** — affects all METS/ALTO
+importers, but only changes behaviour on input that previously crashed.
+
+### Still open for corpus-scale
+- **Alias registration**: `impresso_essentials` only registers the 6 pilot aliases.
+  `--title-slug` can mint an alias from the title for unmapped LCCNs, but it is **not**
+  a registered Impresso medium — downstream provider/media lookups and IIIF hosting
+  expect registered aliases. Decide a naming + registration process before scaling.
+- **IIIF hosting**: `iiif_img_base_uri` points at the Impresso proxy keyed by
+  `page_id`; the proxy must actually host the title's images or links break.
+- **Tarball-only (no METS) inputs**: the parser needs a METS; `canonicalize.py` warns
+  on `ocr.xml`-only directories. Use the bulk downloader (lazy METS crawl) to fetch
+  METS first.
+- **`pixel`-unit coordinates**: handled as identity; correct rendering needs the source
+  scan DPI if such batches appear.
+
+### Commands
+```bash
+# Audit a download (read-only): what variants are present?
+python -m text_preparation.importers.chronicling_america.audit \
+  --input-dir /path/to/ca/raw --alto-sample 3 --json /tmp/ca_audit.json
+
+# Convert in place to canonical JSON (schema-validated by the engine)
+SE_ACCESS_KEY=dummy SE_SECRET_KEY=dummy \
+python -m text_preparation.importers.chronicling_america.canonicalize \
+  --input-dir /path/to/ca/raw --output-dir /path/to/ca/canonical --clear
+# add --lccn-alias snXXXXXXXX=myalias  (repeatable) or --title-slug for unmapped LCCNs
+```
+The benign `InvalidAccessKeyId` at the end is only the *manifest* trying to upload
+itself with dummy creds; the canonical JSON is fully written before that.
