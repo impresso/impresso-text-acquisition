@@ -614,6 +614,43 @@ def test_is_batch_directory_listing() -> None:
     )
 
 
+def test_tiered_http_client_routes_by_url_class() -> None:
+    from text_preparation.importers.chronicling_america.bulk import (
+        HttpClient,
+        TieredHttpClient,
+        make_http_client,
+    )
+
+    crawl = MagicMock(spec=HttpClient)
+    asset = MagicMock(spec=HttpClient)
+    crawl.request.return_value = MagicMock(status_code=200)
+    asset.request.return_value = MagicMock(status_code=200)
+    client = TieredHttpClient(crawl, asset)
+
+    dir_url = (
+        "https://chroniclingamerica.loc.gov/data/batches/dlc_ver01/data/sn83045462/"
+    )
+    mets_url = (
+        "https://chroniclingamerica.loc.gov/data/batches/dlc_ver01/data/"
+        "sn83045462/00280600854/1931120201/1931120201.xml"
+    )
+    client.request(dir_url)
+    client.request(mets_url)
+
+    crawl.request.assert_called_once_with(dir_url, method="GET")
+    asset.request.assert_called_once_with(mets_url, method="GET")
+
+    single = make_http_client(delay=3.0, max_requests_per_minute=8)
+    assert isinstance(single, HttpClient)
+
+    tiered = make_http_client(
+        delay=3.0,
+        max_requests_per_minute=8,
+        asset_max_requests_per_minute=20,
+    )
+    assert isinstance(tiered, TieredHttpClient)
+
+
 def test_download_mets_with_pacing_pauses_on_burst() -> None:
     from text_preparation.importers.chronicling_america.bulk import (
         download_mets_with_pacing,

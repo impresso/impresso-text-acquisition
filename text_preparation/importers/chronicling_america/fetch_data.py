@@ -28,6 +28,13 @@ import sys
 
 from text_preparation.importers.chronicling_america import api, bulk
 from text_preparation.importers.chronicling_america.bulk import (
+    BATCH_ENUMERATION_COOLDOWN,
+    DEFAULT_DIRECTORY_DELAY,
+    DEFAULT_MAX_REQUESTS_PER_MINUTE,
+    DEFAULT_REQUEST_DELAY,
+    METS_BURST_PAUSE,
+    METS_BURST_SIZE,
+    TARBALL_COOLDOWN,
     HttpClient,
     build_download_plan,
     dedupe_issues,
@@ -37,16 +44,6 @@ from text_preparation.importers.chronicling_america.bulk import (
     print_dry_run_report,
     run_bulk_download,
     title_from_legacy,
-)
-from text_preparation.importers.chronicling_america.bulk import DEFAULT_REQUEST_DELAY
-from text_preparation.importers.chronicling_america.bulk import (
-    DEFAULT_MAX_REQUESTS_PER_MINUTE,
-)
-from text_preparation.importers.chronicling_america.bulk import (
-    DEFAULT_DIRECTORY_DELAY,
-    METS_BURST_PAUSE,
-    METS_BURST_SIZE,
-    TARBALL_COOLDOWN,
 )
 
 logging.basicConfig(
@@ -144,20 +141,41 @@ def _run_legacy_crawl(args: argparse.Namespace) -> None:
     logger.info("Download completed successfully!")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Download METS/ALTO files from Chronicling America.",
+def _run_bulk(args: argparse.Namespace) -> None:
+    titles = bulk.load_titles_config(args.config)
+    run_bulk_download(
+        titles=titles,
+        output_dir=args.output_dir,
+        state_dir=args.state_dir,
+        index_path=args.index_path,
+        scratch_dir=args.scratch_dir,
+        dry_run=args.dry_run,
+        keep_tarballs=args.keep_tarballs,
+        workers=args.workers,
+        delay=args.delay,
+        max_requests_per_minute=args.max_rpm,
+        directory_delay=args.directory_delay,
+        asset_delay=args.asset_delay,
+        asset_max_requests_per_minute=args.asset_max_rpm,
+        tarball_cooldown=args.batch_cooldown,
+        enumeration_cooldown=args.enumeration_cooldown,
+        mets_burst_size=args.mets_burst_size,
+        mets_burst_pause=args.mets_burst_pause,
     )
+
+
+def _run_legacy_dry_run(args: argparse.Namespace) -> None:
+    client = HttpClient(delay=args.delay)
+    titles = [title_from_legacy(args.lccn, args.alias)]
+    plan = build_download_plan(client, titles, args.index_path, dry_run=True)
+    print_dry_run_report(plan)
+
+
+def _add_bulk_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--config",
         type=str,
         help="JSON file listing LCCN/alias titles for bulk download",
-    )
-    parser.add_argument(
-        "--output-dir",
-        type=str,
-        required=True,
-        help="Directory to save downloaded files",
     )
     parser.add_argument(
         "--state-dir",
@@ -200,8 +218,28 @@ def main() -> None:
         type=int,
         default=DEFAULT_MAX_REQUESTS_PER_MINUTE,
         help=(
-            "Maximum HTTP requests per rolling 60 s window (default 8; LOC JSON "
-            "API limit is 20/min)"
+            "Maximum crawl HTTP requests per rolling 60 s window for HTML "
+            "/data/batches/ listings (default 8; LOC JSON API limit is 20/min)"
+        ),
+    )
+    parser.add_argument(
+        "--asset-max-rpm",
+        type=int,
+        default=None,
+        help=(
+            "Maximum asset HTTP requests per rolling 60 s window for METS, "
+            "tarballs, and manifests (default: same as --max-rpm). Set to 20 "
+            "with --mets-burst-size 0 for ~4.5× METS throughput (Pathfinder "
+            "soak-test before production defaults)."
+        ),
+    )
+    parser.add_argument(
+        "--asset-delay",
+        type=float,
+        default=None,
+        help=(
+            "Minimum seconds between asset GETs (METS/tarballs; default: same "
+            "as --delay)"
         ),
     )
     parser.add_argument(
@@ -217,7 +255,16 @@ def main() -> None:
         "--batch-cooldown",
         type=float,
         default=TARBALL_COOLDOWN,
-        help="Seconds to pause between OCR tarballs (default 180)",
+        help="Seconds to pause between OCR tarballs (default 180; 0 disables)",
+    )
+    parser.add_argument(
+        "--enumeration-cooldown",
+        type=float,
+        default=BATCH_ENUMERATION_COOLDOWN,
+        help=(
+            "Seconds to pause after reel enumeration per batch/LCCN "
+            "(default 120; 0 disables)"
+        ),
     )
     parser.add_argument(
         "--mets-burst-size",
@@ -251,7 +298,8 @@ def main() -> None:
     )
     parser.set_defaults(keep_tarballs=True)
 
-    # Legacy single-title options
+
+def _add_legacy_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--lccn",
         type=str,
@@ -292,36 +340,37 @@ def main() -> None:
         help="Use batch-directory crawling instead of the loc.gov JSON API",
     )
 
-    args = parser.parse_args()
+
+def _resolve_paths(args: argparse.Namespace) -> argparse.Namespace:
     state_dir = args.state_dir or os.path.join(args.output_dir, ".ca_state")
     scratch_dir = args.scratch_dir or os.path.join(state_dir, "tarballs")
     index_path = args.index_path or os.path.join(state_dir, "batch_index.json")
+    args.state_dir = state_dir
+    args.scratch_dir = scratch_dir
+    args.index_path = index_path
+    return args
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Download METS/ALTO files from Chronicling America.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        required=True,
+        help="Directory to save downloaded files",
+    )
+    _add_bulk_args(parser)
+    _add_legacy_args(parser)
+    args = _resolve_paths(parser.parse_args())
 
     if args.config:
-        titles = bulk.load_titles_config(args.config)
-        run_bulk_download(
-            titles=titles,
-            output_dir=args.output_dir,
-            state_dir=state_dir,
-            index_path=index_path,
-            scratch_dir=scratch_dir,
-            dry_run=args.dry_run,
-            keep_tarballs=args.keep_tarballs,
-            workers=args.workers,
-            delay=args.delay,
-            max_requests_per_minute=args.max_rpm,
-            directory_delay=args.directory_delay,
-            tarball_cooldown=args.batch_cooldown,
-            mets_burst_size=args.mets_burst_size,
-            mets_burst_pause=args.mets_burst_pause,
-        )
+        _run_bulk(args)
         return
 
     if args.dry_run:
-        client = HttpClient(delay=args.delay)
-        titles = [title_from_legacy(args.lccn, args.alias)]
-        plan = build_download_plan(client, titles, index_path, dry_run=True)
-        print_dry_run_report(plan)
+        _run_legacy_dry_run(args)
         return
 
     if args.use_crawl:

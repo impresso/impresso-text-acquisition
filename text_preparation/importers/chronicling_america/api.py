@@ -35,6 +35,11 @@ ITEM_URL_RE = re.compile(
 )
 
 
+# ---------------------------------------------------------------------------
+# URL builders and parsers
+# ---------------------------------------------------------------------------
+
+
 @dataclass(frozen=True)
 class ApiIssueFiles:
     """Resolved download URLs for one newspaper issue."""
@@ -93,6 +98,11 @@ def _issue_matches_title(
     return True
 
 
+# ---------------------------------------------------------------------------
+# Issue discovery via loc.gov collection search
+# ---------------------------------------------------------------------------
+
+
 def _iter_search_pages(
     client: HttpClient,
     search_url: str,
@@ -149,6 +159,11 @@ def discover_issue_item_urls(
     if limit is not None:
         item_urls = item_urls[:limit]
     return item_urls
+
+
+# ---------------------------------------------------------------------------
+# Per-issue file resolution and download
+# ---------------------------------------------------------------------------
 
 
 def _pick_mets_url(other_formats: list[str], issue_dir_name: str) -> tuple[str, str] | None:

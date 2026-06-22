@@ -1,279 +1,189 @@
 """Bulk download pipeline for Chronicling America METS/ALTO data.
 
 Uses per-batch OCR tarballs (ALTO XML) plus a lightweight METS crawl per issue.
+
+Submodules:
+  constants  — URLs, rate limits, regexes
+  models     — TitleSpec, TarballInfo, IssueInfo, DownloadPlan, DownloadState
+  http       — HttpClient, download_file
+  manifest   — OCR manifest parsing and batch selection
+  crawl      — batch directory crawling and issue URL caches
+  issues     — issue identity and deduplication
+  layout     — local METS/ALTO filesystem layout
+  tarball    — OCR tarball extraction and SHA-1 verification
+
+This module re-exports the public API and hosts download orchestration.
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import os
-import re
-import tarfile
-import threading
 import time
-from collections import deque
-from dataclasses import dataclass, field, replace
 from datetime import date
-from typing import Any
 from urllib.parse import urljoin
 
-import requests
-from bs4 import BeautifulSoup
+from text_preparation.importers.chronicling_america.constants import (
+    BASE_URL,
+    BATCH_ENUMERATION_COOLDOWN,
+    BATCHES_URL,
+    BATCH_VERSION_RE,
+    CHALLENGE_MARKERS,
+    DEFAULT_DIRECTORY_DELAY,
+    DEFAULT_MAX_REQUESTS_PER_MINUTE,
+    DEFAULT_REQUEST_DELAY,
+    HEADERS,
+    ISSUE_DIR_RE,
+    LCCN_RE,
+    LOC_JSON_API_REQUESTS_PER_MINUTE,
+    LOC_RATE_LIMIT_BLOCK_SECONDS,
+    METS_BURST_PAUSE,
+    METS_BURST_SIZE,
+    OCR_JSON_URLS,
+    PLAIN_TARBALL_RE,
+    TARBALL_BATCH_RE,
+    TARBALL_COOLDOWN,
+)
+from text_preparation.importers.chronicling_america.crawl import (
+    _parse_directory_links,
+    batch_contains_lccn,
+    build_or_load_batch_index,
+    enumerate_issue_urls,
+    fetch_batch_lccns,
+    find_first_batch_for_lccn,
+    issue_url_cache_path,
+    list_all_batches,
+    list_issues_in_batch,
+    load_issue_url_cache,
+    resolve_issue_urls,
+    save_issue_url_cache,
+)
+from text_preparation.importers.chronicling_america.http import (
+    HttpClient,
+    TieredHttpClient,
+    download_file,
+    is_batch_directory_listing,
+    is_challenge_response,
+    is_transient_status,
+    make_http_client,
+)
+from text_preparation.importers.chronicling_america.issues import (
+    dedupe_issues,
+    issue_dir_name_from_date_edition,
+    issue_info_from_tarball_key,
+    issue_in_date_range,
+    issue_local_dir,
+    issue_state_key,
+    issues_from_tarball_extraction,
+)
+from text_preparation.importers.chronicling_america.layout import (
+    parse_mets_alto_filenames,
+    write_issue_layout,
+)
+from text_preparation.importers.chronicling_america.manifest import (
+    batch_family,
+    batch_version,
+    batches_for_lccns,
+    dedupe_batch_versions,
+    fetch_ocr_tarballs,
+    index_from_tarball_manifest,
+    parse_ocr_manifest,
+    tarball_batch_name,
+)
+from text_preparation.importers.chronicling_america.models import (
+    DownloadPlan,
+    DownloadState,
+    IssueInfo,
+    TarballInfo,
+    TitleSpec,
+)
+from text_preparation.importers.chronicling_america.tarball import (
+    extract_alto_members,
+    verify_sha1,
+)
 
 logger = logging.getLogger(__name__)
 
-BASE_URL = "https://chroniclingamerica.loc.gov"
-# LOC migrated OCR manifests in 2025: /ocr.json now 404s after redirect; the live
-# manifest is at /data/ocr/ocr.json with a list-shaped schema (archive_name, batch).
-OCR_JSON_URLS = (
-    f"{BASE_URL}/data/ocr/ocr.json",
-    f"{BASE_URL}/ocr.json",
-)
-BATCHES_URL = f"{BASE_URL}/data/batches/"
-
-# Official LOC rate limits (https://www.loc.gov/apis/json-and-yaml/working-within-limits/):
-# JSON/YAML API: 20 req/min; storage/text/image: 150 req/min; block time: 1 hour.
-# chroniclingamerica.loc.gov bulk crawls are throttled similarly in practice; stay
-# under the JSON API limit to avoid 429 / CAPTCHA blocks.
-LOC_JSON_API_REQUESTS_PER_MINUTE = 20
-LOC_RATE_LIMIT_BLOCK_SECONDS = 3600
-DEFAULT_REQUEST_DELAY = 60.0 / LOC_JSON_API_REQUESTS_PER_MINUTE  # 3.0 s
-# Stay well under the official 20/min ceiling; directory crawls trigger CAPTCHA
-# faster than tarball or XML file downloads in practice.
-DEFAULT_MAX_REQUESTS_PER_MINUTE = 8
-# Extra minimum spacing for HTML directory listings under /data/batches/.
-DEFAULT_DIRECTORY_DELAY = 6.0
-# Pause after enumerating reels for one batch/LCCN before METS downloads.
-BATCH_ENUMERATION_COOLDOWN = 120.0
-# Pause between finishing one OCR tarball and starting the next.
-TARBALL_COOLDOWN = 180.0
-# After this many METS downloads, pause to avoid sustained crawl bursts.
-METS_BURST_SIZE = 15
-METS_BURST_PAUSE = 90.0
-
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (compatible; ImpressoTextPreparation/1.0; "
-        "+https://github.com/impresso/impresso-text-acquisition)"
-    )
-}
-
-CHALLENGE_MARKERS = (
-    "captcha",
-    "just a moment",
-    "challenge-platform",
-    "cloudflare",
-)
-
-
-# Includes Cloudflare-specific 52x codes (e.g. 525 SSL handshake failed) which
-# tile.loc.gov intermittently returns and which are safe to retry.
-def is_transient_status(status_code: int) -> bool:
-    return status_code == 429 or status_code >= 500
-
-
-def is_challenge_response(response: requests.Response) -> bool:
-    """True when LOC/Cloudflare returns an HTML bot challenge instead of data."""
-    if response.status_code not in (403, 429):
-        return False
-    content_type = response.headers.get("Content-Type", "")
-    if "text/html" not in content_type.lower():
-        return False
-    snippet = response.text[:4096].lower()
-    return any(marker in snippet for marker in CHALLENGE_MARKERS)
-
-
-def is_batch_directory_listing(url: str) -> bool:
-    """True for batch index pages (HTML listings), not METS/ALTO/tarball files."""
-    if "/data/batches/" not in url:
-        return False
-    last_segment = url.rstrip("/").rsplit("/", 1)[-1]
-    if not last_segment:
-        return True
-    return "." not in last_segment
-
-
-ISSUE_DIR_RE = re.compile(r"^\d{10}$")
-TARBALL_BATCH_RE = re.compile(r"^batch_(.+)\.tar\.bz2$")
-PLAIN_TARBALL_RE = re.compile(r"^(.+_ver\d+)\.tar\.bz2$")
-BATCH_VERSION_RE = re.compile(r"^(.+)_ver(\d+)$")
-# LCCNs are either prefixed (sn83045462, mn99999999) or purely numeric (2010218500)
-LCCN_RE = re.compile(r"^[a-z]{0,3}\d{8,12}$")
+__all__ = [
+    "BASE_URL",
+    "BATCHES_URL",
+    "BATCH_ENUMERATION_COOLDOWN",
+    "BATCH_VERSION_RE",
+    "CHALLENGE_MARKERS",
+    "DEFAULT_DIRECTORY_DELAY",
+    "DEFAULT_MAX_REQUESTS_PER_MINUTE",
+    "DEFAULT_REQUEST_DELAY",
+    "DownloadPlan",
+    "DownloadState",
+    "HEADERS",
+    "HttpClient",
+    "TieredHttpClient",
+    "ISSUE_DIR_RE",
+    "LCCN_RE",
+    "LOC_JSON_API_REQUESTS_PER_MINUTE",
+    "LOC_RATE_LIMIT_BLOCK_SECONDS",
+    "METS_BURST_PAUSE",
+    "METS_BURST_SIZE",
+    "OCR_JSON_URLS",
+    "PLAIN_TARBALL_RE",
+    "TARBALL_BATCH_RE",
+    "TARBALL_COOLDOWN",
+    "IssueInfo",
+    "TarballInfo",
+    "TitleSpec",
+    "_parse_directory_links",
+    "batch_contains_lccn",
+    "batch_family",
+    "batch_version",
+    "batches_for_lccns",
+    "build_download_plan",
+    "build_or_load_batch_index",
+    "dedupe_batch_versions",
+    "dedupe_issues",
+    "download_file",
+    "download_issue_mets",
+    "download_mets_with_pacing",
+    "enumerate_issue_urls",
+    "extract_alto_members",
+    "fetch_batch_lccns",
+    "fetch_ocr_tarballs",
+    "find_first_batch_for_lccn",
+    "format_bytes",
+    "format_dry_run_report",
+    "index_from_tarball_manifest",
+    "is_batch_directory_listing",
+    "is_challenge_response",
+    "is_transient_status",
+    "issue_dir_name_from_date_edition",
+    "issue_info_from_tarball_key",
+    "issue_in_date_range",
+    "issue_local_dir",
+    "issue_state_key",
+    "issue_url_cache_path",
+    "issues_from_tarball_extraction",
+    "list_all_batches",
+    "list_issues_in_batch",
+    "load_issue_url_cache",
+    "load_titles_config",
+    "make_http_client",
+    "parse_mets_alto_filenames",
+    "parse_ocr_manifest",
+    "print_dry_run_report",
+    "process_tarball",
+    "resolve_issue_urls",
+    "run_bulk_download",
+    "save_issue_url_cache",
+    "tarball_batch_name",
+    "title_from_legacy",
+    "verify_sha1",
+    "write_issue_layout",
+]
 
 
-@dataclass(frozen=True)
-class TitleSpec:
-    lccn: str
-    alias: str
-    start_date: date | None = None
-    end_date: date | None = None
-
-
-@dataclass(frozen=True)
-class TarballInfo:
-    batch: str
-    url: str
-    sha1: str
-    size: int
-    lccns: tuple[str, ...] = ()
-    issue_count: int = 0
-
-
-@dataclass(frozen=True)
-class IssueInfo:
-    batch: str
-    lccn: str
-    alias: str
-    date: str
-    edition: str
-    issue_dir_name: str
-    url: str
-
-
-@dataclass
-class DownloadPlan:
-    titles: list[TitleSpec]
-    batches: list[str]
-    tarballs: list[TarballInfo]
-    issues: list[IssueInfo]
-    total_tarball_bytes: int = 0
-    estimated_issues: int | None = None
-
-
-@dataclass
-class DownloadState:
-    completed_tarballs: dict[str, str] = field(default_factory=dict)
-    completed_issues: set[str] = field(default_factory=set)
-
-    @staticmethod
-    def load(path: str) -> DownloadState:
-        if not os.path.exists(path):
-            return DownloadState()
-        with open(path, encoding="utf-8") as f:
-            data = json.load(f)
-        return DownloadState(
-            completed_tarballs=data.get("completed_tarballs", {}),
-            completed_issues=set(data.get("completed_issues", [])),
-        )
-
-    def save(self, path: str) -> None:
-        os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-        with open(path, "w", encoding="utf-8") as f:
-            json.dump(
-                {
-                    "completed_tarballs": self.completed_tarballs,
-                    "completed_issues": sorted(self.completed_issues),
-                },
-                f,
-                indent=2,
-            )
-
-
-class HttpClient:
-    """HTTP client with polite delays, timeouts, and retry/backoff."""
-
-    def __init__(
-        self,
-        delay: float = DEFAULT_REQUEST_DELAY,
-        max_retries: int = 5,
-        timeout: float = 120.0,
-        max_requests_per_minute: int = DEFAULT_MAX_REQUESTS_PER_MINUTE,
-        directory_delay: float = DEFAULT_DIRECTORY_DELAY,
-        session: requests.Session | None = None,
-    ) -> None:
-        self.delay = delay
-        self.max_retries = max_retries
-        self.timeout = timeout
-        self.max_requests_per_minute = max_requests_per_minute
-        self.directory_delay = directory_delay
-        self.session = session or requests.Session()
-        self.session.headers.update(HEADERS)
-        self._lock = threading.Lock()
-        self._last_request_at = 0.0
-        self._request_times: deque[float] = deque()
-
-    def _effective_delay(self, url: str) -> float:
-        if is_batch_directory_listing(url):
-            return max(self.delay, self.directory_delay)
-        return self.delay
-
-    def _rate_limit_wait(self, url: str) -> float:
-        """Enforce minimum spacing and a sliding-window requests/minute cap."""
-        total_wait = 0.0
-        now = time.monotonic()
-        min_spacing = self._effective_delay(url)
-
-        while self._request_times and now - self._request_times[0] >= 60.0:
-            self._request_times.popleft()
-
-        if len(self._request_times) >= self.max_requests_per_minute:
-            wait = 60.0 - (now - self._request_times[0]) + 0.05
-            time.sleep(wait)
-            total_wait += wait
-            now = time.monotonic()
-            while self._request_times and now - self._request_times[0] >= 60.0:
-                self._request_times.popleft()
-
-        spacing = min_spacing - (now - self._last_request_at)
-        if spacing > 0:
-            time.sleep(spacing)
-            total_wait += spacing
-
-        return total_wait
-
-    def _backoff_for_status(self, response: requests.Response, backoff: float) -> float:
-        if response.status_code != 429 and not is_challenge_response(response):
-            return backoff
-        retry_after = response.headers.get("Retry-After")
-        if retry_after and retry_after.isdigit():
-            return max(backoff, float(retry_after))
-        # LOC documents a 1-hour block when rate limits are exceeded.
-        return max(backoff, float(LOC_RATE_LIMIT_BLOCK_SECONDS))
-
-    def request(self, url: str, method: str = "GET", **kwargs: Any) -> requests.Response:
-        retries = 0
-        backoff = 2.0
-        kwargs.setdefault("timeout", self.timeout)
-        while retries < self.max_retries:
-            try:
-                with self._lock:
-                    self._rate_limit_wait(url)
-                    response = (
-                        self.session.get(url, **kwargs)
-                        if method == "GET"
-                        else self.session.head(url, **kwargs)
-                    )
-                    now = time.monotonic()
-                    self._last_request_at = now
-                    self._request_times.append(now)
-                if is_transient_status(response.status_code) or is_challenge_response(
-                    response
-                ):
-                    backoff = self._backoff_for_status(response, backoff)
-                    reason = (
-                        "CAPTCHA/challenge"
-                        if is_challenge_response(response)
-                        else f"HTTP {response.status_code}"
-                    )
-                    logger.warning(
-                        "%s for %s; sleeping %.0fs before retry",
-                        reason,
-                        url,
-                        backoff,
-                    )
-                    time.sleep(backoff)
-                    backoff *= 2.0
-                    retries += 1
-                    continue
-                return response
-            except requests.RequestException as exc:
-                logger.warning("Request failed for %s: %s", url, exc)
-                time.sleep(backoff)
-                backoff *= 2.0
-                retries += 1
-        raise RuntimeError(f"Failed to fetch {url} after {self.max_retries} attempts")
+# ---------------------------------------------------------------------------
+# Config loading
+# ---------------------------------------------------------------------------
 
 
 def load_titles_config(path: str) -> list[TitleSpec]:
@@ -298,415 +208,9 @@ def title_from_legacy(lccn: str, alias: str) -> TitleSpec:
     return TitleSpec(lccn=lccn, alias=alias)
 
 
-def batch_family(batch: str) -> str:
-    match = BATCH_VERSION_RE.match(batch)
-    return match.group(1) if match else batch
-
-
-def batch_version(batch: str) -> int:
-    match = BATCH_VERSION_RE.match(batch)
-    return int(match.group(2)) if match else 0
-
-
-def dedupe_batch_versions(batches: list[str]) -> list[str]:
-    best: dict[str, tuple[int, str]] = {}
-    for batch in batches:
-        family = batch_family(batch)
-        version = batch_version(batch)
-        if family not in best or version > best[family][0]:
-            best[family] = (version, batch)
-    return sorted(value[1] for value in best.values())
-
-
-def tarball_batch_name(filename: str) -> str | None:
-    match = TARBALL_BATCH_RE.match(filename)
-    if match:
-        return match.group(1)
-    plain = PLAIN_TARBALL_RE.match(filename)
-    return plain.group(1) if plain else None
-
-
-def parse_ocr_manifest(payload: Any) -> list[TarballInfo]:
-    """Parse OCR tarball metadata from legacy or post-migration loc.gov manifests."""
-    if isinstance(payload, dict):
-        entries = payload.get("ocr", [])
-    elif isinstance(payload, list):
-        entries = payload
-    else:
-        return []
-
-    tarballs: list[TarballInfo] = []
-    for entry in entries:
-        if not isinstance(entry, dict):
-            continue
-        batch = entry.get("batch")
-        if not batch:
-            archive_name = entry.get("name") or entry.get("archive_name", "")
-            batch = tarball_batch_name(archive_name) or archive_name.removesuffix(
-                ".tar.bz2"
-            )
-        if not batch:
-            continue
-        url = entry.get("url")
-        sha1 = entry.get("sha1")
-        size = entry.get("size")
-        if not url or not sha1 or size is None:
-            continue
-        raw_lccns = entry.get("lccns") or []
-        issue_count = entry.get("issue_count") or 0
-        tarballs.append(
-            TarballInfo(
-                batch=batch,
-                url=url,
-                sha1=sha1,
-                size=int(size),
-                lccns=tuple(
-                    lccn
-                    for lccn in raw_lccns
-                    if isinstance(lccn, str) and LCCN_RE.match(lccn)
-                ),
-                issue_count=int(issue_count),
-            )
-        )
-    return tarballs
-
-
-def index_from_tarball_manifest(tarballs: list[TarballInfo]) -> dict[str, list[str]]:
-    """Build a batch→LCCN index from OCR manifest metadata (no HTTP crawl)."""
-    index: dict[str, list[str]] = {}
-    for info in tarballs:
-        if info.lccns:
-            index[info.batch] = sorted(info.lccns)
-    return index
-
-
-def fetch_ocr_tarballs(client: HttpClient) -> list[TarballInfo]:
-    last_error: Exception | None = None
-    for manifest_url in OCR_JSON_URLS:
-        try:
-            response = client.request(manifest_url)
-            response.raise_for_status()
-            tarballs = parse_ocr_manifest(response.json())
-            if tarballs:
-                return tarballs
-        except (requests.RequestException, ValueError, KeyError) as exc:
-            last_error = exc
-            logger.warning("Failed to load OCR manifest from %s: %s", manifest_url, exc)
-    raise RuntimeError(
-        "Could not load Chronicling America OCR tarball manifest from any known URL"
-    ) from last_error
-
-
-def _parse_directory_links(html: str) -> list[str]:
-    soup = BeautifulSoup(html, "html.parser")
-    links: list[str] = []
-    for anchor in soup.find_all("a"):
-        text = anchor.text.strip().rstrip("/")
-        href = anchor.get("href", "").strip()
-        if not text:
-            continue
-        if text in (".", "..", "../", "Parent Directory"):
-            continue
-        if href in ("../", "./", "/"):
-            continue
-        links.append(text)
-    return links
-
-
-def fetch_batch_lccns(client: HttpClient, batch: str) -> set[str]:
-    url = f"{BATCHES_URL}{batch}/data/"
-    response = client.request(url)
-    if response.status_code == 404:
-        return set()
-    response.raise_for_status()
-    return {
-        link
-        for link in _parse_directory_links(response.text)
-        if LCCN_RE.match(link)
-    }
-
-
-def build_or_load_batch_index(
-    client: HttpClient,
-    index_path: str,
-    batches: list[str] | None = None,
-    manifest_index: dict[str, list[str]] | None = None,
-) -> dict[str, list[str]]:
-    if os.path.exists(index_path):
-        with open(index_path, encoding="utf-8") as f:
-            cached = json.load(f)
-        return {batch: sorted(lccns) for batch, lccns in cached.items()}
-
-    if batches is None:
-        response = client.request(BATCHES_URL)
-        response.raise_for_status()
-        batches = [
-            link
-            for link in _parse_directory_links(response.text)
-            if "_ver" in link
-        ]
-
-    index: dict[str, list[str]] = dict(manifest_index or {})
-    batches_to_crawl = [batch for batch in sorted(batches) if batch not in index]
-    if not batches_to_crawl:
-        logger.info(
-            "Built batch index from OCR manifest metadata for %d batches (no crawl)",
-            len(index),
-        )
-    for idx, batch in enumerate(batches_to_crawl, start=1):
-        logger.info("Indexing batch %s (%d/%d)", batch, idx, len(batches_to_crawl))
-        lccns = fetch_batch_lccns(client, batch)
-        if lccns:
-            index[batch] = sorted(lccns)
-
-    os.makedirs(os.path.dirname(index_path) or ".", exist_ok=True)
-    with open(index_path, "w", encoding="utf-8") as f:
-        json.dump(index, f, indent=2)
-    return index
-
-
-def list_all_batches(client: HttpClient) -> list[str]:
-    response = client.request(BATCHES_URL)
-    response.raise_for_status()
-    return sorted(
-        link for link in _parse_directory_links(response.text) if "_ver" in link
-    )
-
-
-def batch_contains_lccn(client: HttpClient, batch: str, lccn: str) -> bool:
-    url = f"{BATCHES_URL}{batch}/data/{lccn}/"
-    response = client.request(url)
-    if response.status_code == 404:
-        return False
-    response.raise_for_status()
-    return bool(_parse_directory_links(response.text))
-
-
-def find_first_batch_for_lccn(client: HttpClient, lccn: str) -> str | None:
-    """Find the first batch whose data directory actually lists reels for the LCCN.
-
-    Only suitable for sampling; the bulk pipeline uses the full cached index instead.
-    """
-    batches = list_all_batches(client)
-    ordered = sorted(batches, key=lambda b: (0 if b.startswith("dlc_") else 1, b))
-    for batch in ordered:
-        if batch_contains_lccn(client, batch, lccn):
-            return batch
-    return None
-
-
-def batches_for_lccns(
-    index: dict[str, list[str]],
-    lccns: set[str],
-) -> list[str]:
-    matching = [
-        batch
-        for batch, batch_lccns in index.items()
-        if lccns.intersection(batch_lccns)
-    ]
-    return dedupe_batch_versions(matching)
-
-
-def issue_in_date_range(issue_date: str, title: TitleSpec) -> bool:
-    parsed = date.fromisoformat(issue_date)
-    if title.start_date and parsed < title.start_date:
-        return False
-    if title.end_date and parsed > title.end_date:
-        return False
-    return True
-
-
-def list_issues_in_batch(
-    client: HttpClient,
-    batch: str,
-    title: TitleSpec,
-) -> list[IssueInfo]:
-    lccn_url = f"{BATCHES_URL}{batch}/data/{title.lccn}/"
-    response = client.request(lccn_url)
-    if response.status_code == 404:
-        return []
-    response.raise_for_status()
-
-    issues: list[IssueInfo] = []
-    for reel in _parse_directory_links(response.text):
-        reel_url = f"{lccn_url}{reel}/"
-        reel_response = client.request(reel_url)
-        reel_response.raise_for_status()
-        for issue_dir in _parse_directory_links(reel_response.text):
-            if not ISSUE_DIR_RE.match(issue_dir):
-                continue
-            issue_date = f"{issue_dir[:4]}-{issue_dir[4:6]}-{issue_dir[6:8]}"
-            if not issue_in_date_range(issue_date, title):
-                continue
-            edition = f"ed-{int(issue_dir[8:10])}"
-            issues.append(
-                IssueInfo(
-                    batch=batch,
-                    lccn=title.lccn,
-                    alias=title.alias,
-                    date=issue_date,
-                    edition=edition,
-                    issue_dir_name=issue_dir,
-                    url=f"{reel_url}{issue_dir}/",
-                )
-            )
-    return issues
-
-
-def issue_dir_name_from_date_edition(issue_date: str, edition: str) -> str:
-    year, month, day = issue_date.split("-")
-    ed_num = int(edition.replace("ed-", ""))
-    return f"{year}{month}{day}{ed_num:02d}"
-
-
-def issue_info_from_tarball_key(
-    batch: str,
-    issue_key: str,
-    alias_by_lccn: dict[str, str],
-) -> IssueInfo:
-    lccn, issue_date, edition = issue_key.split("/", 2)
-    return IssueInfo(
-        batch=batch,
-        lccn=lccn,
-        alias=alias_by_lccn[lccn],
-        date=issue_date,
-        edition=edition,
-        issue_dir_name=issue_dir_name_from_date_edition(issue_date, edition),
-        url="",
-    )
-
-
-def issues_from_tarball_extraction(
-    extracted: dict[str, dict[int, bytes]],
-    batch: str,
-    titles: list[TitleSpec],
-    alias_by_lccn: dict[str, str],
-) -> list[IssueInfo]:
-    title_by_lccn = {title.lccn: title for title in titles}
-    issues: list[IssueInfo] = []
-    for issue_key in sorted(extracted):
-        lccn = issue_key.split("/", 1)[0]
-        title = title_by_lccn.get(lccn)
-        if title is None:
-            continue
-        issue = issue_info_from_tarball_key(batch, issue_key, alias_by_lccn)
-        if issue_in_date_range(issue.date, title):
-            issues.append(issue)
-    return issues
-
-
-def issue_url_cache_path(state_dir: str, batch: str, lccn: str) -> str:
-    return os.path.join(state_dir, "issue_urls", f"{batch}_{lccn}.json")
-
-
-def load_issue_url_cache(path: str) -> dict[str, str]:
-    if not os.path.exists(path):
-        return {}
-    with open(path, encoding="utf-8") as handle:
-        return json.load(handle)
-
-
-def save_issue_url_cache(path: str, mapping: dict[str, str]) -> None:
-    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
-    with open(path, "w", encoding="utf-8") as handle:
-        json.dump(mapping, handle, indent=2)
-
-
-def enumerate_issue_urls(
-    client: HttpClient,
-    batch: str,
-    title: TitleSpec,
-    cache_path: str,
-    *,
-    needed: set[str] | None = None,
-) -> dict[str, str]:
-    """Map issue_dir_name → issue base URL, with incremental on-disk cache.
-
-    Only crawls ``chroniclingamerica.loc.gov/data/batches/{batch}/data/{lccn}/``
-    directory listings. When *needed* is provided, stops as soon as every
-    requested issue_dir_name has been found (typically after a handful of reel
-    listings instead of the full batch).
-    """
-    cached = load_issue_url_cache(cache_path)
-    if needed and needed.issubset(cached):
-        return cached
-
-    lccn_url = f"{BATCHES_URL}{batch}/data/{title.lccn}/"
-    response = client.request(lccn_url)
-    if response.status_code == 404:
-        save_issue_url_cache(cache_path, cached)
-        return cached
-    response.raise_for_status()
-
-    for reel in _parse_directory_links(response.text):
-        if needed and needed.issubset(cached):
-            break
-        reel_url = f"{lccn_url}{reel}/"
-        reel_response = client.request(reel_url)
-        reel_response.raise_for_status()
-        for issue_dir in _parse_directory_links(reel_response.text):
-            if not ISSUE_DIR_RE.match(issue_dir):
-                continue
-            if issue_dir not in cached:
-                cached[issue_dir] = f"{reel_url}{issue_dir}/"
-        save_issue_url_cache(cache_path, cached)
-
-    if BATCH_ENUMERATION_COOLDOWN > 0:
-        logger.info(
-            "Pausing %.0fs after enumerating %s/%s",
-            BATCH_ENUMERATION_COOLDOWN,
-            batch,
-            title.lccn,
-        )
-        time.sleep(BATCH_ENUMERATION_COOLDOWN)
-
-    return cached
-
-
-def resolve_issue_urls(
-    client: HttpClient,
-    batch: str,
-    title: TitleSpec,
-    issues: list[IssueInfo],
-    state_dir: str,
-) -> list[IssueInfo]:
-    if not issues:
-        return []
-    cache_path = issue_url_cache_path(state_dir, batch, title.lccn)
-    needed = {issue.issue_dir_name for issue in issues}
-    url_map = enumerate_issue_urls(
-        client,
-        batch,
-        title,
-        cache_path,
-        needed=needed,
-    )
-    resolved: list[IssueInfo] = []
-    for issue in issues:
-        base_url = url_map.get(issue.issue_dir_name, "")
-        if not base_url:
-            logger.warning(
-                "No batch URL for %s in %s/%s",
-                issue.issue_dir_name,
-                batch,
-                title.lccn,
-            )
-            continue
-        resolved.append(replace(issue, url=base_url))
-    return resolved
-
-
-def dedupe_issues(issues: list[IssueInfo]) -> list[IssueInfo]:
-    best: dict[str, IssueInfo] = {}
-    for issue in issues:
-        key = f"{issue.lccn}/{issue.date}/{issue.edition}"
-        current = best.get(key)
-        if current is None:
-            best[key] = issue
-            continue
-        if batch_version(issue.batch) > batch_version(current.batch):
-            best[key] = issue
-    return sorted(best.values(), key=lambda i: (i.alias, i.date, i.edition))
+# ---------------------------------------------------------------------------
+# Download planning and dry-run reporting
+# ---------------------------------------------------------------------------
 
 
 def build_download_plan(
@@ -816,173 +320,9 @@ def print_dry_run_report(plan: DownloadPlan) -> None:
     print(format_dry_run_report(plan), end="")
 
 
-def verify_sha1(path: str, expected: str) -> bool:
-    digest = hashlib.sha1()
-    with open(path, "rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest() == expected.lower()
-
-
-def download_file(
-    client: HttpClient,
-    url: str,
-    dest_path: str,
-    max_retries: int = 5,
-) -> None:
-    """Stream a URL to disk, retrying on mid-stream connection drops.
-
-    Downloads to a temporary file first and renames on success so partially
-    written files never look complete to the resume logic.
-    """
-    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-    tmp_path = f"{dest_path}.part"
-    backoff = 2.0
-    last_exc: Exception | None = None
-    for attempt in range(1, max_retries + 1):
-        try:
-            response = client.request(url, stream=True)
-            response.raise_for_status()
-            with open(tmp_path, "wb") as handle:
-                for chunk in response.iter_content(chunk_size=1024 * 1024):
-                    if chunk:
-                        handle.write(chunk)
-            os.replace(tmp_path, dest_path)
-            return
-        except requests.exceptions.HTTPError as exc:
-            status = exc.response.status_code if exc.response is not None else None
-            if status is not None and is_transient_status(status):
-                last_exc = exc
-                logger.warning(
-                    "Download of %s failed with HTTP %s (attempt %d/%d)",
-                    url,
-                    status,
-                    attempt,
-                    max_retries,
-                )
-                if os.path.exists(tmp_path):
-                    os.remove(tmp_path)
-                time.sleep(backoff)
-                backoff *= 2.0
-                continue
-            raise
-        except (
-            requests.exceptions.ChunkedEncodingError,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.Timeout,
-        ) as exc:
-            last_exc = exc
-            logger.warning(
-                "Download of %s interrupted (attempt %d/%d): %s",
-                url,
-                attempt,
-                max_retries,
-                exc,
-            )
-            if os.path.exists(tmp_path):
-                os.remove(tmp_path)
-            time.sleep(backoff)
-            backoff *= 2.0
-    raise RuntimeError(
-        f"Failed to download {url} after {max_retries} attempts"
-    ) from last_exc
-
-
-def extract_alto_members(
-    tarball_path: str,
-    lccns: set[str],
-) -> dict[str, dict[int, bytes]]:
-    """Return {issue_key: {seq_num: alto_xml_bytes}} extracted from tarball."""
-    extracted: dict[str, dict[int, bytes]] = {}
-    with tarfile.open(tarball_path, mode="r:bz2") as archive:
-        for member in archive.getmembers():
-            if not member.isfile():
-                continue
-            # Expected layout: lccn/YYYY/MM/DD/ed-N/seq-N/ocr.xml
-            parts = member.name.split("/")
-            if len(parts) != 7:
-                continue
-            lccn, year, month, day, edition, seq_dir, filename = parts
-            if lccn not in lccns:
-                continue
-            if not filename.endswith(".xml"):
-                continue
-            seq_match = re.match(r"seq-(\d+)$", seq_dir)
-            if not seq_match:
-                continue
-            issue_key = f"{lccn}/{year}-{month}-{day}/{edition}"
-            file_obj = archive.extractfile(member)
-            if file_obj is None:
-                continue
-            content = file_obj.read()
-            extracted.setdefault(issue_key, {})[int(seq_match.group(1))] = content
-    return extracted
-
-
-def parse_mets_alto_filenames(mets_xml: bytes) -> list[str]:
-    soup = BeautifulSoup(mets_xml, "xml")
-    file_map: dict[str, str] = {}
-    file_sec = soup.find("fileSec")
-    if file_sec:
-        for file_tag in file_sec.find_all("file"):
-            file_id = file_tag.get("ID")
-            flocat = file_tag.find("FLocat")
-            if file_id and flocat and flocat.get("xlink:href"):
-                file_map[file_id] = os.path.basename(flocat["xlink:href"])
-
-    ordered: list[str] = []
-    struct_map = soup.find("structMap")
-    if struct_map:
-        page_divs = struct_map.find_all(
-            "div",
-            {"TYPE": lambda value: value and "page" in value.lower()},
-        )
-        for div in page_divs:
-            fptr = div.find("fptr", {"FILEID": lambda value: value and value.startswith("ocrFile")})
-            if not fptr:
-                continue
-            filename = file_map.get(fptr.get("FILEID", ""))
-            if filename:
-                ordered.append(filename)
-    return ordered
-
-
-def issue_local_dir(output_dir: str, issue: IssueInfo) -> str:
-    year, month, day = issue.date.split("-")
-    return os.path.join(output_dir, issue.alias, year, month, day, issue.edition)
-
-
-def issue_state_key(issue: IssueInfo) -> str:
-    return f"{issue.alias}/{issue.date}/{issue.edition}"
-
-
-def write_issue_layout(
-    output_dir: str,
-    issue: IssueInfo,
-    mets_bytes: bytes,
-    alto_by_seq: dict[int, bytes],
-) -> None:
-    issue_dir = issue_local_dir(output_dir, issue)
-    alto_dir = os.path.join(issue_dir, "alto")
-    os.makedirs(alto_dir, exist_ok=True)
-
-    mets_path = os.path.join(issue_dir, f"{issue.issue_dir_name}.xml")
-    with open(mets_path, "wb") as handle:
-        handle.write(mets_bytes)
-
-    href_names = parse_mets_alto_filenames(mets_bytes)
-    if href_names:
-        for seq_num, alto_bytes in sorted(alto_by_seq.items()):
-            if seq_num <= len(href_names):
-                filename = href_names[seq_num - 1]
-            else:
-                filename = f"seq-{seq_num}.xml"
-            with open(os.path.join(alto_dir, filename), "wb") as handle:
-                handle.write(alto_bytes)
-    else:
-        for seq_num, alto_bytes in sorted(alto_by_seq.items()):
-            with open(os.path.join(alto_dir, f"seq-{seq_num}.xml"), "wb") as handle:
-                handle.write(alto_bytes)
+# ---------------------------------------------------------------------------
+# Per-issue METS download and tarball processing
+# ---------------------------------------------------------------------------
 
 
 def download_issue_mets(
@@ -1054,7 +394,7 @@ def finalize_issue_from_tarball(
 
 
 def process_tarball(
-    client: HttpClient,
+    client: HttpClient | TieredHttpClient,
     tarball: TarballInfo,
     titles: list[TitleSpec],
     output_dir: str,
@@ -1066,6 +406,7 @@ def process_tarball(
     *,
     mets_burst_size: int = METS_BURST_SIZE,
     mets_burst_pause: float = METS_BURST_PAUSE,
+    enumeration_cooldown: float = BATCH_ENUMERATION_COOLDOWN,
 ) -> None:
     if tarball.sha1 in state.completed_tarballs:
         logger.info("Skipping tarball %s (already completed)", tarball.batch)
@@ -1108,7 +449,14 @@ def process_tarball(
         title = titles_by_lccn[lccn]
         lccn_issues = [issue for issue in batch_issues if issue.lccn == lccn]
         resolved_issues.extend(
-            resolve_issue_urls(client, tarball.batch, title, lccn_issues, state_dir)
+            resolve_issue_urls(
+                client,
+                tarball.batch,
+                title,
+                lccn_issues,
+                state_dir,
+                enumeration_cooldown=enumeration_cooldown,
+            )
         )
 
     download_mets_with_pacing(
@@ -1154,15 +502,20 @@ def run_bulk_download(
     delay: float = DEFAULT_REQUEST_DELAY,
     max_requests_per_minute: int = DEFAULT_MAX_REQUESTS_PER_MINUTE,
     directory_delay: float = DEFAULT_DIRECTORY_DELAY,
+    asset_delay: float | None = None,
+    asset_max_requests_per_minute: int | None = None,
     tarball_cooldown: float = TARBALL_COOLDOWN,
+    enumeration_cooldown: float = BATCH_ENUMERATION_COOLDOWN,
     mets_burst_size: int = METS_BURST_SIZE,
     mets_burst_pause: float = METS_BURST_PAUSE,
-    client: HttpClient | None = None,
+    client: HttpClient | TieredHttpClient | None = None,
 ) -> DownloadPlan:
-    http = client or HttpClient(
+    http = client or make_http_client(
         delay=delay,
         max_requests_per_minute=max_requests_per_minute,
         directory_delay=directory_delay,
+        asset_delay=asset_delay,
+        asset_max_requests_per_minute=asset_max_requests_per_minute,
     )
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(state_dir, exist_ok=True)
@@ -1200,6 +553,7 @@ def run_bulk_download(
             keep_tarballs,
             mets_burst_size=mets_burst_size,
             mets_burst_pause=mets_burst_pause,
+            enumeration_cooldown=enumeration_cooldown,
         )
 
     logger.info("Bulk download completed for %d titles", len(titles))
