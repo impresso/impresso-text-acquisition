@@ -112,9 +112,9 @@ def entry2issue(
 def detect_issues(
     base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None
 ) -> list[RTSIssueDir]:
-    """Detect INA Radio broadcasts to import within the filesystem.
+    """Detect RTS Radio broadcasts to import within the filesystem.
 
-    This function expects the directory structure that we created for Swissinfo.
+    This function expects the JSON issue index and that we created for RTS.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.
@@ -192,9 +192,5 @@ def select_issues(base_dir: str, config: dict) -> list[RTSIssueDir] | None:
     logger.info(
         f"{len(filtered_issues)} newspaper issues remained after applying filter ({len(selected_issues)} before.)"
     )
-
-    return filtered_issues
-
-    print(f"SELECT issues = {issues}, filtered_issues = {filtered_issues}")
 
     return filtered_issues

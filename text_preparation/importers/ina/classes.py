@@ -141,15 +141,12 @@ class INABroadcastIssue(CanonicalIssue):
 
     def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
-        self.metadata_file = issue_dir.metadata_file
+        self.issue_metadata = issue_dir.issue_metadata
         self._notes = []
         self.audio_records = []
 
-        self._find_asr_files()
         self._find_audios()
         self._parse_content_item()
-
-        program, channel = self._fetch_broadcast_metadata()
 
         self.issue_data = {
             "id": self.id,
@@ -158,7 +155,24 @@ class INABroadcastIssue(CanonicalIssue):
             "sm": SourceMedium.AO.value,
             "i": self.content_items,
             "rr": [r.id for r in self.audio_records],
+            "is_exact_date": self.metadata["exact_date"],
         }
+
+        # add the radio program and channel to the data if they were not None
+        if self.metadata["broadcast_program_name"]:
+            self.issue_data["rp"] = self.metadata["broadcast_program_name"]
+        if self.metadata["radio_channel"]:
+            self.issue_data["rc"] = self.metadata["radio_channel"]
+
+        # if we know the full duration of the record, save it
+        self.duration = (
+            None
+            if (
+                self.metadata["work_duration"] is None
+                or self.metadata["work_duration"] == "00:00:00"
+            )
+            else self.metadata["work_duration"]
+        )
 
         # add the radio program and channel to the data if they were not None
         if program:
