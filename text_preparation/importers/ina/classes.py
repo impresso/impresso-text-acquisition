@@ -8,13 +8,14 @@ import os
 import logging
 import json
 from time import strftime, gmtime
-from collections import Counter
+from typing import Any
 
 from bs4 import BeautifulSoup
 from mutagen.mp3 import MP3
 
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
+from text_preparation.importers import CONTENTITEM_TYPE_ARTICLE
 from text_preparation.importers.classes import CanonicalIssue, CanonicalAudioRecord
 from text_preparation.importers.ina.helpers import get_utterances
 
@@ -40,13 +41,13 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         issue (CanonicalIssue | None): Issue this page is from.
     """
 
-    def __init__(self, _id: str, number: int, xml_filepath: str) -> None:
+    def __init__(self, _id: str, number: int, json_filepath: str, mp3_filepath: str) -> None:
         super().__init__(_id, number)
-        self.xml_filepath = xml_filepath
-        self.json_filepath = xml_filepath.replace(".xml", ".json")
-        # TODO change once the mp3 files are moved and renamed
-        self.mp3_filepath = xml_filepath.replace(".xml", ".MP3")
+        # the text is actually stored in a json
+        self.json_filepath = json_filepath
+        self.mp3_filepath = mp3_filepath
         self.iiif_base_uri = self.create_iiif()
+        self.dur_in_sec = None
         self.notes = []
 
         self.record_data = {
@@ -73,8 +74,8 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         self.issue = issue
 
     @property
-    def xml(self) -> BeautifulSoup:
-        """Read XML file of the audio record and create a BeautifulSoup object.
+    def json(self) -> BeautifulSoup:
+        """Read json file of the audio record and return the corresponding dict object.
 
         Returns:
             BeautifulSoup: BeautifulSoup object with XML of the audio record.
@@ -83,11 +84,10 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         tries = 3
         for i in range(tries):
             try:
-                with open(self.xml_filepath, "r", encoding="utf-8") as f:
-                    raw_xml = f.read()
+                with open(self.json_filepath, "r", encoding="utf-8") as f:
+                    json_contents = json.load(f)
 
-                xml_doc = BeautifulSoup(raw_xml, "xml")
-                return xml_doc
+                return json_contents
             except IOError as e:
                 if i < tries - 1:  # i is zero indexed
                     msg = (
@@ -100,19 +100,38 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
                     logger.error("Reached maximum amount of errors for %s.", self.id)
                     raise e
 
-    def _get_duration(self) -> str:
-        dur_in_sec = MP3(self.mp3_filepath).info.length
-        return strftime("%H:%M:%S", gmtime(dur_in_sec))
+    def _set_duration(self) -> None:
+        self.dur_in_secs = MP3(self.mp3_filepath).info.length
+        formatted_dur = strftime("%H:%M:%S", gmtime(self.dur_in_secs))
+
+        if self.issue.duration is not None and self.issue.duration != formatted_dur:
+            msg = f"audio {self.id} - The found duration {formatted_dur} does not match the on from the metadata {self.issue.duration}!"
+            print(msg)
+            logger.info(msg)
+
+        # set the duration in the record data
+        self.record_data["dur"] = formatted_dur
+
+    def _get_duration(self, in_secs=True) -> str:
+        # set the duration in the record data
+        if self.record_data["dur"] == "":
+            self._set_duration()
+
+        return self.dur_in_sec if in_secs else self.record_data["dur"]
 
     def parse(self) -> None:
 
-        self.record_data["dur"] = self._get_duration()
-        xml_doc = self.xml
+        if self.record_data["dur"] == "":
+            self._set_duration()
 
-        utterances = get_utterances(xml_doc)
+        json_doc = self.json
+        # TODO
+        utterances = get_utterances(json_doc)
 
         section_stime = utterances[0]["tc"][0]
-        section_etime = max(float(ss.get("etime")) for ss in xml_doc.findAll("SpeechSegment"))
+        # the section end time is the end time of the last word in the last speech seg
+        section_etime = json_doc[-1]["words"][-1]["end"]
+        # max(float(ss.get("etime")) for ss in json_doc.findAll("SpeechSegment"))
 
         self.record_data["s"] = [
             {
@@ -141,7 +160,7 @@ class INABroadcastIssue(CanonicalIssue):
 
     def __init__(self, issue_dir: IssueDir) -> None:
         super().__init__(issue_dir)
-        self.issue_metadata = issue_dir.issue_metadata
+        self.metadata = issue_dir.issue_metadata
         self._notes = []
         self.audio_records = []
 
@@ -174,11 +193,8 @@ class INABroadcastIssue(CanonicalIssue):
             else self.metadata["work_duration"]
         )
 
-        # add the radio program and channel to the data if they were not None
-        if program:
-            self.issue_data["rp"] = program
-        if channel:
-            self.issue_data["rc"] = channel
+        # recover and lightly clean all the provider given metadata which will be included almost "as-is" in the issues
+        self.issue_data["provided_metadata"] = self._clean_provided_metadata()
 
         self.issue_data["n"] = self._notes
 
@@ -186,117 +202,87 @@ class INABroadcastIssue(CanonicalIssue):
         # Not defined in this context
         pass
 
-    def _find_asr_files(self) -> None:
-        # TODO modifiy this once we have more context
-        # the key of this rb is the directory
-        self.rb_issue_key = os.path.basename(self.path)
-        # read the contents of the metadata json
-        with open(self.metadata_file, "r", encoding="utf-8") as f:
-            metadata_json = json.load(f)
-
-        self.metadata = metadata_json[self.rb_issue_key]
-        exp_xml_filename = (
-            f"{self.metadata['Identifiant de la notice']}_{self.metadata['Noms fichers']}"
-        )
-
-        dir_contents = os.listdir(self.path)
-        xml_files = [f for f in dir_contents if f.endswith(".xml")]
-        if len(xml_files) > 1:
-            msg = f"{self.id} - There is more than one xml file in dir!!"
-            print(msg)
-            logger.warning(msg)
-            self._notes.append(msg)
-            raise Exception(msg)
-        else:
-            xml_filename = xml_files[0]
-
-        if exp_xml_filename not in xml_filename:
-            msg = (
-                f"{self.id} - The issue's folder {self.path} does not contain the expected"
-                f" xml file {exp_xml_filename}. Contents of the folder are {dir_contents} will be used."
-            )
-            print(msg)
-            logger.warning(msg)
-            self._notes.append(msg)
-
-        self.xml_file_path = os.path.join(self.path, xml_filename)
-        self.json_file_path = self.xml_file_path.replace(".xml", ".json")
-
     def _find_audios(self) -> None:
-        # currently nothing but once we have put the audios in a IIIF server
-        # TODO change to go fetch the actual final audio MP3 file
-        # There is only one audio for each issue
-        audio_id = self.metadata["Audio Record ID"]
-        self.audio_file_path = self.xml_file_path.replace(".xml", ".MP3")
 
-        if not os.path.exists(self.audio_file_path):
-            msg = f"{self.id} - The issue's audio record MP3 file {self.audio_file_path} cannot be found!"
+        # define the base mp3 and xml paths, both are lists
+        self.json_filepath = [os.path.join(self.path, f) for f in self.metadata["xml_filepath"]]
+        self.mp3_filepath = [os.path.join(self.path, f) for f in self.metadata["mp3_filepath"]]
+
+        if len(self.mp3_filepath) > 1:
+            msg = f"{self.id} - This issue has more than one audio file!!"
             print(msg)
-            logger.warning(msg)
-            self._notes.append(msg)
 
-        self.audio_records.append(INABroadcastAudioRecord(audio_id, 1, self.xml_file_path))
+        full_audio_length = 0
 
-    def _find_lang(self) -> str:
-
-        # sometimes the language is given inside the metadata
-        if self.metadata["Résumé"] is not None and "En anglais" in self.metadata["Résumé"]:
-            return "en"
-
-        else:
-            xml_doc = self.audio_records[0].xml
-            # identify all the languages found in the xml (speakers or speechsegments)
-            langs = Counter(
-                [s.get("lang") for s in xml_doc.find_all("Speaker")]
-                + [ss.get("lang") for ss in xml_doc.find_all("SpeechSegment")]
-            )
-            if len(langs) > 1:
-                msg = (
-                    f"{self.id} - Warning, more than one language was found in the ASR XML. "
-                    f"Choosing the most frequent one: {langs}."
-                )
-                logger.warning(msg)
+        for idx, mp3_path in enumerate(self.mp3_filepath):
+            if not os.path.exists(mp3_path):
+                msg = f"{self.id} - The issue's audio record n°{idx+1} MP3 file {mp3_path} cannot be found!"
                 print(msg)
+                logger.warning(msg)
                 self._notes.append(msg)
 
-            return LANG_MAPPING[max(langs)]
+            audio_id = f"{self.id}-r{str(idx+1).zfill(4)}"
+
+            audio_rec = INABroadcastAudioRecord(
+                audio_id, idx + 1, self.json_filepath, self.mp3_filepath
+            )
+
+            self.audio_records.append(audio_rec)
+
+            # sum the duration in seconds of the records from the length of each audio
+            full_audio_length += audio_rec._get_duration()
+
+        full_formatted_dur = strftime("%H:%M:%S", gmtime(full_audio_length))
+        if self.duration is not None and self.duration != full_formatted_dur:
+            msg = f"audio {self.id} - The sum of the found durations of records ({full_formatted_dur}) does not match the one from the metadata {self.duration}!"
+            print(msg)
+            self._notes.append(msg)
+            logger.info(msg)
 
     def _parse_content_item(self) -> None:
 
         ci_metadata = {
             "id": f"{self.id}-i{str(1).zfill(4)}",
-            "lg": self._find_lang(),
+            "lg": "fr",
             "rr": [r.number for r in self.audio_records],
             # only this type for now
-            "tp": "radio_broadcast_episode",
+            "tp": (
+                self.metadata["broadcast_type"]
+                if self.metadata["broadcast_type"]
+                else CONTENTITEM_TYPE_ARTICLE
+            ),
             "ro": 1,
         }
 
-        if self.metadata["Titre propre"] is not None:
-            ci_metadata["t"] = self.metadata["Titre propre"]
-
-        if self.metadata["Résumé"] is not None:
-            ci_metadata["archival_note"] = self.metadata["Résumé"]
+        if self.metadata["broadcast_episode_title"] is not None:
+            ci_metadata["t"] = self.metadata["broadcast_episode_title"]
 
         # the legacy we can provide is the original notice ID and filename in the metadata
         ci_legacy = {
-            "source": [
-                f"Identifiant de la notice (in metadata): {self.metadata['Identifiant de la notice']}",
-                f"Noms fichers (in metadata): {self.metadata['Noms fichers']}",
-                f"Noms fichers (in practice): {os.path.basename(self.xml_file_path).replace('.xml', '')}",
-            ]
+            "notice_id": self.metadata["notice_id"],
+            "src_files": {
+                "audio_json": self.metadata["xml_filepath"],
+                "audio_mp3": self.metadata["mp3_filepath"],
+            },
         }
 
         self.content_items = [{"m": ci_metadata, "l": ci_legacy}]
 
-    def _fetch_broadcast_metadata(self) -> tuple[str | None, str | None]:
+    def _clean_provided_metadata(self) -> dict[str, Any]:
 
-        program, channel = None, None
-        if self.metadata["Titre collection"] is not None:
-            program = self.metadata["Titre collection"]
-        if self.metadata["Canal de diffusion"] is not None:
-            channel = self.metadata["Canal de diffusion"]
-            if self.metadata["Société de programmes"] is not None:
-                channel = f"{channel} ({self.metadata['Société de programmes']})"
+        clean_meta = {}
+        for k, v in self.metadata.items():
+            # filter out some unnecessary keys
+            if k not in [
+                "mp3_filepath",
+                "xml_filepath",
+                "exact_date",
+                "radio_channel",
+                "broadcast_type",
+                "notice_id",
+            ]:
+                if v is not None and not (isinstance(v, list) and not v):
+                    # set all the non-null and non-empty values
+                    clean_meta[k] = v
 
-        return program, channel
+        return clean_meta
