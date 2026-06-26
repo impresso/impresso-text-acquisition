@@ -103,9 +103,6 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
     def _set_duration(self) -> None:
         self.dur_in_secs = MP3(self.mp3_filepath).info.length
         formatted_dur = strftime("%H:%M:%S", gmtime(self.dur_in_secs))
-        print(
-            f"{self.id} - self.dur_in_secs={self.dur_in_secs},  MP3(self.mp3_filepath).info={ MP3(self.mp3_filepath).info}"
-        )
 
         if self.issue and self.issue.duration is not None and self.issue.duration != formatted_dur:
             msg = f"audio {self.id} - The found duration {formatted_dur} does not match the on from the metadata {self.issue.duration}!"
@@ -117,12 +114,8 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
 
     def _get_duration(self, in_secs=True) -> str:
         # set the duration in the record data
-        print(f"{self.id} - self.record_data['dur']={self.record_data['dur']}, hasattr(self, )")
         if self.record_data["dur"] == "":
             self._set_duration()
-            print(
-                f"{self.id} - self.record_data['dur']={self.record_data['dur']}, self.dur_in_sec={self.dur_in_secs}"
-            )
 
         return self.dur_in_secs if in_secs else self.record_data["dur"]
 
@@ -238,9 +231,6 @@ class INABroadcastIssue(CanonicalIssue):
 
             # sum the duration in seconds of the records from the length of each audio
             audio_dur = audio_rec._get_duration()
-            print(
-                f"{self.id}: full_audio_length={full_audio_length}, audio_rec._get_duration()={audio_dur}"
-            )
             full_audio_length += audio_dur
 
         full_formatted_dur = strftime("%H:%M:%S", gmtime(full_audio_length))

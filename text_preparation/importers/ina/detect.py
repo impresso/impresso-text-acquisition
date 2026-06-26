@@ -7,6 +7,8 @@ from datetime import datetime, date
 from collections import namedtuple
 from typing import Any
 
+from ast import literal_eval
+
 from dask import bag as db
 
 from text_preparation.importers.detect import _apply_datefilter
@@ -132,7 +134,8 @@ def detect_issues(
 
     with open(FAILED_COPIES_FILE, "r", encoding="utf-8") as f:
         failed_copies_list = list(f)
-    issues_to_ignore = [l["issue_id"] for l in failed_copies_list]
+
+    issues_to_ignore = [json.loads(l)["issue_id"] for l in failed_copies_list]
 
     issues: list[INAIssueDir] = []
 

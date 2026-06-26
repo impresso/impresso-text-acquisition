@@ -49,7 +49,7 @@ def get_utterances(json_doc: dict) -> list[dict]:
 
         tokens = [
             # each words start with a space, we want to remove them immediately
-            {"tc": extract_time_coords_from_elem(word), "tx": word["word"].split()}
+            {"tc": extract_time_coords_from_elem(word), "tx": word["word"].strip()}
             for word in json_ss["words"]
         ]
 
