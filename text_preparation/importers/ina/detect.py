@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 JSON_FILE = "../data/issue_indices/issue_index.ina.json"
 METADATA_FILE = "../data/sample_data/INA/issues_metadata.ina.json"
+FAILED_COPIES_FILE = "../data/sample_data/INA/failed_audio_copies.jsonl"
 
 INAIssueDir = namedtuple(
     "IssueDirectory", ["provider", "alias", "date", "edition", "path", "issue_metadata"]
@@ -129,6 +130,10 @@ def detect_issues(
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         issues_data = json.load(f)
 
+    with open(FAILED_COPIES_FILE, "r", encoding="utf-8") as f:
+        failed_copies_list = list(f)
+    issues_to_ignore = [l["issue_id"] for l in failed_copies_list]
+
     issues: list[INAIssueDir] = []
 
     msg = f"INSIDE INA DETECT ISSUES: alias_filter: {alias_filter}"
@@ -147,8 +152,16 @@ def detect_issues(
         for year, months in years.items():
             for month, entries in months.items():
                 for entry in entries:
-                    issue = entry2issue(alias, year, month, entry, base_dir, alias_issues)
-                    issues.append(issue)
+
+                    issue_id = f"{alias}-{year}-{month}-{entry['day']}-{entry['edition']}"
+                    if issue_id not in issues_to_ignore:
+                        issue = entry2issue(alias, year, month, entry, base_dir, alias_issues)
+                        issues.append(issue)
+                    else:
+                        # don't process the issues which have faulty audio files
+                        msg = f"{issue_id} - This issue is in the list of faulty audio files - skipping."
+                        print(msg)
+                        logger.info(msg)
 
     return issues
 
