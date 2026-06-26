@@ -20,10 +20,10 @@ def extract_time_coords_from_elem(elem: dict, is_sseg: bool = False) -> list[flo
         return [
             elem["words"][0]["start"],  # start time of the first word
             # duration = end time of last word - start time of first word
-            elem["words"][-1]["end"] - elem["words"][0]["start"],
+            round(elem["words"][-1]["end"] - elem["words"][0]["start"], 5),
         ]
 
-    return [elem["start"], elem["end"] - elem["start"]]
+    return [elem["start"], round(elem["end"] - elem["start"], 5)]
 
 
 def get_utterances(json_doc: dict) -> list[dict]:

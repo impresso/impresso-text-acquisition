@@ -103,8 +103,11 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
     def _set_duration(self) -> None:
         self.dur_in_secs = MP3(self.mp3_filepath).info.length
         formatted_dur = strftime("%H:%M:%S", gmtime(self.dur_in_secs))
+        print(
+            f"{self.id} - self.dur_in_secs={self.dur_in_secs},  MP3(self.mp3_filepath).info={ MP3(self.mp3_filepath).info}"
+        )
 
-        if self.issue.duration is not None and self.issue.duration != formatted_dur:
+        if self.issue and self.issue.duration is not None and self.issue.duration != formatted_dur:
             msg = f"audio {self.id} - The found duration {formatted_dur} does not match the on from the metadata {self.issue.duration}!"
             print(msg)
             logger.info(msg)
@@ -114,10 +117,14 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
 
     def _get_duration(self, in_secs=True) -> str:
         # set the duration in the record data
+        print(f"{self.id} - self.record_data['dur']={self.record_data['dur']}, hasattr(self, )")
         if self.record_data["dur"] == "":
             self._set_duration()
+            print(
+                f"{self.id} - self.record_data['dur']={self.record_data['dur']}, self.dur_in_sec={self.dur_in_secs}"
+            )
 
-        return self.dur_in_sec if in_secs else self.record_data["dur"]
+        return self.dur_in_secs if in_secs else self.record_data["dur"]
 
     def parse(self) -> None:
 
@@ -164,6 +171,16 @@ class INABroadcastIssue(CanonicalIssue):
         self._notes = []
         self.audio_records = []
 
+        # if we know the full duration of the record, save it
+        self.duration = (
+            None
+            if (
+                self.metadata["work_duration"] is None
+                or self.metadata["work_duration"] == "00:00:00"
+            )
+            else self.metadata["work_duration"]
+        )
+
         self._find_audios()
         self._parse_content_item()
 
@@ -182,16 +199,6 @@ class INABroadcastIssue(CanonicalIssue):
             self.issue_data["rp"] = self.metadata["broadcast_program_name"]
         if self.metadata["radio_channel"]:
             self.issue_data["rc"] = self.metadata["radio_channel"]
-
-        # if we know the full duration of the record, save it
-        self.duration = (
-            None
-            if (
-                self.metadata["work_duration"] is None
-                or self.metadata["work_duration"] == "00:00:00"
-            )
-            else self.metadata["work_duration"]
-        )
 
         # recover and lightly clean all the provider given metadata which will be included almost "as-is" in the issues
         self.issue_data["provided_metadata"] = self._clean_provided_metadata()
@@ -224,13 +231,17 @@ class INABroadcastIssue(CanonicalIssue):
             audio_id = f"{self.id}-r{str(idx+1).zfill(4)}"
 
             audio_rec = INABroadcastAudioRecord(
-                audio_id, idx + 1, self.json_filepath, self.mp3_filepath
+                audio_id, idx + 1, self.json_filepath[idx], mp3_path
             )
 
             self.audio_records.append(audio_rec)
 
             # sum the duration in seconds of the records from the length of each audio
-            full_audio_length += audio_rec._get_duration()
+            audio_dur = audio_rec._get_duration()
+            print(
+                f"{self.id}: full_audio_length={full_audio_length}, audio_rec._get_duration()={audio_dur}"
+            )
+            full_audio_length += audio_dur
 
         full_formatted_dur = strftime("%H:%M:%S", gmtime(full_audio_length))
         if self.duration is not None and self.duration != full_formatted_dur:

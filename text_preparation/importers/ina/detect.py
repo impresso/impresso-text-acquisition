@@ -5,6 +5,7 @@ import os
 import json
 from datetime import datetime, date
 from collections import namedtuple
+from typing import Any
 
 from dask import bag as db
 
@@ -85,7 +86,7 @@ Args:
 
 def entry2issue(
     alias: str, year: str, month: str, entry: dict, base_dir: str, alias_issues: dict[str, Any]
-) -> RTSIssueDir:
+) -> INAIssueDir:
     """
     Convert a hierarchical JSON entry into a RTSIssueDir.
 
