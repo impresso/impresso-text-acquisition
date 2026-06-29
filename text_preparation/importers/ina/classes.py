@@ -128,18 +128,26 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         # TODO
         utterances = get_utterances(json_doc)
 
-        section_stime = utterances[0]["tc"][0]
-        # the section end time is the end time of the last word in the last speech seg
-        section_etime = json_doc[-1]["words"][-1]["end"]
-        # max(float(ss.get("etime")) for ss in json_doc.findAll("SpeechSegment"))
+        if len(utterances) > 0:
+            section_stime = utterances[0]["tc"][
+                0
+            ]  # if len(utterances) > 0 else json_doc[0]["words"][0]["start"]
+            # the section end time is the end time of the last word in the last speech seg
+            section_etime = json_doc[-1]["words"][-1]["end"]
+            # max(float(ss.get("etime")) for ss in json_doc.findAll("SpeechSegment"))
 
-        self.record_data["s"] = [
-            {
-                "tc": [section_stime, section_etime - section_stime],
-                "u": utterances,
-                "pOf": self.issue.content_items[0]["m"]["id"],
-            }
-        ]
+            self.record_data["s"] = [
+                {
+                    "tc": [section_stime, section_etime - section_stime],
+                    "u": utterances,
+                    "pOf": self.issue.content_items[0]["m"]["id"],
+                }
+            ]
+        else:
+            msg = f"{self.id} - len(utturances)=0!! json_doc={json_doc}, setting empty sections."
+            print(msg)
+            self.record_data["s"] = []
+            self.notes.append(msg)
 
 
 class INABroadcastIssue(CanonicalIssue):
@@ -188,9 +196,11 @@ class INABroadcastIssue(CanonicalIssue):
         }
 
         # add the radio program and channel to the data if they were not None
-        if self.metadata["broadcast_program_name"]:
+        if self.metadata["broadcast_program_name"] and isinstance(
+            self.metadata["broadcast_program_name"], str
+        ):
             self.issue_data["rp"] = self.metadata["broadcast_program_name"]
-        if self.metadata["radio_channel"]:
+        if self.metadata["radio_channel"] and isinstance(self.metadata["radio_channel"], str):
             self.issue_data["rc"] = self.metadata["radio_channel"]
 
         # recover and lightly clean all the provider given metadata which will be included almost "as-is" in the issues
