@@ -419,14 +419,6 @@ def rejoin_cis(issue: IssueDir, issue_json: dict[str, Any]) -> list[dict[str, An
                     issue_json["provided_metadata"], ci
                 )
             if "rr" in issue_json:
-                # TODO update in the case we can have >1 record per CI or vice-versa
-                if len(ci["m"]["rr"]) > 1:
-                    msg = (
-                        f"{ci['if']} - PROBLEM - more than one record for this CI! "
-                        "Taking only the first one."
-                    )
-                    print(msg)
-                    logger.warning(msg)
                 # taking the start time and duration of the first record for this CI
                 # (numbering starts at 1)
                 ci["stt"] = issue_json["rr"][ci["m"]["rr"][0] - 1]["stt"]
