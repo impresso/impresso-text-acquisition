@@ -18,6 +18,13 @@ logger = logging.getLogger(__name__)
 JSON_FILE = "../data/issue_indices/issue_index.ina.json"
 METADATA_FILE = "../data/sample_data/INA/issues_metadata.ina.json"
 FAILED_COPIES_FILE = "../data/sample_data/INA/failed_audio_copies.jsonl"
+# these four issues have faulty json files in their formatting. As a result we will ignore them during ingestion
+ADDITIONAL_FAULTY_ISSUES = [
+    "TrParis-1951-06-13-a",
+    "TrParis-1951-05-16-d",
+    "TrParis-1951-05-16-a",
+    "InterSoir-1995-01-03-b",
+]
 
 INAIssueDir = namedtuple(
     "IssueDirectory", ["provider", "alias", "date", "edition", "path", "issue_metadata"]
@@ -157,7 +164,10 @@ def detect_issues(
                 for entry in entries:
 
                     issue_id = f"{alias}-{year}-{month}-{entry['day']}-{entry['edition']}"
-                    if issue_id not in issues_to_ignore:
+                    if (
+                        issue_id not in issues_to_ignore
+                        and issue_id not in ADDITIONAL_FAULTY_ISSUES
+                    ):
                         issue = entry2issue(alias, year, month, entry, base_dir, alias_issues)
                         issues.append(issue)
                     else:
