@@ -1,0 +1,99 @@
+# structure_media — example configuration
+#
+# Handles images (-> JP2) and audio (mp3 copy), auto-detected per issue from
+# the `ext` field in the issues JSON. No media_type field is needed.
+#
+# Copy this file, adjust paths and filters, then run:
+#   impresso-structure-media --config my_config.yaml
+#   impresso-structure-media --config my_config.yaml --dry_run=False
+
+# --- Paths ---
+
+# JSON file listing all issues for the collection (alias > year > month > issues).
+issues_json_path: /path/to/issue_index.<provider>.json
+
+# Provider-specific access-rights JSON (rights[alias][year_range] entries).
+# REQUIRED for audio runs (read once at startup; per-issue lookups are pure
+# in-memory). Image-only runs may leave this empty.
+access_rights_path: ""
+
+# Root of source data (read-only mount is fine).
+source_base_dir: /mnt/project_impresso/original
+
+# Kind root for the writable output — the bare images or audios mount.
+# For audio runs the script appends {PROVIDER}/ internally (so on-disk paths
+# mirror the IIIF URL); for image runs the alias subtree starts directly
+# under this root. The augmented issue_index always lands at
+# {target_base_dir}/issue_index/ regardless of media type. Must be the rw
+# mount, NOT the read-only /mnt/project_impresso/images or .../audios.
+target_base_dir: /mnt/project_impresso_rw/images
+
+# --- Filtering ---
+
+# Process only these aliases (empty = all).
+aliases_include: []
+#  - BLB
+#  - actionfem
+
+# Skip these aliases (applied after aliases_include).
+aliases_exclude: []
+
+# --- Behaviour ---
+
+# SAFE DEFAULT: no files written. Set to false to actually process.
+dry_run: true
+
+# Process only the first N issues end-to-end (with actual writes).
+# Useful to smoke-test conversions before a full run. Overrides dry_run.
+# 0 = disabled (default).
+sample: 0
+
+# Reconvert / re-copy units whose target already exists. Default false lets
+# retries skip already-produced units cheaply.
+overwrite: false
+
+# Delete source image files after verified copy. NOT YET IMPLEMENTED — ignored.
+delete_source: false
+
+# --- Image conversion ---
+
+# JP2 compression ratio passed to opj_compress (-r). 1 = lossless (large; only
+# worthwhile for uncompressed-master sources), 10 = impresso standard
+# (~1-2pp reOCR loss, zoom-grade quality). Already-compressed JPEG sources may
+# yield a JP2 slightly larger than the source — a warning is logged when so.
+compression_ratio: 10
+
+# --- Performance ---
+
+# Number of threads for parallel page conversion within each issue.
+# 1 = sequential (default); higher values convert pages concurrently via
+# opj_compress subprocesses. Typical sweet spot: number of CPU cores.
+workers: 1
+
+# --- Output / Logging ---
+
+# Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL (default: INFO).
+log_level: INFO
+
+# Log file path (empty = log to stdout). Suggested layout:
+#   /rcp-scratch/journe/experiments/copy_media/logs/<provider>/<run>.log
+log_file: ""
+
+# Directory for the processing report. The script writes two files inside it:
+#   success.txt  — one issue_id per line (crash-safe, append mode)
+#   failed.jsonl — one JSON object per failed issue (issue_id, num_pages,
+#                  pages_ok, failed_pages, errors, timestamp)
+# Auto-created if missing. One directory per run; suggested layout:
+#   /rcp-scratch/journe/experiments/copy_media/reports/<provider>/<run>
+report_dir: ""
+
+# Directory of a prior report to resume from (same two-file layout).
+# Issues listed in prior_report_dir/success.txt are skipped this run.
+# Set prior_report_dir == report_dir for an in-place resume — the script
+# reads existing entries before appending, so files don't grow on re-runs
+# when an issue's status is unchanged.
+prior_report_dir: ""
+
+# When true AND prior_report_dir is set: only re-process issues listed in
+# prior_report_dir/failed.jsonl. Ignores new and already-succeeded issues.
+retry_failed_only: false

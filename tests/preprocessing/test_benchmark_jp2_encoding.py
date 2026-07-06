@@ -15,7 +15,7 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from text_preparation.importer_scripts.preprocessing.structure_facsimiles import (
+from text_preparation.importer_scripts.preprocessing.structure_media import (
     _run_opj_compress,
 )
 

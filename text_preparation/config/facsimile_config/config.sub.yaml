@@ -1,0 +1,69 @@
+# structure_media — SUB (Hamburger Echo) image configuration
+#
+# Image collection: each issue's `ext` is .tif, so the script auto-routes
+# through the image pipeline (TIF -> JP2 via opj_compress, {issue_id}-p{NNNN}.jp2
+# naming). The SUB TIFs are already lossy JPEG-in-TIFF (~9:1), so -r 10 yields a
+# JP2 slightly smaller than the source (~9.9M vs 11M) at ~44 dB — no inflation
+# warning expected here.
+#
+#   impresso-structure-media --config facsimile_config/config.sub.yaml
+#   impresso-structure-media --config facsimile_config/config.sub.yaml --dry_run=False
+
+# --- Paths ---
+
+# SUB issue index (alias > year > month > issues; alias = hamb_echo, ext = .tif).
+issues_json_path: /rcp-scratch/journe/impresso-acquisition/issue_indices/issue_index.sub.json
+
+# Image-only run — no access-rights needed.
+access_rights_path: ""
+
+# Read-only source mount (sources live under SUB/Hamburger_Echo/...).
+source_base_dir: /mnt/project_impresso/original
+
+# Kind root for the writable image output. For image runs the alias subtree
+# starts directly under this root (no {PROVIDER} segment), and the augmented
+# issue_index lands at /mnt/project_impresso_rw/images/issue_index/. Must be the
+# rw mount, NOT the read-only /mnt/project_impresso/images.
+target_base_dir: /mnt/project_impresso_rw/images
+
+# --- Filtering ---
+
+# Empty = all SUB aliases (the index only contains hamb_echo).
+aliases_include: []
+aliases_exclude: []
+
+# --- Behaviour ---
+
+# SAFE DEFAULT: no files written. Set to false (or pass --dry_run=False) to
+# actually process.
+dry_run: false
+
+sample: 0
+overwrite: false
+delete_source: false
+
+# --- Image conversion ---
+
+# impresso standard. SUB sources are already lossy JPEG-in-TIFF, so lossless
+# (-r 1) would 3x the size for no real fidelity gain; -r 10 keeps ~44 dB.
+compression_ratio: 10
+
+# --- Performance ---
+
+# 1 = sequential. SUB pages are large (~5000x7000) and opj_compress is single
+# threaded per page, so raising this toward the server core count speeds full
+# runs considerably.
+workers: 1
+
+# --- Output / Logging ---
+
+log_level: INFO
+
+# One log file + one report directory per run, named under the provider.
+log_file:          /rcp-scratch/journe/experiments/copy_media/logs/sub/run1.log
+report_dir:        /rcp-scratch/journe/experiments/copy_media/reports/sub/run1
+
+# In-place resume: rereading the same report dir before appending lets a
+# retry skip already-succeeded issues without growing the files.
+prior_report_dir:  /rcp-scratch/journe/experiments/copy_media/reports/sub/run1
+retry_failed_only: false

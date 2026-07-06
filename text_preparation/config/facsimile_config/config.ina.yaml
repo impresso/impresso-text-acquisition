@@ -1,0 +1,61 @@
+# structure_media — INA audio configuration
+#
+# Audio collection: each issue's `ext` is .mp3, so the script auto-routes
+# through the audio pipeline (mp3 copy, IIIF Presentation 3 manifest emit,
+# {PROVIDER}/{alias}/{date}/{edition}/ on-disk layout).
+#
+#   impresso-structure-media --config facsimile_config/config.ina.yaml
+#   impresso-structure-media --config facsimile_config/config.ina.yaml --dry_run=False
+
+# --- Paths ---
+
+# INA issue index (alias > year > month > issues; ext = .mp3).
+issues_json_path: /rcp-scratch/journe/impresso-acquisition/issue_indices/issue_index.ina.json
+
+# Provider-specific access-rights — required for audio (consumed by the
+# IIIF manifest's content_bitmaps).
+access_rights_path: /rcp-scratch/journe/impresso-acquisition/access_rights_masterfiles/access_rights.ina.json
+
+# Read-only source mount.
+source_base_dir: /mnt/project_impresso/original
+
+# Kind root for the writable audio output. The script appends `/INA`
+# internally (derived from issues_json_path) so the on-disk layout becomes
+# /mnt/project_impresso_rw/audios/INA/{alias}/{date}/{edition}/, mirroring
+# the IIIF URL .../media/audio/INA/{alias}/{date}/{edition}. The augmented
+# issue_index lands at /mnt/project_impresso_rw/audios/issue_index/ (kind
+# root, alongside any future image-side index).
+target_base_dir: /mnt/project_impresso_rw/audios
+
+# --- Filtering ---
+
+# Empty = all INA aliases.
+aliases_include: []
+aliases_exclude: []
+
+# --- Behaviour ---
+
+# Real-run mode for this INA config. Set back to `true` (or pass
+# --dry_run on the CLI) to inspect without writing.
+dry_run: false
+
+sample: 0
+overwrite: false
+delete_source: false
+
+# --- Performance ---
+
+workers: 1
+
+# --- Output / Logging ---
+
+log_level: INFO
+
+# One log file + one report directory per run, named under the provider.
+log_file:          /rcp-scratch/journe/experiments/copy_media/logs/ina/run1.log
+report_dir:        /rcp-scratch/journe/experiments/copy_media/reports/ina/run1
+
+# In-place resume: rereading the same report dir before appending lets a
+# retry skip already-succeeded issues without growing the files.
+prior_report_dir:  /rcp-scratch/journe/experiments/copy_media/reports/ina/run1
+retry_failed_only: false
