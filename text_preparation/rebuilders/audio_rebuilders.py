@@ -357,7 +357,7 @@ def filter_provided_metadata(add_metadata, ci):
                 additional_metadata.append({"key": key, "value": participants})
             else:
                 additional_metadata.append({"key": key, "value": val})
-        elif logger.level == logger.debug:
+        elif logger.level == logging.DEBUG:
             msg = f"{ci['m']['id']} - Field '{key}' present in provider_metadata is not in the list of kept field, not keeping its value."
             print(msg)
 
