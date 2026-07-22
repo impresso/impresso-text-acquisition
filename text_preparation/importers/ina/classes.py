@@ -74,11 +74,11 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         self.issue = issue
 
     @property
-    def json(self) -> BeautifulSoup:
+    def json(self) -> dict:
         """Read json file of the audio record and return the corresponding dict object.
 
         Returns:
-            BeautifulSoup: BeautifulSoup object with XML of the audio record.
+            dict: dict of the contents of the transcript for the audio.
         """
         # In case of I/O error, retry twice,
         tries = 3
@@ -125,7 +125,6 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
             self._set_duration()
 
         json_doc = self.json
-        # TODO
         utterances = get_utterances(json_doc)
 
         if len(utterances) > 0:
