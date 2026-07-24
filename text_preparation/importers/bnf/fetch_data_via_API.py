@@ -65,11 +65,10 @@ class _TqdmLoggingHandler(logging.Handler):
         except Exception:  # noqa: BLE001 — logging must never raise
             self.handleError(record)
 
+
 # --- BnF API endpoints (confirmed live; see bnf_api_progress.md) ----------------------------
 TOKEN_URL = "https://apimauthproext.bnf.fr/oauth2/token"
-MANIFEST_TMPL = (
-    "https://openapiproext.bnf.fr/iiif/presentation/v3/ark:/12148/{ark}/manifest.json"
-)
+MANIFEST_TMPL = "https://openapiproext.bnf.fr/iiif/presentation/v3/ark:/12148/{ark}/manifest.json"
 
 # --- Default input location (the dhlab sync target; override locally) -----------------------
 INFO_DIR = "/rcp-scratch/journe/impresso-acquisition/bnf_api/BnF_API_info"
@@ -87,8 +86,21 @@ DEFAULT_THROTTLE_BACKOFF_S = 30.0
 MAX_CONSECUTIVE_THROTTLES = 20
 # French month abbreviations as they appear in WSO2 `nextAccessTime` (accented + ASCII fallbacks).
 FR_MONTHS = {
-    "janv": 1, "févr": 2, "fevr": 2, "mars": 3, "avr": 4, "mai": 5, "juin": 6,
-    "juil": 7, "août": 8, "aout": 8, "sept": 9, "oct": 10, "nov": 11, "déc": 12, "dec": 12,
+    "janv": 1,
+    "févr": 2,
+    "fevr": 2,
+    "mars": 3,
+    "avr": 4,
+    "mai": 5,
+    "juin": 6,
+    "juil": 7,
+    "août": 8,
+    "aout": 8,
+    "sept": 9,
+    "oct": 10,
+    "nov": 11,
+    "déc": 12,
+    "dec": 12,
 }
 
 
@@ -213,9 +225,7 @@ def build_work_list(
             n_skipped += 1
             continue
         if len(arks) != docs:
-            logger.warning(
-                "%s (%s): issue count %d != DOCS %d.", alias, cb_ark, len(arks), docs
-            )
+            logger.warning("%s (%s): issue count %d != DOCS %d.", alias, cb_ark, len(arks), docs)
         work.append(
             TitleWork(
                 alias=alias,
@@ -264,9 +274,7 @@ class ThrottleHalt(Exception):
         )
 
 
-_NEXT_ACCESS_RE = re.compile(
-    r"(\d{4})-([^-]+?)\.?-(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})([+-]\d{4})"
-)
+_NEXT_ACCESS_RE = re.compile(r"(\d{4})-([^-]+?)\.?-(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})([+-]\d{4})")
 
 
 def parse_next_access(value: str) -> datetime:
@@ -305,9 +313,7 @@ def wso2_throttle(resp: httpx.Response) -> dict | None:
     return None
 
 
-def throttle_decision(
-    info: dict, threshold_min: float, now: datetime
-) -> tuple[str, float]:
+def throttle_decision(info: dict, threshold_min: float, now: datetime) -> tuple[str, float]:
     """Decide how to react to a throttle: ``("sleep", seconds)`` or ``("halt", 0.0)``.
 
     - ``nextAccessTime`` within ``threshold_min`` → sleep exactly that long.
@@ -375,9 +381,7 @@ class TokenManager:
 
     async def _fetch(self) -> None:
         if not self._key or not self._secret:
-            raise RuntimeError(
-                "BNF_API_KEY / BNF_API_SECRET not set — cannot fetch an API token."
-            )
+            raise RuntimeError("BNF_API_KEY / BNF_API_SECRET not set — cannot fetch an API token.")
         resp = None
         async for attempt in stamina.retry_context(
             on=httpx.TransportError, attempts=self._max_retries, timeout=None
@@ -525,9 +529,7 @@ class BnfApiClient:
 
     async def _handle_throttle(self, info: dict) -> None:
         """Sleep through a short throttle, or raise ``ThrottleHalt`` for a long one."""
-        action, seconds = throttle_decision(
-            info, self.threshold_min, datetime.now(timezone.utc)
-        )
+        action, seconds = throttle_decision(info, self.threshold_min, datetime.now(timezone.utc))
         if action == "halt":
             raise ThrottleHalt(info)
         logger.warning(
@@ -616,9 +618,7 @@ def _normalize_title(value: str) -> str:
     return re.sub(r"[^a-z0-9]", "", value.casefold())
 
 
-def parse_manifest(
-    manifest: dict, issue_ark: str, expected_title: str | None = None
-) -> IssueMeta:
+def parse_manifest(manifest: dict, issue_ark: str, expected_title: str | None = None) -> IssueMeta:
     """Parse a IIIF v3 manifest into an ``IssueMeta``.
 
     Raises ``ManifestError`` if the manifest has no ``items``, no parseable ``Date``, or no usable
@@ -639,12 +639,32 @@ def parse_manifest(
         logger.warning("%s: no title (Titre/summary) in manifest.", issue_ark)
 
     date_str = _meta_value(manifest, "Date")
+    # is_exact_date = True if issue index is implemented from here
+    issue_date = None
     if not date_str:
         raise ManifestError(f"{issue_ark}: manifest has no 'Date' metadata.")
     try:
         issue_date = datetime.strptime(date_str, "%Y-%m-%d").date()
     except ValueError as exc:
-        raise ManifestError(f"{issue_ark}: unparseable Date {date_str!r} ({exc}).") from exc
+        msg = f"{issue_ark}: Found unparseable date {date_str!r} ({exc}) - Applying fix."
+        print(msg)
+        if "-" in date_str:
+            # year-month only date, need to add the day, 1st of the month
+            f_date_str = "-".join([date_str, "01"])
+        else:
+            # year only date, need to add the day and month, 1st of january
+            f_date_str = "-".join([date_str, "01", "01"])
+        # is_exact_date = False
+        msg = f"{issue_ark}: unparseable Date {date_str!r} - Fixed to {f_date_str}, setting is_exact_date=False."
+        print(msg)
+        logger.warning(msg)
+
+    # Retrying with the fixed date
+    if not issue_date:
+        try:
+            issue_date = datetime.strptime(f_date_str, "%Y-%m-%d").date()
+        except ValueError as exc:
+            raise ManifestError(f"{issue_ark}: unparseable Date {date_str!r} ({exc}).") from exc
 
     language = _meta_value(manifest, "Langue")
     if language is None:
@@ -665,9 +685,7 @@ def parse_manifest(
             )
             continue
         if page_num in seen_nums:
-            logger.warning(
-                "%s: duplicate page number %d — keeping the first.", issue_ark, page_num
-            )
+            logger.warning("%s: duplicate page number %d — keeping the first.", issue_ark, page_num)
             continue
         seen_nums.add(page_num)
         pages.append(PageInfo(page_num, alto_url, int(width), int(height)))
@@ -962,7 +980,9 @@ async def _download_issue(
     """
     try:
         try:
-            manifest = await asyncio.to_thread(_read_json_file, _cache_path(cache_dir, tw.alias, ark))
+            manifest = await asyncio.to_thread(
+                _read_json_file, _cache_path(cache_dir, tw.alias, ark)
+            )
             meta = parse_manifest(manifest, ark, expected_title=tw.title)
         except Exception as exc:  # noqa: BLE001 — a bad cache entry fails just this issue
             logger.error("%s (%s): could not load cached manifest: %s", issue_id, ark, exc)
@@ -977,7 +997,11 @@ async def _download_issue(
             logger.error("%s: non-canonical issue_id — skipping.", issue_id)
             stats.issues_failed += 1
             report.write_failure(
-                ark, issue_id, tw.alias, len(meta.pages), 0,
+                ark,
+                issue_id,
+                tw.alias,
+                len(meta.pages),
+                0,
                 [{"page": None, "error": "non-canonical issue_id"}],
             )
             return
@@ -992,8 +1016,12 @@ async def _download_issue(
         results = await asyncio.gather(
             *[
                 _download_page(
-                    api, issue_dir, build_page_id(issue_id, page.page_num), page.alto_url,
-                    overwrite=overwrite, stats=stats,
+                    api,
+                    issue_dir,
+                    build_page_id(issue_id, page.page_num),
+                    page.alto_url,
+                    overwrite=overwrite,
+                    stats=stats,
                 )
                 for page in meta.pages
             ],
@@ -1010,7 +1038,10 @@ async def _download_issue(
         if errors:
             logger.warning(
                 "%s: %d/%d pages failed (%s) — good pages + manifest kept, not a success.",
-                issue_id, len(errors), len(meta.pages), errors[0]["error"],
+                issue_id,
+                len(errors),
+                len(meta.pages),
+                errors[0]["error"],
             )
             stats.issues_failed += 1
             report.write_failure(
@@ -1064,9 +1095,15 @@ async def run_downloads(
                 n_todo = sum(1 for ark in tw.issue_arks if report.should_process(ark))
                 logger.info(
                     "Title %s (%s): %d issues (%d to process, %d skipped).",
-                    tw.alias, tw.cb_ark, len(tw.issue_arks), n_todo, len(tw.issue_arks) - n_todo,
+                    tw.alias,
+                    tw.cb_ark,
+                    len(tw.issue_arks),
+                    n_todo,
+                    len(tw.issue_arks) - n_todo,
                 )
-                counters: dict[date, int] = {}  # per-date running edition counter (arks-index order)
+                counters: dict[date, int] = (
+                    {}
+                )  # per-date running edition counter (arks-index order)
                 for ark in tw.issue_arks:
                     if not report.should_process(ark):
                         # Already done / not selected: reserve its edition letter, don't re-fetch.
@@ -1078,8 +1115,15 @@ async def run_downloads(
                         progress.update(1)
                         continue
                     meta = await _fetch_parse_cached(
-                        api, tw, ark, cache_dir, stats, progress, report,
-                        recompute=recompute_manifest, write=not dry_run,
+                        api,
+                        tw,
+                        ark,
+                        cache_dir,
+                        stats,
+                        progress,
+                        report,
+                        recompute=recompute_manifest,
+                        write=not dry_run,
                     )
                     if meta is None:  # failed/unparseable — logged + progress advanced already
                         continue
@@ -1089,13 +1133,19 @@ async def run_downloads(
                         logger.error("%s: built a non-canonical issue_id — skipping.", issue_id)
                         stats.issues_failed += 1
                         report.write_failure(
-                            ark, issue_id, tw.alias, len(meta.pages), 0,
+                            ark,
+                            issue_id,
+                            tw.alias,
+                            len(meta.pages),
+                            0,
                             [{"page": None, "error": "non-canonical issue_id"}],
                         )
                         progress.update(1)
                         continue
                     if dry_run:
-                        logger.info("[dry-run] would write %d pages for %s", len(meta.pages), issue_id)
+                        logger.info(
+                            "[dry-run] would write %d pages for %s", len(meta.pages), issue_id
+                        )
                         stats.issues_ok += 1
                         progress.update(1)
                         continue
@@ -1107,9 +1157,17 @@ async def run_downloads(
             while (item := await queue.get()) is not None:
                 tw, ark, issue_id = item
                 await _download_issue(
-                    api, tw, ark, issue_id, target_base_dir, cache_dir,
-                    overwrite=overwrite, recompute_manifest=recompute_manifest,
-                    stats=stats, progress=progress, report=report,
+                    api,
+                    tw,
+                    ark,
+                    issue_id,
+                    target_base_dir,
+                    cache_dir,
+                    overwrite=overwrite,
+                    recompute_manifest=recompute_manifest,
+                    stats=stats,
+                    progress=progress,
+                    report=report,
                 )
 
         # asyncio.gather (not TaskGroup) so a ThrottleHalt propagates unwrapped to main's handler.
@@ -1200,6 +1258,7 @@ class DownloadReport:
 
     SUCCESS_FILENAME = "success.txt"
     FAILED_FILENAME = "failed.jsonl"
+    INDEX_FILENAME = "issue_index.bnf.json"
 
     def __init__(
         self,
@@ -1315,8 +1374,12 @@ class DownloadReport:
                 carried += 1
         if carried:
             self._success_fh.flush()
-            logger.info("Carried forward %d prior success entr%s into %s.",
-                        carried, "y" if carried == 1 else "ies", success_path)
+            logger.info(
+                "Carried forward %d prior success entr%s into %s.",
+                carried,
+                "y" if carried == 1 else "ies",
+                success_path,
+            )
         logger.info("Report files: %s, %s (truncated).", success_path, failed_path)
 
     # --- resume decision & seeding ---
@@ -1543,8 +1606,11 @@ def main(
     print(f"Log file:   {log_file or 'stdout'}", flush=True)
     print(f"Report dir: {report_dir or '(none — no report written)'}", flush=True)
     if prior_report_dir:
-        print(f"Resume from: {prior_report_dir}"
-              f"{' (retry failed only)' if retry_failed_only else ''}", flush=True)
+        print(
+            f"Resume from: {prior_report_dir}"
+            f"{' (retry failed only)' if retry_failed_only else ''}",
+            flush=True,
+        )
     print(f"Dry run:    {dry_run}", flush=True)
     print(flush=True)
 
@@ -1586,7 +1652,9 @@ def main(
         logger.warning(
             "manifest_rate_per_min (%s) + alto_rate_per_min (%s) = %s exceeds BnF's 1000/min/IP "
             "cap — expect throttling.",
-            manifest_rate_per_min, alto_rate_per_min, manifest_rate_per_min + alto_rate_per_min,
+            manifest_rate_per_min,
+            alto_rate_per_min,
+            manifest_rate_per_min + alto_rate_per_min,
         )
 
     # --- Step 2: build the work list ---
