@@ -71,7 +71,10 @@ TOKEN_URL = "https://apimauthproext.bnf.fr/oauth2/token"
 MANIFEST_TMPL = "https://openapiproext.bnf.fr/iiif/presentation/v3/ark:/12148/{ark}/manifest.json"
 
 # --- Default input location (the dhlab sync target; override locally) -----------------------
-INFO_DIR = "/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BNF_API/BnF_API_info"  # "/rcp-scratch/journe/impresso-acquisition/bnf_api/BnF_API_info"
+INFO_DIR = (
+    "/home/piconti/impresso-text-acquisition/text_preparation/data/sample_data/BNF_API/BnF_API_info"
+)
+# INFO_DIR = "/rcp-scratch/journe/impresso-acquisition/bnf_api/BnF_API_info"
 
 VALID_LOG_LEVELS = ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
 
