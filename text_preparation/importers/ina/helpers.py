@@ -5,16 +5,19 @@ from bs4.element import Tag
 
 
 def extract_time_coords_from_elem(elem: dict, is_sseg: bool = False) -> list[float] | None:
-    """Extract the time coordinates (start, duration) from a given speech element.
+    """Extract the time coordinates ``[start, duration]`` from a speech element.
 
     Args:
-        elem (Tag): Element from the beautifulsoup object extracted from the ASR.
-
-    Raises:
-        NotImplementedError: The element did not have one of the expected names.
+        elem (dict): A word-level or speech-segment-level dict from the ASR JSON
+            document, containing ``"start"`` / ``"end"`` timestamps and, for
+            speech segments, a ``"words"`` list.
+        is_sseg (bool): If ``True``, treat ``elem`` as a speech segment and
+            derive coordinates from its first and last word. If ``False``
+            (default), treat ``elem`` as a single word.
 
     Returns:
-        list[float] | None: The time coordinates for the given ASR element.
+        list[float] | None: A two-element list ``[start_time, duration]`` in
+        seconds, rounded to five decimal places for the duration.
     """
     if is_sseg:
         return [
@@ -26,16 +29,25 @@ def extract_time_coords_from_elem(elem: dict, is_sseg: bool = False) -> list[flo
     return [elem["start"], round(elem["end"] - elem["start"], 5)]
 
 
-def get_utterances(json_doc: dict) -> list[dict]:
-    """Construct the utterances composed of speech segments for a given record.
+def get_utterances(json_doc: list[dict]) -> list[dict]:
+    """Construct utterances from consecutive speech segments sharing the same speaker.
 
-    An utterance is a list of consecutive speechsegments with the same speaker ID.
+    Iterates over the speech segments in the ASR JSON document and groups
+    consecutive segments belonging to the same speaker into a single utterance.
+    Each utterance contains a time-code span, the speaker identifier, and the
+    constituent speech segments with their token-level time codes.
 
     Args:
-        xml_doc (BeautifulSoup): Contents of the ASR xml document of the record.
+        json_doc (list[dict]): Parsed ASR JSON document for one audio record.
+            Each element is a speech-segment dict with at least ``"speaker"``
+            and ``"words"`` keys.
 
     Returns:
-        list[dict]: List of utterances, composed of speechsegments for the record.
+        list[dict]: List of utterance dicts, each containing:
+
+            - ``"tc"`` (list[float]): ``[start_time, duration]`` of the utterance.
+            - ``"speaker"`` (str): Speaker identifier.
+            - ``"ss"`` (list[dict]): Speech segments belonging to this utterance.
     """
     utterances = []
 
