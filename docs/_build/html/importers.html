@@ -566,17 +566,6 @@ our processings and data structures through our pipeline (eg. number as we only 
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.number">
-<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.number" title="Link to this definition"></a></dt>
-<dd><p>Record number.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.record_data">
 <span class="sig-name descname"><span class="pre">record_data</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.record_data" title="Link to this definition"></a></dt>
 <dd><p>Audio record data according to canonical format.</p>
@@ -609,6 +598,15 @@ the canonical issue.</p>
 <dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.classes.CanonicalAudioRecord.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.classes.CanonicalAudioRecord.number" title="Link to this definition"></a></dt>
+<dd><p>if number != 1:
+msg = f”Warning! {id}: Audio record with another number than 1!”
+logger.debug(msg)
+print(msg)</p>
 </dd></dl>
 
 <dl class="py method">

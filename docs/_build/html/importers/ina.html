@@ -116,7 +116,7 @@ It was developed to handle ASR radio data provided by the <a class="reference ex
 to a unified canoncial format.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.classes.</span></span><span class="sig-name descname"><span class="pre">INABroadcastAudioRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.classes.</span></span><span class="sig-name descname"><span class="pre">INABroadcastAudioRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">json_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp3_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord" title="Link to this definition"></a></dt>
 <dd><p>Radio-Broadcast Audio Record for INA’s ASR format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -197,6 +197,20 @@ the canonical issue.</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.json">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">json</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.json" title="Link to this definition"></a></dt>
+<dd><p>Read json file of the audio record and return the corresponding dict object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict of the contents of the transcript for the audio.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.parse">
 <span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.parse" title="Link to this definition"></a></dt>
@@ -207,20 +221,6 @@ the canonical issue.</p>
 upon creation of the audio record object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
 method is called.</p>
 </div>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="text_preparation.importers.ina.classes.INABroadcastAudioRecord.xml">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xml</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></span><a class="headerlink" href="#text_preparation.importers.ina.classes.INABroadcastAudioRecord.xml" title="Link to this definition"></a></dt>
-<dd><p>Read XML file of the audio record and create a BeautifulSoup object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>BeautifulSoup object with XML of the audio record.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>BeautifulSoup</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -348,6 +348,7 @@ second, etc.</p>
 <span class="go">    date=datetime.date(1940, 07, 22),</span>
 <span class="go">    edition=&#39;a&#39;,</span>
 <span class="go">    path=&#39;./SOC_CJ/1940/07/22/a&#39;,</span>
+<span class="go">    issue_metadata={...}</span>
 <span class="go">)</span>
 </pre></div>
 </div>
@@ -355,7 +356,7 @@ second, etc.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.ina.detect.detect_issues">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.ina.detect.detect_issues" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.ina.detect.detect_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect INA Radio broadcasts to import within the filesystem.</p>
 <p>This function expects the directory structure that we created for Swissinfo.</p>
 <dl class="field-list simple">
@@ -372,25 +373,11 @@ second, etc.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_preparation.importers.ina.detect.dir2issue">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.detect.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.detect.dir2issue" title="Link to this definition"></a></dt>
-<dd><p>Create a <cite>INAIssueDir</cite> object from a directory.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function is called internally by <cite>detect_issues</cite></p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<em>str</em>) – The path of the issue.</p></li>
-<li><p><strong>access_rights</strong> (<em>dict</em>) – Dictionary for access rights.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>New <cite>INAIssueDir</cite> object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#text_preparation.importers.ina.detect.INAIssueDir" title="text_preparation.importers.ina.detect.INAIssueDir">INAIssueDir</a> | None</p>
+<dt class="sig sig-object py" id="text_preparation.importers.ina.detect.entry2issue">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.detect.</span></span><span class="sig-name descname"><span class="pre">entry2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.detect.entry2issue" title="Link to this definition"></a></dt>
+<dd><p>Convert a hierarchical JSON entry into a RTSIssueDir.</p>
+<dl class="simple">
+<dt>entry example:</dt><dd><p>{ “day”: “15”, “edition”: “01”, “local_path”: [“[…].mp3”]}</p>
 </dd>
 </dl>
 </dd></dl>
@@ -403,6 +390,11 @@ second, etc.</p>
 difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
 import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
 further details on how to configure filtering.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For INA, the basedir is the original dir, each issue_metadata holds
+the necessary parts to the specific audio and xml files.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -425,8 +417,8 @@ further details on how to configure filtering.</p>
 <p>Helper functions used by the INA Importer.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.ina.helpers.extract_time_coords_from_elem">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.helpers.</span></span><span class="sig-name descname"><span class="pre">extract_time_coords_from_elem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.helpers.extract_time_coords_from_elem" title="Link to this definition"></a></dt>
-<dd><p>Extract the time coordinates from a given speech element.</p>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.helpers.</span></span><span class="sig-name descname"><span class="pre">extract_time_coords_from_elem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sseg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.ina.helpers.extract_time_coords_from_elem" title="Link to this definition"></a></dt>
+<dd><p>Extract the time coordinates (start, duration) from a given speech element.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>elem</strong> (<em>Tag</em>) – Element from the beautifulsoup object extracted from the ASR.</p>
@@ -445,7 +437,7 @@ further details on how to configure filtering.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.ina.helpers.get_utterances">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.helpers.</span></span><span class="sig-name descname"><span class="pre">get_utterances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml_doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BeautifulSoup</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.ina.helpers.get_utterances" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.ina.helpers.</span></span><span class="sig-name descname"><span class="pre">get_utterances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_doc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.ina.helpers.get_utterances" title="Link to this definition"></a></dt>
 <dd><p>Construct the utterances composed of speech segments for a given record.</p>
 <p>An utterance is a list of consecutive speechsegments with the same speaker ID.</p>
 <dl class="field-list simple">
