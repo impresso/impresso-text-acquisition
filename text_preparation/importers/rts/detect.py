@@ -111,9 +111,9 @@ def entry2issue(
 def detect_issues(
     base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None
 ) -> list[RTSIssueDir]:
-    """Detect INA Radio broadcasts to import within the filesystem.
+    """Detect RTS Radio broadcasts to import within the filesystem.
 
-    This function expects the directory structure that we created for Swissinfo.
+    This function expects the JSON issue index and that we created for RTS.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data.

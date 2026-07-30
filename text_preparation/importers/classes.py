@@ -155,7 +155,6 @@ class CanonicalAudioRecord(ABC):
 
     Attributes:
         id (str): Canonical Audio Record ID (e.g. ``INA-1900-01-02-a-r0001``).
-        number (int): Record number.
         record_data (dict[str, Any]): Audio record data according to canonical format.
         issue (CanonicalIssue | None): Issue this page is from.
     """
@@ -163,10 +162,10 @@ class CanonicalAudioRecord(ABC):
     def __init__(self, _id: str, number: int) -> None:
         self.id = _id
         self.number = number
-        if number != 1:
+        """if number != 1:
             msg = f"Warning! {id}: Audio record with another number than 1!"
-            logger.warning(msg)
-            print(msg)
+            logger.debug(msg)
+            print(msg)"""
         # kept for compatibility for testing but should be removed
         self.page_data = None
         self.record_data = {}

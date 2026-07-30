@@ -56,8 +56,9 @@ def rebuild_audio_text(
                     section["s"] = len(string)
 
                     if token["tx"]:
-                        section["l"] = len(token["tx"])
-                        token_text = token["tx"]
+                        # remove excess spaces in the tokens
+                        token_text = token["tx"].strip()
+                        section["l"] = len(token_text)
                     else:
                         section["l"] = 0
                         token_text = ""
@@ -65,14 +66,17 @@ def rebuild_audio_text(
                     # don't add the tokens corresponding to the first part of a hyphenated word
                     if "hy" not in token:
                         next_token = (
-                            speech_seg["t"][n + 1]["tx"] if n != len(speech_seg["t"]) - 1 else None
+                            speech_seg["t"][n + 1]["tx"].strip()
+                            if n != len(speech_seg["t"]) - 1
+                            else None
                         )
                         ws = insert_whitespace(
-                            token["tx"],
+                            token_text,
                             next_t=next_token,
-                            prev_t=speech_seg["t"][n - 1]["tx"] if n != 0 else None,
+                            prev_t=speech_seg["t"][n - 1]["tx"].strip() if n != 0 else None,
                             lang=language,
                         )
+
                         string += f"{token_text} " if ws else f"{token_text}"
 
                     # if token is the last in a speech segment

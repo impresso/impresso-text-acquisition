@@ -278,6 +278,10 @@ def serialize_supports(
             canonical_filename = canonical_path(
                 issue_dir, "r" + str(support.number).zfill(4), ".json"
             )
+            if support.record_data["s"] == []:
+                # some audio transcripts have no content at all - log these in the errors
+                err_msg = f"The record had empty sections - the audio transcript was empty (but processing did not fail). transcript path:{support.json_filepath}"
+                write_error(support, err_msg, failed_log)
         else:
             canonical_filename = canonical_path(
                 issue_dir, "p" + str(support.number).zfill(4), ".json"

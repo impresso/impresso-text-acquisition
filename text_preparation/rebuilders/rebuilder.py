@@ -444,6 +444,10 @@ def main() -> None:
                     del input_issues
 
                     if compute_mft:
+                        if "media_alias" in year_stats[0]:
+                            # no need for the alias at this stage
+                            del year_stats[0]["media_alias"]
+                            del year_stats[0]["year"]
                         msg = f"{issue_key} - year_stats: {year_stats}"
                         print(msg)
                         logger.debug(msg)

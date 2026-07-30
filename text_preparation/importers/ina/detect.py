@@ -1,10 +1,13 @@
-"""This module contains helper functions to find INA ASR data to import."""
+"""Helper functions for detecting and selecting INA ASR broadcast data to import."""
 
 import logging
 import os
 import json
-from datetime import datetime
+from datetime import datetime, date
 from collections import namedtuple
+from typing import Any
+
+from ast import literal_eval
 
 from dask import bag as db
 
@@ -12,42 +15,52 @@ from text_preparation.importers.detect import _apply_datefilter
 
 logger = logging.getLogger(__name__)
 
-METADATA_FILENAME = "ina_metadata.json"
+JSON_FILE = "../data/issue_indices/issue_index.ina.json"
+METADATA_FILE = "../data/sample_data/INA/issues_metadata.ina.json"
+FAILED_COPIES_FILE = "../data/sample_data/INA/failed_audio_copies.jsonl"
+# these four issues have faulty json files in their formatting. As a result we will ignore them during ingestion
+ADDITIONAL_FAULTY_ISSUES = [
+    "TrParis-1951-06-13-a",
+    "TrParis-1951-05-16-d",
+    "TrParis-1951-05-16-a",
+    "InterSoir-1995-01-03-b",
+]
 
 INAIssueDir = namedtuple(
-    "IssueDirectory", ["provider", "alias", "date", "edition", "path", "metadata_file"]
+    "IssueDirectory", ["provider", "alias", "date", "edition", "path", "issue_metadata"]
 )
-"""A light-weight data structure to represent a radio audio broadcast issue.
+"""Lightweight data structure representing a single INA radio broadcast issue.
 
-This named tuple contains basic metadata about a newspaper issue. They
-can then be used to locate the relevant data in the filesystem or to create
-canonical identifiers for the issue and its pages.
+Can be used to locate data in the filesystem or to build canonical identifiers
+for the issue and its audio records.
 
 Note:
-    In case of bulletins published multiple times per day, a lowercase letter
-    is used to indicate the edition number: 'a' for the first, 'b' for the
-    second, etc.
+    When multiple broadcasts are published on the same day, a lowercase letter
+    indicates the edition: ``'a'`` for the first, ``'b'`` for the second, etc.
 
-Args:
-    provider (str): Provider for this alias, here always "INA"
-    alias (str): Bulletin alias.
-    date (datetime.date): Publication date or issue.
-    edition (str): Edition of the newspaper issue ('a', 'b', 'c', etc.).
-    path (str): Path to the directory containing the issue's OCR data.
+Attributes:
+    provider (str): Data provider, always ``"INA"`` for this importer.
+    alias (str): Unique broadcast title alias.
+    date (datetime.date): Broadcast date of the issue.
+    edition (str): Edition letter (``'a'``, ``'b'``, ``'c'``, …).
+    path (str): Path to the directory containing the issue's data files.
+    issue_metadata (dict[str, Any]): Provider-supplied metadata for the issue.
 
->>> from datetime import date
->>> i = INAIssueDir(
-    provider='INA',
-    alias='SOC_CJ', 
-    date=datetime.date(1940, 07, 22), 
-    edition='a', 
-    path='./SOC_CJ/1940/07/22/a', 
-)
+Example:
+    >>> from datetime import date
+    >>> i = INAIssueDir(
+    ...     provider='INA',
+    ...     alias='SOC_CJ',
+    ...     date=date(1940, 7, 22),
+    ...     edition='a',
+    ...     path='./SOC_CJ/1940/07/22/a',
+    ...     issue_metadata={},
+    ... )
 """
 
 
-def dir2issue(path: str, metadata_file_path: str) -> INAIssueDir | None:
-    """Create a `INAIssueDir` object from a directory.
+"""def dir2issue(path: str, metadata_file_path: str) -> INAIssueDir | None:
+    Create a `INAIssueDir` object from a directory.
 
     Note:
         This function is called internally by `detect_issues`
@@ -58,7 +71,7 @@ def dir2issue(path: str, metadata_file_path: str) -> INAIssueDir | None:
 
     Returns:
         INAIssueDir | None: New `INAIssueDir` object.
-    """
+    
     issue_dir_key = os.path.basename(path)
 
     with open(metadata_file_path, "r", encoding="utf-8") as f:
@@ -78,95 +91,154 @@ def dir2issue(path: str, metadata_file_path: str) -> INAIssueDir | None:
         edition=edition,
         path=path,
         metadata_file=metadata_file_path,
+    )"""
+
+
+def entry2issue(
+    alias: str, year: str, month: str, entry: dict, base_dir: str, alias_issues: dict[str, Any]
+) -> INAIssueDir:
+    """Convert a hierarchical JSON index entry into an :class:`INAIssueDir`.
+
+    Args:
+        alias (str): Broadcast title alias (e.g. ``"SOC_CJ"``).
+        year (str): Four-digit year string (e.g. ``"1940"``).
+        month (str): Two-digit month string (e.g. ``"07"``).
+        entry (dict): Single issue entry from the index, containing at minimum
+            ``"day"`` and ``"edition"`` keys (e.g.
+            ``{"day": "15", "edition": "01", "local_path": ["...mp3"]}``).
+        base_dir (str): Absolute path to the root data directory for this alias.
+        alias_issues (dict[str, Any]): Mapping of issue IDs to their provider
+            metadata for the given alias, keyed by canonical issue ID.
+
+    Returns:
+        INAIssueDir: Populated named tuple for the issue.
+    """
+    y = int(year)
+    m = int(month)
+    d = entry["day"]
+
+    edition = entry["edition"]
+
+    issue_id = f"{alias}-{year}-{month}-{d}-{edition}"
+
+    return INAIssueDir(
+        provider="INA",
+        alias=alias,
+        date=date(y, m, int(d)),
+        edition=edition,
+        path=base_dir,
+        issue_metadata=alias_issues[issue_id],
     )
 
 
-def detect_issues(base_dir: str) -> list[INAIssueDir]:
-    """Detect INA Radio broadcasts to import within the filesystem.
+def detect_issues(
+    base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None
+) -> list[INAIssueDir]:
+    """Detect INA radio broadcast issues available for import within the filesystem.
 
-    This function expects the directory structure that we created for Swissinfo.
+    Reads the issue index and metadata files, filters out known-faulty entries,
+    and returns one :class:`INAIssueDir` per importable issue.
 
     Args:
-        base_dir (str): Path to the base directory of newspaper data.
+        base_dir (str): Path to the root directory of the INA broadcast data.
+        alias_filter (list[str] | None): If provided, only issues whose alias is
+            in this list are included. Defaults to ``None`` (no filter).
+        exclude_list (list[str] | None): If provided, issues whose alias appears
+            in this list are excluded. Defaults to ``None`` (no exclusions).
 
     Returns:
-        list[INAIssueDir]: List of `INAIssueDir` instances, to be imported.
+        list[INAIssueDir]: Issue instances ready for import.
     """
+    with open(METADATA_FILE, "r", encoding="utf-8") as f:
+        issues_metadata = json.load(f)
+    with open(JSON_FILE, "r", encoding="utf-8") as f:
+        issues_data = json.load(f)
 
-    metadata_file_path = os.path.join(base_dir, METADATA_FILENAME)
+    with open(FAILED_COPIES_FILE, "r", encoding="utf-8") as f:
+        failed_copies_list = list(f)
 
-    with open(metadata_file_path, "r", encoding="utf-8") as f:
-        metadata_json = json.load(f)
+    issues_to_ignore = [json.loads(l)["issue_id"] for l in failed_copies_list]
 
-    dir_path, dirs, _ = next(os.walk(base_dir))
+    issues: list[INAIssueDir] = []
 
-    journal_dirs = [os.path.join(dir_path, j_dir) for j_dir in dirs if j_dir in metadata_json]
+    msg = f"INSIDE INA DETECT ISSUES: alias_filter: {alias_filter}"
+    print(msg)
 
-    """
-    journal_dirs = [os.path.join(dir_path, j_dir) for j_dir in dirs]
-    # iteratively
-    issues_dirs = [
-        os.path.join(alias, year, month, day, edition)
-        for alias in journal_dirs
-        for year in os.listdir(alias)
-        for month in os.listdir(os.path.join(alias, year))
-        for day in os.listdir(os.path.join(alias, year, month))
-        for edition in os.listdir(os.path.join(alias, year, month, day))
-    ]
-    """
+    # Apply alias filters early
+    if alias_filter:
+        kept_data = {a: d for a, d in issues_data.items() if a in alias_filter}
+    if exclude_list:
+        kept_data = {a: d for a, d in issues_data.items() if a not in exclude_list}
+    else:
+        kept_data = issues_data
 
-    # issue_dirs = [dir2issue(_dir, metadata_file_path) for _dir in journal_dirs]
-    # print(f"issue_dirs = {issue_dirs}")
-    # return issue_dirs
-    return [dir2issue(_dir, metadata_file_path) for _dir in journal_dirs]
+    for alias, years in kept_data.items():
+        alias_issues = issues_metadata[alias]
+        for year, months in years.items():
+            for month, entries in months.items():
+                for entry in entries:
+
+                    issue_id = f"{alias}-{year}-{month}-{entry['day']}-{entry['edition']}"
+                    if (
+                        issue_id not in issues_to_ignore
+                        and issue_id not in ADDITIONAL_FAULTY_ISSUES
+                    ):
+                        issue = entry2issue(alias, year, month, entry, base_dir, alias_issues)
+                        issues.append(issue)
+                    else:
+                        # don't process the issues which have faulty audio files
+                        msg = f"{issue_id} - This issue is in the list of faulty audio files - skipping."
+                        print(msg)
+                        logger.info(msg)
+
+    return issues
 
 
 def select_issues(base_dir: str, config: dict) -> list[INAIssueDir] | None:
-    """Detect selectively issues to import.
+    """Detect and filter issues to import according to a configuration dictionary.
 
-    The behavior is very similar to :func:`detect_issues` with the only
-    difference that ``config`` specifies some rules to filter the data to
-    import. See `this section <../importers.html#configuration-files>`__ for
-    further details on how to configure filtering.
+    Behaves like :func:`detect_issues` but applies additional filtering rules
+    specified in ``config``. See the importer configuration documentation for
+    the supported keys and filtering semantics.
+
+    Note:
+        For INA, ``base_dir`` points to the original data root; each issue's
+        metadata contains the relative paths to its audio and transcript files.
 
     Args:
-        base_dir (str): Path to the base directory of newspaper data.
-        config (dict): Config dictionary for filtering.
+        base_dir (str): Path to the root directory of the INA broadcast data.
+        config (dict): Filtering configuration. Recognised keys:
+
+            - ``"titles"`` (dict): Mapping of alias to date range(s) to include.
+            - ``"exclude_titles"`` (list[str]): Aliases to exclude.
+            - ``"year_only"`` (bool): If ``True``, filter by year only (ignore
+              month/day). Defaults to ``False``.
 
     Returns:
-        list[INAIssueDir] | None: List of `INAIssueDir` to import.
+        list[INAIssueDir] | None: Filtered list of issue instances to import,
+        or ``None`` if a required configuration key is missing.
     """
 
-    # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["titles"]
-        exclude_list = config["exclude_titles"]
-        year_flag = config["year_only"]
+        filter_dict = config.get("titles", {})
+        exclude_list = config.get("exclude_titles", [])
+        year_flag = config.get("year_only", False)
+    except KeyError as e:
+        logger.critical(f"Missing required key in config file: {e}")
+        return None
 
-    except KeyError:
-        logger.critical(
-            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
-        )
-        return
+    alias_filter = list(filter_dict.keys()) if filter_dict else None
 
-    issues = detect_issues(base_dir)
-    issue_bag = db.from_sequence(issues)
-    selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
-        and i.alias not in exclude_list
-    ).compute()
+    selected_issues = detect_issues(base_dir, alias_filter, exclude_list)
 
-    exclude_flag = False if not exclude_list else True
-    filtered_issues = (
-        _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
-        if not exclude_flag
-        else selected_issues
-    )
+    # Apply date filtering if we have a filter dict
+    if filter_dict and not exclude_list:
+        filtered_issues = _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
+    else:
+        filtered_issues = selected_issues
+
     logger.info(
-        "%s newspaper issues remained after applying filter: %s",
-        len(filtered_issues),
-        filtered_issues,
+        f"{len(filtered_issues)} newspaper issues remained after applying filter ({len(selected_issues)} before.)"
     )
-    print(f"SELECT issues = {issues}, filtered_issues = {filtered_issues}")
 
     return filtered_issues

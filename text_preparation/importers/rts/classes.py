@@ -6,7 +6,6 @@ to a unified canonical format.
 
 import os
 import logging
-import json
 from time import strftime, gmtime
 from collections import Counter
 from typing import Any
@@ -116,7 +115,9 @@ class RTSBroadcastAudioRecord(CanonicalAudioRecord):
 
     def parse(self) -> None:
 
-        self.record_data["dur"] = self._get_duration()
+        if self.record_data["dur"] == "":
+            # if the duration is not yet defined at this stage, define it.
+            self.record_data["dur"] = self._get_duration()
         xml_doc = self.xml
 
         utterances = get_utterances(xml_doc)
@@ -203,44 +204,6 @@ class RTSBroadcastIssue(CanonicalIssue):
     def _find_pages(self) -> None:
         # Not defined in this context
         pass
-
-    """def _find_asr_files(self) -> None:
-
-        # TODO modifiy this once we have more context
-        # the key of this rb is the directory
-        self.rb_issue_key = os.path.basename(self.path)
-        # read the contents of the metadata json
-        with open(self.metadata_file, "r", encoding="utf-8") as f:
-            metadata_json = json.load(f)
-
-        self.metadata = metadata_json[self.rb_issue_key]
-        exp_xml_filename = (
-            f"{self.metadata['Identifiant de la notice']}_{self.metadata['Noms fichers']}"
-        )
-
-        dir_contents = os.listdir(self.path)
-        xml_files = [f for f in dir_contents if f.endswith(".xml")]
-        if len(xml_files) > 1:
-            msg = f"{self.id} - There is more than one xml file in dir!!"
-            print(msg)
-            logger.warning(msg)
-            self._notes.append(msg)
-            raise Exception(msg)
-        else:
-            xml_filename = xml_files[0]
-
-        if exp_xml_filename not in xml_filename:
-            msg = (
-                f"{self.id} - The issue's folder {self.path} does not contain the expected"
-                f" xml file {exp_xml_filename}. Contents of the folder are {dir_contents} will be used."
-            )
-            print(msg)
-            logger.warning(msg)
-            self._notes.append(msg)
-
-        self.xml_file_path = os.path.join(self.path, xml_filename)
-        self.json_file_path = self.xml_file_path.replace(".xml", ".json")
-    """
 
     def _find_audios(self) -> None:
 
