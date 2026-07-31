@@ -1,5 +1,4 @@
-"""This module contains helper functions to find INA ASR data to import."""
-
+"""This module contains helper functions to find RTS ASR data to import."""
 import logging
 import os
 import json
@@ -129,16 +128,13 @@ def detect_issues(
 
     issues: list[RTSIssueDir] = []
 
-    msg = f"INSIDE RTS DETECT ISSUES: alias_filter: {alias_filter}"
-    print(msg)
+    logger.debug("RTS detect_issues: alias_filter=%s exclude_list=%s", alias_filter, exclude_list)
 
-    # Apply alias filters early
+    kept_data = issues_data
     if alias_filter:
-        kept_data = {a: d for a, d in issues_data.items() if a in alias_filter}
+        kept_data = {a: d for a, d in kept_data.items() if a in alias_filter}
     if exclude_list:
-        kept_data = {a: d for a, d in issues_data.items() if a not in exclude_list}
-    else:
-        kept_data = issues_data
+        kept_data = {a: d for a, d in kept_data.items() if a not in exclude_list}
 
     for alias, years in kept_data.items():
         alias_issues = issues_metadata[alias]

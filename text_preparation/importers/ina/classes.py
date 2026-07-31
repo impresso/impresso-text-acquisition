@@ -1,7 +1,8 @@
-"""This module contains the definition of INA importer classes.
+"""INA importer classes for converting ASR data to a unified canonical format.
 
-The classes define Issues and Audio record objects which convert ASR data
-to a unified canoncial format.
+This module defines Issue and Audio record objects used by the INA importer
+to convert Automatic Speech Recognition (ASR) data into the impresso canonical
+format for radio-broadcast content.
 """
 
 import os
@@ -33,15 +34,30 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
     Args:
         _id (str): Canonical Audio Record ID (e.g. ``CFCE-1900-01-02-a-r0001``).
         number (int): Record number (for compatibility with other source mediums).
+        json_filepath (str): Path to the JSON file containing the ASR transcript.
+        mp3_filepath (str): Path to the MP3 audio file.
 
     Attributes:
         id (str): Canonical Audio Record ID (e.g. ``CFCE-1900-01-02-a-r0001``).
         number (int): Record number.
+        json_filepath (str): Path to the JSON file containing the ASR transcript.
+        mp3_filepath (str): Path to the MP3 audio file.
+        iiif_base_uri (str): Constructed IIIF URI for this audio record.
+        dur_in_sec (float | None): Duration of the audio record in seconds.
+        notes (list[str]): Informational or warning messages collected during parsing.
         record_data (dict[str, Any]): Audio record data according to canonical format.
-        issue (CanonicalIssue | None): Issue this page is from.
+        issue (CanonicalIssue | None): Issue this audio record belongs to.
     """
 
     def __init__(self, _id: str, number: int, json_filepath: str, mp3_filepath: str) -> None:
+        """Initialise the audio record and construct its canonical record data skeleton.
+
+        Args:
+            _id (str): Canonical Audio Record ID (e.g. ``CFCE-1900-01-02-a-r0001``).
+            number (int): Record number (for compatibility with other source mediums).
+            json_filepath (str): Path to the JSON file containing the ASR transcript.
+            mp3_filepath (str): Path to the MP3 audio file.
+        """
         super().__init__(_id, number)
         # the text is actually stored in a json
         self.json_filepath = json_filepath
@@ -62,23 +78,33 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         }
 
     def create_iiif(self) -> str:
-        """Create the IIIF URI for this audio record from all its parts
+        """Create the IIIF URI for this audio record from its constituent parts.
 
         Returns:
-            str: Created IIIF URI for this audio record.
+            str: Constructed IIIF URI pointing to the MP3 file for this record.
         """
         internal_path = os.path.dirname(self.id.replace("-", "/"))
         return os.path.join(IIIF_ENDPOINT_URI, "INA", internal_path, f"{self.id}.mp3")
 
     def add_issue(self, issue: CanonicalIssue) -> None:
+        """Attach the parent issue to this audio record.
+
+        Args:
+            issue (CanonicalIssue): The canonical issue this audio record belongs to.
+        """
         self.issue = issue
 
     @property
-    def json(self) -> BeautifulSoup:
-        """Read json file of the audio record and return the corresponding dict object.
+    def json(self) -> dict:
+        """Read the JSON transcript file and return its contents as a dictionary.
+
+        Retries up to three times on I/O errors before re-raising the exception.
 
         Returns:
-            BeautifulSoup: BeautifulSoup object with XML of the audio record.
+            dict: Parsed contents of the ASR transcript JSON file.
+
+        Raises:
+            IOError: If the file cannot be read after the maximum number of retries.
         """
         # In case of I/O error, retry twice,
         tries = 3
@@ -101,6 +127,12 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
                     raise e
 
     def _set_duration(self) -> None:
+        """Read the MP3 file to determine the audio duration and store it.
+
+        Reads the duration from the MP3 metadata, formats it as ``HH:MM:SS``,
+        and writes it to ``record_data["dur"]``. Logs a warning if the computed
+        duration differs from the duration stored in the parent issue metadata.
+        """
         self.dur_in_secs = MP3(self.mp3_filepath).info.length
         formatted_dur = strftime("%H:%M:%S", gmtime(self.dur_in_secs))
 
@@ -112,20 +144,34 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
         # set the duration in the record data
         self.record_data["dur"] = formatted_dur
 
-    def _get_duration(self, in_secs=True) -> str:
-        # set the duration in the record data
+    def _get_duration(self, in_secs: bool = True) -> float | str:
+        """Return the audio duration, computing it from the MP3 file if necessary.
+
+        Args:
+            in_secs (bool): If ``True`` (default), return the raw duration in
+                seconds as a float. If ``False``, return the formatted
+                ``HH:MM:SS`` string stored in ``record_data``.
+
+        Returns:
+            float | str: Duration in seconds when ``in_secs`` is ``True``,
+            otherwise the formatted duration string.
+        """
         if self.record_data["dur"] == "":
             self._set_duration()
 
         return self.dur_in_secs if in_secs else self.record_data["dur"]
 
     def parse(self) -> None:
+        """Parse the ASR transcript and populate ``record_data`` with audio sections.
 
+        Reads the JSON transcript, extracts utterances, and builds a single audio
+        section spanning the full broadcast. If no utterances are found, an empty
+        section list is stored and a warning is appended to ``notes``.
+        """
         if self.record_data["dur"] == "":
             self._set_duration()
 
         json_doc = self.json
-        # TODO
         utterances = get_utterances(json_doc)
 
         if len(utterances) > 0:
@@ -151,22 +197,36 @@ class INABroadcastAudioRecord(CanonicalAudioRecord):
 
 
 class INABroadcastIssue(CanonicalIssue):
-    """Radio-Broadcast Issue for INA's OCR format.
+    """Radio-Broadcast Issue for INA's ASR format.
+
+    Wraps a single broadcast entry from the INA archive, aggregating its
+    associated audio records and constructing the canonical issue representation.
 
     Args:
-        issue_dir (IssueDir): Identifying information about the issue.
+        issue_dir (IssueDir): Identifying information about the issue, including
+            the path to the data directory and provider-supplied metadata.
 
     Attributes:
-        id (str): Canonical Issue ID (e.g. ``[alias]-1940-01-05-a``).
-        edition (str): Lower case letter ordering issues of the same day.
+        id (str): Canonical Issue ID (e.g. ``CFCE-1940-01-05-a``).
+        edition (str): Lower-case letter ordering issues of the same day.
         alias (str): Media title unique alias (identifier or name).
-        path (str): Path to directory containing the issue's OCR data.
-        date (datetime.date): Publication date of issue.
-        issue_data (dict[str, Any]): Issue data according to canonical format.
-        audio_records (list): list of :obj: `INABroadcastAudioRecord` instances from this issue.
+        path (str): Path to the directory containing the issue's data files.
+        date (datetime.date): Broadcast date of the issue.
+        metadata (dict[str, Any]): Raw provider-supplied metadata from ``issue_dir``.
+        duration (str | None): Full broadcast duration as ``HH:MM:SS``, or ``None``
+            if unavailable or zero.
+        audio_records (list[INABroadcastAudioRecord]): Audio records belonging to
+            this issue.
+        issue_data (dict[str, Any]): Issue data serialised to canonical format.
     """
 
     def __init__(self, issue_dir: IssueDir) -> None:
+        """Initialise the issue, discover audio records, and build canonical issue data.
+
+        Args:
+            issue_dir (IssueDir): Identifying information about the issue, including
+                the path to the data directory and provider-supplied metadata.
+        """
         super().__init__(issue_dir)
         self.metadata = issue_dir.issue_metadata
         self._notes = []
@@ -209,11 +269,17 @@ class INABroadcastIssue(CanonicalIssue):
         self.issue_data["n"] = self._notes
 
     def _find_pages(self) -> None:
-        # Not defined in this context
+        """No-op override: page discovery is not applicable for audio content."""
         pass
 
     def _find_audios(self) -> None:
+        """Locate audio files and instantiate :class:`INABroadcastAudioRecord` objects.
 
+        Resolves the absolute paths for all MP3 and JSON transcript files listed
+        in the issue metadata, creates one ``INABroadcastAudioRecord`` per MP3
+        file, and validates the total computed duration against the metadata value.
+        Missing MP3 files are logged as warnings and appended to ``_notes``.
+        """
         # define the base mp3 and xml paths, both are lists
         self.json_filepath = [os.path.join(self.path, f) for f in self.metadata["xml_filepath"]]
         self.mp3_filepath = [os.path.join(self.path, f) for f in self.metadata["mp3_filepath"]]
@@ -251,7 +317,12 @@ class INABroadcastIssue(CanonicalIssue):
             logger.info(msg)
 
     def _parse_content_item(self) -> None:
+        """Build the canonical content item for this issue and store it in ``content_items``.
 
+        Constructs a single content item entry that groups all audio records
+        belonging to this issue and records legacy provenance information such
+        as the original notice ID and source file paths.
+        """
         ci_metadata = {
             "id": f"{self.id}-i{str(1).zfill(4)}",
             "lg": "fr",
@@ -280,7 +351,16 @@ class INABroadcastIssue(CanonicalIssue):
         self.content_items = [{"m": ci_metadata, "l": ci_legacy}]
 
     def _clean_provided_metadata(self) -> dict[str, Any]:
+        """Filter and return a cleaned copy of the provider-supplied metadata.
 
+        Removes keys that are already represented elsewhere in the canonical
+        schema (e.g. file paths, channel, broadcast type) and drops ``None``
+        values and empty lists.
+
+        Returns:
+            dict[str, Any]: Cleaned metadata dictionary ready for inclusion in
+            ``issue_data["provided_metadata"]``.
+        """
         clean_meta = {}
         for k, v in self.metadata.items():
             # filter out some unnecessary keys

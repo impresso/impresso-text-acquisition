@@ -155,7 +155,6 @@ class CanonicalAudioRecord(ABC):
 
     Attributes:
         id (str): Canonical Audio Record ID (e.g. ``INA-1900-01-02-a-r0001``).
-        number (int): Record number.
         record_data (dict[str, Any]): Audio record data according to canonical format.
         issue (CanonicalIssue | None): Issue this page is from.
     """

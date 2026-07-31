@@ -111,9 +111,9 @@
 It was developed to handle ASR radio data provided by the <a class="reference external" href="https://www.rts.ch/">Radio Télévision Suisse (RTS)</a> of Switzerland.</p>
 <section id="module-text_preparation.importers.rts.classes">
 <span id="rts-custom-classes"></span><h2>RTS Custom classes<a class="headerlink" href="#module-text_preparation.importers.rts.classes" title="Link to this heading"></a></h2>
-<p>This module contains the definition of INA importer classes.</p>
-<p>The classes define Issues and Audio record objects which convert ASR data
-to a unified canoncial format.</p>
+<p>This module contains the definition of RTS importer classes.</p>
+<p>The classes define Issues and audio record objects which convert RTS ASR data
+to a unified canonical format.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="text_preparation.importers.rts.classes.RTSBroadcastAudioRecord">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rts.classes.</span></span><span class="sig-name descname"><span class="pre">RTSBroadcastAudioRecord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xml_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mp3_filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.rts.classes.RTSBroadcastAudioRecord" title="Link to this definition"></a></dt>
@@ -316,7 +316,7 @@ method is called.</p>
 </section>
 <section id="module-text_preparation.importers.rts.detect">
 <span id="rts-detect-functions"></span><h2>RTS Detect functions<a class="headerlink" href="#module-text_preparation.importers.rts.detect" title="Link to this heading"></a></h2>
-<p>This module contains helper functions to find INA ASR data to import.</p>
+<p>This module contains helper functions to find RTS ASR data to import.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="text_preparation.importers.rts.detect.RTSIssueDir">
 <span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rts.detect.</span></span><span class="sig-name descname"><span class="pre">RTSIssueDir</span></span><a class="headerlink" href="#text_preparation.importers.rts.detect.RTSIssueDir" title="Link to this definition"></a></dt>
@@ -357,8 +357,8 @@ second, etc.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.rts.detect.detect_issues">
 <span class="sig-prename descclassname"><span class="pre">text_preparation.importers.rts.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.rts.detect.detect_issues" title="Link to this definition"></a></dt>
-<dd><p>Detect INA Radio broadcasts to import within the filesystem.</p>
-<p>This function expects the directory structure that we created for Swissinfo.</p>
+<dd><p>Detect RTS Radio broadcasts to import within the filesystem.</p>
+<p>This function expects the JSON issue index and that we created for RTS.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p>
