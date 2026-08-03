@@ -68,7 +68,7 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
         self.page_data["fh"] = page_size[1]
         self.file_id = file_id
         self.iiif_img_base_uri = iiif_img_base_uri
-        
+
         # Store page-level IIIF image base URI if provided
         if iiif_img_base_uri:
             self.page_data["iiif_img_base_uri"] = self.iiif_img_base_uri
@@ -102,26 +102,28 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
             ci_id = ci["m"]["id"]
             if "parts" in ci["l"]:
                 for part in ci["l"]["parts"]:
-                    
+
                     # ONLY map parts that are on THIS page to avoid BLOCK-ID collisions
                     if part.get("comp_page_no") != self.number:
                         continue
-                    
+
                     mappings[part["comp_id"]] = ci_id
-            
+
         pselement = doc.find("PrintSpace")
         page_regions, notes = self.parse_printspace(pselement, mappings)
         self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(page_regions)
- 
+
         if len(notes) > 0:
             self.page_data["n"] = notes
 
-    def parse_printspace(self, element: Tag, mappings: dict[str, str]) -> tuple[list[dict], list[str]]:
+    def parse_printspace(
+        self, element: Tag, mappings: dict[str, str]
+    ) -> tuple[list[dict], list[str]]:
         """Parse the ``<PrintSpace>`` element of an SUB ALTO XML document.
 
         This function closely resembles the one inside importers.alto, but slightly
         adapts to the SUB case, where we have an additional layer of "ComposedBlocks"
-        on top of the "TextBlocks". 
+        on top of the "TextBlocks".
         The original function could be used if the SubNewspaperPage.parse() method is
         slightly adapted (potential future work).
         This element contains all the OCR information about the content items of
@@ -147,17 +149,19 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
 
                 if isinstance(block, NavigableString) or block.name == "Shape":
                     continue
-                
+
                 block_id = block.get("ID")
 
-                if (block.get("TYPE") and block.get("TYPE").lower() in alto.IMG_COMP_LABELS) or block.name.lower() in alto.IMG_COMP_LABELS:
+                if (
+                    block.get("TYPE") and block.get("TYPE").lower() in alto.IMG_COMP_LABELS
+                ) or block.name.lower() in alto.IMG_COMP_LABELS:
                     # don't add the text from illustration regions
                     # because it's very often OCR none-sense.
                     continue
 
                 if block_id in mappings:
                     part_of_contentitem = mappings[block_id]
-                elif block.name=="ComposedBlock" and len(block.findAll("TextBlock"))!=0:
+                elif block.name == "ComposedBlock" and len(block.findAll("TextBlock")) != 0:
                     sub_regions, sub_notes = self.parse_printspace(block, mappings)
                     regions.extend(sub_regions)
                     notes += sub_notes
@@ -167,7 +171,9 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
 
                 coordinates = alto.distill_coordinates(block)
 
-                tmp = [alto.parse_textline(line_element) for line_element in block.findAll("TextLine")]
+                tmp = [
+                    alto.parse_textline(line_element) for line_element in block.findAll("TextLine")
+                ]
 
                 if len(tmp) > 0:
                     lines, new_notes = list(zip(*tmp))
@@ -191,12 +197,11 @@ class SubNewspaperPage(MetsAltoCanonicalPage):
 
                 if part_of_contentitem:
                     region["pOf"] = part_of_contentitem
-                
+
                 notes += new_notes
                 regions.append(region)
 
         return regions, notes
-
 
 
 class SubNewspaperIssue(MetsAltoCanonicalIssue):
@@ -291,7 +296,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
 
         # Extract IIIF links from fileGrp IIIF
         self._extract_page_iiif_links(mets_soup)
-        
+
         page_files = []
         # Find all page files from FULLTEXT fileGrp
         file_grp = mets_soup.find("fileGrp", {"USE": "FULLTEXT"})
@@ -300,8 +305,10 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
             print(msg)
             logger.warning(msg)
             # if there is no FULLTEXT fileGrp in the mets file, simply check the contents of the issuedir
-            pages_filenames = [f for f in os.listdir(self.path) if "PPN" not in f and f.endswith(".xml")]
-            
+            pages_filenames = [
+                f for f in os.listdir(self.path) if "PPN" not in f and f.endswith(".xml")
+            ]
+
             if len(pages_filenames) != len(self.page_iiif_links):
                 msg = f"{self.id} - Found a different number of page ALTO files ({len(pages_filenames)}) than the number of iiif links ({len(self.page_iiif_links)})!"
                 print(msg)
@@ -310,7 +317,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
             # in this case use by default file IDs mathcing the structure of the rest
             for filename in pages_filenames:
                 try:
-                    page_num = int(filename.replace('.xml', ''))
+                    page_num = int(filename.replace(".xml", ""))
                     file_id = f"FILE_{str(page_num).zfill(4)}_FULLTEXT"
                     page_files.append((page_num, filename, file_id))
                 except (IndexError, ValueError):
@@ -326,7 +333,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     # Extract filename from URL
                     filename = href.split("/")[-1]
                     file_id = file_elem.get("ID", "")
-                    #print(f"{self.id} - adding page with filename {filename} and file_id {file_id}")
+                    # print(f"{self.id} - adding page with filename {filename} and file_id {file_id}")
                     # Extract page number from file ID (e.g., FILE_0001_FULLTEXT -> 1)
                     try:
                         page_num = int(file_id.split("_")[1])
@@ -477,7 +484,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
         # Non-page items counter starts after all page CIs (num_pages + 1)
         ci_counter = len(self.pages)
 
-        #print(f"pages: {[p.id for p in sorted(self.pages, key=lambda x: x.number)]}")
+        # print(f"pages: {[p.id for p in sorted(self.pages, key=lambda x: x.number)]}")
         # Process each page to extract content items
         for page in sorted(self.pages, key=lambda x: x.number):
             page_num_str = str(page.number).zfill(4)
@@ -534,7 +541,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     "src_files": {
                         "mets_xml": os.path.basename(self.mets_file),
                         "alto_xml": page.filename,
-                        "image_tif": page.filename.replace('xml', 'tif')
+                        "image_tif": page.filename.replace("xml", "tif"),
                     },
                     # Additional SUB-specific identifiers
                     "ppn": self.ppn_with_date,  # Issue PPN with date
@@ -565,8 +572,9 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                     "m": {
                         "id": image_ci_id,
                         "tp": "image",  # content type: image
+                        "lg": None,
                         "pp": [page.number],  # page this image appears on
-                        "iiif_link": os.path.join(page.iiif_img_base_uri, "info.json")
+                        "iiif_link": os.path.join(page.iiif_img_base_uri, "info.json"),
                     },
                     # Legacy section
                     "l": {
@@ -584,7 +592,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         "src_files": {
                             "mets_xml": os.path.basename(self.mets_file),
                             "alto_xml": page.filename,
-                            "image_tif": page.filename.replace('xml', 'tif')
+                            "image_tif": page.filename.replace("xml", "tif"),
                         },
                         "ppn": self.ppn,
                         "title_ppn": self.title_ppn,
@@ -621,7 +629,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         "m": {
                             "id": table_ci_id,
                             "tp": "table",  # content type: table
-                            "l": alto_soup.find("Page").get("language", "de"),
+                            "lg": alto_soup.find("Page").get("language", "de"),
                             "pp": [int(page.id[-4:])],
                         },
                         # Legacy section
@@ -640,7 +648,7 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                             "src_files": {
                                 "mets_xml": os.path.basename(self.mets_file),
                                 "alto_xml": page.filename,
-                                "image_tif": page.filename.replace('xml', 'tif')
+                                "image_tif": page.filename.replace("xml", "tif"),
                             },
                             "ppn": self.ppn,
                             "title_ppn": self.title_ppn,
@@ -652,7 +660,6 @@ class SubNewspaperIssue(MetsAltoCanonicalIssue):
                         table_ci["m"]["c"] = coords
 
                     content_items.append(table_ci)
-
 
         msg = (
             f"Created {len(content_items)} content items for issue {self.id}: "

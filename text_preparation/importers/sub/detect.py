@@ -113,7 +113,7 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
         alias=alias,
         date=date(y, m, d),
         edition=edition,
-        path=base_dir + entry["local_path"][0],
+        path=os.path.join(base_dir, entry["local_path"][0]),
     )
 
 
