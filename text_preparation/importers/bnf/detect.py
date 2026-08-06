@@ -138,6 +138,7 @@ def dir2issue(issue_path: str) -> BnfIssueDir:
             )
             edition = "a"
             issue = BnfIssueDir(
+                provider="BNF",
                 alias=alias,
                 date=np_date,
                 edition=edition,

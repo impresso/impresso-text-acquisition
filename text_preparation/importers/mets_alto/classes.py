@@ -60,7 +60,6 @@ class MetsAltoCanonicalPage(CanonicalPage):
         self.encoding = encoding
         self.page_data = {
             "id": _id,
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
             "st": SourceType.NP.value,
             "sm": SourceMedium.PT.value,
@@ -136,16 +135,16 @@ class MetsAltoCanonicalPage(CanonicalPage):
                     # we want to make sure to link the images to their original CI,
                     # if it was already assigned for the rest of the CI
                     # continue
-                    
+
                     # ONLY map parts that are on THIS page to avoid BLOCK-ID collisions
                     if part.get("comp_page_no") != self.number:
                         continue
-                    
+
                     mappings[part["comp_id"]] = ci_id
-            if 'section_title' in ci:
-                for part in ci['section_title']["heading_legacy_parts"]:
+            if "section_title" in ci:
+                for part in ci["section_title"]["heading_legacy_parts"]:
                     if part.get("comp_page_no") == self.number:
-                        section_mappings[part['comp_id']] = ci['section_title']['composing_ci_ids']
+                        section_mappings[part["comp_id"]] = ci["section_title"]["composing_ci_ids"]
 
         pselement = doc.find("PrintSpace")
         page_regions, notes = alto.parse_printspace(pselement, mappings, section_mappings)
