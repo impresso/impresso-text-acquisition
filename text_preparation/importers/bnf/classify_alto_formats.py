@@ -104,17 +104,24 @@ ERROR_LABELS = {
 }
 
 
-def find_page_dir(issue_abs: str):
+def find_page_dir(issue_abs: str, sort: bool = False):
     """Return (page_dir, sorted xml filenames) for the first existing dir among
     ocr/, ALTO/, or the issue root that contains xml files. ([], []) if none."""
     for sub in ("ocr", "ALTO", ""):
         d = os.path.join(issue_abs, sub) if sub else issue_abs
         if os.path.isdir(d):
-            files = sorted(
-                f
-                for f in os.listdir(d)
-                if f.lower().endswith(".xml") or f.lower().endswith(".xml.gz")
-            )
+            if sort:
+                files = sorted(
+                    f
+                    for f in os.listdir(d)
+                    if f.lower().endswith(".xml") or f.lower().endswith(".xml.gz")
+                )
+            else:
+                files = [
+                    f
+                    for f in os.listdir(d)
+                    if f.lower().endswith(".xml") or f.lower().endswith(".xml.gz")
+                ]
             if files:
                 return d, files
     return None, []
@@ -206,7 +213,8 @@ def process_issue(
             "page_file": None,
         }
 
-    page_dir, files = find_page_dir(issue_abs)
+    # if choosing at random, no need to sort
+    page_dir, files = find_page_dir(issue_abs, sort=page_choice == "first")
     if not files:
         return {
             "label": "missing-file",
@@ -219,7 +227,8 @@ def process_issue(
             "page_file": None,
         }
 
-    chosen = rng.choice(files) if page_choice == "random" else files[0]
+    # chosen = rng.choice(files) if page_choice == "random" else files[0]
+    chosen = files[0]
     page_path = os.path.join(page_dir, chosen)
 
     try:
@@ -309,7 +318,7 @@ def run_for_index(
     rng_master = random.Random(seed)
     start = time.time()
     done = 0
-    log_every = max(1, total // 25) if total else 1
+    log_every = max(1, total // 200) if total else 1
 
     def worker(item):
         alias, year, month, entry = item
@@ -442,7 +451,7 @@ def main():
     parser.add_argument("--index-dir", default=DEFAULT_INDEX_DIR)
     parser.add_argument("--out-dir", default=DEFAULT_OUT_DIR)
     parser.add_argument("--workers", type=int, default=24)
-    parser.add_argument("--page-choice", choices=["first", "random"], default="first")
+    parser.add_argument("--page-choice", choices=["first", "random"], default="random")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
         "--limit-per-alias",
