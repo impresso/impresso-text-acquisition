@@ -8,6 +8,7 @@ Theses classes are subclasses of generic Mets/Alto importer classes.
 import gzip
 import logging
 import os
+import json
 from glob import glob
 from time import strftime
 
@@ -34,7 +35,7 @@ from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URI = "https://gallica.bnf.fr/iiif"
+IIIF_ENDPOINT_URI = "https://openapi.bnf.fr/iiif/image/v3/ark:/12148/"
 IIIF_MANIFEST_SUFFIX = "manifest.json"
 IIIF_SUFFIX = "info.json"
 
@@ -62,24 +63,17 @@ class BnfNewspaperPage(MetsAltoCanonicalPage):
 
     def __init__(self, _id: str, number: int, filename: str, basedir: str) -> None:
 
-        self.is_gzip = filename.endswith("gz")
+        # self.is_gzip = filename.endswith("gz") not applicable in this case
         super().__init__(_id, number, filename, basedir)
-        self.ark_link = self.xml.find("fileIdentifier").getText()
-
-    def _parse_font_styles(self) -> None:
-        """Parse the styles at the page level."""
-        style_divs = self.xml.findAll("TextStyle")
-
-        styles = []
-        for d in style_divs:
-            styles.append(parse_style(d))
-
-        self.page_data["s"] = styles
+        # ark id is at issue level and already present in the issue object upon creation
+        # self.ark_link = self.xml.find("fileIdentifier").getText()
 
     def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
-        self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.ark_link)
-        self._parse_font_styles()
+        self.ark_id = self.issue.ark_id
+        self.page_data["iiif_img_base_uri"] = os.path.join(
+            IIIF_ENDPOINT_URI, self.ark_id, f"f{self.number}"
+        )
 
     def parse(self) -> None:
         doc = self.xml
@@ -97,15 +91,15 @@ class BnfNewspaperPage(MetsAltoCanonicalPage):
         if len(notes) > 0:
             self.page_data["n"] = notes
 
-    @property
+    """@property
     def xml(self) -> BeautifulSoup:
-        """Read Alto XML file of the page and create a BeautifulSoup object.
+        Read Alto XML file of the page and create a BeautifulSoup object.
 
         Redefined function as for some issues, the pages are in gz format.
 
         Returns:
             BeautifulSoup: BeautifulSoup object with Alto XML of the page.
-        """
+        
         if not self.is_gzip:
             return super(BnfNewspaperPage, self).xml
         else:
@@ -115,6 +109,7 @@ class BnfNewspaperPage(MetsAltoCanonicalPage):
 
             alto_doc = BeautifulSoup(raw_xml, "xml")
             return alto_doc
+    """
 
 
 class BnfNewspaperIssue(MetsAltoCanonicalIssue):
@@ -122,6 +117,9 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
 
     All functions defined in this child class are specific to parsing BNF
     OCR-only Alto format.
+
+    All OCR-only data is form the new set of API downloaded data,
+    so we know that the format and directory structure is always the same.
 
     Args:
         issue_dir (IssueDir): Identifying information about the issue.
@@ -142,20 +140,23 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
     """
 
     def __init__(self, issue_dir: IssueDir) -> None:
-        self.issue_uid = os.path.basename(issue_dir.path)
+        # self.issue_uid = os.path.basename(issue_dir.path)
+
         self.secondary_date = issue_dir.secondary_date
+        self.ark_id = issue_dir.ark_id
+        self.manifest_contents = None
 
         # TODO REMOVE ALL METS/OLR related stuff
         super().__init__(issue_dir)
         # TODO add page width & height
 
-    @property
+    """@property
     def xml(self) -> BeautifulSoup:
-        """Read Mets XML file of the issue and create a BeautifulSoup object.
+        Read Mets XML file of the issue and create a BeautifulSoup object.
 
         Returns:
             BeautifulSoup: BeautifulSoup object with Mets XML of the issue.
-        """
+        
         mets_regex = os.path.join(self.path, "toc", f"*{self.issue_uid}.xml")
         mets_file = glob(mets_regex)
         if len(mets_file) == 0:
@@ -166,7 +167,14 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
             raw_xml = f.read()
 
         mets_doc = BeautifulSoup(raw_xml, "xml")
-        return mets_doc
+        return mets_doc"""
+
+    """def _read_manifest_json(self) -> None:
+
+        manifest_path = os.path.join(self.path, 'manifest.json')
+
+        with open(manifest_path, 'r', encoding='utf-8') as fin:
+            manifest_contents = json.load(fin)"""
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
@@ -176,24 +184,25 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         Raises:
             e: Instantiation of a page or adding it to :attr:`pages` failed.
         """
-        ocr_path = os.path.join(self.path, "ocr")  # Pages in `ocr` folder
+        manifest_path = os.path.join(self.path, "manifest.json")
+        # TODO extract size and width from the manifest file
+        with open(manifest_path, "r", encoding="utf-8") as fin:
+            manifest_contents = json.load(fin)
 
         pages = [
             (file, int(file.split(".")[0][1:]))
-            for file in os.listdir(ocr_path)
+            for file in os.listdir(self.path)
             if not file.startswith(".") and ".xml" in file
         ]
 
-        page_filenames, page_numbers = zip(*pages)
-
-        page_canonical_names = [
-            "{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers
-        ]
+        # sort the pages
+        page_filenames, page_numbers = zip(*sorted(pages, key=lambda x: x[1]))
 
         self.pages = {}
-        for filename, page_no, page_id in zip(page_filenames, page_numbers, page_canonical_names):
+        for filename, page_no in zip(page_filenames, page_numbers):
+            page_id = filename.split(".")[0]
             try:
-                self.pages[page_no] = BnfNewspaperPage(page_id, page_no, filename, ocr_path)
+                self.pages[page_no] = BnfNewspaperPage(page_id, page_no, filename, self.path)
             except Exception as e:
                 logger.error(
                     "Adding page %s %s %s raised following exception: %s",
@@ -375,7 +384,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         return coords, iiif_link
 
     def _parse_mets(self) -> None:
-        """Parse the Mets XML file corresponding to this issue.
+        """Override the `parse_mets` function to read the `manifest` JSON file instead
 
         Once the :attr:`issue_data` is created, containing all the relevant
         information in the canonical Issue format, the `BnfNewspaperIssue`

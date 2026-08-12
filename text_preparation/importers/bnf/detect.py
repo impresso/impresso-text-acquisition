@@ -2,9 +2,11 @@
 
 import logging
 import os
+import json
 import string
 from collections import namedtuple
 from typing import List, Optional
+from datetime import date
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -16,7 +18,7 @@ from text_preparation.importers.detect import _apply_datefilter
 logger = logging.getLogger(__name__)
 
 BnfIssueDir = namedtuple(
-    "IssueDirectory", ["provider", "alias", "date", "edition", "path", "secondary_date"]
+    "IssueDirectory", ["provider", "alias", "date", "edition", "path", "ark_id", "secondary_date"]
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -46,9 +48,10 @@ Args:
 >>> i = BnfIssueDir(
     provider='BNF',
     alias='Marie-Claire', 
-    date=datetime.date(1938, 3, 11), 
+    date=datetime.date(1925, 10, 01), 
     edition='a', 
-    path='./BNF/files/4701034.zip', 
+    path="BNF/abendland/1925/10/01/a", 
+    ark_id="bpt6k47732053",
     secondary_date = None
 )
 """
@@ -56,178 +59,257 @@ Args:
 DATE_FORMATS = ["%Y-%m-%d", "%Y/%m/%d"]
 DATE_SEPARATORS = ["/", "-"]
 
+FORMATS = {"BNF-OCR": "ocr", "MP-OLR": "mp", "EN-OLR": "en"}
+JSON_FILE = "../data/issue_indices/issue_index.bnf_{format}.json"
+FORMAT = None
 
-def get_id(issue: BnfIssueDir) -> str:
-    """Return an issue's canonical ID given its IssueDir.
+# Listing issue ark_ids which had incomplete dates and were approximated to the 1st of the month/year
+INEXACT_DATE_ISSUES = {
+    "bpt6k6357584w",
+    "bpt6k6505631k",
+    "bpt6k64182864",
+    "bpt6k6460684k",
+    "bpt6k6465476w",
+    "bpt6k6446747z",
+    "bpt6k6463830n",
+    "bpt6k201227m",
+    "bpt6k2012280",
+    "bpt6k201229c",
+    "bpt6k2012309",
+    "bpt6k201231p",
+    "bpt6k2012322",
+    "bpt6k201233f",
+    "bpt6k201234t",
+    "bpt6k2012356",
+    "bpt6k201236k",
+    "bpt6k201237z",
+    "bpt6k201238b",
+    "bpt6k201239q",
+    "bpt6k201240n",
+    "bpt6k9815051w",
+    "bpt6k104618h",
+    "bpt6k104619w",
+    "bpt6k2012445",
+    "bpt6k1046216",
+    "bpt6k104622k",
+    "bpt6k104623z",
+    "bpt6k104624b",
+    "bpt6k104625q",
+    "bpt6k1046263",
+    "bpt6k104627g",
+    "bpt6k104628v",
+    "bpt6k98146507",
+    "bpt6k1066182",
+    "bpt6k106619f",
+    "bpt6k106620c",
+    "bpt6k106621r",
+    "bpt6k1066224",
+    "bpt6k106624w",
+    "bpt6k1066258",
+    "bpt6k106626n",
+    "bpt6k1066271",
+    "bpt6k106628d",
+    "bpt6k106629s",
+    "bpt6k106630q",
+    "bpt6k1066313",
+    "bpt6k106632g",
+    "bpt6k106633v",
+    "bpt6k1066347",
+    "bpt6k106635m",
+    "bpt6k4766447s",
+    "bpt6k4773164m",
+    "bd6t550851129",
+    "bpt6k4140780k",
+    "bpt6k70359657",
+    "bpt6k97427650",
+    "bpt6k4715134f",
+    "bpt6k5497472g",
+    "bpt6k7631174n",
+    "bpt6k7631177w",
+    "bpt6k76311752",
+    "bpt6k7631176g",
+    "bpt6k46741905",
+    "bpt6k97425659",
+    "bpt6k9742578x",
+    "bpt6k115388h",
+    "bpt6k115392k",
+    "bpt6k115393z",
+    "bpt6k115394b",
+    "bpt6k67132s",
+    "bpt6k671334",
+    "bpt6k67134g",
+    "bpt6k67135t",
+    "bpt6k67140d",
+    "bpt6k67141r",
+    "bpt6k671423",
+    "bpt6k67143f",
+    "bpt6k67144s",
+    "bpt6k671454",
+    "bpt6k67146g",
+    "bpt6k7053456g",
+    "bpt6k7053457w",
+    "bpt6k70534589",
+    "bd6t54196152f",
+    "bd6t54182736w",
+    "bd6t54180388m",
+    "bd6t542051480",
+    "bpt6k56009224",
+    "bpt6k106239w",
+    "bpt6k56873886",
+    "bpt6k5687175w",
+    "bpt6k56873923",
+    "bpt6k106240t",
+    "bpt6k5696170s",
+    "bpt6k5727872n",
+    "bpt6k5727852w",
+    "bpt6k57278784",
+    "bpt6k5727866x",
+    "bpt6k106242k",
+    "bpt6k56885975",
+    "bpt6k106243z",
+    "bpt6k56962704",
+    "bpt6k106248v",
+    "bpt6k5696212p",
+    "bpt6k5696296c",
+    "bpt6k5416020v",
+    "bpt6k1062505",
+    "bpt6k5690493z",
+    "bpt6k106251j",
+    "bpt6k5690516h",
+    "bpt6k106252x",
+    "bpt6k1062539",
+    "bpt6k5696077b",
+    "bpt6k1062552",
+    "bpt6k106256f",
+    "bpt6k106257t",
+    "bpt6k4766753j",
+    "bpt6k4766754z",
+    "bpt6k4766755c",
+    "bpt6k6517037w",
+    "bpt6k63508054",
+    "bpt6k6257708z",
+    "bpt6k6262047c",
+    "bpt6k6257711f",
+    "bpt6k6257714p",
+    "bpt6k6247942d",
+    "bpt6k6215666b",
+    "bpt6k6215667r",
+}
 
-    Args:
-        issue (BnfIssueDir): IssueDir of issue.
 
-    Returns:
-        str: Canonical ID of issue.
+def set_json_file(format):
+    global FORMAT, JSON_FILE
+
+    FORMAT = format
+    JSON_FILE = JSON_FILE.format(format=FORMATS[FORMAT])
+
+
+def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -> BnfIssueDir:
     """
-    return "{}-{}-{:02}-{:02}-{}".format(
-        issue.alias, issue.date.year, issue.date.month, issue.date.day, issue.edition
+    Convert a hierarchical JSON entry into a BnfIssueDir.
+
+    entry example:
+      { "day": "15", "edition": "01", "local_path": "..._01" }
+    """
+
+    y = int(year)
+    m = int(month)
+    d = int(entry["day"])
+
+    edition = entry["edition"]
+
+    if entry["ark_id"] in INEXACT_DATE_ISSUES:
+        # for incomplete dates, use the secondary date to notify that the date is not exact
+        sec_date = year if month == 1 and d == 1 else "-".join([year, month])
+    else:
+        sec_date = entry.get("secondary_date", None)
+
+    return BnfIssueDir(
+        provider="BNF",
+        alias=alias,
+        date=date(y, m, d),
+        edition=edition,
+        path=os.path.join(base_dir, entry["local_path"][0]),
+        ark_id=entry["ark_id"],
+        secondary_date=sec_date,
+        batch=entry["batch"],  # batch info will help with knowing the issue directory structure
     )
 
 
-def get_number(issue: BnfIssueDir) -> str:
-    """Return an issue's original identifying number given its IssueDir.
+def detect_issues(
+    base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None
+) -> list[BnfIssueDir]:
+    """Detect SUB issues to import within the filesystem.
+
+    Traverses the directory structure looking for METS XML files that indicate
+    a valid issue directory. Handles multiple issues per day by assigning editions
+    'a', 'b', 'c', etc. based on alphabetical order of directory names.
 
     Args:
-        issue (BnfIssueDir): IssueDir of issue.
+        base_dir (str): Path to the base directory of newspaper data,
+            this directory should contain directories corresponding to newspaper aliases.
+        alias_filter (list[str] | None, optional): Aliases to consider. Defaults to None.
+        exclude_list (list[str] | None, optional): Aliases to exclude. Defaults to None.
 
     Returns:
-        str: Identifying number in BNF's original file structure.
+        list[BnfIssueDir]: List of `BnfIssueDir` instances to import.
     """
-    return issue.path.split("/")[-1]
+    with open(JSON_FILE, "r", encoding="utf-8") as f:
+        issues_data = json.load(f)
+
+    issues: list[BnfIssueDir] = []
+
+    # Apply alias filters early
+    kept_data = issues_data
+    if alias_filter:
+        kept_data = {a: d for a, d in kept_data.items() if a in alias_filter}
+    if exclude_list:
+        kept_data = {a: d for a, d in kept_data.items() if a not in exclude_list}
+
+    for alias, years in kept_data.items():
+        for year, months in years.items():
+            for month, entries in months.items():
+                for entry in entries:
+                    issue = entry2issue(alias, year, month, entry, base_dir)
+                    issues.append(issue)
+
+    return issues
 
 
-def assign_editions(issues: list[BnfIssueDir]) -> list[BnfIssueDir]:
-    """Assign updated edition numbers to each issue of a given day.
-
-    TFor BNF, the issues are not organized by date or edition in the file
-    system. Hence, when multiple issues exist for a given day, an indexing
-    must be applied to assign edition numbers.
-
-    Args:
-        issues (list[BnfIssueDir]): List of issues for a given day.
-
-    Returns:
-        list[BnfIssueDir]: List of issues with updated editions.
-    """
-    issues = sorted(issues, key=lambda x: x[1])
-    new_issues = []
-    for index, (i, n) in enumerate(issues):
-        i = BnfIssueDir(
-            alias=i.alias,
-            date=i.date,
-            edition=string.ascii_lowercase[index],
-            path=i.path,
-            secondary_date=i.secondary_date,
-        )
-        new_issues.append((i, n))
-    return new_issues
-
-
-def dir2issue(issue_path: str) -> BnfIssueDir:
-    """Create a `BnfIssueDir` object from an archive path.
-
-    Note:
-        This function is called internally by `detect_issues`
-
-    Args:
-        issue_path (str): The path of the issue within the archive.
-
-    Returns:
-        BnfIssueDir: New `BnfIssueDir` object
-    """
-    manifest_file = os.path.join(issue_path, "manifest.xml")
-
-    issue = None
-    if os.path.isfile(manifest_file):
-        with open(manifest_file, encoding="utf-8") as f:
-            manifest = BeautifulSoup(f, "xml")
-
-        try:
-            # Issue info is in dmdSec of id "DMD.2"
-            issue_info = get_dmd_sec(manifest, "DMD.2")
-            alias = get_journal_name(issue_path)
-            np_date, secondary_date = parse_date(
-                issue_info.find("date").contents[0], DATE_FORMATS, DATE_SEPARATORS
-            )
-            edition = "a"
-            issue = BnfIssueDir(
-                provider="BNF",
-                alias=alias,
-                date=np_date,
-                edition=edition,
-                path=issue_path,
-                secondary_date=secondary_date,
-            )
-        except ValueError as e:
-            logger.info(e)
-            logger.error("Could not parse issue at %s", issue_path)
-    else:
-        logger.error("Could not find manifest in %s", issue_path)
-    return issue
-
-
-def detect_issues(base_dir: str) -> list[BnfIssueDir]:
-    """Detect BNF issues to import within the filesystem
-
-    This function the directory structure used by BNF (one subdir by journal).
-
-    Args:
-        base_dir (str): Path to the base directory of newspaper data.
-
-    Returns:
-        list[BnfIssueDir]: List of `BnfIssueDir` instances, to be imported.
-    """
-    dir_path, dirs, _ = next(os.walk(base_dir))
-    journal_dirs = [os.path.join(dir_path, _dir) for _dir in dirs if not _dir.startswith("2")]
-    issue_dirs = [
-        os.path.join(journal, _dir) for journal in journal_dirs for _dir in os.listdir(journal)
-    ]
-
-    issue_dirs = [dir2issue(_dir) for _dir in issue_dirs]
-    initial_length = len(issue_dirs)
-    issue_dirs = [i for i in issue_dirs if i is not None]
-
-    df = pd.DataFrame([{"issue": i, "id": get_id(i), "number": get_number(i)} for i in issue_dirs])
-    vals = df.groupby("id").apply(lambda x: x[["issue", "number"]].values.tolist()).values
-    # TODO -> keep info of number in issue for legacy
-    issue_dirs = [i if len(i) == 1 else assign_editions(i) for i in vals]
-    issue_dirs = [j[0] for i in issue_dirs for j in i]
-
-    logger.info("Removed %s problematic issues", initial_length - len(issue_dirs))
-    return [i for i in issue_dirs if i is not None]
-
-
-def select_issues(base_dir: str, config: dict) -> Optional[List[BnfIssueDir]]:
+def select_issues(base_dir: str, config: dict) -> list[BnfIssueDir] | None:
     """Detect selectively newspaper issues to import.
 
     The behavior is very similar to :func:`detect_issues` with the only
     difference that ``config`` specifies some rules to filter the data to
-    import. See `this section <../importers.html#configuration-files>`__ for
-    further details on how to configure filtering.
+    import. See the configuration documentation for details on filtering.
 
     Args:
-        base_dir (str): Path to the base directory of newspaper data.
-        config (dict): Config dictionary for filtering.
+        base_dir (str): Path to the base directory of newspaper data,
+            this directory should contain directories corresponding to newspaper aliases.
+        config (dict): Configuration dictionary containing 'titles', 'exclude_titles',
+            and 'year_only' keys for filtering.
 
     Returns:
-        Optional[List[BnfIssueDir]]: List of `BnfIssueDir` instances, to be imported.
+        list[BnfIssueDir] | None: List of `BnfIssueDir` instances to import.
     """
-
-    # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["titles"]
-        exclude_list = config["exclude_titles"]
-        year_flag = config["year_only"]
+        filter_dict = config.get("titles", {})
+        exclude_list = config.get("exclude_titles", [])
+        year_flag = config.get("year_only", False)
+    except KeyError as e:
+        logger.critical(f"Missing required key in config file: {e}")
+        return None
 
-    except KeyError:
-        logger.critical(
-            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
-        )
-        return
+    alias_filter = list(filter_dict.keys()) if filter_dict else None
 
-    issues = detect_issues(base_dir)
-    issue_bag = db.from_sequence(issues)
-    selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
-        and i.alias not in exclude_list
-    ).compute()
-    exclude_flag = False if not exclude_list else True
-    filtered_issues = (
-        _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
-        if not exclude_flag
-        else selected_issues
-    )
-    logger.info(
-        "%s newspaper issues remained after applying filter: %s",
-        len(filtered_issues),
-        filtered_issues,
-    )
+    selected_issues = detect_issues(base_dir, alias_filter, exclude_list)
+
+    # Apply date filtering if we have a filter dict
+    if filter_dict and not exclude_list:
+        filtered_issues = _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
+    else:
+        filtered_issues = selected_issues
+
+    logger.info(f"{len(filtered_issues)} newspaper issues remained after applying filter")
 
     return filtered_issues

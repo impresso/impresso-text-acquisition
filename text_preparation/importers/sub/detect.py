@@ -42,59 +42,6 @@ Args:
 """
 
 
-"""def dir2issue(path: str) -> SubIssueDir | None:
-    ""Convert a directory path into a SubIssueDir object.
-
-    Expected directory structure:
-    [base]/[alias]/[yyyy]/[mm]/[dd]/[edition_name]
-
-    The edition mapping works as follows:
-    - Directories with prefixes like "A1-", "A2-", "A3-" are mapped to 'a', 'b', 'c', etc.
-    - When multiple directories exist for the same date without edition prefixes,
-      they are assigned editions 'a', 'b', 'c' based on alphabetical order
-
-    Args:
-        path (str): The issue directory path
-
-    Returns:
-        SubIssueDir | None: The corresponding Issue, or None if path is invalid
-    ""
-    try:
-        parts = path.rstrip("/").split("/")
-
-        # Extract components from path
-        # Expecting: .../alias/yyyy/mm/dd/edition_name
-        if len(parts) < 5:
-            logger.warning(f"Path too short to parse: {path}")
-            return None
-
-        edition_name = parts[-1]
-        day = int(parts[-2])
-        month = int(parts[-3])
-        year = int(parts[-4])
-        alias = parts[-5]
-
-        # Map edition names to lowercase letters
-        # Handle explicit edition naming like A1-, A2-, A3- etc.
-        if edition_name.startswith(("A1-", "A2-", "A3-", "A4-", "A5-", "A6-", "A7-", "A8-", "A9-")):
-            # Extract the number from A1-, A2-, etc. and map to a, b, c...
-            edition_number = int(edition_name.split("-")[0][1:])  # Extract 1, 2, 3, etc.
-            edition = chr(96 + edition_number)  # Map 1 -> 'a', 2 -> 'b', etc.
-        else:
-            # For paths without explicit edition prefixes, we need to check if there are
-            # multiple directories for the same date. This requires checking sibling directories.
-            # For now, default to 'a' - the calling code can adjust if multiple issues per day are detected
-            edition = "a"
-
-        return SubIssueDir(
-            provider="SUB", alias=alias, date=date(year, month, day), edition=edition, path=path
-        )
-    except (ValueError, IndexError) as e:
-        logger.warning(f"Failed to parse issue directory {path}: {e}")
-        return None
-"""
-
-
 def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -> SubIssueDir:
     """
     Convert a hierarchical JSON entry into a SubIssueDir.
