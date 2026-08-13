@@ -18,7 +18,8 @@ from text_preparation.importers.detect import _apply_datefilter
 logger = logging.getLogger(__name__)
 
 BnfIssueDir = namedtuple(
-    "IssueDirectory", ["provider", "alias", "date", "edition", "path", "ark_id", "secondary_date"]
+    "IssueDirectory",
+    ["provider", "alias", "date", "edition", "path", "ark_id", "title_ark", "secondary_date"],
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -52,7 +53,8 @@ Args:
     edition='a', 
     path="BNF/abendland/1925/10/01/a", 
     ark_id="bpt6k47732053",
-    secondary_date = None
+    title_ark="cb343488519",
+    secondary_date = None,
 )
 """
 
@@ -61,6 +63,7 @@ DATE_SEPARATORS = ["/", "-"]
 
 FORMATS = {"BNF-OCR": "ocr", "MP-OLR": "mp", "EN-OLR": "en"}
 JSON_FILE = "../data/issue_indices/issue_index.bnf_{format}.json"
+ALIAS_TO_ARKS_FILE = "../data/sample_data/BNF_API/alias_to_ark.json"
 FORMAT = None
 
 # Listing issue ark_ids which had incomplete dates and were approximated to the 1st of the month/year
@@ -204,7 +207,9 @@ def set_json_file(format):
     JSON_FILE = JSON_FILE.format(format=FORMATS[FORMAT])
 
 
-def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -> BnfIssueDir:
+def entry2issue(
+    alias: str, year: str, month: str, entry: dict, base_dir: str, title_ark
+) -> BnfIssueDir:
     """
     Convert a hierarchical JSON entry into a BnfIssueDir.
 
@@ -233,6 +238,7 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
         ark_id=entry["ark_id"],
         secondary_date=sec_date,
         batch=entry["batch"],  # batch info will help with knowing the issue directory structure
+        title_ark=title_ark,
     )
 
 
@@ -257,6 +263,9 @@ def detect_issues(
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         issues_data = json.load(f)
 
+    with open(ALIAS_TO_ARKS_FILE, "r", encoding="utf-8") as fin:
+        arks_per_alias = json.load(fin)
+
     issues: list[BnfIssueDir] = []
 
     # Apply alias filters early
@@ -270,7 +279,7 @@ def detect_issues(
         for year, months in years.items():
             for month, entries in months.items():
                 for entry in entries:
-                    issue = entry2issue(alias, year, month, entry, base_dir)
+                    issue = entry2issue(alias, year, month, entry, base_dir, arks_per_alias[alias])
                     issues.append(issue)
 
     return issues

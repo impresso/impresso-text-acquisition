@@ -11,6 +11,7 @@ import os
 import json
 from glob import glob
 from time import strftime
+from typing import Any
 
 from bs4 import BeautifulSoup
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
@@ -26,16 +27,14 @@ from text_preparation.importers.bnf.parsers import (
     parse_embedded_cis,
     parse_printspace,
 )
-from text_preparation.importers.mets_alto import (
-    MetsAltoCanonicalIssue,
-    MetsAltoCanonicalPage,
-)
+from text_preparation.importers.mets_alto import MetsAltoCanonicalIssue, MetsAltoCanonicalPage, alto
 from text_preparation.importers.mets_alto.alto import distill_coordinates, parse_style
 from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
-IIIF_ENDPOINT_URI = "https://openapi.bnf.fr/iiif/image/v3/ark:/12148/"
+IIIF_IMAGE_URI = "https://openapi.bnf.fr/iiif/image/v3/ark:/12148/"
+IIIF_PRES_URI = "https://openapi.bnf.fr/iiif/image/v3/ark:/12148/"
 IIIF_MANIFEST_SUFFIX = "manifest.json"
 IIIF_SUFFIX = "info.json"
 
@@ -61,10 +60,17 @@ class BnfNewspaperPage(MetsAltoCanonicalPage):
         ark_link (str): IIIF Ark identifier for this page.
     """
 
-    def __init__(self, _id: str, number: int, filename: str, basedir: str) -> None:
+    def __init__(
+        self, _id: str, number: int, filename: str, basedir: str, page_size: tuple[int, int]
+    ) -> None:
 
         # self.is_gzip = filename.endswith("gz") not applicable in this case
         super().__init__(_id, number, filename, basedir)
+
+        # Add the facsimile height and width to the page data
+        self.page_data["fw"] = page_size[0]
+        self.page_data["fh"] = page_size[1]
+
         # ark id is at issue level and already present in the issue object upon creation
         # self.ark_link = self.xml.find("fileIdentifier").getText()
 
@@ -72,7 +78,7 @@ class BnfNewspaperPage(MetsAltoCanonicalPage):
         self.issue = issue
         self.ark_id = self.issue.ark_id
         self.page_data["iiif_img_base_uri"] = os.path.join(
-            IIIF_ENDPOINT_URI, self.ark_id, f"f{self.number}"
+            IIIF_IMAGE_URI, self.ark_id, f"f{self.number}"
         )
 
     def parse(self) -> None:
@@ -144,11 +150,49 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
 
         self.secondary_date = issue_dir.secondary_date
         self.ark_id = issue_dir.ark_id
+        self.title_ark_id = issue_dir.title_ark
         self.manifest_contents = None
+        self.media_title_variant = None
+
+        self.iiif_manifest = os.path.join(IIIF_PRES_URI, self.ark_id, IIIF_MANIFEST_SUFFIX)
 
         # TODO REMOVE ALL METS/OLR related stuff
         super().__init__(issue_dir)
         # TODO add page width & height
+
+        self.content_items = self._find_content_items()
+
+        # by default the date is considered to be exact
+        is_exact_date = True
+
+        # Note for newspapers with two dates (197 cases)
+        if self.secondary_date is not None:
+            # when the secondary date is only a year or a month, the date is not exact
+            if len(self.secondary_date.split("-")) < 3:
+                msg = f"{self.id} - Secondary date {self.secondary_date} has only year or year-month. Setting extract_date=False."
+                print(msg)
+                self._notes.append(msg)
+                is_exact_date = False
+            else:
+                self._notes.append(f"Secondary date {self.secondary_date}")
+
+        self.issue_data = {
+            "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
+            "ts": timestamp(),
+            "st": SourceType.NP.value,
+            "sm": SourceMedium.PT.value,
+            "olr": False,
+            "i": self.content_items,
+            "pp": [p.id for p in self.pages],
+            "iiif_manifest_uri": self.iiif_manifest,
+            "is_exact_date": is_exact_date,
+            "n": self._notes,
+        }
+
+        if self.media_title_variant is not None:
+            # the media title variant is defined if it is found in the manifest json file
+            self.issue_data["media_title_variant"] = self.media_title_variant
 
     """@property
     def xml(self) -> BeautifulSoup:
@@ -189,6 +233,11 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         with open(manifest_path, "r", encoding="utf-8") as fin:
             manifest_contents = json.load(fin)
 
+        # take the opportunity to define the media title variant
+        for m_dict in manifest_contents["metadata"]:
+            if m_dict["label"]["fr"] == ["Titre"]:
+                self.media_title_variant = m_dict["value"]["fr"][0]
+
         pages = [
             (file, int(file.split(".")[0][1:]))
             for file in os.listdir(self.path)
@@ -201,8 +250,13 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         self.pages = {}
         for filename, page_no in zip(page_filenames, page_numbers):
             page_id = filename.split(".")[0]
+            # directly fetch the page width and height from the iiif presentation API
+            page_w = manifest_contents["items"][page_no - 1]["width"]
+            page_h = manifest_contents["items"][page_no - 1]["height"]
             try:
-                self.pages[page_no] = BnfNewspaperPage(page_id, page_no, filename, self.path)
+                self.pages[page_no] = BnfNewspaperPage(
+                    page_id, page_no, filename, self.path, (page_w, page_h)
+                )
             except Exception as e:
                 logger.error(
                     "Adding page %s %s %s raised following exception: %s",
@@ -213,23 +267,8 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
                 )
                 raise e
 
-    def _get_divs_by_type(self, mets: BeautifulSoup) -> dict[str, list[tuple[str, str]]]:
-        """Parse `div` tags, flatten them and sort them by type.
-
-        First, parse the `dmdSec` tags, and sort them by type.
-        Then, search for `div` tags in the `content` of the `structMap` that
-        don't have the `DMDID` attribute, and for which the type is in
-        `BNF_CONTENT_TYPES`.
-        Finally, flatten the sections into what they actually contain, and add
-        the flattened sections to the return dict.
-
-        Args:
-            mets (BeautifulSoup): Contents of the Mets XML file.
-
-        Returns:
-            dict[str, list[tuple[str, str]]]: All the `div` sorted by type, the
-                values are the List of (div_id, div_label)
-        """
+    """def _get_divs_by_type(self, mets: BeautifulSoup) -> dict[str, list[tuple[str, str]]]:
+        
         dmd_sections = [x for x in mets.findAll("dmdSec") if x.find("mods")]
         struct_map = mets.find("structMap", {"TYPE": "logical"})
         struct_content = struct_map.find("div", {"TYPE": "CONTENT"})
@@ -262,20 +301,10 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         if "section" in by_type:
             by_type = self._flatten_sections(by_type, struct_content)
 
-        return by_type
+        return by_type"""
 
-    def _flatten_sections(self, by_type: dict, struct_content) -> dict[str, list[tuple[str, str]]]:
-        """Flatten the sections of the issue.
-
-        This means making the children parts standalone CIs.
-
-        Args:
-            by_type (dict): Parsed `div` tags separated by type
-            struct_content (_type_): _description_
-
-        Returns:
-            dict[str, list[tuple[str, str]]]: _description_
-        """
+    """def _flatten_sections(self, by_type: dict, struct_content) -> dict[str, list[tuple[str, str]]]:
+        
         # Flatten the sections
         for div_id, lab in by_type["section"]:
             # Get all divs of this section
@@ -296,7 +325,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
                         ci_type,
                     )
         del by_type["section"]
-        return by_type
+        return by_type"""
 
     def _parse_div(
         self,
@@ -347,15 +376,222 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
 
         return embedded, item_counter
 
-    def _get_image_iiif_link(self, ci_id: str, parts: list) -> tuple[list[int], str]:
-        """Get the image coordinates and iiif info uri given the ID of the CI.
+    def _find_content_items(self) -> list[dict[str, Any]]:
+        """Extract content items from Alto files for this issue.
+
+        For BNF data without OLR (Optical Layout Recognition at article level),
+        we create content items for:
+        1. Page-level content items containing all TextBlocks (excluding tables)
+        2. Image content items for Illustration elements
+        3. Table content items for TextBlocks with type="Table"
+
+        Each content item includes:
+        - Metadata: id, type, language, page references
+        - Legacy: tracking METS/ALTO component information for reconstruction
+
+        Returns:
+            list[dict[str, Any]]: List of content item dictionaries
+        """
+        content_items = []
+        # Non-page items counter starts after all page CIs (num_pages + 1)
+        ci_counter = len(self.pages)
+
+        # Process each page to extract content items
+        for page_no, page in self.pages.items():
+            page_num_str = str(page_no).zfill(4)
+
+            # Use page.xml property instead of opening file manually
+            try:
+                alto_soup = page.xml
+            except Exception as e:
+                logger.error(f"Failed to parse Alto file for page {page.number}: {e}")
+                continue
+
+            # Get the PrintSpace element which contains the page content
+            print_space = alto_soup.find("PrintSpace")
+            if not print_space:
+                logger.warning(f"No PrintSpace found in Alto file for page {page.number}")
+                continue
+
+            # === 1. Create page-level content item ===
+            # Collect all TextBlock elements that are NOT tables
+            text_blocks = []
+            for text_block in print_space.find_all("TextBlock"):
+                # Skip TextBlocks that are explicitly marked as tables
+                block_type = text_block.get("TYPE", "")
+                if block_type.lower() != "table":
+                    text_blocks.append(text_block)
+
+            # Create the page-level content item (type "page")
+            page_ci_id = f"{self.id}-i{page_num_str}"
+            page_ci = {
+                # Metadata section
+                "m": {
+                    "id": page_ci_id,
+                    "tp": "page",  # content type: page
+                    "lg": alto_soup.find("Page").get("language", "de"),  # language
+                    # for pp take last 4 strings and turn into digits
+                    "pp": [page.number],
+                },
+                # Legacy section - tracking ALTO components
+                "l": {
+                    # Composite ID: {title_ppn}-{issue_ppn}-{page_filename}
+                    "id": f"{self.ark_id}/f{page.number}",
+                    # List of parts (ALTO elements) composing this CI
+                    "parts": [
+                        {
+                            "comp_id": tb.get("ID"),  # TextBlock ID from Alto
+                            "comp_role": "body",  # role: body text
+                            "comp_fileid": page.file_id,  # Alto filename
+                            "comp_page_no": page.number,  # page number
+                        }
+                        for tb in text_blocks
+                        if tb.get("ID")
+                    ],
+                    # Source METS filename
+                    "src_files": {
+                        # TODO add the mets if it ends up existing
+                        # "mets_xml": os.path.basename(self.mets_file),
+                        "presentation_manifest": self.iiif_manifest,
+                        "alto_xml": page.filename,
+                    },
+                    # Additional BNF-specific identifiers
+                    "ark_id": self.ark_id,  # Issue ark_id
+                    "title_ark_id": self.title_ark_id,  # Title-level ark_id
+                },
+            }
+            content_items.append(page_ci)
+            # TODO RECHECK THE BEHAVIOR OF THESE PARTS
+            # === 2. Create content items for Illustrations (images) ===
+            for illustration in print_space.find_all("Illustration"):
+                illus_id = illustration.get("ID")
+                if not illus_id:
+                    continue
+
+                # Use alto.distill_coordinates for coordinate extraction
+                coords = None
+                try:
+                    coords = alto.distill_coordinates(illustration)
+                except (TypeError, ValueError) as e:
+                    logger.warning(f"Invalid coordinates for Illustration {illus_id}: {e}")
+
+                # Generate unique CI ID for this image
+                ci_counter += 1
+                image_ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
+
+                image_ci = {
+                    # Metadata section
+                    "m": {
+                        "id": image_ci_id,
+                        "tp": "image",  # content type: image
+                        "lg": None,
+                        "pp": [page.number],  # page this image appears on
+                        "iiif_link": os.path.join(page.iiif_img_base_uri, "info.json"),
+                    },
+                    # Legacy section
+                    "l": {
+                        # Composite ID format for images
+                        "id": f"{self.ark_id}/f{page.number}",
+                        # Single part for the illustration element
+                        "parts": [
+                            {
+                                "comp_id": illus_id,  # Illustration ID from Alto
+                                "comp_role": "image",  # role: image
+                                "comp_fileid": page.file_id,
+                                "comp_page_no": page.number,
+                            }
+                        ],
+                        "src_files": {
+                            "presentation_manifest": self.iiif_manifest,
+                            "image_tif": page.filename.replace("xml", "tif"),
+                        },
+                        "ark_id": self.ark_id,
+                        "title_ark_id": self.title_ark_id,
+                    },
+                }
+
+                # Add coordinates if available
+                if coords:
+                    image_ci["c"] = coords
+
+                content_items.append(image_ci)
+
+            # === 3. Create content items for Tables ===
+            for text_block in print_space.find_all("ComposedBlock"):
+                block_type = text_block.get("TYPE", "")
+                if block_type.lower() == "table":
+                    table_id = text_block.get("ID")
+                    if not table_id:
+                        continue
+
+                    # Use alto.distill_coordinates for coordinate extraction
+                    coords = None
+                    try:
+                        coords = alto.distill_coordinates(text_block)
+                    except (TypeError, ValueError) as e:
+                        logger.warning(f"Invalid coordinates for table {table_id}: {e}")
+
+                    # Generate unique CI ID for this table
+                    ci_counter += 1
+                    table_ci_id = f"{self.id}-i{str(ci_counter).zfill(4)}"
+
+                    table_ci = {
+                        # Metadata section
+                        "m": {
+                            "id": table_ci_id,
+                            "tp": "table",  # content type: table
+                            "lg": alto_soup.find("Page").get("language", "de"),
+                            "pp": [int(page.id[-4:])],
+                        },
+                        # Legacy section
+                        "l": {
+                            # Composite ID format for tables
+                            "id": f"{self.ark_id}/f{page.number}",
+                            # Single part for the table TextBlock
+                            "parts": [
+                                {
+                                    "comp_id": table_id,  # TextBlock ID from Alto
+                                    "comp_role": "table",  # role: table
+                                    "comp_fileid": page.file_id,
+                                    "comp_page_no": page.number,
+                                }
+                            ],
+                            "src_files": {
+                                "presentation_manifest": self.iiif_manifest,
+                                "alto_xml": page.filename,
+                            },
+                            "ark_id": self.ark_id,
+                            "title_ark_id": self.title_ark_id,
+                        },
+                    }
+
+                    # Add coordinates if available
+                    if coords:
+                        table_ci["m"]["c"] = coords
+
+                    content_items.append(table_ci)
+
+        msg = (
+            f"Created {len(content_items)} content items for issue {self.id}: "
+            f"{sum(1 for ci in content_items if ci['m']['tp'] == 'page')} pages, "
+            f"{sum(1 for ci in content_items if ci['m']['tp'] == 'image')} images, "
+            f"{sum(1 for ci in content_items if ci['m']['tp'] == 'table')} tables"
+        )
+        logger.debug(msg)
+        if logger.level == logging.debug:
+            print(msg)
+
+        return content_items
+
+    """def _get_image_iiif_link(self, ci_id: str, parts: list) -> tuple[list[int], str]:
+        Get the image coordinates and iiif info uri given the ID of the CI.
         Args:
             ci_id (str): The ID of the image CI
             parts (list): Parts of the image
         Returns:
             tuple[list[int], str]: The image coordinated and iiif uri to the
                 info.json for the page's image.
-        """
+        
         image_part = [p for p in parts if p["comp_role"] == CONTENTITEM_TYPE_IMAGE]
         iiif_link, coords = None, None
         if len(image_part) == 0:
@@ -379,17 +615,17 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
                 logger.warning("Could not find image %s for CI %s", image_part_id, ci_id)
             else:
                 coords = distill_coordinates(block)
-                iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.ark_link, IIIF_SUFFIX)
+                iiif_link = os.path.join(IIIF_IMAGE_URI, page.ark_link, IIIF_SUFFIX)
 
-        return coords, iiif_link
+        return coords, iiif_link"""
 
-    def _parse_mets(self) -> None:
-        """Override the `parse_mets` function to read the `manifest` JSON file instead
+    """def _parse_mets(self) -> None:
+        Override the `parse_mets` function to read the `manifest` JSON file instead
 
         Once the :attr:`issue_data` is created, containing all the relevant
         information in the canonical Issue format, the `BnfNewspaperIssue`
         instance is ready for serialization.
-        """
+        
 
         mets_doc = self.xml
         # First get all the divs by type
@@ -444,3 +680,4 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         # Note for newspapers with two dates (197 cases)
         if self.secondary_date is not None:
             self.issue_data["n"] = [f"Secondary date {self.secondary_date}"]
+    """
