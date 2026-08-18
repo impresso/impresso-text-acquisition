@@ -334,8 +334,8 @@ def coords_to_xywh(coords: list[int | Any], as_int: bool = True) -> list[int | A
 
 
 def draw_box_on_img(
-    base_img_path: str,
     coords_xy: list,
+    base_img_path: str = None,
     img: Image = None,
     width: int = 10,
     color: str | None = "red",
@@ -347,8 +347,8 @@ def draw_box_on_img(
     if other bboxes have already been drawn on it.)
 
     Args:
-        base_img_path (str): Path to the image to open as a PIL Image.
         coords_xy (list): Coordinates of the bbox to draw.
+        base_img_path (str): Path to the image to open as a PIL Image. Defaults to None.
         img (Image, optional): PIL image if already loaded. Defaults to None.
         width (int, optional): Stroke width for the bbox. Defaults to 10.
         color (str, optional): Color of stroke. Defaults to 'red'.
@@ -358,6 +358,8 @@ def draw_box_on_img(
         Image: Resulting PIL Image with the bbox drawn on it.
     """
     if not img:
+        if not base_img_path:
+            raise AttributeError("At least one of base_img_path and img should be defined!")
         img = Image.open(base_img_path)
         img = img.convert("RGB")
         img = img.convert(mode="1")
