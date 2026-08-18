@@ -181,8 +181,10 @@ class MetsAltoCanonicalIssue(CanonicalIssue):
         super().__init__(issue_dir)
         # create the canonical issue id
         self.image_properties = {}
-        self.ark_id = None
-        self.mets_file = None
+        if not hasattr(self, "ark_id"):
+            self.ark_id = None
+        if not hasattr(self, "mets_file"):
+            self.mets_file = None
 
         self._find_pages()
         self._parse_mets()

@@ -19,7 +19,17 @@ logger = logging.getLogger(__name__)
 
 BnfIssueDir = namedtuple(
     "IssueDirectory",
-    ["provider", "alias", "date", "edition", "path", "ark_id", "title_ark", "secondary_date"],
+    [
+        "provider",
+        "alias",
+        "date",
+        "edition",
+        "path",
+        "ark_id",
+        "title_ark",
+        "batch",
+        "secondary_date",
+    ],
 )
 """A light-weight data structure to represent a newspaper issue.
 
@@ -62,8 +72,8 @@ DATE_FORMATS = ["%Y-%m-%d", "%Y/%m/%d"]
 DATE_SEPARATORS = ["/", "-"]
 
 FORMATS = {"BNF-OCR": "ocr", "MP-OLR": "mp", "EN-OLR": "en"}
-JSON_FILE = "../data/issue_indices/issue_index.bnf_{format}.json"
-ALIAS_TO_ARKS_FILE = "../data/sample_data/BNF_API/alias_to_ark.json"
+JSON_FILE = "../../data/issue_indices/issue_index.bnf_{format}.json"
+ALIAS_TO_ARKS_FILE = "../../data/sample_data/BNF_API/alias_to_ark.json"
 FORMAT = None
 
 # Listing issue ark_ids which had incomplete dates and were approximated to the 1st of the month/year
@@ -208,7 +218,7 @@ def set_json_file(format):
 
 
 def entry2issue(
-    alias: str, year: str, month: str, entry: dict, base_dir: str, title_ark
+    alias: str, year: str, month: str, entry: dict, base_dir: str, title_ark=None
 ) -> BnfIssueDir:
     """
     Convert a hierarchical JSON entry into a BnfIssueDir.
@@ -295,15 +305,15 @@ def select_issues(base_dir: str, config: dict) -> list[BnfIssueDir] | None:
     Args:
         base_dir (str): Path to the base directory of newspaper data,
             this directory should contain directories corresponding to newspaper aliases.
-        config (dict): Configuration dictionary containing 'titles', 'exclude_titles',
+        config (dict): Configuration dictionary containing 'aliases', 'exclude_aliases',
             and 'year_only' keys for filtering.
 
     Returns:
         list[BnfIssueDir] | None: List of `BnfIssueDir` instances to import.
     """
     try:
-        filter_dict = config.get("titles", {})
-        exclude_list = config.get("exclude_titles", [])
+        filter_dict = config.get("aliases", {})
+        exclude_list = config.get("exclude_aliases", [])
         year_flag = config.get("year_only", False)
     except KeyError as e:
         logger.critical(f"Missing required key in config file: {e}")

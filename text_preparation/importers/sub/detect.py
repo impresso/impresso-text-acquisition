@@ -114,15 +114,15 @@ def select_issues(base_dir: str, config: dict) -> list[SubIssueDir] | None:
     Args:
         base_dir (str): Path to the base directory of newspaper data,
             this directory should contain directories corresponding to newspaper aliases.
-        config (dict): Configuration dictionary containing 'titles', 'exclude_titles',
+        config (dict): Configuration dictionary containing 'aliases', 'exclude_aliases',
             and 'year_only' keys for filtering.
 
     Returns:
         list[SubIssueDir] | None: List of `SubIssueDir` instances to import.
     """
     try:
-        filter_dict = config.get("titles", {})
-        exclude_list = config.get("exclude_titles", [])
+        filter_dict = config.get("aliases", {})
+        exclude_list = config.get("exclude_aliases", [])
         year_flag = config.get("year_only", False)
     except KeyError as e:
         logger.critical(f"Missing required key in config file: {e}")

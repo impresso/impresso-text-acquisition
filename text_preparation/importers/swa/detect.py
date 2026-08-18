@@ -208,12 +208,12 @@ def select_issues(base_dir: str, config: dict) -> list[SwaIssueDir]:
         list[SwaIssueDir]: list of ``SwaIssueDir`` instances, to be imported.
     """
     try:
-        filter_dict = config.get("titles")
-        exclude_list = config["exclude_titles"]
+        filter_dict = config.get("aliases")
+        exclude_list = config["exclude_aliases"]
         year_flag = config["year_only"]
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
+            "The key [aliases|exclude_aliases|year_only] " "is missing in the config file."
         )
         return []
 
@@ -226,10 +226,10 @@ def select_issues(base_dir: str, config: dict) -> list[SwaIssueDir]:
     )
     logger.debug(msg)
 
-    filter_titles = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
+    filter_aliases = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
     logger.debug(
-        "got filter_titles: %s, with exclude flag: %s",
-        filter_titles,
+        "got filter_aliases: %s, with exclude flag: %s",
+        filter_aliases,
         exclude_flag,
     )
 

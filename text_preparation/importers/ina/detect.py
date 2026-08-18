@@ -209,8 +209,8 @@ def select_issues(base_dir: str, config: dict) -> list[INAIssueDir] | None:
         base_dir (str): Path to the root directory of the INA broadcast data.
         config (dict): Filtering configuration. Recognised keys:
 
-            - ``"titles"`` (dict): Mapping of alias to date range(s) to include.
-            - ``"exclude_titles"`` (list[str]): Aliases to exclude.
+            - ``"aliases"`` (dict): Mapping of alias to date range(s) to include.
+            - ``"exclude_aliases"`` (list[str]): Aliases to exclude.
             - ``"year_only"`` (bool): If ``True``, filter by year only (ignore
               month/day). Defaults to ``False``.
 
@@ -220,8 +220,8 @@ def select_issues(base_dir: str, config: dict) -> list[INAIssueDir] | None:
     """
 
     try:
-        filter_dict = config.get("titles", {})
-        exclude_list = config.get("exclude_titles", [])
+        filter_dict = config.get("aliases", {})
+        exclude_list = config.get("exclude_aliases", [])
         year_flag = config.get("year_only", False)
     except KeyError as e:
         logger.critical(f"Missing required key in config file: {e}")

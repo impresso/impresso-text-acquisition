@@ -15,9 +15,7 @@ from text_preparation.importers.mets_alto.alto import (
 logger = logging.getLogger(__name__)
 
 
-def parse_printspace(
-    element: Tag, mappings: dict[str, str]
-) -> tuple[list[dict], list[str] | None]:
+def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict], list[str] | None]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document for BNF.
 
     Args:
@@ -41,7 +39,7 @@ def parse_printspace(
             cb_regions, new_notes = parse_printspace(block, mappings)
             regions += cb_regions
             notes += new_notes
-        else:
+        elif block.name not in ["Polygon", "Shape"]:
             if block_id in mappings:
                 part_of_contentitem = mappings[block_id]
             else:
@@ -49,10 +47,7 @@ def parse_printspace(
 
             coordinates = distill_coordinates(block)
 
-            tmp = [
-                parse_textline(line_element)
-                for line_element in block.findAll("TextLine")
-            ]
+            tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
 
             if len(tmp) > 0:
                 lines, new_notes = list(zip(*tmp))
@@ -66,6 +61,10 @@ def parse_printspace(
 
             if part_of_contentitem:
                 region["pOf"] = part_of_contentitem
+            elif not lines:
+                # if the region is not associated to a CI and there is no lines, don't add it
+                continue
+
             notes += new_notes
             regions.append(region)
 

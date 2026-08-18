@@ -1,4 +1,5 @@
 """This module contains helper functions to find RTS ASR data to import."""
+
 import logging
 import os
 import json
@@ -168,8 +169,8 @@ def select_issues(base_dir: str, config: dict) -> list[RTSIssueDir] | None:
     """
 
     try:
-        filter_dict = config.get("titles", {})
-        exclude_list = config.get("exclude_titles", [])
+        filter_dict = config.get("aliases", {})
+        exclude_list = config.get("exclude_aliases", [])
         year_flag = config.get("year_only", False)
     except KeyError as e:
         logger.critical(f"Missing required key in config file: {e}")

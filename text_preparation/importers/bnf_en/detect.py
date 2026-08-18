@@ -378,13 +378,13 @@ def select_issues(base_dir: str, config: dict) -> list[BnfEnIssueDir] | None:
         list[BnfEnIssueDir] | None: `BnfEnIssueDir` instances to import.
     """
     try:
-        filter_dict = config["titles"]
-        exclude_list = config["exclude_titles"]
+        filter_dict = config["aliases"]
+        exclude_list = config["exclude_aliases"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
+            "The key [aliases|exclude_aliases|year_only] " "is missing in the config file."
         )
         return None
 
