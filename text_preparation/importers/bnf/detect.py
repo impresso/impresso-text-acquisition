@@ -72,8 +72,8 @@ DATE_FORMATS = ["%Y-%m-%d", "%Y/%m/%d"]
 DATE_SEPARATORS = ["/", "-"]
 
 FORMATS = {"BNF-OCR": "ocr", "MP-OLR": "mp", "EN-OLR": "en"}
-JSON_FILE = "../../data/issue_indices/issue_index.bnf_{format}.json"
-ALIAS_TO_ARKS_FILE = "../../data/sample_data/BNF_API/alias_to_ark.json"
+JSON_FILE = "../data/issue_indices/issue_index.bnf_{format}.json"
+ALIAS_TO_ARKS_FILE = "../data/sample_data/BNF_API/alias_to_ark.json"
 FORMAT = None
 
 # Listing issue ark_ids which had incomplete dates and were approximated to the 1st of the month/year

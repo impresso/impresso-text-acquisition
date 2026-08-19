@@ -74,6 +74,7 @@ def write_error(
     logger.exception(error)
 
     issuedir = None
+    note = ""
 
     if isinstance(thing, CanonicalPage):
         issuedir = thing.issue.issuedir
@@ -89,7 +90,7 @@ def write_error(
         note = f"{thing}: {error}"
 
     if issuedir is not None:
-        note = f"{canonical_path(issuedir)}: {error}"
+        note = f"{canonical_path(issuedir)}: {error} | stacktrace: {error.__traceback__}"
 
     if failed_log is not None:
         with open(failed_log, "a+", encoding="utf-8") as f:

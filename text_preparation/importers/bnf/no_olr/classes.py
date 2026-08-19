@@ -108,7 +108,7 @@ class BnfNewspaperPage(MetsAltoCanonicalPage):
                 msg = f"WANRING - {self.id} - Trying to decode with default encoding {self.encoding} failed - retrying with 'iso-8859-1'. Error : {e}"
                 print(msg)
                 self.encoding = "iso-8859-1"
-                logger.error(msg)
+                # logger.error(msg)
                 continue
             except IOError as e:
                 if i < tries - 1:  # i is zero indexed
@@ -178,8 +178,6 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         self.manifest_contents = None
         self.media_title_variant = None
 
-        print(f"self.ark_id: {self.ark_id}, self.title_ark_id: {self.title_ark_id}")
-
         self.iiif_manifest = os.path.join(IIIF_PRES_URI, self.ark_id, IIIF_MANIFEST_SUFFIX)
 
         # TODO REMOVE ALL METS/OLR related stuff
@@ -195,7 +193,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         if self.secondary_date is not None:
             # when the secondary date is only a year or a month, the date is not exact
             if len(self.secondary_date.split("-")) < 3:
-                msg = f"{self.id} - Secondary date {self.secondary_date} has only year or year-month. Setting extract_date=False."
+                msg = f"{self.id} - Secondary date {self.secondary_date} has only year or year-month. Setting exact_date=False."
                 print(msg)
                 self._notes.append(msg)
                 is_exact_date = False
@@ -258,8 +256,32 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         for filename, page_no in zip(page_filenames, page_numbers):
             page_id = filename.split(".")[0]
             # directly fetch the page width and height from the iiif presentation API
-            page_w = manifest_contents["items"][page_no - 1]["width"]
-            page_h = manifest_contents["items"][page_no - 1]["height"]
+            page_w, page_h = None, None
+            for mft_item in manifest_contents["items"]:
+                # typical item in the manifest:
+                """{
+                "id": "https://openapi.bnf.fr/iiif/presentation/v3/ark:/12148/bpt6k9742578x/f1/canvas",
+                "type": "Canvas",
+                "label": {
+                    "fr": [
+                    "NP"
+                    ]
+                },
+                "height": 6084,
+                "width": 4584,
+                [...]
+                """
+                item_pg_fnum = mft_item["id"].split("/")[-2]  # finds "f[page number]"
+                if page_no == int(item_pg_fnum[1:]):
+                    page_w = mft_item["width"]
+                    page_h = mft_item["height"]
+                    # once we've found the corresponding page, stop looking
+                    break
+            if not page_w and not page_w:
+                msg = f"{self.id} - page {filename} - there is no item with page number {page_no} in the manifest, skipping it."
+                print(msg)
+                self._notes.append(msg)
+                continue
             try:
                 self.pages.append(
                     BnfNewspaperPage(page_id, page_no, filename, self.path, (page_w, page_h))
@@ -310,7 +332,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
             # Get the PrintSpace element which contains the page content
             print_space = alto_soup.find("PrintSpace")
             if not print_space:
-                msg = f"No PrintSpace found in Alto file for page {page.number} - {page.local_path}"
+                msg = f"No PrintSpace found in Alto file for page {page.number} - {page.id}"
                 self._notes.append(msg)
                 logger.error(msg)
                 continue

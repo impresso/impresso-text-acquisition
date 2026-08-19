@@ -29,44 +29,48 @@ def parse_printspace(element: Tag, mappings: dict[str, str]) -> tuple[list[dict]
 
     regions = []
     notes = []
-    for block in element.children:
+    if element:
+        for block in element.children:
 
-        if isinstance(block, bs4.element.NavigableString):
-            continue
-
-        block_id = block.get("ID")
-        if block.name == "ComposedBlock":
-            cb_regions, new_notes = parse_printspace(block, mappings)
-            regions += cb_regions
-            notes += new_notes
-        elif block.name not in ["Polygon", "Shape"]:
-            if block_id in mappings:
-                part_of_contentitem = mappings[block_id]
-            else:
-                part_of_contentitem = None
-
-            coordinates = distill_coordinates(block)
-
-            tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
-
-            if len(tmp) > 0:
-                lines, new_notes = list(zip(*tmp))
-                new_notes = [i for n in new_notes for i in n]
-            else:
-                lines, new_notes = [], []
-
-            paragraph = {"c": coordinates, "l": lines}
-
-            region = {"c": coordinates, "p": [paragraph]}
-
-            if part_of_contentitem:
-                region["pOf"] = part_of_contentitem
-            elif not lines:
-                # if the region is not associated to a CI and there is no lines, don't add it
+            if isinstance(block, bs4.element.NavigableString):
                 continue
 
-            notes += new_notes
-            regions.append(region)
+            block_id = block.get("ID")
+            if block.name == "ComposedBlock":
+                cb_regions, new_notes = parse_printspace(block, mappings)
+                regions += cb_regions
+                notes += new_notes
+            elif block.name not in ["Polygon", "Shape"]:
+                if block_id in mappings:
+                    part_of_contentitem = mappings[block_id]
+                else:
+                    part_of_contentitem = None
+
+                coordinates = distill_coordinates(block)
+
+                tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
+
+                if len(tmp) > 0:
+                    lines, new_notes = list(zip(*tmp))
+                    new_notes = [i for n in new_notes for i in n]
+                    if isinstance(lines, tuple):
+                        # formatting problem
+                        lines = list(lines)
+                else:
+                    lines, new_notes = [], []
+
+                paragraph = {"c": coordinates, "l": lines}
+
+                region = {"c": coordinates, "p": [paragraph]}
+
+                if part_of_contentitem:
+                    region["pOf"] = part_of_contentitem
+                elif not lines:
+                    # if the region is not associated to a CI and there is no lines, don't add it
+                    continue
+
+                notes += new_notes
+                regions.append(region)
 
     return regions, notes
 
