@@ -277,12 +277,13 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
                     page_h = mft_item["height"]
                     # once we've found the corresponding page, stop looking
                     break
-            if not page_w and not page_w:
-                msg = f"{self.id} - page {filename} - there is no item with page number {page_no} in the manifest, skipping it."
-                print(msg)
-                self._notes.append(msg)
-                continue
             try:
+                if not page_w and not page_w:
+                    msg = f"{self.id} - page {filename} - there is no item with page number {page_no} in the manifest, skipping it."
+                    print(msg)
+                    self._notes.append(msg)
+                    raise Exception(msg)
+
                 self.pages.append(
                     BnfNewspaperPage(page_id, page_no, filename, self.path, (page_w, page_h))
                 )
