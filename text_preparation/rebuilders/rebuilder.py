@@ -38,6 +38,7 @@ import jsonlines
 from dask.distributed import Client, progress
 from dask.diagnostics import ProgressBar
 from docopt import docopt
+from jsonschema import ValidationError
 from smart_open import smart_open
 
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
@@ -52,6 +53,7 @@ from impresso_essentials.utils import (
 from impresso_essentials.versioning.data_manifest import DataManifest
 from impresso_essentials.versioning.aggregators import compute_stats_in_rebuilt_bag
 
+from text_preparation.utils import validate_rebuilt_schema
 from text_preparation.rebuilders.helpers import (
     read_issue_supports,
     rejoin_cis,
@@ -62,6 +64,29 @@ from text_preparation.rebuilders.helpers import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _validate_and_log(ci: dict) -> dict | None:
+    """Validate a rebuilt CI against its schema, logging and dropping it on failure.
+
+    Args:
+        ci (dict): Rebuilt content-item to validate.
+
+    Returns:
+        dict | None: `ci` if it's valid, None otherwise (so it can be filtered out).
+    """
+    try:
+        validate_rebuilt_schema(ci)
+        return ci
+    except ValidationError as e:
+        ci_id = ci.get("ci_id", ci.get("id", "<unknown>"))
+        msg = (
+            f"Dropping CI {ci_id}: failed rebuilt schema validation "
+            f"at {'/'.join(str(p) for p in e.absolute_path)}: {e.message}"
+        )
+        logger.error(msg)
+        print(msg)
+        return None
 
 
 def compress(key: str, json_files: list, output_dir: str) -> tuple[str, str]:
@@ -224,6 +249,9 @@ def filter_and_process_cis(
     del faulty_cis_n
 
     cis_bag = cis_bag.filter(ci_without_problem).map(rebuild_function).persist()
+
+    if _format == "solr":
+        cis_bag = cis_bag.map(_validate_and_log).filter(lambda ci: ci is not None).persist()
 
     return cis_bag
 

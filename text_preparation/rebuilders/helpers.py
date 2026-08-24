@@ -242,7 +242,7 @@ def rebuild_for_solr(content_item: dict[str, Any]) -> dict[str, Any]:
     support_field = "rr" if content_item["sm"] == "audio" else "pp"
 
     solr_ci = {
-        "id": ci_id,
+        "ci_id": ci_id,
         "ts": timestamp(),
         support_field: content_item["m"][support_field],
         "d": d.isoformat(),

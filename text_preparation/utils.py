@@ -14,14 +14,18 @@ from PIL import Image, ImageDraw
 from smart_open import open as smart_open_function
 import python_jsonschema_objects as pjs
 
-from impresso_essentials.utils import get_pkg_resource, validate_against_schema
+from impresso_essentials.utils import get_pkg_resource, validate_against_schema, SourceMedium
 
 logger = logging.getLogger(__name__)
 
-# path to the canonical schemas (in essentials, in text_prep, it's `impresso-schemas``)
-CANONICAL_PAGE_SCHEMA = "schemas/json/canonical/page.schema.json"
-CANONICAL_ISSUE_SCHEMA = "schemas/json/canonical/issue.schema.json"
-CANONICAL_RECORD_SCHEMA = "schemas/json/canonical/audio_record.schema.json"
+TEXT_PREP_SCHEMAS = "schemas/json/impresso-2/data-preparation"
+
+# path to the versioned (impresso-2) canonical and rebuilt schemas, in impresso_essentials
+CANONICAL_PAGE_SCHEMA = f"{TEXT_PREP_SCHEMAS}/canonical/page.v1.schema.json"
+CANONICAL_ISSUE_SCHEMA = f"{TEXT_PREP_SCHEMAS}/canonical/issue.v1.schema.json"
+CANONICAL_RECORD_SCHEMA = f"{TEXT_PREP_SCHEMAS}/canonical/audio-record.v1.schema.json"
+REBUILT_PAPER_CI_SCHEMA = f"{TEXT_PREP_SCHEMAS}/rebuilt/paper-contentitem.v1.schema.json"
+REBUILT_AUDIO_CI_SCHEMA = f"{TEXT_PREP_SCHEMAS}/rebuilt/audio-record-contentitem.v1.schema.json"
 
 TP_RO_PRIORITY = {
     "page": 0,
@@ -95,6 +99,24 @@ def validate_issue_schema(issue_json: dict, issue_schema: str = CANONICAL_ISSUE_
     # print(msg)
     # logger.info(msg)
     return validate_against_schema(issue_json, issue_schema)
+
+
+def validate_rebuilt_schema(rebuilt_json: dict, is_audio: bool | None = None) -> None:
+    """Validate a rebuilt content-item against its paper or audio schema.
+
+    Args:
+        rebuilt_json (dict): Rebuilt content-item to validate.
+        is_audio (bool | None, optional): Whether `rebuilt_json` is an audio record. If not
+            provided, it's derived from `rebuilt_json`'s own "sm" (source medium) field.
+            Defaults to None.
+
+    Raises:
+        jsonschema.ValidationError: The provided JSON could not be validated against its schema.
+    """
+    if is_audio is None:
+        is_audio = rebuilt_json.get("sm") == SourceMedium.AO.value
+    schema = REBUILT_AUDIO_CI_SCHEMA if is_audio else REBUILT_PAPER_CI_SCHEMA
+    return validate_against_schema(rebuilt_json, schema)
 
 
 def verify_imported_issues(
