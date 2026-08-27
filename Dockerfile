@@ -69,10 +69,12 @@ COPY . .
 # Change ownership of the copied files to the new user and group
 RUN chown -R ${USER_NAME}:${GROUP_NAME} /home/${USER_NAME}/impresso-text-acquisition
 
+# Install as root so it lands in the conda env's site-packages (writable,
+# on PATH) instead of falling back to a per-user install under ~/.local.
+RUN pip install .
+
 # Switch to the new user
 USER $USER_NAME
-
-RUN pip install .
 
 # sleep for 3 days (to sensure I have the time to check the run)
 CMD ["sleep", "259200"]

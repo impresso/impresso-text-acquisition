@@ -62,6 +62,10 @@ echo "Launching using configuration script $CONFIG with $WORKERS workers."
 # move to directory containing init script
 cd /rcp-scratch/$USER_NAME/impresso/impresso-text-acquisition
 
+# reinstall the package (editable, system-wide) so the imports match this
+# PVC-mounted source rather than whatever snapshot was baked into the image.
+sudo pip install -e .
+
 # make config script exectuable and execute it.
 chmod -x $CONFIG
 . $CONFIG
