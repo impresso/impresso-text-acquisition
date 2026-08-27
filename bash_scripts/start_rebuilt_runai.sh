@@ -4,6 +4,12 @@
 # Will use the environment variables in pvc (on mnt point of cdhvm0002)
 # "/home/$USER_NAME/dhlab-data/data/$USER_NAME-data/config_rebuilt_runai.sh" (or other provided script) for the various configuartions necessary.
 
+# Work around botocore >=1.36 defaulting to chunked/trailer-checksum PutObject
+# uploads, which SWITCHengines' S3-compatible endpoint rejects with
+# "MissingContentLength". Restores the pre-1.36 plain-PUT behavior.
+export AWS_REQUEST_CHECKSUM_CALCULATION='when_required'
+export AWS_RESPONSE_CHECKSUM_VALIDATION='when_required'
+
 # Default number of workers
 export DEFAULT_WORKERS='16'
 # Default config script

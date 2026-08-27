@@ -21,6 +21,6 @@ python_jsonschema_objects>=0.5.7
 regex>=2024.11.6
 Requests>=2.32.4
 setuptools>=74.1.2
-smart_open>=7.0.4
+smart_open==7.0.4
 tqdm>=4.66.5
 Sphinx>=7.4.7
