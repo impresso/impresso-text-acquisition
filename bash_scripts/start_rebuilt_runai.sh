@@ -62,9 +62,11 @@ echo "Launching using configuration script $CONFIG with $WORKERS workers."
 # move to directory containing init script
 cd /rcp-scratch/$USER_NAME/impresso/impresso-text-acquisition
 
-# reinstall the package (editable, system-wide) so the imports match this
-# PVC-mounted source rather than whatever snapshot was baked into the image.
-sudo pip install -e .
+# reinstall the package (editable) so the imports match this PVC-mounted
+# source rather than whatever snapshot was baked into the image. Root is
+# squashed on this NFS-backed PVC, so this must NOT use sudo; it installs
+# under ~/.local instead (see PATH fix in the Dockerfile).
+pip install -e .
 
 # make config script exectuable and execute it.
 chmod -x $CONFIG
