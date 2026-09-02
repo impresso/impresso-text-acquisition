@@ -255,11 +255,7 @@ def entry2issue(
 def detect_issues(
     base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None
 ) -> list[BnfIssueDir]:
-    """Detect SUB issues to import within the filesystem.
-
-    Traverses the directory structure looking for METS XML files that indicate
-    a valid issue directory. Handles multiple issues per day by assigning editions
-    'a', 'b', 'c', etc. based on alphabetical order of directory names.
+    """Detect BNF issues to import within the filesystem.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data,
@@ -297,10 +293,6 @@ def detect_issues(
 
 def select_issues(base_dir: str, config: dict) -> list[BnfIssueDir] | None:
     """Detect selectively newspaper issues to import.
-
-    The behavior is very similar to :func:`detect_issues` with the only
-    difference that ``config`` specifies some rules to filter the data to
-    import. See the configuration documentation for details on filtering.
 
     Args:
         base_dir (str): Path to the base directory of newspaper data,
