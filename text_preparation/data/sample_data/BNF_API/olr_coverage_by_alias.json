@@ -1,0 +1,884 @@
+{
+  "jeuneeurope1930": {
+    "total_issues": 1,
+    "olr_file_true": 1,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "letemps": {
+    "total_issues": 29321,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 29321,
+    "coverage_pct": 0.0
+  },
+  "quinzainecol": {
+    "total_issues": 10,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 10,
+    "coverage_pct": 0.0
+  },
+  "vsve": {
+    "total_issues": 60,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 60,
+    "missing_unexplained": 0,
+    "coverage_pct": 0.0
+  },
+  "petitepresse": {
+    "total_issues": 14582,
+    "olr_file_true": 14291,
+    "missing_in_failed_arks": 125,
+    "missing_unexplained": 166,
+    "coverage_pct": 98.0
+  },
+  "petitmarocain": {
+    "total_issues": 7503,
+    "olr_file_true": 4115,
+    "missing_in_failed_arks": 3387,
+    "missing_unexplained": 1,
+    "coverage_pct": 54.84
+  },
+  "bsgecm": {
+    "total_issues": 7,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 7,
+    "coverage_pct": 0.0
+  },
+  "lescolonies": {
+    "total_issues": 14,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 14,
+    "coverage_pct": 0.0
+  },
+  "pressecolill": {
+    "total_issues": 70,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 70,
+    "coverage_pct": 0.0
+  },
+  "lafrique1844": {
+    "total_issues": 76,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 76,
+    "coverage_pct": 0.0
+  },
+  "liberation": {
+    "total_issues": 3518,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 3513,
+    "missing_unexplained": 5,
+    "coverage_pct": 0.0
+  },
+  "lecaucase": {
+    "total_issues": 23,
+    "olr_file_true": 22,
+    "missing_in_failed_arks": 1,
+    "missing_unexplained": 0,
+    "coverage_pct": 95.65
+  },
+  "unionfrancaise": {
+    "total_issues": 36,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 12,
+    "missing_unexplained": 24,
+    "coverage_pct": 0.0
+  },
+  "jeuneeuroperev": {
+    "total_issues": 1,
+    "olr_file_true": 1,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "combat": {
+    "total_issues": 3522,
+    "olr_file_true": 1334,
+    "missing_in_failed_arks": 2185,
+    "missing_unexplained": 3,
+    "coverage_pct": 37.88
+  },
+  "franceyougoslavie": {
+    "total_issues": 18,
+    "olr_file_true": 17,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 1,
+    "coverage_pct": 94.44
+  },
+  "ikdam": {
+    "total_issues": 224,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 224,
+    "coverage_pct": 0.0
+  },
+  "democratiepacifique": {
+    "total_issues": 2420,
+    "olr_file_true": 2213,
+    "missing_in_failed_arks": 157,
+    "missing_unexplained": 50,
+    "coverage_pct": 91.45
+  },
+  "terreeurope": {
+    "total_issues": 8,
+    "olr_file_true": 7,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 1,
+    "coverage_pct": 87.5
+  },
+  "europeor1919": {
+    "total_issues": 9,
+    "olr_file_true": 9,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "gazettecoloniale": {
+    "total_issues": 168,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 168,
+    "coverage_pct": 0.0
+  },
+  "bocfo": {
+    "total_issues": 78,
+    "olr_file_true": 72,
+    "missing_in_failed_arks": 6,
+    "missing_unexplained": 0,
+    "coverage_pct": 92.31
+  },
+  "nyherald": {
+    "total_issues": 17262,
+    "olr_file_true": 4953,
+    "missing_in_failed_arks": 12153,
+    "missing_unexplained": 156,
+    "coverage_pct": 28.69
+  },
+  "cridespeuples": {
+    "total_issues": 27,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 27,
+    "coverage_pct": 0.0
+  },
+  "etatsuniseurope": {
+    "total_issues": 6,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 6,
+    "missing_unexplained": 0,
+    "coverage_pct": 0.0
+  },
+  "europedabord": {
+    "total_issues": 6,
+    "olr_file_true": 6,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "europecoloniale": {
+    "total_issues": 129,
+    "olr_file_true": 128,
+    "missing_in_failed_arks": 1,
+    "missing_unexplained": 0,
+    "coverage_pct": 99.22
+  },
+  "lepays": {
+    "total_issues": 20534,
+    "olr_file_true": 20316,
+    "missing_in_failed_arks": 136,
+    "missing_unexplained": 82,
+    "coverage_pct": 98.94
+  },
+  "libertecol": {
+    "total_issues": 87,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 87,
+    "coverage_pct": 0.0
+  },
+  "lesbalkans": {
+    "total_issues": 5,
+    "olr_file_true": 5,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "parisbalkans": {
+    "total_issues": 8,
+    "olr_file_true": 7,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 1,
+    "coverage_pct": 87.5
+  },
+  "demokratischeztg": {
+    "total_issues": 5,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 5,
+    "missing_unexplained": 0,
+    "coverage_pct": 0.0
+  },
+  "depechetoulouse": {
+    "total_issues": 24790,
+    "olr_file_true": 24342,
+    "missing_in_failed_arks": 280,
+    "missing_unexplained": 168,
+    "coverage_pct": 98.19
+  },
+  "progrescol": {
+    "total_issues": 10,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 10,
+    "coverage_pct": 0.0
+  },
+  "bulletinoffcol": {
+    "total_issues": 15,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 15,
+    "coverage_pct": 0.0
+  },
+  "revuecolan": {
+    "total_issues": 27,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 27,
+    "coverage_pct": 0.0
+  },
+  "oeuvre": {
+    "total_issues": 10704,
+    "olr_file_true": 10239,
+    "missing_in_failed_arks": 401,
+    "missing_unexplained": 64,
+    "coverage_pct": 95.66
+  },
+  "europedanubienne": {
+    "total_issues": 1,
+    "olr_file_true": 1,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "laliberte": {
+    "total_issues": 52803,
+    "olr_file_true": 9341,
+    "missing_in_failed_arks": 17291,
+    "missing_unexplained": 26171,
+    "coverage_pct": 17.69
+  },
+  "figarosupl": {
+    "total_issues": 2814,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 2814,
+    "coverage_pct": 0.0
+  },
+  "armeecoloniale": {
+    "total_issues": 59,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 59,
+    "coverage_pct": 0.0
+  },
+  "lacharente": {
+    "total_issues": 21687,
+    "olr_file_true": 19334,
+    "missing_in_failed_arks": 1956,
+    "missing_unexplained": 397,
+    "coverage_pct": 89.15
+  },
+  "elouma": {
+    "total_issues": 14,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 14,
+    "coverage_pct": 0.0
+  },
+  "chicagotribune": {
+    "total_issues": 4148,
+    "olr_file_true": 4007,
+    "missing_in_failed_arks": 141,
+    "missing_unexplained": 0,
+    "coverage_pct": 96.6
+  },
+  "europeindcom": {
+    "total_issues": 7,
+    "olr_file_true": 7,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "europefuture": {
+    "total_issues": 14,
+    "olr_file_true": 14,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "nouvellestcheco": {
+    "total_issues": 70,
+    "olr_file_true": 69,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 1,
+    "coverage_pct": 98.57
+  },
+  "parismidi": {
+    "total_issues": 11437,
+    "olr_file_true": 11297,
+    "missing_in_failed_arks": 110,
+    "missing_unexplained": 30,
+    "coverage_pct": 98.78
+  },
+  "europeartistique": {
+    "total_issues": 3,
+    "olr_file_true": 3,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "lepeuple": {
+    "total_issues": 7280,
+    "olr_file_true": 4129,
+    "missing_in_failed_arks": 404,
+    "missing_unexplained": 2747,
+    "coverage_pct": 56.72
+  },
+  "notretemps": {
+    "total_issues": 485,
+    "olr_file_true": 434,
+    "missing_in_failed_arks": 50,
+    "missing_unexplained": 1,
+    "coverage_pct": 89.48
+  },
+  "europefinanciere1": {
+    "total_issues": 63,
+    "olr_file_true": 63,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "candide": {
+    "total_issues": 1037,
+    "olr_file_true": 1032,
+    "missing_in_failed_arks": 5,
+    "missing_unexplained": 0,
+    "coverage_pct": 99.52
+  },
+  "francerussie": {
+    "total_issues": 3,
+    "olr_file_true": 3,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "courrierlondres": {
+    "total_issues": 25,
+    "olr_file_true": 24,
+    "missing_in_failed_arks": 1,
+    "missing_unexplained": 0,
+    "coverage_pct": 96.0
+  },
+  "bulletincol": {
+    "total_issues": 99,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 99,
+    "coverage_pct": 0.0
+  },
+  "mondecolill": {
+    "total_issues": 33,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 33,
+    "coverage_pct": 0.0
+  },
+  "lacroix": {
+    "total_issues": 26856,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 21749,
+    "missing_unexplained": 5107,
+    "coverage_pct": 0.0
+  },
+  "intransigeant": {
+    "total_issues": 21154,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 21154,
+    "coverage_pct": 0.0
+  },
+  "lecourrier": {
+    "total_issues": 9887,
+    "olr_file_true": 9572,
+    "missing_in_failed_arks": 292,
+    "missing_unexplained": 23,
+    "coverage_pct": 96.81
+  },
+  "lapresse": {
+    "total_issues": 32083,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 32083,
+    "coverage_pct": 0.0
+  },
+  "vendredi": {
+    "total_issues": 163,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 163,
+    "missing_unexplained": 0,
+    "coverage_pct": 0.0
+  },
+  "europenouvelle": {
+    "total_issues": 30,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 15,
+    "missing_unexplained": 15,
+    "coverage_pct": 0.0
+  },
+  "europefinanciere2": {
+    "total_issues": 19,
+    "olr_file_true": 15,
+    "missing_in_failed_arks": 4,
+    "missing_unexplained": 0,
+    "coverage_pct": 78.95
+  },
+  "franceboheme": {
+    "total_issues": 39,
+    "olr_file_true": 38,
+    "missing_in_failed_arks": 1,
+    "missing_unexplained": 0,
+    "coverage_pct": 97.44
+  },
+  "revueorienth": {
+    "total_issues": 263,
+    "olr_file_true": 261,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 2,
+    "coverage_pct": 99.24
+  },
+  "francesoir": {
+    "total_issues": 3514,
+    "olr_file_true": 1166,
+    "missing_in_failed_arks": 2336,
+    "missing_unexplained": 12,
+    "coverage_pct": 33.18
+  },
+  "figaro1826": {
+    "total_issues": 3261,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 3261,
+    "coverage_pct": 0.0
+  },
+  "echoran": {
+    "total_issues": 28788,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 28788,
+    "coverage_pct": 0.0
+  },
+  "oenantes": {
+    "total_issues": 9875,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 9874,
+    "missing_unexplained": 1,
+    "coverage_pct": 0.0
+  },
+  "lagrimace": {
+    "total_issues": 252,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 252,
+    "coverage_pct": 0.0
+  },
+  "togocameroun": {
+    "total_issues": 31,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 31,
+    "coverage_pct": 0.0
+  },
+  "leconstitutionnel": {
+    "total_issues": 14709,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 14709,
+    "coverage_pct": 0.0
+  },
+  "vielatine": {
+    "total_issues": 45,
+    "olr_file_true": 45,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "nouvellefrancemars": {
+    "total_issues": 78,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 78,
+    "coverage_pct": 0.0
+  },
+  "lepetitjournal": {
+    "total_issues": 28856,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 28856,
+    "coverage_pct": 0.0
+  },
+  "renaissancecol": {
+    "total_issues": 12,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 12,
+    "coverage_pct": 0.0
+  },
+  "actionfrancaise1908": {
+    "total_issues": 12928,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 12928,
+    "coverage_pct": 0.0
+  },
+  "rqcm": {
+    "total_issues": 54,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 54,
+    "coverage_pct": 0.0
+  },
+  "annalescol": {
+    "total_issues": 43,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 43,
+    "coverage_pct": 0.0
+  },
+  "europeorroum": {
+    "total_issues": 22,
+    "olr_file_true": 21,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 1,
+    "coverage_pct": 95.45
+  },
+  "grandechonord": {
+    "total_issues": 17579,
+    "olr_file_true": 15240,
+    "missing_in_failed_arks": 2306,
+    "missing_unexplained": 33,
+    "coverage_pct": 86.69
+  },
+  "europeillrev": {
+    "total_issues": 7,
+    "olr_file_true": 7,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "bouffon": {
+    "total_issues": 174,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 174,
+    "missing_unexplained": 0,
+    "coverage_pct": 0.0
+  },
+  "lafranceparis": {
+    "total_issues": 22913,
+    "olr_file_true": 1396,
+    "missing_in_failed_arks": 18456,
+    "missing_unexplained": 3061,
+    "coverage_pct": 6.09
+  },
+  "europeill": {
+    "total_issues": 4,
+    "olr_file_true": 4,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "courriercolill": {
+    "total_issues": 28,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 28,
+    "coverage_pct": 0.0
+  },
+  "revuecol": {
+    "total_issues": 14,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 14,
+    "coverage_pct": 0.0
+  },
+  "freeeurope": {
+    "total_issues": 47,
+    "olr_file_true": 44,
+    "missing_in_failed_arks": 1,
+    "missing_unexplained": 2,
+    "coverage_pct": 93.62
+  },
+  "paristribune": {
+    "total_issues": 8,
+    "olr_file_true": 8,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "figaro1839": {
+    "total_issues": 191,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 191,
+    "coverage_pct": 0.0
+  },
+  "lettresfrancaises": {
+    "total_issues": 618,
+    "olr_file_true": 221,
+    "missing_in_failed_arks": 378,
+    "missing_unexplained": 19,
+    "coverage_pct": 35.76
+  },
+  "depechecolill": {
+    "total_issues": 284,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 284,
+    "coverage_pct": 0.0
+  },
+  "cesoir": {
+    "total_issues": 3539,
+    "olr_file_true": 2197,
+    "missing_in_failed_arks": 1334,
+    "missing_unexplained": 8,
+    "coverage_pct": 62.08
+  },
+  "gringoire": {
+    "total_issues": 786,
+    "olr_file_true": 785,
+    "missing_in_failed_arks": 1,
+    "missing_unexplained": 0,
+    "coverage_pct": 99.87
+  },
+  "alsacefrancaise": {
+    "total_issues": 786,
+    "olr_file_true": 750,
+    "missing_in_failed_arks": 33,
+    "missing_unexplained": 3,
+    "coverage_pct": 95.42
+  },
+  "rhcf": {
+    "total_issues": 52,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 52,
+    "coverage_pct": 0.0
+  },
+  "defensenationalparis": {
+    "total_issues": 35,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 17,
+    "missing_unexplained": 18,
+    "coverage_pct": 0.0
+  },
+  "univers": {
+    "total_issues": 16121,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 16121,
+    "coverage_pct": 0.0
+  },
+  "abendland": {
+    "total_issues": 19,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 19,
+    "missing_unexplained": 0,
+    "coverage_pct": 0.0
+  },
+  "canardenchaine": {
+    "total_issues": 1325,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 1325,
+    "coverage_pct": 0.0
+  },
+  "courriermarna": {
+    "total_issues": 89,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 89,
+    "coverage_pct": 0.0
+  },
+  "humanite": {
+    "total_issues": 16446,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 16446,
+    "coverage_pct": 0.0
+  },
+  "tablettescol": {
+    "total_issues": 181,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 181,
+    "coverage_pct": 0.0
+  },
+  "europejq": {
+    "total_issues": 967,
+    "olr_file_true": 931,
+    "missing_in_failed_arks": 31,
+    "missing_unexplained": 5,
+    "coverage_pct": 96.28
+  },
+  "cripeuple1871": {
+    "total_issues": 2513,
+    "olr_file_true": 2502,
+    "missing_in_failed_arks": 4,
+    "missing_unexplained": 7,
+    "coverage_pct": 99.56
+  },
+  "europepscil": {
+    "total_issues": 407,
+    "olr_file_true": 404,
+    "missing_in_failed_arks": 3,
+    "missing_unexplained": 0,
+    "coverage_pct": 99.26
+  },
+  "echangouleme": {
+    "total_issues": 779,
+    "olr_file_true": 772,
+    "missing_in_failed_arks": 7,
+    "missing_unexplained": 0,
+    "coverage_pct": 99.1
+  },
+  "paixtravail": {
+    "total_issues": 1,
+    "olr_file_true": 1,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "francelibre": {
+    "total_issues": 1190,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 1190,
+    "missing_unexplained": 0,
+    "coverage_pct": 0.0
+  },
+  "figaro1854": {
+    "total_issues": 29931,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 29931,
+    "coverage_pct": 0.0
+  },
+  "europecolonies": {
+    "total_issues": 77,
+    "olr_file_true": 76,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 1,
+    "coverage_pct": 98.7
+  },
+  "bsecm": {
+    "total_issues": 20,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 20,
+    "coverage_pct": 0.0
+  },
+  "bonnetrouge": {
+    "total_issues": 1056,
+    "olr_file_true": 1050,
+    "missing_in_failed_arks": 1,
+    "missing_unexplained": 5,
+    "coverage_pct": 99.43
+  },
+  "bcaf": {
+    "total_issues": 21,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 21,
+    "coverage_pct": 0.0
+  },
+  "lajustice": {
+    "total_issues": 12032,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 12032,
+    "coverage_pct": 0.0
+  },
+  "pariseurope": {
+    "total_issues": 10,
+    "olr_file_true": 10,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 0,
+    "coverage_pct": 100.0
+  },
+  "echoalger": {
+    "total_issues": 15105,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 15105,
+    "coverage_pct": 0.0
+  },
+  "lecorsaire": {
+    "total_issues": 3978,
+    "olr_file_true": 3973,
+    "missing_in_failed_arks": 3,
+    "missing_unexplained": 2,
+    "coverage_pct": 99.87
+  },
+  "lejournal": {
+    "total_issues": 18752,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 18635,
+    "missing_unexplained": 117,
+    "coverage_pct": 0.0
+  },
+  "actionfrancaise1899": {
+    "total_issues": 20,
+    "olr_file_true": 0,
+    "missing_in_failed_arks": 0,
+    "missing_unexplained": 20,
+    "coverage_pct": 0.0
+  },
+  "franctireur": {
+    "total_issues": 2897,
+    "olr_file_true": 1335,
+    "missing_in_failed_arks": 1559,
+    "missing_unexplained": 3,
+    "coverage_pct": 46.08
+  },
+  "cinejournal": {
+    "total_issues": 868,
+    "olr_file_true": 207,
+    "missing_in_failed_arks": 590,
+    "missing_unexplained": 71,
+    "coverage_pct": 23.85
+  },
+  "franceeuropeor": {
+    "total_issues": 101,
+    "olr_file_true": 95,
+    "missing_in_failed_arks": 6,
+    "missing_unexplained": 0,
+    "coverage_pct": 94.06
+  },
+  "aurore1943": {
+    "total_issues": 5561,
+    "olr_file_true": 1940,
+    "missing_in_failed_arks": 1566,
+    "missing_unexplained": 2055,
+    "coverage_pct": 34.89
+  },
+  "lauto": {
+    "total_issues": 16409,
+    "olr_file_true": 15607,
+    "missing_in_failed_arks": 52,
+    "missing_unexplained": 750,
+    "coverage_pct": 95.11
+  }
+}

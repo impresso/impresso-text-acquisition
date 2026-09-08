@@ -49,7 +49,7 @@ IMP1_DIRNAME_TO_ALIAS = {
 
 # Aliases whose entry in `output_file` should be recomputed even though they are already present
 # (e.g. titles reprocessed after a fix, or added since the last full run).
-DEFAULT_ALIASES_TO_OVERRIDE = [
+"""DEFAULT_ALIASES_TO_OVERRIDE = [
     # "bsgecm",
     "bcaf",
     "actionfrancaise1899",
@@ -70,6 +70,38 @@ DEFAULT_ALIASES_TO_OVERRIDE = [
     "lepetitjournal",
     "letemps",
     "revuecol",
+]
+"""
+# MP/EN titles
+DEFAULT_ALIASES_TO_OVERRIDE = [
+    "oenantes",
+    "cesoir",
+    "cinejournal",
+    "combat",
+    "europecolonies",
+    "nyherald",
+    "aurore1943",
+    "lauto",
+    "unionfrancaise",
+    "lacharente",
+    "lacroix",
+    "democratiepacifique",
+    "depechetoulouse",
+    "lafranceparis",
+    "laliberte",
+    "petitepresse",
+    "lecourrier",
+    "cripeuple1871",
+    "franctireur",
+    "grandechonord",
+    "lejournal",
+    "lepays",
+    "petitmarocain",
+    "etatsuniseurope",
+    "lettresfrancaises",
+    "liberation",
+    "parismidi",
+    "chicagotribune",
 ]
 
 DEFAULT_DATA_DIR = Path(__file__).resolve().parents[2] / "data"
@@ -186,13 +218,22 @@ def detect_issues_bnf(
             alias = IMP1_DIRNAME_TO_ALIAS[alias]
 
         if alias in all_issues and alias not in aliases_to_override:
-            logger.info(
-                "%d/%d - Alias %s is already present in the index and will be skipped.",
-                idx + 1,
-                len(title_dirs),
-                alias,
-            )
-            continue
+            if alias in ("excelsior", "lafronde", "marieclaire", "new_olr", ".manifest_cache"):
+                # if one of these title dirs are found they should be skipped,
+                # and if the key is already in the indices it should be removed
+                del all_issues[alias]
+                msg = f"Removed the entries for {alias} from the index as it does not correspond to something we want"
+                logger.info(msg)
+                print(msg)
+                continue
+            else:
+                logger.info(
+                    "%d/%d - Alias %s is already present in the index and will be skipped.",
+                    idx + 1,
+                    len(title_dirs),
+                    alias,
+                )
+                continue
         else:
             logger.info(
                 "%d/%d - Processing to find the issues of alias %s...",
@@ -201,7 +242,7 @@ def detect_issues_bnf(
                 alias,
             )
 
-        if alias not in ("excelsior", "lafronde", "marieclaire"):
+        if alias not in ("excelsior", "lafronde", "marieclaire", "new_olr", ".manifest_cache"):
             # skip the impresso 1 data for now, will add later
             if alias == "oeuvre":
                 alias_issues, oeuvre_skipped_issues = find_bnf_issues_w_walk(
@@ -210,6 +251,8 @@ def detect_issues_bnf(
             else:
                 alias_issues, _ = find_bnf_issues_w_walk(prov_base_dir, alias, base_dir, None)
         else:
+            # remove the contents the issue dict has for one of these aliases, because it's usually false
+            del all_issues[alias]
             continue
 
         n_issues = sum(len(d) for m in alias_issues.values() for d in m.values())
