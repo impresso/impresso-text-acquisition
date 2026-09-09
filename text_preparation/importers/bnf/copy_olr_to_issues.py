@@ -51,7 +51,7 @@ DEFAULT_ISSUE_INDEX = "text_preparation/data/issue_indices/issue_index.bnf_new.j
 DEFAULT_PROGRESS_FILE = "text_preparation/importers/bnf/.copy_olr_progress.json"
 DEFAULT_STATS_REPORT = "text_preparation/data/sample_data/BNF_API/olr_coverage_by_alias.json"
 DEFAULT_UNMATCHED_REPORT = "text_preparation/data/sample_data/BNF_API/olr_files_without_issues.txt"
-DEFAULT_MISSING_REPORT = "text_preparation/data/sample_data/BNF_API/olr_missing_unexplained.txt"
+DEFAULT_MISSING_REPORT = "text_preparation/data/sample_data/BNF_API/olr_missing_unexplained.tsv"
 
 OLR_SUFFIX = "_olr.xml"
 
