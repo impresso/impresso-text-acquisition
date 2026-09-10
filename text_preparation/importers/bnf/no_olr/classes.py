@@ -17,11 +17,7 @@ from bs4 import BeautifulSoup
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
 
 from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
-from text_preparation.importers.bnf.helpers import (
-    BNF_CONTENT_TYPES,
-    add_div,
-    type_translation,
-)
+from text_preparation.importers.bnf.helpers import get_manifest_info
 from text_preparation.importers.bnf.parsers import (
     parse_div_parts,
     parse_embedded_cis,
@@ -214,7 +210,7 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
             "n": self._notes,
         }
 
-        if self.media_title_variant is not None:
+        if self.media_title_variant:
             # the media title variant is defined if it is found in the manifest json file
             self.issue_data["media_title_variant"] = self.media_title_variant
 
@@ -233,15 +229,8 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         Raises:
             e: Instantiation of a page or adding it to :attr:`pages` failed.
         """
-        manifest_path = os.path.join(self.path, "manifest.json")
-        # TODO extract size and width from the manifest file
-        with open(manifest_path, "r", encoding="utf-8") as fin:
-            manifest_contents = json.load(fin)
 
-        # take the opportunity to define the media title variant
-        for m_dict in manifest_contents["metadata"]:
-            if m_dict["label"]["fr"] == ["Titre"]:
-                self.media_title_variant = m_dict["value"]["fr"][0]
+        manifest_page_dims, self.media_title_variant = get_manifest_info(self.path)
 
         pages = [
             (file, int(file.split(".")[0][-4:]))
@@ -255,37 +244,17 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         self.pages = []
         for filename, page_no in zip(page_filenames, page_numbers):
             page_id = filename.split(".")[0]
-            # directly fetch the page width and height from the iiif presentation API
-            page_w, page_h = None, None
-            for mft_item in manifest_contents["items"]:
-                # typical item in the manifest:
-                """{
-                "id": "https://openapi.bnf.fr/iiif/presentation/v3/ark:/12148/bpt6k9742578x/f1/canvas",
-                "type": "Canvas",
-                "label": {
-                    "fr": [
-                    "NP"
-                    ]
-                },
-                "height": 6084,
-                "width": 4584,
-                [...]
-                """
-                item_pg_fnum = mft_item["id"].split("/")[-2]  # finds "f[page number]"
-                if page_no == int(item_pg_fnum[1:]):
-                    page_w = mft_item["width"]
-                    page_h = mft_item["height"]
-                    # once we've found the corresponding page, stop looking
-                    break
             try:
-                if not page_w and not page_w:
+                if page_no not in manifest_page_dims:
                     msg = f"{self.id} - page {filename} - there is no item with page number {page_no} in the manifest, skipping it."
                     print(msg)
                     self._notes.append(msg)
                     raise Exception(msg)
 
                 self.pages.append(
-                    BnfNewspaperPage(page_id, page_no, filename, self.path, (page_w, page_h))
+                    BnfNewspaperPage(
+                        page_id, page_no, filename, self.path, manifest_page_dims.get(page_no)
+                    )
                 )
             except Exception as e:
                 logger.error(

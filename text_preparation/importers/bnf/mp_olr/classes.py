@@ -10,6 +10,7 @@ import logging
 import os
 from glob import glob
 from time import strftime
+from typing import Optional
 
 from bs4 import BeautifulSoup
 from impresso_essentials.utils import IssueDir, SourceType, SourceMedium, timestamp
@@ -18,6 +19,7 @@ from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.bnf.helpers import (
     BNF_CONTENT_TYPES,
     add_div,
+    get_manifest_info,
     type_translation,
 )
 from text_preparation.importers.bnf.parsers import (
@@ -34,8 +36,8 @@ from text_preparation.utils import get_reading_order
 
 logger = logging.getLogger(__name__)
 
-# TODO update the endpoints
-IIIF_ENDPOINT_URI = "https://gallica.bnf.fr/iiif"
+IIIF_IMAGE_URI = "https://openapi.bnf.fr/iiif/image/v3/ark:/12148/"
+IIIF_PRES_URI = "https://openapi.bnf.fr/iiif/presentation/v3/ark:/12148/"
 IIIF_MANIFEST_SUFFIX = "manifest.json"
 IIIF_SUFFIX = "info.json"
 
@@ -48,6 +50,8 @@ class BnfMpNewspaperPage(MetsAltoCanonicalPage):
         number (int): Page number.
         filename (str): Name of the Alto XML page file.
         basedir (str): Base directory where Alto files are located.
+        manifest_dims (Optional[tuple[int, int]]): Facsimile (width, height)
+            of this page as found in the issue's `manifest.json`, if any.
 
     Attributes:
         id (str): Canonical Page ID (e.g. ``GDL-1900-01-02-a-p0004``).
@@ -58,14 +62,44 @@ class BnfMpNewspaperPage(MetsAltoCanonicalPage):
         basedir (str): Base directory where Alto files are located.
         encoding (str, optional): Encoding of XML file. Defaults to 'utf-8'.
         is_gzip (bool): Whether the page's corresponding file is in .gzip.
-        ark_link (str): IIIF Ark identifier for this page.
+        page_width (float): Width in pixels of the page, from the ALTO file.
+        page_height (float): Height in pixels of the page, from the ALTO file.
     """
 
-    def __init__(self, _id: str, number: int, filename: str, basedir: str) -> None:
+    def __init__(
+        self,
+        _id: str,
+        number: int,
+        filename: str,
+        basedir: str,
+        manifest_dims: Optional[tuple[int, int]] = None,
+    ) -> None:
 
         self.is_gzip = filename.endswith("gz")
         super().__init__(_id, number, filename, basedir)
-        self.ark_link = self.xml.find("fileIdentifier").getText()
+
+        page_tag = self.xml.find("Page")
+        self.page_width = float(page_tag.get("WIDTH"))
+        self.page_height = float(page_tag.get("HEIGHT"))
+        alto_fw, alto_fh = int(self.page_width), int(self.page_height)
+
+        # `fw`/`fh` are preferably read from the issue's manifest.json (passed
+        # in from `BnfMpNewspaperIssue._find_pages`); when unavailable (the
+        # case for all current legacy mp_olr issues), fall back to the ALTO
+        # Page tag's WIDTH/HEIGHT attributes read above.
+        self._dim_mismatch_note = None
+        if manifest_dims is not None:
+            mft_w, mft_h = manifest_dims
+            self.page_data["fw"] = int(mft_w)
+            self.page_data["fh"] = int(mft_h)
+            if int(mft_w) != alto_fw or int(mft_h) != alto_fh:
+                self._dim_mismatch_note = (
+                    f"{_id} - facsimile dims mismatch between manifest.json "
+                    f"({mft_w}x{mft_h}) and ALTO Page tag ({alto_fw}x{alto_fh})."
+                )
+        else:
+            self.page_data["fw"] = alto_fw
+            self.page_data["fh"] = alto_fh
 
     def _parse_font_styles(self) -> None:
         """Parse the styles at the page level."""
@@ -79,8 +113,12 @@ class BnfMpNewspaperPage(MetsAltoCanonicalPage):
 
     def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
-        self.page_data["iiif_img_base_uri"] = os.path.join(IIIF_ENDPOINT_URI, self.ark_link)
+        self.page_data["iiif_img_base_uri"] = os.path.join(
+            IIIF_IMAGE_URI, self.issue.ark_id, f"f{self.number}"
+        )
         self._parse_font_styles()
+        if self._dim_mismatch_note is not None:
+            self.issue._notes.append(self._dim_mismatch_note)
 
     def parse(self) -> None:
         doc = self.xml
@@ -137,16 +175,26 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         pages (list): list of :obj:`CanonicalPage` instances from this issue.
         image_properties (dict[str, Any]): metadata allowing to convert region
             OCR/OLR coordinates to iiif format compliant ones.
-        ark_id (int): Issue ARK identifier, for the issue's pages' iiif links.
+        ark_id (str): Issue ARK identifier, for the issue's pages' iiif links.
+        title_ark_id (str): Title-level ARK identifier for the newspaper.
         issue_uid (str): Basename of the Mets XML file of this issue.
-        secondary_date (datetime.date): Potential secondary date of issue.
+        secondary_date (str): Potential secondary date of issue.
     """
 
     def __init__(self, issue_dir: IssueDir) -> None:
+        # TODO handle legacy vs new batch cases for the contents of the issue
         self.issue_uid = os.path.basename(issue_dir.path)
         self.secondary_date = issue_dir.secondary_date
+        self.ark_id = issue_dir.ark_id
+        self.title_ark_id = issue_dir.title_ark
+
+        # Issue manifest iiif URI is in format {iiif_prefix}/{ark_id}/manifest.json
+        self.iiif_manifest = os.path.join(IIIF_PRES_URI, self.ark_id, IIIF_MANIFEST_SUFFIX)
+        self.manifest_filepath = None
+
+        # initialize the media title variant in the case it's defined
+        self.media_title_variant = None
         super().__init__(issue_dir)
-        # TODO add page width & height
 
     @property
     def xml(self) -> BeautifulSoup:
@@ -177,22 +225,30 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         """
         ocr_path = os.path.join(self.path, "ocr")  # Pages in `ocr` folder
 
+        # Preferably read the facsimile dimensions of each page from the
+        # issue's IIIF presentation `manifest.json`, when available.
+        # TODO check if there is a manifest filepath
+
+        manifest_page_dims, self.media_title_variant = get_manifest_info(self.path)
+
         pages = [
             (file, int(file.split(".")[0][1:]))
             for file in os.listdir(ocr_path)
             if not file.startswith(".") and ".xml" in file
         ]
 
-        page_filenames, page_numbers = zip(*pages)
-
-        page_canonical_names = [
-            "{}-p{}".format(self.id, str(page_n).zfill(4)) for page_n in page_numbers
-        ]
+        # sort the pages
+        page_filenames, page_numbers = zip(*sorted(pages, key=lambda x: x[1]))
 
         self.pages = {}
-        for filename, page_no, page_id in zip(page_filenames, page_numbers, page_canonical_names):
+        self.page_files_by_number = {}
+        for filename, page_no in zip(page_filenames, page_numbers):
+            page_id = f"{self.id}-p{str(page_no).zfill(4)}"
             try:
-                self.pages[page_no] = BnfMpNewspaperPage(page_id, page_no, filename, ocr_path)
+                self.pages[page_no] = BnfMpNewspaperPage(
+                    page_id, page_no, filename, ocr_path, manifest_page_dims.get(page_no)
+                )
+                self.page_files_by_number[page_no] = filename
             except Exception as e:
                 logger.error(
                     "Adding page %s %s %s raised following exception: %s",
@@ -315,7 +371,9 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         metadata, ci = None, None
         # If parts were found, create content item for this DIV
         if len(parts) > 0:
-            article_id = "{}-i{}".format(self.id, str(item_counter).zfill(4))
+
+            article_id = f"{self.id}-i{str(item_counter).zfill(4)}"
+
             metadata = {
                 "id": article_id,
                 "tp": type_translation[div_type],
@@ -323,7 +381,27 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             }
             if label is not None:
                 metadata["t"] = label
-            ci = {"m": metadata, "l": {"parts": parts}}
+            ci = {
+                "m": metadata,
+                "l": {
+                    "parts": parts,
+                    "src_files": {
+                        # TODO check wha't the IIIF manifest!!
+                        "mets_xml": os.path.join(self.path, self.mets_file),
+                        "presentation_manifest": self.manifest_filepath,
+                        "alto_xml": [],
+                    },
+                    "ark_id": self.ark_id,
+                    "title_ark_id": self.title_ark_id,
+                },
+            }
+
+            for part in ci["l"]["parts"]:
+                page_no = part["comp_page_no"]
+                if page_no not in ci["m"]["pp"]:
+                    ci["m"]["pp"].append(page_no)
+                    ci["l"]["src_files"]["alto_xml"].append(self.page_files_by_number[page_no])
+
             item_counter += 1
         else:  # Otherwise, only parse embedded CIs
             article_id = None
@@ -369,7 +447,9 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 logger.warning("Could not find image %s for CI %s", image_part_id, ci_id)
             else:
                 coords = distill_coordinates(block)
-                iiif_link = os.path.join(IIIF_ENDPOINT_URI, page.ark_link, IIIF_SUFFIX)
+                iiif_link = os.path.join(
+                    IIIF_IMAGE_URI, self.ark_id, f"f{page.number}", IIIF_SUFFIX
+                )
 
         return coords, iiif_link
 
@@ -380,7 +460,6 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         information in the canonical Issue format, the `BnfNewspaperIssue`
         instance is ready for serialization.
         """
-
         mets_doc = self.xml
         # First get all the divs by type
         by_type = self._get_divs_by_type(mets_doc)
@@ -402,6 +481,11 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 x["c"], x["m"]["iiif_link"] = self._get_image_iiif_link(
                     x["m"]["id"], x["l"]["parts"]
                 )
+            # Additional BNF-specific identifiers, added for every content
+            # item (both the ones created directly in `_parse_div`, and the
+            # ones produced by the shared `parse_embedded_cis`).
+            x["l"]["ark_id"] = self.ark_id
+            x["l"]["title_ark_id"] = self.title_ark_id
 
         # once the pages are added to the metadata, compute & add the reading order
         reading_order_dict = get_reading_order(content_items)
@@ -410,19 +494,26 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
 
         self.pages = list(self.pages.values())
 
-        # Issue manifest iiif URI is in format {iiif_prefix}/{ark_id}/manifest.json
-        # By default, the ark id contains the page number,
-        iiif_manifest = os.path.join(
-            IIIF_ENDPOINT_URI,
-            os.path.dirname(self.pages[0].ark_link),
-            IIIF_MANIFEST_SUFFIX,
-        )
+        # by default the date is considered to be exact
+        is_exact_date = True
 
-        # TODO maybe add media_title_variant based on content of manifest or mets file
-        # TODO define is_exact_date=False when we know it's not the correct one
+        # Note for newspapers with two dates (197 cases)
+        if self.secondary_date is not None:
+            # when the secondary date is only a year or a month, the date is not exact
+            if len(self.secondary_date.split("-")) < 3:
+                msg = (
+                    f"{self.id} - Secondary date {self.secondary_date} has only year or "
+                    "year-month. Setting exact_date=False."
+                )
+                logger.info(msg)
+                self._notes.append(msg)
+                is_exact_date = False
+            else:
+                self._notes.append(f"Secondary date {self.secondary_date}")
 
         self.issue_data = {
             "id": self.id,
+            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
             "st": SourceType.NP.value,
             "sm": SourceMedium.PT.value,
@@ -430,7 +521,11 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             "i": content_items,
             "pp": [p.id for p in self.pages],
             "iiif_manifest_uri": iiif_manifest,
+            "is_exact_date": is_exact_date,
+            "n": self._notes,
         }
-        # Note for newspapers with two dates (197 cases)
-        if self.secondary_date is not None:
-            self.issue_data["n"] = [f"Secondary date {self.secondary_date}"]
+
+        # TODO maybe add media_title_variant based on content of manifest or mets file
+        if self.media_title_variant:
+            # the media title variant is defined if it is found in the manifest json file
+            self.issue_data["media_title_variant"] = self.media_title_variant

@@ -1,6 +1,8 @@
 """Set of helper functions for BNF importer"""
 
+import json
 import logging
+import os
 from datetime import datetime
 from typing import Optional
 
@@ -174,3 +176,65 @@ def parse_date(
         raise ValueError(f"Could not parse date {date_string}")
 
     return date, secondary
+
+
+def get_manifest_info(issue_path: str) -> tuple[dict[int, tuple[int, int]], str]:
+    """Read the issue's IIIF presentation `manifest.json` file if present.
+
+    When available, the manifest.json file (fetched from the BNF IIIF
+    presentation API) is the preferred source of the facsimile width/height
+    (in pixels) of each page, matched based on the `f{page_number}` fragment
+    of each canvas item's `id`. Legacy BNF OLR issues (`en_olr`, `mp_olr`)
+    currently don't have this file on disk, in which case callers should fall
+    back to reading each page's ALTO `<Page>` tag WIDTH/HEIGHT attributes.
+
+    typical item in the manifest:
+    {
+    "id": "https://openapi.bnf.fr/iiif/presentation/v3/ark:/12148/bpt6k9742578x/f1/canvas",
+    "type": "Canvas",
+    "label": {
+        "fr": [
+        "NP"
+        ]
+    },
+    "height": 6084,
+    "width": 4584,
+    [...]
+
+    This function extracts the page dimensions and the newspaper title from
+    the IIIF presentation API metadata.
+
+    Args:
+        issue_path (str): Path to the directory containing the issue's data.
+
+    Returns:
+        tuple[dict[int, tuple[int, int]], str]: Mapping from page number to
+            (width, height) in pixels, and extracted title string.
+            Empty if no `manifest.json` was found in `issue_path`, or if it
+            couldn't be parsed as expected.
+    """
+    manifest_path = os.path.join(issue_path, "manifest.json")
+    page_dims: dict[int, tuple[int, int]] = {}
+    title_variant = ""
+
+    if not os.path.exists(manifest_path):
+        return page_dims, title_variant
+
+    try:
+        with open(manifest_path, "r", encoding="utf-8") as fin:
+            manifest_contents = json.load(fin)
+
+        for m_dict in manifest_contents["metadata"]:
+            if m_dict["label"]["fr"] == ["Titre"]:
+                title_variant = m_dict["value"]["fr"][0]
+
+        for mft_item in manifest_contents.get("items", []):
+            # typical item id:
+            # ".../presentation/v3/ark:/12148/{ark_id}/f{page_number}/canvas"
+            item_pg_fnum = mft_item["id"].split("/")[-2]
+            page_no = int(item_pg_fnum[1:])
+            page_dims[page_no] = (mft_item["width"], mft_item["height"])
+    except (OSError, ValueError, KeyError, json.JSONDecodeError) as e:
+        logger.warning("Could not parse manifest.json at %s: %s", manifest_path, e)
+
+    return page_dims, title_variant
