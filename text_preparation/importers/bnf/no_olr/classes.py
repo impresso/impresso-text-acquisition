@@ -229,8 +229,8 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
         Raises:
             e: Instantiation of a page or adding it to :attr:`pages` failed.
         """
-
-        manifest_page_dims, self.media_title_variant = get_manifest_info(self.path)
+        manifest_path = os.path.join(self.path, "manifest.json")
+        manifest_page_dims, self.media_title_variant = get_manifest_info(manifest_path)
 
         pages = [
             (file, int(file.split(".")[0][-4:]))
@@ -344,10 +344,8 @@ class BnfNewspaperIssue(MetsAltoCanonicalIssue):
                     ],
                     # Source METS filename
                     "src_files": {
-                        # TODO add the mets if it ends up existing
-                        # "mets_xml": os.path.basename(self.mets_file),
-                        "presentation_manifest": self.iiif_manifest,
                         "alto_xml": page.filename,
+                        "manifest_json": "manifest.json",
                     },
                     # Additional BNF-specific identifiers
                     "ark_id": self.ark_id,  # Issue ark_id

@@ -117,7 +117,13 @@ def parse_div_parts(div: Tag) -> list[dict[str, str | int]]:
 
 
 def parse_embedded_cis(
-    div: Tag, label: str, issue_id: str, parent_id: str | None, counter: int
+    div: Tag,
+    label: str,
+    issue_id: str,
+    parent_id: str | None,
+    counter: int,
+    issue_level_legacy,
+    page_filenames,
 ) -> tuple[list[dict], int]:
     """Parse the div Tags embedded in the given one.
 
@@ -152,7 +158,7 @@ def parse_embedded_cis(
                     impresso_type = comp_role
 
                 metadata = {
-                    "id": "{}-i{}".format(issue_id, str(counter).zfill(4)),
+                    "id": f"{issue_id}-i{str(counter).zfill(4)}",
                     "tp": impresso_type,
                     "pp": [],
                 }
@@ -165,7 +171,19 @@ def parse_embedded_cis(
                 # but the articles are empty)
                 if parent_id is not None:
                     metadata["pOf"] = parent_id
-                new_ci = {"m": metadata, "l": {"parts": parse_div_parts(child)}}
+                new_ci = {
+                    "m": metadata,
+                    "l": {
+                        "id": child.get("ID"),
+                        "parts": parse_div_parts(child),
+                    },
+                }
+
+                issue_level_legacy["src_files"]["alto_xml"] = [
+                    page_filenames[p["comp_page_no"]] for p in new_ci["l"]["parts"]
+                ]
+                # add the issue-level legacy (with src_files, ark_id and title_ark_id)
+                new_ci["l"].update(issue_level_legacy)
                 new_cis.append(new_ci)
                 counter += 1
 

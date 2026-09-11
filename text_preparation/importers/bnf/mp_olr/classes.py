@@ -113,10 +113,9 @@ class BnfMpNewspaperPage(MetsAltoCanonicalPage):
 
     def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
-        self.page_data["iiif_img_base_uri"] = os.path.join(
-            IIIF_IMAGE_URI, self.issue.ark_id, f"f{self.number}"
-        )
-        self._parse_font_styles()
+        self.iiif_img_base_uri = os.path.join(IIIF_IMAGE_URI, self.issue.ark_id, f"f{self.number}")
+        self.page_data["iiif_img_base_uri"] = self.iiif_img_base_uri
+        # self._parse_font_styles()
         if self._dim_mismatch_note is not None:
             self.issue._notes.append(self._dim_mismatch_note)
 
@@ -183,14 +182,20 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
 
     def __init__(self, issue_dir: IssueDir) -> None:
         # TODO handle legacy vs new batch cases for the contents of the issue
-        self.issue_uid = os.path.basename(issue_dir.path)
         self.secondary_date = issue_dir.secondary_date
         self.ark_id = issue_dir.ark_id
         self.title_ark_id = issue_dir.title_ark
 
+        # collect the data batch from the issueDir
+        # This impacts the expected format of the directory content.
+        # its value can be "BNF_MP_old" (legacy titles) or "BNF_API_NEW" new data
+        self.new_data_batch = issue_dir.batch == "BNF_API_NEW"
+
+        # both format store the information relative to the image dimensions in a "manifest" file
+        self.manifest_filename = f"manifest.{'json' if self.new_data_batch else 'xml'}"
+
         # Issue manifest iiif URI is in format {iiif_prefix}/{ark_id}/manifest.json
         self.iiif_manifest = os.path.join(IIIF_PRES_URI, self.ark_id, IIIF_MANIFEST_SUFFIX)
-        self.manifest_filepath = None
 
         # initialize the media title variant in the case it's defined
         self.media_title_variant = None
@@ -203,17 +208,100 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         Returns:
             BeautifulSoup: BeautifulSoup object with Mets XML of the issue.
         """
-        mets_regex = os.path.join(self.path, "toc", f"*{self.issue_uid}.xml")
-        mets_file = glob(mets_regex)
-        if len(mets_file) == 0:
-            logger.critical("Could not find METS file in %s", self.path)
-            return None
-        mets_file = mets_file[0]
-        with open(mets_file, "r", encoding="utf-8") as f:
+        if not self.mets_file:
+            if self.new_data_batch:
+                # first case: new data - the mets is named after the issue ark
+                mets_regex = os.path.join(self.path, f"*{self.ark_id}_olr.xml")
+                mets_file = glob(mets_regex)
+                if len(mets_file) == 0:
+                    logger.critical("Could not find METS file in %s", self.path)
+                    return None
+            else:
+                # second case: legacy data - the mets file is named after the issue's dirname
+                issue_uid = os.path.basename(self.path)
+                mets_regex = os.path.join(self.path, "toc", f"*{issue_uid}.xml")
+                mets_file = glob(mets_regex)
+                if len(mets_file) == 0:
+                    logger.critical("Could not find METS file in %s", self.path)
+                    return None
+
+        self.mets_file = mets_file[0]
+
+        with open(self.mets_file, "r", encoding="utf-8") as f:
             raw_xml = f.read()
 
         mets_doc = BeautifulSoup(raw_xml, "xml")
         return mets_doc
+
+    def get_legacy_manifest_info(self, manifest_path) -> tuple[dict[int, tuple[int, int]], str]:
+        """Read the issue's legacy `manifest.xml` (METS) file if present.
+
+        Mirrors `get_manifest_info()` (for the new API's `manifest.json`) but
+        for the Impresso I batch's legacy `manifest.xml`, which is itself a
+        METS document. Page facsimile dimensions live in
+        `<techMD MDTYPE="NISOIMG">` sections (`mix:imageWidth`/
+        `mix:imageHeight`), each linked to a page's `<file ID="master.{page_no}">`
+        entry via that file's `ADMID` attribute (space-separated list of AMD
+        ids, one of which is the NISOIMG techMD).
+
+        Note:
+            Unlike the new manifest.json (which has a "Titre" metadata entry
+            for the media's variant title), this legacy manifest's only
+            title-like field (`dc:title` in `DMD.2`) is the issue's own dated
+            title (e.g. "1937-03-05 (Année 0, Numéro 1)"), not a media title
+            variant, so there is no equivalent field to extract here.
+
+        Args:
+            manifest_path (str): Path to the issue's `manifest.xml` file.
+
+        Returns:
+            tuple[dict[int, tuple[int, int]], str]: Mapping from page number
+                to (width, height) in pixels, and an empty title (no
+                equivalent field exists in this format). Empty dict if the
+                file is missing or couldn't be parsed as expected.
+        """
+        page_dims: dict[int, tuple[int, int]] = {}
+        title_variant = ""
+
+        if not os.path.exists(manifest_path):
+            return page_dims, title_variant
+
+        try:
+            with open(manifest_path, "r", encoding="utf-8") as f:
+                raw_xml = f.read()
+
+            manifest_contents = BeautifulSoup(raw_xml, "xml")
+
+            # Map each NISOIMG techMD's ID to its (width, height).
+            dims_by_amdid: dict[str, tuple[int, int]] = {}
+            for tech_md in manifest_contents.find_all("techMD"):
+                md_wrap = tech_md.find("mdWrap")
+                if md_wrap is None or md_wrap.get("MDTYPE") != "NISOIMG":
+                    continue
+                width_tag = tech_md.find("mix:imageWidth")
+                height_tag = tech_md.find("mix:imageHeight")
+                if width_tag is None or height_tag is None:
+                    continue
+                amd_id = tech_md.get("ID")
+                dims_by_amdid[amd_id] = (
+                    int(width_tag.get_text(strip=True)),
+                    int(height_tag.get_text(strip=True)),
+                )
+
+            # Match each page's master file to its NISOIMG techMD via ADMID.
+            for file_tag in manifest_contents.find_all("file", {"ID": True}):
+                file_id = file_tag.get("ID")
+                if not file_id.startswith("master."):
+                    continue
+                page_no = int(file_id.split(".")[1])
+                for amd_id in (file_tag.get("ADMID") or "").split():
+                    if amd_id in dims_by_amdid:
+                        page_dims[page_no] = dims_by_amdid[amd_id]
+                        break
+        except (OSError, ValueError, AttributeError) as e:
+            logger.warning("Could not parse legacy manifest.xml at %s: %s", manifest_path, e)
+
+        return page_dims, title_variant
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
@@ -225,11 +313,15 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         """
         ocr_path = os.path.join(self.path, "ocr")  # Pages in `ocr` folder
 
-        # Preferably read the facsimile dimensions of each page from the
-        # issue's IIIF presentation `manifest.json`, when available.
-        # TODO check if there is a manifest filepath
-
-        manifest_page_dims, self.media_title_variant = get_manifest_info(self.path)
+        manifest_path = os.path.join(self.path, self.manifest_filename)
+        if self.new_data_batch:
+            # Read the facsimile dimensions of each page from the issue's `manifest.json`
+            manifest_page_dims, self.media_title_variant = get_manifest_info(manifest_path)
+        else:
+            # Read the facsimile dimensions of each page from the `manifest.xml` file.
+            manifest_page_dims, self.media_title_variant = self.get_legacy_manifest_info(
+                manifest_path
+            )
 
         pages = [
             (file, int(file.split(".")[0][1:]))
@@ -364,6 +456,16 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         Returns:
             tuple[list[dict], int]: _description_
         """
+        # define issue-level legacy info which will be repeated
+        issue_level_legacy = {
+            "src_files": {
+                "mets_xml": os.path.basename(self.mets_file),
+                "alto_xml": [],
+                "manifest_file": self.manifest_filename,
+            },
+            "ark_id": self.ark_id,
+            "title_ark_id": self.title_ark_id,
+        }
         article_div = mets_doc.find("div", {"ID": div_id})  # Get the tag
         # Try to get the body if there is one (we discard headings)
         article_div = article_div.find("div", {"TYPE": "BODY"}) or article_div
@@ -374,6 +476,7 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
 
             article_id = f"{self.id}-i{str(item_counter).zfill(4)}"
 
+            # first create the CI skeleton
             metadata = {
                 "id": article_id,
                 "tp": type_translation[div_type],
@@ -384,18 +487,16 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             ci = {
                 "m": metadata,
                 "l": {
+                    # Composite ID format for tables
+                    "id": div_id,
                     "parts": parts,
-                    "src_files": {
-                        # TODO check wha't the IIIF manifest!!
-                        "mets_xml": os.path.join(self.path, self.mets_file),
-                        "presentation_manifest": self.manifest_filepath,
-                        "alto_xml": [],
-                    },
-                    "ark_id": self.ark_id,
-                    "title_ark_id": self.title_ark_id,
+                    # add the issue-level legacy
                 },
             }
+            # add the issue-level legacy
+            ci["l"].update(issue_level_legacy)
 
+            # add the source files and pages from the parts.
             for part in ci["l"]["parts"]:
                 page_no = part["comp_page_no"]
                 if page_no not in ci["m"]["pp"]:
@@ -407,7 +508,13 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             article_id = None
 
         embedded, item_counter = parse_embedded_cis(
-            article_div, label, self.id, article_id, item_counter
+            article_div,
+            label,
+            self.id,
+            article_id,
+            item_counter,
+            issue_level_legacy,
+            self.page_files_by_number,
         )
 
         if metadata is not None:
@@ -513,14 +620,13 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
 
         self.issue_data = {
             "id": self.id,
-            "cdt": strftime("%Y-%m-%d %H:%M:%S"),
             "ts": timestamp(),
             "st": SourceType.NP.value,
             "sm": SourceMedium.PT.value,
             "olr": True,
             "i": content_items,
             "pp": [p.id for p in self.pages],
-            "iiif_manifest_uri": iiif_manifest,
+            "iiif_manifest_uri": self.iiif_manifest,
             "is_exact_date": is_exact_date,
             "n": self._notes,
         }

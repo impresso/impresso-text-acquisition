@@ -285,8 +285,12 @@ def detect_issues(
         for year, months in years.items():
             for month, entries in months.items():
                 for entry in entries:
-                    issue = entry2issue(alias, year, month, entry, base_dir, arks_per_alias[alias])
-                    issues.append(issue)
+                    # if the format is not OCR only, the OLR file should be present in the issue index entry
+                    if FORMAT == "BNF-OCR" or "olr_file" in entry:
+                        issue = entry2issue(
+                            alias, year, month, entry, base_dir, arks_per_alias[alias]
+                        )
+                        issues.append(issue)
 
     return issues
 

@@ -178,7 +178,7 @@ def parse_date(
     return date, secondary
 
 
-def get_manifest_info(issue_path: str) -> tuple[dict[int, tuple[int, int]], str]:
+def get_manifest_info(manifest_path: str) -> tuple[dict[int, tuple[int, int]], str]:
     """Read the issue's IIIF presentation `manifest.json` file if present.
 
     When available, the manifest.json file (fetched from the BNF IIIF
@@ -213,7 +213,6 @@ def get_manifest_info(issue_path: str) -> tuple[dict[int, tuple[int, int]], str]
             Empty if no `manifest.json` was found in `issue_path`, or if it
             couldn't be parsed as expected.
     """
-    manifest_path = os.path.join(issue_path, "manifest.json")
     page_dims: dict[int, tuple[int, int]] = {}
     title_variant = ""
 
