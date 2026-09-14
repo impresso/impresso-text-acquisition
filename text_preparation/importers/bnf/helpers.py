@@ -38,6 +38,7 @@ type_translation = {
     "table": CONTENTITEM_TYPE_TABLE,
     "article": CONTENTITEM_TYPE_ARTICLE,
     "freead": CONTENTITEM_TYPE_ADVERTISEMENT,
+    # "image": CONTENTITEM_TYPE_IMAGE,
 }
 
 logger = logging.getLogger(__name__)

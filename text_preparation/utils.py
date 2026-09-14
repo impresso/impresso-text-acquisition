@@ -215,8 +215,8 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
         m = item["m"]
         sortable.append(
             (
-                type_priority(m.get("tp")),
                 first_page(m.get("pp", [])),
+                type_priority(m.get("tp")),
                 ci_index(m["id"]),
                 m["id"],
             )

@@ -199,6 +199,8 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
 
         # initialize the media title variant in the case it's defined
         self.media_title_variant = None
+
+        self.sections = []
         super().__init__(issue_dir)
 
     @property
@@ -311,7 +313,8 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         Raises:
             e: Instantiation of a page or adding it to :attr:`pages` failed.
         """
-        ocr_path = os.path.join(self.path, "ocr")  # Pages in `ocr` folder
+        # Pages in `ocr` folder in the old setup
+        ocr_path = self.path if self.new_data_batch else os.path.join(self.path, "ocr")
 
         manifest_path = os.path.join(self.path, self.manifest_filename)
         if self.new_data_batch:
@@ -323,10 +326,17 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 manifest_path
             )
 
+        # fetch the page ALTO XML filenames and corresponding page numbers
+        # new batch files: alias-year-month-day-edition-p[4-digit_page_num].xml
+        # old batch files: X[7-digit_page_num].xml
+        get_page_num = lambda name: int(
+            name.split(".")[0][-4:] if self.new_data_batch else name.split(".")[0][1:]
+        )
+
         pages = [
-            (file, int(file.split(".")[0][1:]))
+            (file, get_page_num(file))
             for file in os.listdir(ocr_path)
-            if not file.startswith(".") and ".xml" in file
+            if not file.startswith(".") and ".xml" in file and "olr" not in file
         ]
 
         # sort the pages
@@ -416,24 +426,45 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         """
         # Flatten the sections
         for div_id, lab in by_type["section"]:
+
+            section_heading_parts = None
             # Get all divs of this section
             div = struct_content.find("div", {"ID": div_id})
+            composing_div_ids = []
             for d in div.findChildren("div", recursive=False):
                 dmdid = d.get("DMDID")
                 div_id = d.get("ID")
-                ci_type = d.get("TYPE").lower()
+                div_type = d.get("TYPE").lower()
                 d_label = d.get("LABEL")
+
+                if div_type == "heading":
+                    # find the heading div corresponding to the section title
+                    section_heading_parts, _ = parse_div_parts(d)
+
                 # This div needs to be added to the content items
-                if dmdid is None and ci_type in BNF_CONTENT_TYPES:
-                    by_type = add_div(by_type, ci_type, div_id, d_label or lab)
+                if dmdid is None and div_type in BNF_CONTENT_TYPES:
+                    by_type = add_div(by_type, div_type, div_id, d_label or lab)
                 elif dmdid is None:
                     logging.debug(
                         " %s: %s of type %s within section is not in CONTENT_TYPES",
                         self.id,
                         div_id,
-                        ci_type,
+                        div_type,
                     )
+                composing_div_ids.append(div_id)
+
+            self.sections.append(
+                {
+                    "title_text": lab,
+                    "composing_ci_ids": [],
+                    "section_id": div_id,
+                    "heading_legacy_parts": section_heading_parts,
+                    "composing_div_ids": composing_div_ids,
+                }
+            )
+
         del by_type["section"]
+
         return by_type
 
     def _parse_div(
@@ -468,8 +499,23 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         }
         article_div = mets_doc.find("div", {"ID": div_id})  # Get the tag
         # Try to get the body if there is one (we discard headings)
-        article_div = article_div.find("div", {"TYPE": "BODY"}) or article_div
-        parts = parse_div_parts(article_div)  # Parse the parts of the tag
+        body_div = article_div.find("div", {"TYPE": "BODY"}) or article_div
+        # Parse the parts of the tag
+        parts, image_divs = parse_div_parts(body_div)
+
+        if article_div.get("ID") == "DIV.32":
+            print(
+                f"DIV.32 -------> 1. RESULTING CI PARTS AND IMAGE PARTS IN _parse_div: \n\n parts:\n{parts} \n\n image_parts:\n{image_divs}"
+            )
+        # Try to get the heading if there is one
+        heading_div = article_div.find("div", {"TYPE": "HEADING"})
+        heading_parts = []
+        if heading_div:
+            heading_parts, _ = parse_div_parts(heading_div)
+
+        # attach the heading parts to the body parts
+        parts = heading_parts + parts
+
         metadata, ci = None, None
         # If parts were found, create content item for this DIV
         if len(parts) > 0:
@@ -507,8 +553,8 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         else:  # Otherwise, only parse embedded CIs
             article_id = None
 
-        embedded, item_counter = parse_embedded_cis(
-            article_div,
+        embedded, item_counter, emb_image_divs = parse_embedded_cis(
+            body_div,
             label,
             self.id,
             article_id,
@@ -516,6 +562,13 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             issue_level_legacy,
             self.page_files_by_number,
         )
+
+        image_divs.update(emb_image_divs)
+
+        if article_div.get("ID") == "DIV.32":
+            print(
+                f"DIV.32 -------> 2. RESULTING BODY DIVS CI PARTS AND IMAGE PARTS IN _parse_div: \n\n image_parts:\n{image_divs}"
+            )
 
         if metadata is not None:
             embedded.append(ci)
@@ -560,6 +613,16 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
 
         return coords, iiif_link
 
+    def _assign_sections(self, content_items):
+
+        for ci in content_items:
+            for section in self.sections:
+                if ci["l"]["id"] in section["composing_div_ids"]:
+                    section["composing_ci_ids"].append(ci["m"]["id"])
+                    ci["section_title"] = section
+
+        return content_items
+
     def _parse_mets(self) -> None:
         """Parse the Mets XML file corresponding to this issue.
 
@@ -585,6 +648,8 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         for x in content_items:
             x["m"]["pp"] = list(set(c["comp_page_no"] for c in x["l"]["parts"]))
             if x["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
+                print(f'FROM INSIDE _PARSE_METS - IMAGE CI: {x["m"]["id"]}')
+                # add here the image CI processing
                 x["c"], x["m"]["iiif_link"] = self._get_image_iiif_link(
                     x["m"]["id"], x["l"]["parts"]
                 )
@@ -593,6 +658,8 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             # ones produced by the shared `parse_embedded_cis`).
             x["l"]["ark_id"] = self.ark_id
             x["l"]["title_ark_id"] = self.title_ark_id
+
+        content_items = self._assign_sections(content_items)
 
         # once the pages are added to the metadata, compute & add the reading order
         reading_order_dict = get_reading_order(content_items)

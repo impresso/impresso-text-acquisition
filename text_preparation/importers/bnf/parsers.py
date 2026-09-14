@@ -6,6 +6,8 @@ import bs4
 from bs4 import NavigableString
 from bs4.element import Tag
 
+
+from text_preparation.importers import CONTENTITEM_TYPE_IMAGE
 from text_preparation.importers.bnf.helpers import BNF_CONTENT_TYPES, type_translation
 from text_preparation.importers.mets_alto.alto import (
     parse_textline,
@@ -90,30 +92,72 @@ def parse_div_parts(div: Tag) -> list[dict[str, str | int]]:
         list[dict[str, str | int]]: The list of parts of this Tag.
     """
     parts = []
+    image_divs = {}
+
     for child in div.children:
 
         if isinstance(child, NavigableString):
             continue
         elif isinstance(child, Tag):
+            if div.get("ID") == "DIV.35" or div.get("ID") == "DIV.36":
+                print(f"PRINTING THE EXAMPLE DIV for child: {child.get('ID')}")
             type_attr = child.get("TYPE")
             comp_role = type_attr.lower() if type_attr else None
 
-            if comp_role not in BNF_CONTENT_TYPES:
+            # if comp_role == "illustration":
+            #    print(f"div {div.get('ID')} has child of type {comp_role} --> {child.get('ID')}")
+
+            if div.get("ID") == "DIV.35" or div.get("ID") == "DIV.36":
+                print(
+                    f"DIV.35 --> child {child.get('ID')} - type_attr: {type_attr}, comp_role: {comp_role}"
+                )
+
+            # keep track of parts which are BELOW article level OR which correspond to image parts (to create image CIs after)
+            if (
+                comp_role not in BNF_CONTENT_TYPES
+            ):  # or comp_role in ["illustration","image","caption",]:
+
                 areas = child.findAll("area")
-                for area in areas:
+
+                if div.get("ID") == "DIV.35" or div.get("ID") == "DIV.36":
+                    print(f"DIV.35 --> child {child.get('ID')} - areas: {areas}")
+
+                for a_idx, area in enumerate(areas):
                     comp_id = area.get("BEGIN")
                     comp_fileid = area.get("FILEID")
                     comp_page_no = int(comp_fileid.split(".")[1])
 
-                    parts.append(
-                        {
-                            "comp_role": comp_role,
-                            "comp_id": comp_id,
-                            "comp_fileid": comp_fileid,
-                            "comp_page_no": comp_page_no,
-                        }
+                    part_area = {
+                        "comp_role": comp_role,
+                        "comp_id": comp_id,
+                        "comp_fileid": comp_fileid,
+                        "comp_page_no": comp_page_no,
+                    }
+
+                    if comp_role not in BNF_CONTENT_TYPES:
+                        if div.get("ID") == "DIV.35":
+                            print(
+                                f"DIV.35 --> child {child.get('ID')} adding area {a_idx} (comp_id={comp_id}) to parts"
+                            )
+                        parts.append(part_area)
+
+            # when there is an illustration within the body, images and caption parts will be stored both in the CI parts and the Image CI parts
+            if comp_role == "illustration":
+
+                illustration_parts, _ = parse_div_parts(child)
+
+                # add its parts to the rest of the parts of the CI
+                parts.extend(illustration_parts)
+
+                if div.get("ID") == "DIV.35" or div.get("ID") == "DIV.36":
+                    print(
+                        f"DIV.35 --> child {child.get('ID')} saving illustration_parts: {illustration_parts}"
                     )
-    return parts
+
+                # and store the image's subdiv, its parts and the original div in another structure to create an image CI after
+                image_divs[child.get("ID")] = (child, illustration_parts)
+
+    return parts, image_divs
 
 
 def parse_embedded_cis(
@@ -142,6 +186,7 @@ def parse_embedded_cis(
     Returns:
         tuple[list[dict], int]: The embedded CIs and resulting updated counter.
     """
+    all_image_divs = {}
     new_cis = []
     for child in div.children:
 
@@ -150,6 +195,12 @@ def parse_embedded_cis(
         elif isinstance(child, Tag):
             type_attr = child.get("TYPE")
             comp_role = type_attr.lower() if type_attr else None
+
+            if comp_role == "illustration":
+                print(
+                    f"div {div.get('ID')} (with parent div {parent_id}) has child of type {comp_role} --> {child.get('ID')}"
+                )
+
             if comp_role in BNF_CONTENT_TYPES:
                 if comp_role in type_translation:
                     impresso_type = type_translation[comp_role]
@@ -171,13 +222,28 @@ def parse_embedded_cis(
                 # but the articles are empty)
                 if parent_id is not None:
                     metadata["pOf"] = parent_id
+
+                if div.get("ID") == "DIV.36":
+                    print(
+                        f"DIV.36 -------> PRINTING THE EXAMPLE DIV FOR parse_embedded_cis: child {child.get('ID')}"
+                    )
+                ci_parts, image_divs = parse_div_parts(child)
+                if div.get("ID") == "DIV.36":
+                    print(
+                        f"DIV.36 -------> RESULTING CI PARTS AND IMAGE PARTS IN parse_embedded_cis: \n\n ci_parts:\n{ci_parts} \n\n image_parts:\n{image_divs}"
+                    )
+                all_image_divs.update(image_divs)
+
                 new_ci = {
                     "m": metadata,
                     "l": {
                         "id": child.get("ID"),
-                        "parts": parse_div_parts(child),
+                        "parts": ci_parts,
                     },
                 }
+
+                if impresso_type == CONTENTITEM_TYPE_IMAGE:
+                    new_ci["pOf"] = parent_id
 
                 issue_level_legacy["src_files"]["alto_xml"] = [
                     page_filenames[p["comp_page_no"]] for p in new_ci["l"]["parts"]
@@ -187,4 +253,4 @@ def parse_embedded_cis(
                 new_cis.append(new_ci)
                 counter += 1
 
-    return new_cis, counter
+    return new_cis, counter, all_image_divs
