@@ -79,7 +79,9 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     return line, notes
 
 
-def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: None | dict[str, list[str]]=None) -> tuple[list[dict], list[str]]:
+def parse_printspace(
+    element: Tag, mappings: dict[str, str], section_mappings: None | dict[str, list[str]] = None
+) -> tuple[list[dict], list[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
     This element contains all the OCR information about the content items of
@@ -112,36 +114,40 @@ def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: N
                 # don't add the text from illustration regions
                 # because it's very often OCR none-sense.
                 continue
+            if block.name == "ComposedBlock":
+                cb_regions, new_notes = parse_printspace(block, mappings)
+                regions += cb_regions
+                notes += new_notes
+            elif block.name not in ["Polygon", "Shape"]:
+                if block_id in mappings:
+                    part_of_contentitem = mappings[block_id]
+                else:
+                    part_of_contentitem = None
 
-            if block_id in mappings:
-                part_of_contentitem = mappings[block_id]
-            else:
-                part_of_contentitem = None
+                coordinates = distill_coordinates(block)
 
-            coordinates = distill_coordinates(block)
+                tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
 
-            tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
+                if len(tmp) > 0:
+                    lines, new_notes = list(zip(*tmp))
+                    new_notes = [i for n in new_notes for i in n]
+                    if isinstance(lines, tuple):
+                        # formatting problem
+                        lines = list(lines)
+                else:
+                    lines, new_notes = [], []
 
-            if len(tmp) > 0:
-                lines, new_notes = list(zip(*tmp))
-                new_notes = [i for n in new_notes for i in n]
-                if isinstance(lines, tuple):
-                    # formatting problem
-                    lines = list(lines)
-            else:
-                lines, new_notes = [], []
+                paragraph = {"c": coordinates, "l": lines}
 
-            paragraph = {"c": coordinates, "l": lines}
+                region = {"c": coordinates, "p": [paragraph]}
 
-            region = {"c": coordinates, "p": [paragraph]}
+                if section_mappings is not None and block_id in section_mappings:
+                    region["section_pOf"] = section_mappings[block_id]
+                elif part_of_contentitem:
+                    region["pOf"] = part_of_contentitem
 
-            if section_mappings is not None and block_id in section_mappings:
-                region["section_pOf"] = section_mappings[block_id]
-            elif part_of_contentitem:
-                region["pOf"] = part_of_contentitem
-            
-            notes += new_notes
-            regions.append(region)
+                notes += new_notes
+                regions.append(region)
     return regions, notes
 
 

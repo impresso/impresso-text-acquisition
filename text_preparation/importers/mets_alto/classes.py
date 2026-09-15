@@ -142,9 +142,15 @@ class MetsAltoCanonicalPage(CanonicalPage):
 
                     mappings[part["comp_id"]] = ci_id
             if "section_title" in ci:
+                """print(
+                    f"page {self.id} - ci {ci['m']['id']} - has section_title. (current section_mappings={section_mappings})"
+                )"""
                 for part in ci["section_title"]["heading_legacy_parts"]:
                     if part.get("comp_page_no") == self.number:
                         section_mappings[part["comp_id"]] = ci["section_title"]["composing_ci_ids"]
+                """print(
+                    f"page {self.id} - section_mappings post ci {ci['m']['id']} - {section_mappings}"
+                )"""
 
         pselement = doc.find("PrintSpace")
         page_regions, notes = alto.parse_printspace(pselement, mappings, section_mappings)

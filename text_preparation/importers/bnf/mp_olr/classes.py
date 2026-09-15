@@ -119,7 +119,7 @@ class BnfMpNewspaperPage(MetsAltoCanonicalPage):
         if self._dim_mismatch_note is not None:
             self.issue._notes.append(self._dim_mismatch_note)
 
-    def parse(self) -> None:
+    """def parse(self) -> None:
         doc = self.xml
 
         mappings = {}
@@ -133,7 +133,7 @@ class BnfMpNewspaperPage(MetsAltoCanonicalPage):
         page_data, notes = parse_printspace(pselement, mappings)
         self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(page_data)
         if len(notes) > 0:
-            self.page_data["n"] = notes
+            self.page_data["n"] = notes"""
 
     @property
     def xml(self) -> BeautifulSoup:
@@ -181,7 +181,6 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
     """
 
     def __init__(self, issue_dir: IssueDir) -> None:
-        # TODO handle legacy vs new batch cases for the contents of the issue
         self.secondary_date = issue_dir.secondary_date
         self.ark_id = issue_dir.ark_id
         self.title_ark_id = issue_dir.title_ark
@@ -408,11 +407,13 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 by_type = add_div(by_type, _type, c.get("ID"), c.get("LABEL"))
 
         if "section" in by_type:
-            by_type = self._flatten_sections(by_type, struct_content)
+            by_type = self._find_and_flatten_sections(by_type, struct_content)
 
         return by_type
 
-    def _flatten_sections(self, by_type: dict, struct_content) -> dict[str, list[tuple[str, str]]]:
+    def _find_and_flatten_sections(
+        self, by_type: dict, struct_content
+    ) -> dict[str, list[tuple[str, str]]]:
         """Flatten the sections of the issue.
 
         This means making the children parts standalone CIs.
@@ -427,7 +428,7 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         # Flatten the sections
         for div_id, lab in by_type["section"]:
 
-            section_heading_parts = None
+            section_heading_parts = []
             # Get all divs of this section
             div = struct_content.find("div", {"ID": div_id})
             composing_div_ids = []
@@ -439,7 +440,7 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
 
                 if div_type == "heading":
                     # find the heading div corresponding to the section title
-                    section_heading_parts, _ = parse_div_parts(d)
+                    section_heading_parts = parse_div_parts(d)
 
                 # This div needs to be added to the content items
                 if dmdid is None and div_type in BNF_CONTENT_TYPES:
@@ -457,7 +458,7 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 {
                     "title_text": lab,
                     "composing_ci_ids": [],
-                    "section_id": div_id,
+                    "section_id": div.get("ID"),
                     "heading_legacy_parts": section_heading_parts,
                     "composing_div_ids": composing_div_ids,
                 }
@@ -501,17 +502,13 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         # Try to get the body if there is one (we discard headings)
         body_div = article_div.find("div", {"TYPE": "BODY"}) or article_div
         # Parse the parts of the tag
-        parts, image_divs = parse_div_parts(body_div)
+        parts = parse_div_parts(body_div)
 
-        if article_div.get("ID") == "DIV.32":
-            print(
-                f"DIV.32 -------> 1. RESULTING CI PARTS AND IMAGE PARTS IN _parse_div: \n\n parts:\n{parts} \n\n image_parts:\n{image_divs}"
-            )
         # Try to get the heading if there is one
         heading_div = article_div.find("div", {"TYPE": "HEADING"})
         heading_parts = []
         if heading_div:
-            heading_parts, _ = parse_div_parts(heading_div)
+            heading_parts = parse_div_parts(heading_div)
 
         # attach the heading parts to the body parts
         parts = heading_parts + parts
@@ -534,7 +531,7 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 "m": metadata,
                 "l": {
                     # Composite ID format for tables
-                    "id": div_id,
+                    "id": article_div.get("ID"),
                     "parts": parts,
                     # add the issue-level legacy
                 },
@@ -553,7 +550,7 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         else:  # Otherwise, only parse embedded CIs
             article_id = None
 
-        embedded, item_counter, emb_image_divs = parse_embedded_cis(
+        embedded, item_counter = parse_embedded_cis(
             body_div,
             label,
             self.id,
@@ -562,13 +559,6 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             issue_level_legacy,
             self.page_files_by_number,
         )
-
-        image_divs.update(emb_image_divs)
-
-        if article_div.get("ID") == "DIV.32":
-            print(
-                f"DIV.32 -------> 2. RESULTING BODY DIVS CI PARTS AND IMAGE PARTS IN _parse_div: \n\n image_parts:\n{image_divs}"
-            )
 
         if metadata is not None:
             embedded.append(ci)
@@ -648,7 +638,6 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
         for x in content_items:
             x["m"]["pp"] = list(set(c["comp_page_no"] for c in x["l"]["parts"]))
             if x["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
-                print(f'FROM INSIDE _PARSE_METS - IMAGE CI: {x["m"]["id"]}')
                 # add here the image CI processing
                 x["c"], x["m"]["iiif_link"] = self._get_image_iiif_link(
                     x["m"]["id"], x["l"]["parts"]

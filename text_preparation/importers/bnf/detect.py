@@ -286,7 +286,12 @@ def detect_issues(
             for month, entries in months.items():
                 for entry in entries:
                     # if the format is not OCR only, the OLR file should be present in the issue index entry
-                    if FORMAT == "BNF-OCR" or "olr_file" in entry:
+                    if (
+                        FORMAT == "BNF-OCR"
+                        or "olr_file" in entry
+                        or entry["batch"] == "BNF_MP_old"
+                        and entry["ark_id"] is not None
+                    ):
                         issue = entry2issue(
                             alias, year, month, entry, base_dir, arks_per_alias[alias]
                         )
