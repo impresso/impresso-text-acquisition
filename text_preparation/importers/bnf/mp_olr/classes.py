@@ -520,11 +520,7 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             article_id = f"{self.id}-i{str(item_counter).zfill(4)}"
 
             # first create the CI skeleton
-            metadata = {
-                "id": article_id,
-                "tp": type_translation[div_type],
-                "pp": [],
-            }
+            metadata = {"id": article_id, "tp": type_translation[div_type], "pp": [], "lg": None}
             if label is not None:
                 metadata["t"] = label
             ci = {
@@ -565,7 +561,7 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
 
         return embedded, item_counter
 
-    def _get_image_iiif_link(self, ci_id: str, parts: list) -> tuple[list[int], str]:
+    def _get_image_iiif_link(self, ci_id: str, parts: list, xml_pages) -> tuple[list[int], str]:
         """Get the image coordinates and iiif info uri given the ID of the CI.
         Args:
             ci_id (str): The ID of the image CI
@@ -574,6 +570,8 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
             tuple[list[int], str]: The image coordinated and iiif uri to the
                 info.json for the page's image.
         """
+        # special case was found with the images of music (with role "musicscore") being used
+        # currently they are being filtered out
         image_part = [p for p in parts if p["comp_role"] == CONTENTITEM_TYPE_IMAGE]
         iiif_link, coords = None, None
         if len(image_part) == 0:
@@ -582,24 +580,27 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 f"{CONTENTITEM_TYPE_IMAGE} does not have image part."
             )
             logger.warning(message)
-        elif len(image_part) > 1:
-            message = (
-                f"Content item {ci_id} of type "
-                f"{CONTENTITEM_TYPE_IMAGE} has multiple image parts."
-            )
-            logger.warning(message)
+            print(message)
         else:
+            if len(image_part) > 1:
+                message = (
+                    f"Content item {ci_id} of type "
+                    f"{CONTENTITEM_TYPE_IMAGE} has multiple image parts. Using the first."
+                )
+                logger.warning(message)
+                print(message)
 
             image_part_id = image_part[0]["comp_id"]
-            page = self.pages[image_part[0]["comp_page_no"]]
-            block = page.xml.find("Illustration", {"ID": image_part_id})
+            # page = self.pages[image_part[0]["comp_page_no"]]
+            page_num = image_part[0]["comp_page_no"]
+            block = xml_pages[image_part[0]["comp_page_no"]].find(
+                "Illustration", {"ID": image_part_id}
+            )
             if block is None:
                 logger.warning("Could not find image %s for CI %s", image_part_id, ci_id)
             else:
                 coords = distill_coordinates(block)
-                iiif_link = os.path.join(
-                    IIIF_IMAGE_URI, self.ark_id, f"f{page.number}", IIIF_SUFFIX
-                )
+                iiif_link = os.path.join(IIIF_IMAGE_URI, self.ark_id, f"f{page_num}", IIIF_SUFFIX)
 
         return coords, iiif_link
 
@@ -634,19 +635,32 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 )
                 content_items += cis
 
+        # compute once the xml objects of each page:
+        xml_pages = {p_num: p.xml for p_num, p in self.pages.items()}
+        invalid_image_cis = []
         # Finally add the pages and iiif link
         for x in content_items:
             x["m"]["pp"] = list(set(c["comp_page_no"] for c in x["l"]["parts"]))
             if x["m"]["tp"] == CONTENTITEM_TYPE_IMAGE:
                 # add here the image CI processing
-                x["c"], x["m"]["iiif_link"] = self._get_image_iiif_link(
-                    x["m"]["id"], x["l"]["parts"]
-                )
+                coords, link = self._get_image_iiif_link(x["m"]["id"], x["l"]["parts"], xml_pages)
+                if coords is None or link is None:
+                    invalid_image_cis.append(x)
+                else:
+                    x["c"] = coords
+                    x["m"]["iiif_link"] = link
             # Additional BNF-specific identifiers, added for every content
             # item (both the ones created directly in `_parse_div`, and the
             # ones produced by the shared `parse_embedded_cis`).
             x["l"]["ark_id"] = self.ark_id
             x["l"]["title_ark_id"] = self.title_ark_id
+
+        # remove all the invalid image CIs
+        for faulty_ci in invalid_image_cis:
+            msg = f"{self.id} - Faulty image CI without coordinates or iiif link - removing it: {faulty_ci}"
+            print(msg)
+            self._notes.append(faulty_ci)
+            content_items.remove(faulty_ci)
 
         content_items = self._assign_sections(content_items)
 

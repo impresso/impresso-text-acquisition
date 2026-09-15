@@ -66,7 +66,11 @@ def add_div(
         else:
             _dict[_type] = [(div_id, label)]
     else:
-        logger.warning("Tried to add div of type %s", _type)
+        logger.warning("Tried to add div of type %s - adding as article by default.", _type)
+        if CONTENTITEM_TYPE_ARTICLE in _dict:
+            _dict[CONTENTITEM_TYPE_ARTICLE].append((div_id, label))
+        else:
+            _dict[CONTENTITEM_TYPE_ARTICLE] = [(div_id, label)]
 
     return _dict
 

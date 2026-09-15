@@ -177,6 +177,7 @@ def parse_embedded_cis(
                     "id": f"{issue_id}-i{str(counter).zfill(4)}",
                     "tp": impresso_type,
                     "pp": [],
+                    "lg": None,
                 }
                 lab = child.get("LABEL") or label
 
