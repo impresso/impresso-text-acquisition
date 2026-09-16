@@ -252,6 +252,29 @@ def entry2issue(
     )
 
 
+def filter_oeuvre_entries(entries, year, month):
+    # filter double entries for oeuvre,
+    # where we have several duplicates in the data with the new download
+    edition_dict = {}
+
+    for entry in entries:
+        entry_key = f"{entry['day']}-{entry['edition']}"
+        if entry_key in edition_dict:
+            # replace the currently stored entry if it was from the old import
+            if edition_dict[entry_key]["batch"] == "BNF_MP_old" and entry["batch"] == "BNF_API_NEW":
+                edition_dict[entry_key] = entry
+        else:
+            # if it's not already in the dict, add it.
+            edition_dict[entry_key] = entry
+
+    # return the filtered entries to be ingested
+    resulting_entries = list(edition_dict.values())
+    msg = f"Filtered duplicated entries for oeuvre for {year}-{month}: went from {len(entries)} to {len(resulting_entries)} issues."
+    print(msg)
+    logger.info(msg)
+    return resulting_entries
+
+
 def detect_issues(
     base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None
 ) -> list[BnfIssueDir]:
@@ -284,6 +307,8 @@ def detect_issues(
     for alias, years in kept_data.items():
         for year, months in years.items():
             for month, entries in months.items():
+                if alias == "oeuvre":
+                    entries = filter_oeuvre_entries(entries, year, month)
                 for entry in entries:
                     # if the format is not OCR only, the OLR file should be present in the issue index entry
                     if (
