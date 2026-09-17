@@ -9,7 +9,6 @@ import gzip
 import logging
 import os
 from glob import glob
-from time import strftime
 from typing import Optional
 
 from bs4 import BeautifulSoup
@@ -25,7 +24,6 @@ from text_preparation.importers.bnf.helpers import (
 from text_preparation.importers.bnf.parsers import (
     parse_div_parts,
     parse_embedded_cis,
-    parse_printspace,
 )
 from text_preparation.importers.mets_alto import (
     MetsAltoCanonicalIssue,
@@ -118,22 +116,6 @@ class BnfMpNewspaperPage(MetsAltoCanonicalPage):
         # self._parse_font_styles()
         if self._dim_mismatch_note is not None:
             self.issue._notes.append(self._dim_mismatch_note)
-
-    """def parse(self) -> None:
-        doc = self.xml
-
-        mappings = {}
-        for ci in self.issue.issue_data["i"]:
-            ci_id = ci["m"]["id"]
-            if "parts" in ci["l"]:
-                for part in ci["l"]["parts"]:
-                    mappings[part["comp_id"]] = ci_id
-
-        pselement = doc.find("PrintSpace")
-        page_data, notes = parse_printspace(pselement, mappings)
-        self.page_data["cc"], self.page_data["r"] = self._convert_coordinates(page_data)
-        if len(notes) > 0:
-            self.page_data["n"] = notes"""
 
     @property
     def xml(self) -> BeautifulSoup:

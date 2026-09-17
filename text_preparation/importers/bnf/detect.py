@@ -260,8 +260,12 @@ def filter_oeuvre_entries(entries, year, month):
     for entry in entries:
         entry_key = f"{entry['day']}-{entry['edition']}"
         if entry_key in edition_dict:
-            # replace the currently stored entry if it was from the old import
-            if edition_dict[entry_key]["batch"] == "BNF_MP_old" and entry["batch"] == "BNF_API_NEW":
+            # replace the currently stored entry if it was from the old import and this one has OLR
+            if (
+                edition_dict[entry_key]["batch"] == "BNF_MP_old"
+                and entry["batch"] == "BNF_API_NEW"
+                and "olr_file" in entry
+            ):
                 edition_dict[entry_key] = entry
         else:
             # if it's not already in the dict, add it.
