@@ -20,7 +20,11 @@ from text_preparation.importers import (
     CONTENTITEM_TYPE_IMAGE,
     CONTENTITEM_TYPE_TABLE,
 )
-from text_preparation.importers.bnf.helpers import BNF_CONTENT_TYPES, get_manifest_info
+from text_preparation.importers.bnf.helpers import (
+    BNF_CONTENT_TYPES,
+    type_translation,
+    get_manifest_info,
+)
 from text_preparation.importers.mets_alto import (
     MetsAltoCanonicalIssue,
     MetsAltoCanonicalPage,
@@ -34,11 +38,6 @@ IIIF_PRES_URI = "https://openapi.bnf.fr/iiif/presentation/v3/ark:/12148/"
 IIIF_MANIFEST_SUFFIX = "manifest.json"
 IIIF_SUFFIX = "info.json"
 SECTION_TYPE = "section"
-
-type_translation = {
-    "illustration": CONTENTITEM_TYPE_IMAGE,
-    "advertisement": CONTENTITEM_TYPE_ADVERTISEMENT,
-}
 
 
 class BnfEnNewspaperPage(MetsAltoCanonicalPage):
@@ -100,9 +99,8 @@ class BnfEnNewspaperPage(MetsAltoCanonicalPage):
 
     def add_issue(self, issue: MetsAltoCanonicalIssue) -> None:
         self.issue = issue
-        self.page_data["iiif_img_base_uri"] = os.path.join(
-            IIIF_IMAGE_URI, self.issue.ark_id, f"f{self.number}"
-        )
+        self.iiif_img_base_uri = os.path.join(IIIF_IMAGE_URI, self.issue.ark_id, f"f{self.number}")
+        self.page_data["iiif_img_base_uri"] = self.iiif_img_base_uri
         if self._dim_mismatch_note is not None:
             self.issue._notes.append(self._dim_mismatch_note)
 
@@ -132,14 +130,15 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
     """
 
     def __init__(self, issue_dir: IssueDir) -> None:
-        self.ark_id = issue_dir.ark_id
-        self.title_ark_id = issue_dir.title_ark
-        self.secondary_date = issue_dir.secondary_date
 
         # TODO once OLR data has arrived for oenantes: update to handle new data org
         # initialize the media title variant in the case it's defined
         # self.media_title_variant = None
         super().__init__(issue_dir)
+
+        self.ark_id = issue_dir.ark_id
+        self.title_ark_id = issue_dir.title_ark
+        self.secondary_date = issue_dir.secondary_date
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
@@ -159,8 +158,9 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
 
         # Preferably read the facsimile dimensions of each page from the
         # issue's IIIF presentation `manifest.json`, when available.
-        manifest_page_dims, self.media_title_variant = get_manifest_info(self.path)
-        # TODO fetch page_dims from the mets
+        manifest_page_dims, self.media_title_variant = get_manifest_info(
+            os.path.join(self.path, "manifest.json")
+        )
 
         page_file_names = [
             file for file in os.listdir(alto_path) if not file.startswith(".") and ".xml" in file
@@ -174,15 +174,16 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
 
         page_canonical_names = [f"{self.id}-p{str(page_n).zfill(4)}" for page_n in page_numbers]
 
-        self.pages = []
+        self.pages = {}
+        self.page_files_by_number = {}
         for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
             page_id = f"{self.id}-p{str(page_no).zfill(4)}"
             try:
-                self.pages.append(
-                    BnfEnNewspaperPage(
-                        page_id, page_no, filename, alto_path, manifest_page_dims.get(page_no)
-                    )
+                self.pages[page_no] = BnfEnNewspaperPage(
+                    page_id, page_no, filename, alto_path, manifest_page_dims.get(page_no)
                 )
+
+                self.page_files_by_number[page_no] = filename
             except Exception as e:
                 msg = f"Adding page {page_no} {page_id} {filename} raised following exception: {e}"
                 logger.error(msg)
@@ -193,6 +194,12 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
 
         Given the div of a content item, this function parses the children and
         constructs the legacy `parts` component.
+
+        Note:
+            Any direct child whose own type is already in `BNF_CONTENT_TYPES`
+            (e.g. a nested illustration) is skipped here — it gets its own
+            separate content item elsewhere, so including its areas here too
+            would duplicate them (once under this CI, once under its own).
 
         Args:
             content_div (Tag): The div containing the content item.
@@ -245,7 +252,11 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
         return lang.text
 
     def _parse_content_item(
-        self, item_div: Tag, counter: int, mets_doc: BeautifulSoup
+        self,
+        item_div: Tag,
+        counter: int,
+        mets_doc: BeautifulSoup,
+        dmdid_to_ci_id: dict[str, str],
     ) -> dict[str, Any]:
         """Parse a content item div and returns the dictionary representing it.
 
@@ -254,6 +265,10 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             counter (int): Number of content items already added (needed to
                 generate canonical id).
             mets_doc (BeautifulSoup): Contents of the Mets XML file.
+            dmdid_to_ci_id (dict[str, str]): Map from the `DMDID` of already
+                built content items to their canonical id, updated in place
+                so later items (e.g. a nested image) can look up their
+                enclosing article's id for `pOf` in `_parse_content_items`.
 
         Returns:
             dict[str, Any]: Resulting content item in canonical format.
@@ -279,11 +294,25 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
         if language is not None:
             metadata["lg"] = language
 
+        # Content is usually under a BODY div, with a separate HEADING div for
+        # the title/heading's own OCR text; some content types (e.g. a
+        # standalone illustration) have neither, in which case `item_div`
+        # itself is where the parts are.
+        body_div = item_div.find("div", {"TYPE": "BODY"}) or item_div
+        heading_div = item_div.find("div", {"TYPE": "HEADING"})
+        parts = self._parse_content_parts(body_div)
+        if heading_div is not None:
+            parts = self._parse_content_parts(heading_div) + parts
+
         content_item = {
             "m": metadata,
             "l": {
                 "id": item_div.get("ID"),
-                "parts": self._parse_content_parts(item_div),
+                "parts": parts,
+                "src_files": {
+                    "mets_xml": os.path.basename(self.mets_file),
+                    "alto_xml": [self.page_files_by_number[p["comp_page_no"]] for p in parts],
+                },
                 "ark_id": self.ark_id,
                 "title_ark_id": self.title_ark_id,
             },
@@ -296,6 +325,10 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
         # TODO fix: why go fetch the coordinates for tables?
         if div_type in [CONTENTITEM_TYPE_IMAGE, CONTENTITEM_TYPE_TABLE]:
             content_item["c"], content_item["m"]["iiif_link"] = self._get_image_info(content_item)
+
+        dmdid = item_div.get("DMDID")
+        if dmdid is not None:
+            dmdid_to_ci_id[dmdid] = metadata["id"]
 
         return content_item
 
@@ -329,6 +362,42 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
 
         return final_divs
 
+    def _assign_image_pOf(
+        self,
+        content_items: list[dict[str, Any]],
+        dmdid_to_ci_id: dict[str, str],
+        mets_doc: BeautifulSoup,
+    ) -> None:
+        """Set `pOf` on image CIs whose METS div is nested inside a real article.
+
+        For each image content item, walks the METS tree up from its own div
+        until it finds an ancestor `<div TYPE="ARTICLE">` that itself became a
+        content item (i.e. its `DMDID` is in `dmdid_to_ci_id`), and points
+        `pOf` at that article's canonical id. Mirrors the Lux importer's
+        `_process_image_ci` ancestor walk. Mutates `content_items` in place.
+
+        Args:
+            content_items (list[dict[str, Any]]): Already-built content items.
+            dmdid_to_ci_id (dict[str, str]): Map from DMDID to canonical CI id,
+                built while parsing (see `_parse_content_item`).
+            mets_doc (BeautifulSoup): Contents of the Mets XML file.
+        """
+        for ci in content_items:
+            if ci["m"]["tp"] != CONTENTITEM_TYPE_IMAGE:
+                continue
+            item_div = mets_doc.find("div", {"ID": ci["l"]["id"]})
+            if item_div is None:
+                continue
+            parent = item_div.parent
+            while parent is not None:
+                if getattr(parent, "name", None) == "div":
+                    parent_dmdid = parent.get("DMDID")
+                    parent_ci_id = dmdid_to_ci_id.get(parent_dmdid)
+                    if parent_ci_id is not None and parent_ci_id != ci["m"]["id"]:
+                        ci["m"]["pOf"] = parent_ci_id
+                    break
+                parent = parent.parent
+
     def _parse_content_items(self) -> list[dict[str, Any]]:
         """Extract content item elements from the issue's Mets XML file.
 
@@ -343,6 +412,11 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
 
         # Sort to have same namings - reading order is added separately later
         sorted_divs = sorted(dmd_sections, key=lambda x: x.get("ID").lower())
+
+        # Populated in-place by `_parse_content_item` as each CI is built, so
+        # a later item (e.g. an image nested in an already-processed article)
+        # can look up its enclosing article's canonical id for `pOf`.
+        dmdid_to_ci_id: dict[str, str] = {}
 
         counter = 1
         for d in sorted_divs:
@@ -361,11 +435,36 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
                 if div_type == SECTION_TYPE:
                     section_divs = self._decompose_section(div)
                     for sd in section_divs:
-                        content_items.append(self._parse_content_item(sd, counter, doc))
+                        content_items.append(
+                            self._parse_content_item(sd, counter, doc, dmdid_to_ci_id)
+                        )
                         counter += 1
                 else:
-                    content_items.append(self._parse_content_item(div, counter, doc))
+                    content_items.append(
+                        self._parse_content_item(div, counter, doc, dmdid_to_ci_id)
+                    )
                     counter += 1
+
+        # Drop image CIs whose coordinates/iiif_link couldn't be resolved
+        # (e.g. the referenced ALTO element is missing) rather than crashing
+        # the whole issue over one bad image — numbering of surviving CIs is
+        # untouched, this just removes the faulty entries.
+        invalid_image_cis = [
+            ci
+            for ci in content_items
+            if ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE
+            and (ci.get("c") is None or ci["m"].get("iiif_link") is None)
+        ]
+        for ci in invalid_image_cis:
+            msg = (
+                f"{self.id} - Faulty image CI without coordinates or iiif link - "
+                f"removing it: {ci['m']['id']}"
+            )
+            logger.warning(msg)
+            self._notes.append(msg)
+            content_items.remove(ci)
+
+        self._assign_image_pOf(content_items, dmdid_to_ci_id, doc)
 
         # add the reading order to the items metadata
         reading_order_dict = get_reading_order(content_items)
@@ -374,8 +473,16 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
 
         return content_items
 
-    def _get_image_info(self, content_item: dict[str, Any]) -> tuple[list[int], str]:
+    def _get_image_info(
+        self, content_item: dict[str, Any]
+    ) -> tuple[Optional[list[int]], Optional[str]]:
         """Given an image content item, get its coordinates and iiif url.
+
+        Never raises: an image whose data can't be resolved (spans more than
+        one page, has no parts, or its comp_id resolves to more than one
+        element) returns `(None, None)` instead, with a note logged — the
+        caller (`_parse_content_items`) drops such CIs rather than crashing
+        the whole issue over one bad image.
 
         TODO: Find an approach to reduce the number of calls to page.xml
 
@@ -383,19 +490,26 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             content_item (dict[str, Any]): Content item in canonical format.
 
         Returns:
-            tuple[list[int], str]: Content item coordinates and iiif url.
+            tuple[Optional[list[int]], Optional[str]]: Content item
+                coordinates and iiif url, or `(None, None)` if unresolvable.
         """
-        # Fetch the legacy parts
-
         # Images cannot be on multiple pages
         num_pages = len(content_item["m"]["pp"])
-        assert num_pages == 1, "Image is on more than one page"
+        if num_pages != 1:
+            msg = f"{content_item['m']['id']} - image is on {num_pages} pages, expected 1."
+            logger.warning(msg)
+            self._notes.append(msg)
+            return None, None
 
         page_nb = content_item["m"]["pp"][0]
-        page = [p for p in self.pages if p.number == page_nb][0]
+        page = self.pages[page_nb]
         parts = content_item["l"]["parts"]
 
-        assert len(parts) >= 1, f"No parts for image {content_item['m']['id']}"
+        if len(parts) == 0:
+            msg = f"{content_item['m']['id']} - no parts for this image."
+            logger.warning(msg)
+            self._notes.append(msg)
+            return None, None
 
         if len(parts) > 1:
             logger.info(
@@ -411,7 +525,14 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             comp_id = part["comp_id"]
 
             elements = page_doc.findAll(["ComposedBlock", "TextBlock"], {"ID": comp_id})
-            assert len(elements) <= 1, "Image comp_id matches multiple TextBlock tags"
+            if len(elements) > 1:
+                msg = (
+                    f"{content_item['m']['id']} - comp_id {comp_id} matches "
+                    f"{len(elements)} elements, expected at most 1 - skipping it."
+                )
+                logger.warning(msg)
+                self._notes.append(msg)
+                continue
             if len(elements) == 0:
                 continue
 
@@ -439,6 +560,8 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
         content_items = self._parse_content_items()
 
         iiif_manifest = os.path.join(IIIF_PRES_URI, self.ark_id, IIIF_MANIFEST_SUFFIX)
+
+        self.pages = list(self.pages.values())
 
         # by default the date is considered to be exact
         is_exact_date = True

@@ -65,7 +65,7 @@ class MetsAltoCanonicalPage(CanonicalPage):
             "sm": SourceMedium.PT.value,
             "r": [],  # here go the page regions
         }
-
+        self.iiif_img_base_uri = None
         self.alto_doc = None
         # TODO add page width & height
 

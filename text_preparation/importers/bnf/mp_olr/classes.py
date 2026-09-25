@@ -579,6 +579,11 @@ class BnfMpNewspaperIssue(MetsAltoCanonicalIssue):
                 "Illustration", {"ID": image_part_id}
             )
             if block is None:
+                # if it's not an illustration, try with GraphicalElement
+                block = xml_pages[image_part[0]["comp_page_no"]].find(
+                    "GraphicalElement", {"ID": image_part_id}
+                )
+            if block is None:
                 logger.warning("Could not find image %s for CI %s", image_part_id, ci_id)
             else:
                 coords = distill_coordinates(block)
