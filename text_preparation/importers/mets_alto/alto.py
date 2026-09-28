@@ -103,6 +103,7 @@ def parse_printspace(
     # in case of a blank page, the PrintSpace element is not found thus
     # it will be none
     if element:
+        block_parent_id = element.get("ID")
         for block in element.children:
 
             if isinstance(block, bs4.element.NavigableString):
@@ -121,6 +122,8 @@ def parse_printspace(
             elif block.name not in ["Polygon", "Shape"]:
                 if block_id in mappings:
                     part_of_contentitem = mappings[block_id]
+                elif block_parent_id in mappings:
+                    part_of_contentitem = mappings[block_parent_id]
                 else:
                     part_of_contentitem = None
 

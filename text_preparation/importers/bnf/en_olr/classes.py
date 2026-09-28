@@ -134,11 +134,10 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
         # TODO once OLR data has arrived for oenantes: update to handle new data org
         # initialize the media title variant in the case it's defined
         # self.media_title_variant = None
-        super().__init__(issue_dir)
-
         self.ark_id = issue_dir.ark_id
         self.title_ark_id = issue_dir.title_ark
         self.secondary_date = issue_dir.secondary_date
+        super().__init__(issue_dir)
 
     def _find_pages(self) -> None:
         """Detect and create the issue pages using the relevant Alto XML files.
@@ -162,21 +161,20 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             os.path.join(self.path, "manifest.json")
         )
 
-        page_file_names = [
-            file for file in os.listdir(alto_path) if not file.startswith(".") and ".xml" in file
+        get_page_num = lambda fname: int(fname.split(".")[0].split("-")[1])
+
+        pages = [
+            (file, get_page_num(file))
+            for file in os.listdir(alto_path)
+            if not file.startswith(".") and ".xml" in file
         ]
 
-        page_numbers = []
-
-        for fname in page_file_names:
-            page_no = fname.split(".")[0].split("-")[1]
-            page_numbers.append(int(page_no))
-
-        page_canonical_names = [f"{self.id}-p{str(page_n).zfill(4)}" for page_n in page_numbers]
+        # sort the pages
+        page_filenames, page_numbers = zip(*sorted(pages, key=lambda x: x[1]))
 
         self.pages = {}
         self.page_files_by_number = {}
-        for filename, page_no, page_id in zip(page_file_names, page_numbers, page_canonical_names):
+        for filename, page_no in zip(page_filenames, page_numbers):
             page_id = f"{self.id}-p{str(page_no).zfill(4)}"
             try:
                 self.pages[page_no] = BnfEnNewspaperPage(
@@ -282,17 +280,19 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
         if div_type not in CONTENTITEM_TYPES:
             logger.warning("Found new content item type: %s", div_type)
 
+        # Get CI language
+        language = self._get_ci_language(item_div.get("DMDID"), mets_doc)
+
         metadata = {
             "id": f"{self.id}-i{str(counter).zfill(4)}",
             "tp": div_type,
             "pp": [],
-            "t": item_div.get("LABEL"),
+            "lg": language,
         }
 
-        # Get CI language
-        language = self._get_ci_language(item_div.get("DMDID"), mets_doc)
-        if language is not None:
-            metadata["lg"] = language
+        title = item_div.get("LABEL")
+        if title is not None:
+            metadata["t"] = title
 
         # Content is usually under a BODY div, with a separate HEADING div for
         # the title/heading's own OCR text; some content types (e.g. a
@@ -388,14 +388,14 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             item_div = mets_doc.find("div", {"ID": ci["l"]["id"]})
             if item_div is None:
                 continue
-            parent = item_div.parent
+            parent = item_div  # .parent
             while parent is not None:
                 if getattr(parent, "name", None) == "div":
                     parent_dmdid = parent.get("DMDID")
                     parent_ci_id = dmdid_to_ci_id.get(parent_dmdid)
                     if parent_ci_id is not None and parent_ci_id != ci["m"]["id"]:
-                        ci["m"]["pOf"] = parent_ci_id
-                    break
+                        ci["pOf"] = parent_ci_id
+                        break
                 parent = parent.parent
 
     def _parse_content_items(self) -> list[dict[str, Any]]:
@@ -408,6 +408,8 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
         doc = self.xml
 
         dmd_sections = doc.findAll("dmdSec")
+
+        heading_content = doc.find("div", {"TYPE": "TITLE_SECTION"})
         struct_map = doc.find("div", {"TYPE": "CONTENT"})
 
         # Sort to have same namings - reading order is added separately later
@@ -420,8 +422,15 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
 
         counter = 1
         for d in sorted_divs:
+            # some images are identified in the headings and missing from the content
+            if heading_content:
+                head_div = heading_content.findAll("div", {"DMDID": d.get("ID")})
+            else:
+                head_div = []
             div = struct_map.findAll("div", {"DMDID": d.get("ID")})
-            if len(div) == 0:
+            if len(head_div) != 0 and len(div) == 0:
+                div = head_div
+            elif len(head_div) == 0 and len(div) == 0:
                 continue
             if len(div) > 1:
                 logger.warning(
@@ -449,7 +458,22 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
         # (e.g. the referenced ALTO element is missing) rather than crashing
         # the whole issue over one bad image — numbering of surviving CIs is
         # untouched, this just removes the faulty entries.
-        invalid_image_cis = [
+        filtered_cis = []
+        for ci in content_items:
+            if ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE and (
+                ci.get("c") is None or ci["m"].get("iiif_link") is None
+            ):
+                msg = (
+                    f"{self.id} - Faulty image CI without coordinates or iiif link - "
+                    f"removing it: {ci['m']['id']}"
+                )
+                logger.warning(msg)
+                self._notes.append(msg)
+            else:
+                # keep all non-image and valid image cis
+                filtered_cis.append(ci)
+
+        """invalid_image_cis = [
             ci
             for ci in content_items
             if ci["m"]["tp"] == CONTENTITEM_TYPE_IMAGE
@@ -462,16 +486,16 @@ class BnfEnNewspaperIssue(MetsAltoCanonicalIssue):
             )
             logger.warning(msg)
             self._notes.append(msg)
-            content_items.remove(ci)
+            content_items.remove(ci)"""
 
-        self._assign_image_pOf(content_items, dmdid_to_ci_id, doc)
+        self._assign_image_pOf(filtered_cis, dmdid_to_ci_id, doc)
 
         # add the reading order to the items metadata
-        reading_order_dict = get_reading_order(content_items)
-        for item in content_items:
+        reading_order_dict = get_reading_order(filtered_cis)
+        for item in filtered_cis:
             item["m"]["ro"] = reading_order_dict[item["m"]["id"]]
 
-        return content_items
+        return filtered_cis
 
     def _get_image_info(
         self, content_item: dict[str, Any]

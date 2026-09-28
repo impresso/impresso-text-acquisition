@@ -318,7 +318,7 @@ def detect_issues(
                     if (
                         FORMAT == "BNF-OCR"
                         or "olr_file" in entry
-                        or entry["batch"] == "BNF_MP_old"
+                        or entry["batch"] in ["BNF_MP_old", "BNF_EN_old"]
                         and entry["ark_id"] is not None
                     ):
                         issue = entry2issue(
