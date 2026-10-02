@@ -18,7 +18,7 @@ from impresso_essentials.utils import get_pkg_resource, validate_against_schema,
 
 logger = logging.getLogger(__name__)
 
-TEXT_PREP_SCHEMAS = "schemas/json/impresso-2/data-preparation"
+TEXT_PREP_SCHEMAS = "impresso-schemas/json/impresso-2/data-preparation"
 
 # path to the versioned (impresso-2) canonical and rebuilt schemas, in impresso_essentials
 CANONICAL_PAGE_SCHEMA = f"{TEXT_PREP_SCHEMAS}/canonical/page.v1.schema.json"
@@ -84,21 +84,21 @@ def validate_page_schema(page_json: dict, page_schema: str = CANONICAL_PAGE_SCHE
     # msg = f"{page_json['id']} - Validating against page schema"
     # print(msg)
     # logger.info(msg)
-    return validate_against_schema(page_json, page_schema)
+    return validate_against_schema(page_json, page_schema, "text_preparation")
 
 
 def validate_audio_schema(audio_json: dict, audio_schema: str = CANONICAL_RECORD_SCHEMA) -> None:
     # msg = f"{page_json['id']} - Validating against page schema"
     # print(msg)
     # logger.info(msg)
-    return validate_against_schema(audio_json, audio_schema)
+    return validate_against_schema(audio_json, audio_schema, "text_preparation")
 
 
 def validate_issue_schema(issue_json: dict, issue_schema: str = CANONICAL_ISSUE_SCHEMA) -> None:
     # msg = f"{issue_json['id']} - Validating against issue schema"
     # print(msg)
     # logger.info(msg)
-    return validate_against_schema(issue_json, issue_schema)
+    return validate_against_schema(issue_json, issue_schema, "text_preparation")
 
 
 def validate_rebuilt_schema(rebuilt_json: dict, is_audio: bool | None = None) -> None:
