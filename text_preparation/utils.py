@@ -116,7 +116,7 @@ def validate_rebuilt_schema(rebuilt_json: dict, is_audio: bool | None = None) ->
     if is_audio is None:
         is_audio = rebuilt_json.get("sm") == SourceMedium.AO.value
     schema = REBUILT_AUDIO_CI_SCHEMA if is_audio else REBUILT_PAPER_CI_SCHEMA
-    return validate_against_schema(rebuilt_json, schema)
+    return validate_against_schema(rebuilt_json, schema, "text_preparation")
 
 
 def verify_imported_issues(
