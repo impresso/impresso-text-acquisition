@@ -67,7 +67,7 @@ def _apply_datefilter(
 
 
 def select_issues(config_dict, inp_dir):
-    """Reads a configuration file and select titles/issues to consider
+    """Reads a configuration file and select aliases/issues to consider
     See config.example.md for explanations.
 
     TODO remove and move to olive/Tetml or keep here and use a basis for all
@@ -86,11 +86,13 @@ def select_issues(config_dict, inp_dir):
     """
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config_dict.get("titles")
-        exclude_list = config_dict["exclude_titles"]
+        filter_dict = config_dict.get("aliases")
+        exclude_list = config_dict["exclude_aliases"]
         year_flag = config_dict["year_only"]
     except KeyError:
-        logger.critical("The key [titles|exclude_titles|year_only] is missing in the config file.")
+        logger.critical(
+            "The key [aliases|exclude_aliases|year_only] is missing in the config file."
+        )
         return
     exclude_flag = False if not exclude_list else True
     msg = (
@@ -107,13 +109,13 @@ def select_issues(config_dict, inp_dir):
         logger.error(msg)
         raise AttributeError(msg)
     else:
-        filter_titles = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
+        filter_aliases = set(filter_dict.keys()) if not exclude_list else set(exclude_list)
         logger.debug(
-            "got filter_titles: %s, with exclude flag: %s",
-            filter_titles,
+            "got filter_aliases: %s, with exclude flag: %s",
+            filter_aliases,
             exclude_flag,
         )
-        issues = detect_issues(inp_dir, alias_filter=filter_titles, exclude=exclude_flag)
+        issues = detect_issues(inp_dir, alias_filter=filter_aliases, exclude=exclude_flag)
 
         # apply date filter if not exclusion mode
         filtered_issues = (

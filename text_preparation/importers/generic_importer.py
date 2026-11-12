@@ -281,10 +281,10 @@ def main(
 
     # ititialize manifest
     if config_file:
-        titles = f" for media aliases {list(config['titles'].keys())}"
+        aliases = f" for media aliases {list(config['aliases'].keys())}"
     else:
-        titles = ""
-    manifest_note = f"Ingestion of {len(issues)} issues into canonical format{titles}."
+        aliases = ""
+    manifest_note = f"Ingestion of {len(issues)} issues into canonical format{aliases}."
 
     manifest = DataManifest(
         data_stage="canonical",

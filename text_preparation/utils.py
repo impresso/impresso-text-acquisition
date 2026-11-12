@@ -14,14 +14,18 @@ from PIL import Image, ImageDraw
 from smart_open import open as smart_open_function
 import python_jsonschema_objects as pjs
 
-from impresso_essentials.utils import get_pkg_resource, validate_against_schema
+from impresso_essentials.utils import get_pkg_resource, validate_against_schema, SourceMedium
 
 logger = logging.getLogger(__name__)
 
-# path to the canonical schemas (in essentials, in text_prep, it's `impresso-schemas``)
-CANONICAL_PAGE_SCHEMA = "schemas/json/canonical/page.schema.json"
-CANONICAL_ISSUE_SCHEMA = "schemas/json/canonical/issue.schema.json"
-CANONICAL_RECORD_SCHEMA = "schemas/json/canonical/audio_record.schema.json"
+TEXT_PREP_SCHEMAS = "impresso-schemas/json/impresso-2/data-preparation"
+
+# path to the versioned (impresso-2) canonical and rebuilt schemas, in impresso_essentials
+CANONICAL_PAGE_SCHEMA = f"{TEXT_PREP_SCHEMAS}/canonical/page.v1.schema.json"
+CANONICAL_ISSUE_SCHEMA = f"{TEXT_PREP_SCHEMAS}/canonical/issue.v1.schema.json"
+CANONICAL_RECORD_SCHEMA = f"{TEXT_PREP_SCHEMAS}/canonical/audio-record.v1.schema.json"
+REBUILT_PAPER_CI_SCHEMA = f"{TEXT_PREP_SCHEMAS}/rebuilt/paper-contentitem.v1.schema.json"
+REBUILT_AUDIO_CI_SCHEMA = f"{TEXT_PREP_SCHEMAS}/rebuilt/audio-record-contentitem.v1.schema.json"
 
 TP_RO_PRIORITY = {
     "page": 0,
@@ -80,21 +84,39 @@ def validate_page_schema(page_json: dict, page_schema: str = CANONICAL_PAGE_SCHE
     # msg = f"{page_json['id']} - Validating against page schema"
     # print(msg)
     # logger.info(msg)
-    return validate_against_schema(page_json, page_schema)
+    return validate_against_schema(page_json, page_schema, "text_preparation")
 
 
 def validate_audio_schema(audio_json: dict, audio_schema: str = CANONICAL_RECORD_SCHEMA) -> None:
     # msg = f"{page_json['id']} - Validating against page schema"
     # print(msg)
     # logger.info(msg)
-    return validate_against_schema(audio_json, audio_schema)
+    return validate_against_schema(audio_json, audio_schema, "text_preparation")
 
 
 def validate_issue_schema(issue_json: dict, issue_schema: str = CANONICAL_ISSUE_SCHEMA) -> None:
     # msg = f"{issue_json['id']} - Validating against issue schema"
     # print(msg)
     # logger.info(msg)
-    return validate_against_schema(issue_json, issue_schema)
+    return validate_against_schema(issue_json, issue_schema, "text_preparation")
+
+
+def validate_rebuilt_schema(rebuilt_json: dict, is_audio: bool | None = None) -> None:
+    """Validate a rebuilt content-item against its paper or audio schema.
+
+    Args:
+        rebuilt_json (dict): Rebuilt content-item to validate.
+        is_audio (bool | None, optional): Whether `rebuilt_json` is an audio record. If not
+            provided, it's derived from `rebuilt_json`'s own "sm" (source medium) field.
+            Defaults to None.
+
+    Raises:
+        jsonschema.ValidationError: The provided JSON could not be validated against its schema.
+    """
+    if is_audio is None:
+        is_audio = rebuilt_json.get("sm") == SourceMedium.AO.value
+    schema = REBUILT_AUDIO_CI_SCHEMA if is_audio else REBUILT_PAPER_CI_SCHEMA
+    return validate_against_schema(rebuilt_json, schema, "text_preparation")
 
 
 def verify_imported_issues(
@@ -193,8 +215,8 @@ def get_reading_order(items: list[dict[str, Any]]) -> dict[str, int]:
         m = item["m"]
         sortable.append(
             (
-                type_priority(m.get("tp")),
                 first_page(m.get("pp", [])),
+                type_priority(m.get("tp")),
                 ci_index(m["id"]),
                 m["id"],
             )
@@ -334,8 +356,8 @@ def coords_to_xywh(coords: list[int | Any], as_int: bool = True) -> list[int | A
 
 
 def draw_box_on_img(
-    base_img_path: str,
     coords_xy: list,
+    base_img_path: str = None,
     img: Image = None,
     width: int = 10,
     color: str | None = "red",
@@ -347,8 +369,8 @@ def draw_box_on_img(
     if other bboxes have already been drawn on it.)
 
     Args:
-        base_img_path (str): Path to the image to open as a PIL Image.
         coords_xy (list): Coordinates of the bbox to draw.
+        base_img_path (str): Path to the image to open as a PIL Image. Defaults to None.
         img (Image, optional): PIL image if already loaded. Defaults to None.
         width (int, optional): Stroke width for the bbox. Defaults to 10.
         color (str, optional): Color of stroke. Defaults to 'red'.
@@ -358,6 +380,8 @@ def draw_box_on_img(
         Image: Resulting PIL Image with the bbox drawn on it.
     """
     if not img:
+        if not base_img_path:
+            raise AttributeError("At least one of base_img_path and img should be defined!")
         img = Image.open(base_img_path)
         img = img.convert("RGB")
         img = img.convert(mode="1")

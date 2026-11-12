@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BNF Mets/Alto importer &mdash; Impresso Text Preparation  documentation</title>
+  <title>BNF Mets/Alto importers &mdash; Impresso Text Preparation  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="BNF-EN Mets/Alto importer" href="bnf-en.html" />
+    <link rel="next" title="BCUL ABBYY importer" href="bcul.html" />
     <link rel="prev" title="British Library importers" href="bl.html" /> 
 </head>
 
@@ -55,13 +55,14 @@
 <li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bl.html">British Library importers</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">BNF Mets/Alto importer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bnf.classes">BNF Custom classes</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">BNF Mets/Alto importers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bnf.no_olr.classes">BNF-OCR (no OLR) classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bnf.mp_olr.classes">BNF-MP (Marché Presse OLR) classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bnf.en_olr.classes">BNF-EN (Europeana OLR) classes</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bnf.detect">BNF Detect functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module-text_preparation.importers.bnf.helpers">BNF Helper and Parser methods</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sub.html">SUB Alto importer</a></li>
@@ -95,7 +96,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../importers.html">Importers</a></li>
-      <li class="breadcrumb-item active">BNF Mets/Alto importer</li>
+      <li class="breadcrumb-item active">BNF Mets/Alto importers</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/importers/bnf.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -105,30 +106,40 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="bnf-mets-alto-importer">
-<h1>BNF Mets/Alto importer<a class="headerlink" href="#bnf-mets-alto-importer" title="Link to this heading"></a></h1>
-<p>This importer extends the generic Mets/Alto importer, and it was developed to
-handle OCR newspaper data provided by the BNF.</p>
-<section id="module-text_preparation.importers.bnf.classes">
-<span id="bnf-custom-classes"></span><h2>BNF Custom classes<a class="headerlink" href="#module-text_preparation.importers.bnf.classes" title="Link to this heading"></a></h2>
-<p>This module contains the definition of BNF importer classes.</p>
+  <section id="bnf-mets-alto-importers">
+<h1>BNF Mets/Alto importers<a class="headerlink" href="#bnf-mets-alto-importers" title="Link to this heading"></a></h1>
+<p>These importers extend the generic Mets/Alto importer. They handle the OCR newspaper data
+provided by the BNF, which comes in three formats. Each format has its own canonical classes,
+and they share an issue-index-based detection module:</p>
+<ul class="simple">
+<li><p><strong>BNF-OCR</strong> (<code class="docutils literal notranslate"><span class="pre">no_olr</span></code>): titles without OLR, made of ALTO pages and an IIIF <code class="docutils literal notranslate"><span class="pre">manifest.json</span></code>.</p></li>
+<li><p><strong>MP-OLR</strong> (<code class="docutils literal notranslate"><span class="pre">mp_olr</span></code>): “Marché Presse” titles with OLR (METS + ALTO).</p></li>
+<li><p><strong>EN-OLR</strong> (<code class="docutils literal notranslate"><span class="pre">en_olr</span></code>): “Europeana” titles with OLR (METS + ALTO).</p></li>
+</ul>
+<p>See <code class="docutils literal notranslate"><span class="pre">text_preparation/importers/bnf/README.md</span></code> for the issue indices, the preprocessing
+pipeline and the current ingestion status.</p>
+<section id="module-text_preparation.importers.bnf.no_olr.classes">
+<span id="bnf-ocr-no-olr-classes"></span><h2>BNF-OCR (no OLR) classes<a class="headerlink" href="#module-text_preparation.importers.bnf.no_olr.classes" title="Link to this heading"></a></h2>
+<p>This module contains the definition of BNF OCR-only importer classes.</p>
 <p>The classes define newspaper Issues and Pages objects which convert OCR data in
 the BNF version of the Mets/Alto format to a unified canoncial format.
 Theses classes are subclasses of generic Mets/Alto importer classes.</p>
 <dl class="py class">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.classes.</span></span><span class="sig-name descname"><span class="pre">BnfNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue" title="Link to this definition"></a></dt>
-<dd><p>Newspaper Issue in BNF (Mets/Alto) format.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.no_olr.classes.</span></span><span class="sig-name descname"><span class="pre">BnfNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue" title="Link to this definition"></a></dt>
+<dd><p>Newspaper Issue in BNF format without OLR (Alto).</p>
 <p>All functions defined in this child class are specific to parsing BNF
-Mets/Alto format.</p>
+OCR-only Alto format.</p>
+<p>All OCR-only data is form the new set of API downloaded data,
+so we know that the format and directory structure is always the same.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Identifying information about the issue.</p>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.id" title="Link to this definition"></a></dt>
 <dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -138,8 +149,8 @@ Mets/Alto format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.edition">
-<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.edition" title="Link to this definition"></a></dt>
 <dd><p>Lower case letter ordering issues of the same day.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -149,8 +160,8 @@ Mets/Alto format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.alias">
-<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.alias" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.alias" title="Link to this definition"></a></dt>
 <dd><p>Newspaper unique alias (identifier or name).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -160,8 +171,8 @@ Mets/Alto format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.path">
-<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.path" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.path" title="Link to this definition"></a></dt>
 <dd><p>Path to directory containing the issue’s OCR data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -171,8 +182,8 @@ Mets/Alto format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.date">
-<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.date" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.date" title="Link to this definition"></a></dt>
 <dd><p>Publication date of issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -182,8 +193,8 @@ Mets/Alto format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.issue_data">
-<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
 <dd><p>Issue data according to canonical format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -193,8 +204,8 @@ Mets/Alto format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.pages">
-<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.pages" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.pages" title="Link to this definition"></a></dt>
 <dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">CanonicalPage</span></code> instances from this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -204,8 +215,8 @@ Mets/Alto format.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.image_properties">
-<span class="sig-name descname"><span class="pre">image_properties</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.image_properties" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.image_properties">
+<span class="sig-name descname"><span class="pre">image_properties</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.image_properties" title="Link to this definition"></a></dt>
 <dd><p>metadata allowing to convert region
 OCR/OLR coordinates to iiif format compliant ones.</p>
 <dl class="field-list simple">
@@ -216,8 +227,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.ark_id">
-<span class="sig-name descname"><span class="pre">ark_id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.ark_id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.ark_id">
+<span class="sig-name descname"><span class="pre">ark_id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.ark_id" title="Link to this definition"></a></dt>
 <dd><p>Issue ARK identifier, for the issue’s pages’ iiif links.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -227,8 +238,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.issue_uid">
-<span class="sig-name descname"><span class="pre">issue_uid</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.issue_uid" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.issue_uid">
+<span class="sig-name descname"><span class="pre">issue_uid</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.issue_uid" title="Link to this definition"></a></dt>
 <dd><p>Basename of the Mets XML file of this issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -238,8 +249,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.secondary_date">
-<span class="sig-name descname"><span class="pre">secondary_date</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.secondary_date" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.secondary_date">
+<span class="sig-name descname"><span class="pre">secondary_date</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.secondary_date" title="Link to this definition"></a></dt>
 <dd><p>Potential secondary date of issue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -249,8 +260,361 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py property">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperIssue.xml">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xml</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperIssue.xml" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.xml">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xml</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperIssue.xml" title="Link to this definition"></a></dt>
+<dd><p>Override the XML property of the parent class since we don’t have METS files.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.no_olr.classes.</span></span><span class="sig-name descname"><span class="pre">BnfNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage" title="Link to this definition"></a></dt>
+<dd><p>Newspaper page in BNF (Mets/Alto) format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Name of the Alto XML page file.</p></li>
+<li><p><strong>basedir</strong> (<em>str</em>) – Base directory where Alto files are located.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.number" title="Link to this definition"></a></dt>
+<dd><p>Page number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dd><p>Page data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.filename" title="Link to this definition"></a></dt>
+<dd><p>Name of the Alto XML page file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.basedir">
+<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.basedir" title="Link to this definition"></a></dt>
+<dd><p>Base directory where Alto files are located.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.encoding" title="Link to this definition"></a></dt>
+<dd><p>Encoding of XML file. Defaults to ‘utf-8’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.is_gzip">
+<span class="sig-name descname"><span class="pre">is_gzip</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.is_gzip" title="Link to this definition"></a></dt>
+<dd><p>Whether the page’s corresponding file is in .gzip.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.ark_link">
+<span class="sig-name descname"><span class="pre">ark_link</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.ark_link" title="Link to this definition"></a></dt>
+<dd><p>IIIF Ark identifier for this page.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.add_issue">
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue" title="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue"><span class="pre">MetsAltoCanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the canonical issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.parse" title="Link to this definition"></a></dt>
+<dd><p>Process the page XML file and transform into canonical Page format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This lazy behavior means that the page contents are not processed
+upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
+method is called.</p>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.xml">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xml</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></span><a class="headerlink" href="#text_preparation.importers.bnf.no_olr.classes.BnfNewspaperPage.xml" title="Link to this definition"></a></dt>
+<dd><p>Read Alto XML file of the page and create a BeautifulSoup object.</p>
+<p>This property had to be overridden because this collection presents
+multiple possible encodings (‘utf-8’ for most, and sometimes “iso-8859-1”)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BeautifulSoup object with Alto XML of the page.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>BeautifulSoup</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-text_preparation.importers.bnf.mp_olr.classes">
+<span id="bnf-mp-marche-presse-olr-classes"></span><h2>BNF-MP (Marché Presse OLR) classes<a class="headerlink" href="#module-text_preparation.importers.bnf.mp_olr.classes" title="Link to this heading"></a></h2>
+<p>This module contains the definition of BNF importer classes for segmented data.</p>
+<p>The classes define newspaper Issues and Pages objects which convert OCR and OLR data in
+the BNF version of the Mets/Alto format to a unified canoncial format.
+Theses classes are subclasses of generic Mets/Alto importer classes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.mp_olr.classes.</span></span><span class="sig-name descname"><span class="pre">BnfMpNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue" title="Link to this definition"></a></dt>
+<dd><p>Newspaper Issue in BNF “Marché Presse” OLR (Mets/Alto) format.</p>
+<p>All functions defined in this child class are specific to parsing BNF’s
+“Marché Presse” OLR Mets/Alto format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Identifying information about the issue.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dd><p>Lower case letter ordering issues of the same day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.alias" title="Link to this definition"></a></dt>
+<dd><p>Newspaper unique alias (identifier or name).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.path" title="Link to this definition"></a></dt>
+<dd><p>Path to directory containing the issue’s OCR data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.date" title="Link to this definition"></a></dt>
+<dd><p>Publication date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dd><p>Issue data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.pages" title="Link to this definition"></a></dt>
+<dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">CanonicalPage</span></code> instances from this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.image_properties">
+<span class="sig-name descname"><span class="pre">image_properties</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.image_properties" title="Link to this definition"></a></dt>
+<dd><p>metadata allowing to convert region
+OCR/OLR coordinates to iiif format compliant ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.ark_id">
+<span class="sig-name descname"><span class="pre">ark_id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.ark_id" title="Link to this definition"></a></dt>
+<dd><p>Issue ARK identifier, for the issue’s pages’ iiif links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.title_ark_id">
+<span class="sig-name descname"><span class="pre">title_ark_id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.title_ark_id" title="Link to this definition"></a></dt>
+<dd><p>Title-level ARK identifier for the newspaper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.issue_uid">
+<span class="sig-name descname"><span class="pre">issue_uid</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.issue_uid" title="Link to this definition"></a></dt>
+<dd><p>Basename of the Mets XML file of this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.secondary_date">
+<span class="sig-name descname"><span class="pre">secondary_date</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.secondary_date" title="Link to this definition"></a></dt>
+<dd><p>Potential secondary date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.get_legacy_manifest_info">
+<span class="sig-name descname"><span class="pre">get_legacy_manifest_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest_path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.get_legacy_manifest_info" title="Link to this definition"></a></dt>
+<dd><p>Read the issue’s legacy <cite>manifest.xml</cite> (METS) file if present.</p>
+<p>Mirrors <cite>get_manifest_info()</cite> (for the new API’s <cite>manifest.json</cite>) but
+for the Impresso I batch’s legacy <cite>manifest.xml</cite>, which is itself a
+METS document. Page facsimile dimensions live in
+<cite>&lt;techMD MDTYPE=”NISOIMG”&gt;</cite> sections (<cite>mix:imageWidth</cite>/
+<cite>mix:imageHeight</cite>), each linked to a page’s <cite>&lt;file ID=”master.{page_no}”&gt;</cite>
+entry via that file’s <cite>ADMID</cite> attribute (space-separated list of AMD
+ids, one of which is the NISOIMG techMD).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unlike the new manifest.json (which has a “Titre” metadata entry
+for the media’s variant title), this legacy manifest’s only
+title-like field (<cite>dc:title</cite> in <cite>DMD.2</cite>) is the issue’s own dated
+title (e.g. “1937-03-05 (Année 0, Numéro 1)”), not a media title
+variant, so there is no equivalent field to extract here.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>manifest_path</strong> (<em>str</em>) – Path to the issue’s <cite>manifest.xml</cite> file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Mapping from page number</dt><dd><p>to (width, height) in pixels, and an empty title (no
+equivalent field exists in this format). Empty dict if the
+file is missing or couldn’t be parsed as expected.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[dict[int, tuple[int, int]], str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.xml">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xml</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperIssue.xml" title="Link to this definition"></a></dt>
 <dd><p>Read Mets XML file of the issue and create a BeautifulSoup object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -265,9 +629,9 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.classes.</span></span><span class="sig-name descname"><span class="pre">BnfNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage" title="Link to this definition"></a></dt>
-<dd><p>Newspaper page in BNF (Mets/Alto) format.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.mp_olr.classes.</span></span><span class="sig-name descname"><span class="pre">BnfMpNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage" title="Link to this definition"></a></dt>
+<dd><p>Newspaper page in BNF “Marché Presse” OLR (Mets/Alto) format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -275,12 +639,14 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 <li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
 <li><p><strong>filename</strong> (<em>str</em>) – Name of the Alto XML page file.</p></li>
 <li><p><strong>basedir</strong> (<em>str</em>) – Base directory where Alto files are located.</p></li>
+<li><p><strong>manifest_dims</strong> (<em>Optional</em><em>[</em><em>tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – Facsimile (width, height)
+of this page as found in the issue’s <cite>manifest.json</cite>, if any.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.id" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.id" title="Link to this definition"></a></dt>
 <dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -290,8 +656,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.number">
-<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.number" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.number" title="Link to this definition"></a></dt>
 <dd><p>Page number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -301,8 +667,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.page_data">
-<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.page_data" title="Link to this definition"></a></dt>
 <dd><p>Page data according to canonical format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -312,8 +678,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.issue">
-<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.issue" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.issue" title="Link to this definition"></a></dt>
 <dd><p>Issue this page is from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -323,8 +689,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.filename">
-<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.filename" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.filename" title="Link to this definition"></a></dt>
 <dd><p>Name of the Alto XML page file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -334,8 +700,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.basedir">
-<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.basedir" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.basedir">
+<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.basedir" title="Link to this definition"></a></dt>
 <dd><p>Base directory where Alto files are located.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -345,8 +711,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.encoding">
-<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.encoding" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.encoding" title="Link to this definition"></a></dt>
 <dd><p>Encoding of XML file. Defaults to ‘utf-8’.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -356,8 +722,8 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.is_gzip">
-<span class="sig-name descname"><span class="pre">is_gzip</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.is_gzip" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.is_gzip">
+<span class="sig-name descname"><span class="pre">is_gzip</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.is_gzip" title="Link to this definition"></a></dt>
 <dd><p>Whether the page’s corresponding file is in .gzip.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -367,19 +733,30 @@ OCR/OLR coordinates to iiif format compliant ones.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.ark_link">
-<span class="sig-name descname"><span class="pre">ark_link</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.ark_link" title="Link to this definition"></a></dt>
-<dd><p>IIIF Ark identifier for this page.</p>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.page_width">
+<span class="sig-name descname"><span class="pre">page_width</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.page_width" title="Link to this definition"></a></dt>
+<dd><p>Width in pixels of the page, from the ALTO file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.page_height">
+<span class="sig-name descname"><span class="pre">page_height</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.page_height" title="Link to this definition"></a></dt>
+<dd><p>Height in pixels of the page, from the ALTO file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.add_issue">
-<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue" title="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue"><span class="pre">MetsAltoCanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.add_issue">
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue" title="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue"><span class="pre">MetsAltoCanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.add_issue" title="Link to this definition"></a></dt>
 <dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
 <p>This allows each page to preserve contextual information coming from
 the canonical issue.</p>
@@ -390,21 +767,9 @@ the canonical issue.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.parse">
-<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.parse" title="Link to this definition"></a></dt>
-<dd><p>Process the page XML file and transform into canonical Page format.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This lazy behavior means that the page contents are not processed
-upon creation of the page object, but only once the <code class="docutils literal notranslate"><span class="pre">parse()</span></code>
-method is called.</p>
-</div>
-</dd></dl>
-
 <dl class="py property">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.classes.BnfNewspaperPage.xml">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xml</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></span><a class="headerlink" href="#text_preparation.importers.bnf.classes.BnfNewspaperPage.xml" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.xml">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">xml</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BeautifulSoup</span></span><a class="headerlink" href="#text_preparation.importers.bnf.mp_olr.classes.BnfMpNewspaperPage.xml" title="Link to this definition"></a></dt>
 <dd><p>Read Alto XML file of the page and create a BeautifulSoup object.</p>
 <p>Redefined function as for some issues, the pages are in gz format.</p>
 <dl class="field-list simple">
@@ -413,6 +778,289 @@ method is called.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>BeautifulSoup</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-text_preparation.importers.bnf.en_olr.classes">
+<span id="bnf-en-europeana-olr-classes"></span><h2>BNF-EN (Europeana OLR) classes<a class="headerlink" href="#module-text_preparation.importers.bnf.en_olr.classes" title="Link to this heading"></a></h2>
+<p>This module contains the definition of the BNF importer classes for OLR data in the Europeana format.</p>
+<p>The classes define newspaper Issues and Pages objects which convert OCR and OLR data in
+BNF’s “Europeana” version of the Mets/Alto format to a unified canoncial format.
+Theses classes are subclasses of generic Mets/Alto importer classes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.en_olr.classes.</span></span><span class="sig-name descname"><span class="pre">BnfEnNewspaperIssue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue" title="Link to this definition"></a></dt>
+<dd><p>Newspaper Issue in BNF Europeana OLR (Mets/Alto) format.</p>
+<p>All functions defined in this child class are specific to parsing
+BNF-Europeana OLR Mets/Alto format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue_dir</strong> (<em>IssueDir</em>) – Identifying information about the issue.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Issue ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.edition">
+<span class="sig-name descname"><span class="pre">edition</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.edition" title="Link to this definition"></a></dt>
+<dd><p>Lower case letter ordering issues of the same day.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.alias">
+<span class="sig-name descname"><span class="pre">alias</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.alias" title="Link to this definition"></a></dt>
+<dd><p>Newspaper unique alias (identifier or name).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.path">
+<span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.path" title="Link to this definition"></a></dt>
+<dd><p>Path to directory containing the issue’s OCR data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.date">
+<span class="sig-name descname"><span class="pre">date</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.date" title="Link to this definition"></a></dt>
+<dd><p>Publication date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>datetime.date</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.issue_data">
+<span class="sig-name descname"><span class="pre">issue_data</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.issue_data" title="Link to this definition"></a></dt>
+<dd><p>Issue data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.pages">
+<span class="sig-name descname"><span class="pre">pages</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.pages" title="Link to this definition"></a></dt>
+<dd><p>list of <code class="xref py py-obj docutils literal notranslate"><span class="pre">CanonicalPage</span></code> instances from this issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.image_properties">
+<span class="sig-name descname"><span class="pre">image_properties</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.image_properties" title="Link to this definition"></a></dt>
+<dd><p>metadata allowing to convert region
+OCR/OLR coordinates to iiif format compliant ones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.ark_id">
+<span class="sig-name descname"><span class="pre">ark_id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.ark_id" title="Link to this definition"></a></dt>
+<dd><p>Issue ARK identifier, for the issue’s pages’ iiif links.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.title_ark_id">
+<span class="sig-name descname"><span class="pre">title_ark_id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.title_ark_id" title="Link to this definition"></a></dt>
+<dd><p>Title-level ARK identifier for the newspaper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.secondary_date">
+<span class="sig-name descname"><span class="pre">secondary_date</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperIssue.secondary_date" title="Link to this definition"></a></dt>
+<dd><p>Potential secondary date of issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.en_olr.classes.</span></span><span class="sig-name descname"><span class="pre">BnfEnNewspaperPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_dims</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage" title="Link to this definition"></a></dt>
+<dd><p>Newspaper page in BNF Europeana OLR (Mets/Alto) format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_id</strong> (<em>str</em>) – Canonical page ID.</p></li>
+<li><p><strong>number</strong> (<em>int</em>) – Page number.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – Name of the Alto XML page file.</p></li>
+<li><p><strong>basedir</strong> (<em>str</em>) – Base directory where Alto files are located.</p></li>
+<li><p><strong>manifest_dims</strong> (<em>Optional</em><em>[</em><em>tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – Facsimile (width, height)
+of this page as found in the issue’s <cite>manifest.json</cite>, if any.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.id">
+<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.id" title="Link to this definition"></a></dt>
+<dd><p>Canonical Page ID (e.g. <code class="docutils literal notranslate"><span class="pre">GDL-1900-01-02-a-p0004</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.number">
+<span class="sig-name descname"><span class="pre">number</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.number" title="Link to this definition"></a></dt>
+<dd><p>Page number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.page_data">
+<span class="sig-name descname"><span class="pre">page_data</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.page_data" title="Link to this definition"></a></dt>
+<dd><p>Page data according to canonical format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.issue">
+<span class="sig-name descname"><span class="pre">issue</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.issue" title="Link to this definition"></a></dt>
+<dd><p>Issue this page is from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue">CanonicalIssue</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.filename">
+<span class="sig-name descname"><span class="pre">filename</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.filename" title="Link to this definition"></a></dt>
+<dd><p>Name of the Alto XML page file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.basedir">
+<span class="sig-name descname"><span class="pre">basedir</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.basedir" title="Link to this definition"></a></dt>
+<dd><p>Base directory where Alto files are located.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.encoding">
+<span class="sig-name descname"><span class="pre">encoding</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.encoding" title="Link to this definition"></a></dt>
+<dd><p>Encoding of XML file. Defaults to ‘utf-8’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.is_gzip">
+<span class="sig-name descname"><span class="pre">is_gzip</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.is_gzip" title="Link to this definition"></a></dt>
+<dd><p>Whether the page’s corresponding file is in .gzip.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.page_width">
+<span class="sig-name descname"><span class="pre">page_width</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.page_width" title="Link to this definition"></a></dt>
+<dd><p>Width in pixels of the page, from the ALTO file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.page_height">
+<span class="sig-name descname"><span class="pre">page_height</span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.page_height" title="Link to this definition"></a></dt>
+<dd><p>Height in pixels of the page, from the ALTO file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.add_issue">
+<span class="sig-name descname"><span class="pre">add_issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mets-alto.html#text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue" title="text_preparation.importers.mets_alto.classes.MetsAltoCanonicalIssue"><span class="pre">MetsAltoCanonicalIssue</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.en_olr.classes.BnfEnNewspaperPage.add_issue" title="Link to this definition"></a></dt>
+<dd><p>Add to a page object its parent, i.e. the canonical issue.</p>
+<p>This allows each page to preserve contextual information coming from
+the canonical issue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="../importers.html#text_preparation.importers.classes.CanonicalIssue" title="text_preparation.importers.classes.CanonicalIssue"><em>CanonicalIssue</em></a>) – Canonical issue containing this page.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -458,46 +1106,32 @@ either <cite>-</cite> or <cite>/</cite>.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">BnfIssueDir</span><span class="p">(</span>
 <span class="go">    provider=&#39;BNF&#39;,</span>
 <span class="go">    alias=&#39;Marie-Claire&#39;,</span>
-<span class="go">    date=datetime.date(1938, 3, 11),</span>
+<span class="go">    date=datetime.date(1925, 10, 01),</span>
 <span class="go">    edition=&#39;a&#39;,</span>
-<span class="go">    path=&#39;./BNF/files/4701034.zip&#39;,</span>
-<span class="go">    secondary_date = None</span>
+<span class="go">    path=&quot;BNF/abendland/1925/10/01/a&quot;,</span>
+<span class="go">    ark_id=&quot;bpt6k47732053&quot;,</span>
+<span class="go">    title_ark=&quot;cb343488519&quot;,</span>
+<span class="go">    secondary_date = None,</span>
 <span class="go">)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.detect.assign_editions">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">assign_editions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.assign_editions" title="Link to this definition"></a></dt>
-<dd><p>Assign updated edition numbers to each issue of a given day.</p>
-<p>TFor BNF, the issues are not organized by date or edition in the file
-system. Hence, when multiple issues exist for a given day, an indexing
-must be applied to assign edition numbers.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issues</strong> (<em>list</em><em>[</em><a class="reference internal" href="#text_preparation.importers.bnf.detect.BnfIssueDir" title="text_preparation.importers.bnf.detect.BnfIssueDir"><em>BnfIssueDir</em></a><em>]</em>) – List of issues for a given day.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of issues with updated editions.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>list[<a class="reference internal" href="#text_preparation.importers.bnf.detect.BnfIssueDir" title="text_preparation.importers.bnf.detect.BnfIssueDir">BnfIssueDir</a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.bnf.detect.detect_issues">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.detect_issues" title="Link to this definition"></a></dt>
-<dd><p>Detect BNF issues to import within the filesystem</p>
-<p>This function the directory structure used by BNF (one subdir by journal).</p>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">detect_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alias_filter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.detect_issues" title="Link to this definition"></a></dt>
+<dd><p>Detect BNF issues to import within the filesystem.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data,
+this directory should contain directories corresponding to newspaper aliases.</p></li>
+<li><p><strong>alias_filter</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Aliases to consider. Defaults to None.</p></li>
+<li><p><strong>exclude_list</strong> (<em>list</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Aliases to exclude. Defaults to None.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of <cite>BnfIssueDir</cite> instances, to be imported.</p>
+<dd class="field-even"><p>List of <cite>BnfIssueDir</cite> instances to import.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[<a class="reference internal" href="#text_preparation.importers.bnf.detect.BnfIssueDir" title="text_preparation.importers.bnf.detect.BnfIssueDir">BnfIssueDir</a>]</p>
@@ -506,80 +1140,33 @@ must be applied to assign edition numbers.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.detect.dir2issue">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">dir2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.dir2issue" title="Link to this definition"></a></dt>
-<dd><p>Create a <cite>BnfIssueDir</cite> object from an archive path.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function is called internally by <cite>detect_issues</cite></p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue_path</strong> (<em>str</em>) – The path of the issue within the archive.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>New <cite>BnfIssueDir</cite> object</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#text_preparation.importers.bnf.detect.BnfIssueDir" title="text_preparation.importers.bnf.detect.BnfIssueDir">BnfIssueDir</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.detect.get_id">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDirectory</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.get_id" title="Link to this definition"></a></dt>
-<dd><p>Return an issue’s canonical ID given its IssueDir.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.bnf.detect.BnfIssueDir" title="text_preparation.importers.bnf.detect.BnfIssueDir"><em>BnfIssueDir</em></a>) – IssueDir of issue.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Canonical ID of issue.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="text_preparation.importers.bnf.detect.get_number">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">get_number</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">issue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">IssueDirectory</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.get_number" title="Link to this definition"></a></dt>
-<dd><p>Return an issue’s original identifying number given its IssueDir.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>issue</strong> (<a class="reference internal" href="#text_preparation.importers.bnf.detect.BnfIssueDir" title="text_preparation.importers.bnf.detect.BnfIssueDir"><em>BnfIssueDir</em></a>) – IssueDir of issue.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Identifying number in BNF’s original file structure.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>str</p>
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.detect.entry2issue">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">entry2issue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">month</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title_ark</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">IssueDirectory</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.entry2issue" title="Link to this definition"></a></dt>
+<dd><p>Convert a hierarchical JSON entry into a BnfIssueDir.</p>
+<dl class="simple">
+<dt>entry example:</dt><dd><p>{ “day”: “15”, “edition”: “01”, “local_path”: “…_01” }</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.bnf.detect.select_issues">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.select_issues" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.detect.</span></span><span class="sig-name descname"><span class="pre">select_issues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">IssueDirectory</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.detect.select_issues" title="Link to this definition"></a></dt>
 <dd><p>Detect selectively newspaper issues to import.</p>
-<p>The behavior is very similar to <a class="reference internal" href="#text_preparation.importers.bnf.detect.detect_issues" title="text_preparation.importers.bnf.detect.detect_issues"><code class="xref py py-func docutils literal notranslate"><span class="pre">detect_issues()</span></code></a> with the only
-difference that <code class="docutils literal notranslate"><span class="pre">config</span></code> specifies some rules to filter the data to
-import. See <a class="reference external" href="../importers.html#configuration-files">this section</a> for
-further details on how to configure filtering.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data.</p></li>
-<li><p><strong>config</strong> (<em>dict</em>) – Config dictionary for filtering.</p></li>
+<li><p><strong>base_dir</strong> (<em>str</em>) – Path to the base directory of newspaper data,
+this directory should contain directories corresponding to newspaper aliases.</p></li>
+<li><p><strong>config</strong> (<em>dict</em>) – Configuration dictionary containing ‘aliases’, ‘exclude_aliases’,
+and ‘year_only’ keys for filtering.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>List of <cite>BnfIssueDir</cite> instances, to be imported.</p>
+<dd class="field-even"><p>List of <cite>BnfIssueDir</cite> instances to import.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Optional[List[<a class="reference internal" href="#text_preparation.importers.bnf.detect.BnfIssueDir" title="text_preparation.importers.bnf.detect.BnfIssueDir">BnfIssueDir</a>]]</p>
+<dd class="field-odd"><p>list[<a class="reference internal" href="#text_preparation.importers.bnf.detect.BnfIssueDir" title="text_preparation.importers.bnf.detect.BnfIssueDir">BnfIssueDir</a>] | None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -662,6 +1249,47 @@ date were found, otherwise list of None is returned.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="text_preparation.importers.bnf.helpers.get_manifest_info">
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.helpers.</span></span><span class="sig-name descname"><span class="pre">get_manifest_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">manifest_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.helpers.get_manifest_info" title="Link to this definition"></a></dt>
+<dd><p>Read the issue’s IIIF presentation <cite>manifest.json</cite> file if present.</p>
+<p>When available, the manifest.json file (fetched from the BNF IIIF
+presentation API) is the preferred source of the facsimile width/height
+(in pixels) of each page, matched based on the <cite>f{page_number}</cite> fragment
+of each canvas item’s <cite>id</cite>. Legacy BNF OLR issues (<cite>en_olr</cite>, <cite>mp_olr</cite>)
+currently don’t have this file on disk, in which case callers should fall
+back to reading each page’s ALTO <cite>&lt;Page&gt;</cite> tag WIDTH/HEIGHT attributes.</p>
+<p>typical item in the manifest:
+{
+“id”: “<a class="reference external" href="https://openapi.bnf.fr/iiif/presentation/v3/ark:/12148/bpt6k9742578x/f1/canvas">https://openapi.bnf.fr/iiif/presentation/v3/ark:/12148/bpt6k9742578x/f1/canvas</a>”,
+“type”: “Canvas”,
+“label”: {
+“fr”: [“NP”]
+},
+“height”: 6084,
+“width”: 4584,
+[…]</p>
+<p>This function extracts the page dimensions and the newspaper title from
+the IIIF presentation API metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>issue_path</strong> (<em>str</em>) – Path to the directory containing the issue’s data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Mapping from page number to</dt><dd><p>(width, height) in pixels, and extracted title string.
+Empty if no <cite>manifest.json</cite> was found in <cite>issue_path</cite>, or if it
+couldn’t be parsed as expected.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[dict[int, tuple[int, int]], str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.bnf.helpers.is_multi_date">
 <span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.helpers.</span></span><span class="sig-name descname"><span class="pre">is_multi_date</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.helpers.is_multi_date" title="Link to this definition"></a></dt>
 <dd><p>Check whether a given date string is composed of more than one date.</p>
@@ -738,7 +1366,7 @@ Each element of the output contains keys {‘comp_role’, ‘comp_id’,
 
 <dl class="py function">
 <dt class="sig sig-object py" id="text_preparation.importers.bnf.parsers.parse_embedded_cis">
-<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.parsers.</span></span><span class="sig-name descname"><span class="pre">parse_embedded_cis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">div</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.parsers.parse_embedded_cis" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">text_preparation.importers.bnf.parsers.</span></span><span class="sig-name descname"><span class="pre">parse_embedded_cis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">div</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tag</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">counter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">issue_level_legacy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">page_filenames</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#text_preparation.importers.bnf.parsers.parse_embedded_cis" title="Link to this definition"></a></dt>
 <dd><p>Parse the div Tags embedded in the given one.</p>
 <p>The input <cite>div</cite> should be of type in <cite>BNF_CONTENT_TYPES</cite> and should have
 children of types also in that category.
@@ -795,7 +1423,7 @@ processed separately.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="bl.html" class="btn btn-neutral float-left" title="British Library importers" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="bnf-en.html" class="btn btn-neutral float-right" title="BNF-EN Mets/Alto importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="bcul.html" class="btn btn-neutral float-right" title="BCUL ABBYY importer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

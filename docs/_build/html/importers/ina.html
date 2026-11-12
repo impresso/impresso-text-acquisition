@@ -55,8 +55,7 @@
 <li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bl.html">British Library importers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sub.html">SUB Alto importer</a></li>
@@ -580,8 +579,8 @@ metadata contains the relative paths to its audio and transcript files.</p>
 <li><p><strong>base_dir</strong> (<em>str</em>) – Path to the root directory of the INA broadcast data.</p></li>
 <li><p><strong>config</strong> (<em>dict</em>) – <p>Filtering configuration. Recognised keys:</p>
 <ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">&quot;titles&quot;</span></code> (dict): Mapping of alias to date range(s) to include.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&quot;exclude_titles&quot;</span></code> (list[str]): Aliases to exclude.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;aliases&quot;</span></code> (dict): Mapping of alias to date range(s) to include.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;exclude_aliases&quot;</span></code> (list[str]): Aliases to exclude.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;year_only&quot;</span></code> (bool): If <code class="docutils literal notranslate"><span class="pre">True</span></code>, filter by year only (ignore
 month/day). Defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
 </ul>

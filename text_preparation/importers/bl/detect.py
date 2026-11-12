@@ -17,7 +17,7 @@ EDITIONS_MAPPINGS = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e"}
 BL_OCR_FILE = "BL_ocr_formats.json"
 BL_FORMAT_SPECIFIC_FILE = "BL_{ocr_format}_issues.json"
 POSSIBLE_FORMATS = ["OmniPage-NLP", "BL-ALIAS", "Nuance-NLP", "ABBYY-ALIAS", "ABBYY-NLP"]
-# add here the file with the mapping from issue to working and alternative titles
+# add here the file with the mapping from issue to working and alternative aliases
 
 BlIssueDir = namedtuple("IssueDirectory", ["provider", "alias", "date", "edition", "path", "nlp"])
 """A light-weight data structure to represent a newspaper issue.
@@ -145,13 +145,13 @@ def select_issues(
 
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["titles"]
-        exclude_list = config["exclude_titles"]
+        filter_dict = config["aliases"]
+        exclude_list = config["exclude_aliases"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
+            "The key [aliases|exclude_aliases|year_only] " "is missing in the config file."
         )
         return None
 

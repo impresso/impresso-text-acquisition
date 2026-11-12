@@ -61,7 +61,9 @@ def entry2issue(alias: str, year: str, month: str, entry: dict, base_dir: str) -
     )
 
 
-def detect_issues(base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None) -> list[LuxIssueDir]:
+def detect_issues(
+    base_dir: str, alias_filter: list[str] | None = None, exclude_list: list[str] | None = None
+) -> list[LuxIssueDir]:
     """Detect newspaper issues to import within the filesystem.
 
     This function expects the directory structure that BNL used to
@@ -75,7 +77,9 @@ def detect_issues(base_dir: str, alias_filter: list[str] | None = None, exclude_
     """
     # 1. Ensure base_dir is what we expect
     if not base_dir.endswith(BASE_DIRNAME):
-        raise ValueError(f"BNL importer expects base_dir to en at '{BASE_DIRNAME}', got '{base_dir}'")
+        raise ValueError(
+            f"BNL importer expects base_dir to en at '{BASE_DIRNAME}', got '{base_dir}'"
+        )
     with open(JSON_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -83,9 +87,9 @@ def detect_issues(base_dir: str, alias_filter: list[str] | None = None, exclude_
 
     # Apply alias filters early
     if alias_filter:
-        kept_data = {a:d for a,d in data.items() if a in alias_filter}
+        kept_data = {a: d for a, d in data.items() if a in alias_filter}
     if exclude_list:
-        kept_data = {a:d for a,d in data.items() if a not in exclude_list}
+        kept_data = {a: d for a, d in data.items() if a not in exclude_list}
 
     for alias, years in kept_data.items():
         for year, months in years.items():
@@ -113,25 +117,19 @@ def select_issues(base_dir: str, config: dict) -> list[LuxIssueDir] | None:
         list[LuxIssueDir] | None: List of `LuxIssueDir` instances to import.
     """
     try:
-        filter_dict = config["titles"]
-        exclude_list = config["exclude_titles"]
+        filter_dict = config["aliases"]
+        exclude_list = config["exclude_aliases"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
+            "The key [aliases|exclude_aliases|year_only] " "is missing in the config file."
         )
         return
-    
 
     # directly detect only the issues of interest
     selected_issues = detect_issues(base_dir, filter_dict, exclude_list)
-    """issue_bag = db.from_sequence(issues)
-    selected_issues = issue_bag.filter(
-        lambda i: (len(filter_dict) == 0 or i.alias in filter_dict.keys())
-        and i.alias not in exclude_list
-    ).compute()"""
-    
+
     if filter_dict and not exclude_list:
         filtered_issues = _apply_datefilter(filter_dict, selected_issues, year_only=year_flag)
     else:

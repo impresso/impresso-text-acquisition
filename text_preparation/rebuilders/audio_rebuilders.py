@@ -182,7 +182,7 @@ def recompose_ci_from_audio_solr(
     Returns:
         dict[str, Any]: Rebuilt CI with the recomposed audio elements added to it.
     """
-    issue_id = "-".join(solr_ci["id"].split("-")[:-1])
+    issue_id = "-".join(solr_ci["ci_id"].split("-")[:-1])
     audio_file_names = {r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]}
 
     fulltext = ""

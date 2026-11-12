@@ -79,7 +79,9 @@ def parse_textline(element: Tag) -> tuple[dict, list[str]]:
     return line, notes
 
 
-def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: None | dict[str, list[str]]=None) -> tuple[list[dict], list[str]]:
+def parse_printspace(
+    element: Tag, mappings: dict[str, str], section_mappings: None | dict[str, list[str]] = None
+) -> tuple[list[dict], list[str]]:
     """Parse the ``<PrintSpace>`` element of an ALTO XML document.
 
     This element contains all the OCR information about the content items of
@@ -90,6 +92,13 @@ def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: N
         element (Tag): Input XML element (``<PrintSpace>``).
         mappings (dict[str, str]): Mapping from OCR component ids to their
             corresponding canonical Content Item ID.
+        section_mappings (None | dict[str, list[str]], optional): Mapping from OCR
+            component ids of section headings to the IDs of the CIs composing that
+            section (set as ``section_pOf``). Defaults to None.
+
+    Note:
+        ``<ComposedBlock>`` elements are parsed recursively; their child blocks fall
+        back to the ComposedBlock's own content-item mapping if they have none.
 
     Returns:
         tuple[list[dict], list[str]]: List of page regions in the canonical
@@ -101,6 +110,7 @@ def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: N
     # in case of a blank page, the PrintSpace element is not found thus
     # it will be none
     if element:
+        block_parent_id = element.get("ID")
         for block in element.children:
 
             if isinstance(block, bs4.element.NavigableString):
@@ -112,36 +122,42 @@ def parse_printspace(element: Tag, mappings: dict[str, str], section_mappings: N
                 # don't add the text from illustration regions
                 # because it's very often OCR none-sense.
                 continue
+            if block.name == "ComposedBlock":
+                cb_regions, new_notes = parse_printspace(block, mappings, section_mappings)
+                regions += cb_regions
+                notes += new_notes
+            elif block.name not in ["Polygon", "Shape"]:
+                if block_id in mappings:
+                    part_of_contentitem = mappings[block_id]
+                elif block_parent_id in mappings:
+                    part_of_contentitem = mappings[block_parent_id]
+                else:
+                    part_of_contentitem = None
 
-            if block_id in mappings:
-                part_of_contentitem = mappings[block_id]
-            else:
-                part_of_contentitem = None
+                coordinates = distill_coordinates(block)
 
-            coordinates = distill_coordinates(block)
+                tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
 
-            tmp = [parse_textline(line_element) for line_element in block.findAll("TextLine")]
+                if len(tmp) > 0:
+                    lines, new_notes = list(zip(*tmp))
+                    new_notes = [i for n in new_notes for i in n]
+                    if isinstance(lines, tuple):
+                        # formatting problem
+                        lines = list(lines)
+                else:
+                    lines, new_notes = [], []
 
-            if len(tmp) > 0:
-                lines, new_notes = list(zip(*tmp))
-                new_notes = [i for n in new_notes for i in n]
-                if isinstance(lines, tuple):
-                    # formatting problem
-                    lines = list(lines)
-            else:
-                lines, new_notes = [], []
+                paragraph = {"c": coordinates, "l": lines}
 
-            paragraph = {"c": coordinates, "l": lines}
+                region = {"c": coordinates, "p": [paragraph]}
 
-            region = {"c": coordinates, "p": [paragraph]}
+                if section_mappings is not None and block_id in section_mappings:
+                    region["section_pOf"] = section_mappings[block_id]
+                elif part_of_contentitem:
+                    region["pOf"] = part_of_contentitem
 
-            if section_mappings is not None and block_id in section_mappings:
-                region["section_pOf"] = section_mappings[block_id]
-            elif part_of_contentitem:
-                region["pOf"] = part_of_contentitem
-            
-            notes += new_notes
-            regions.append(region)
+                notes += new_notes
+                regions.append(region)
     return regions, notes
 
 

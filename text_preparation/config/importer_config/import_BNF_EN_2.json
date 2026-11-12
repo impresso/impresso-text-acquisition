@@ -1,5 +1,5 @@
 {
-    "titles": {
+    "aliases": {
         "jdpl": [
             "1891/01/01",
             "1893/01/01",
@@ -14,6 +14,6 @@
             "1930/01/01"
         ]
     },
-    "exclude_titles": [],
+    "exclude_aliases": [],
     "year_only": true
 }
