@@ -58,3 +58,16 @@ text_preparation/config/rebuilt_config/debug*
 #hamb_echo
 tests_gleb
 debug_sub_importer_messy.ipynb
+# credentials / local environment files (never commit)
+.pypirc
+env_text_prep.txt
+Dockerfile copy
+
+# BNF: local logs, reports and intermediate issue-index copies
+bash_scripts/*.out
+text_preparation/importers/bnf/preprocessing/.fetch_*_failed.jsonl
+text_preparation/data/issue_indices/issue_index.bnf_new*.json
+text_preparation/data/issue_indices/issue_index.bnf_*_unsorted.json
+text_preparation/data/issue_indices/issue_index.bnf_en1.json
+text_preparation/data/sample_data/BNF_API/failed_compiled_classified.csv
+text_preparation/data/sample_data/BNF_API/samples/petitmarocain/*.jpg
