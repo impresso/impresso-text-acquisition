@@ -92,6 +92,13 @@ def parse_printspace(
         element (Tag): Input XML element (``<PrintSpace>``).
         mappings (dict[str, str]): Mapping from OCR component ids to their
             corresponding canonical Content Item ID.
+        section_mappings (None | dict[str, list[str]], optional): Mapping from OCR
+            component ids of section headings to the IDs of the CIs composing that
+            section (set as ``section_pOf``). Defaults to None.
+
+    Note:
+        ``<ComposedBlock>`` elements are parsed recursively; their child blocks fall
+        back to the ComposedBlock's own content-item mapping if they have none.
 
     Returns:
         tuple[list[dict], list[str]]: List of page regions in the canonical
@@ -116,7 +123,7 @@ def parse_printspace(
                 # because it's very often OCR none-sense.
                 continue
             if block.name == "ComposedBlock":
-                cb_regions, new_notes = parse_printspace(block, mappings)
+                cb_regions, new_notes = parse_printspace(block, mappings, section_mappings)
                 regions += cb_regions
                 notes += new_notes
             elif block.name not in ["Polygon", "Shape"]:

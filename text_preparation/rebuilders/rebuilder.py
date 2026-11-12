@@ -39,7 +39,7 @@ from dask.distributed import Client, progress
 from dask.diagnostics import ProgressBar
 from docopt import docopt
 from jsonschema import ValidationError
-from smart_open import smart_open
+from smart_open import open as smart_open_function
 
 from impresso_essentials.io.s3 import read_s3_issues, get_s3_resource
 from impresso_essentials.utils import (
@@ -107,7 +107,7 @@ def compress(key: str, json_files: list, output_dir: str) -> tuple[str, str]:
     logger.info("Compressing %s JSON files into %s", len(json_files), filepath)
     print(f"Compressing {len(json_files)} JSON files into {filepath}")
 
-    with smart_open(filepath, "wb") as fout:
+    with smart_open_function(filepath, "wb") as fout:
         writer = jsonlines.Writer(fout)
 
         for json_file in json_files:
