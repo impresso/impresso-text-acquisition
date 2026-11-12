@@ -198,9 +198,7 @@ def get_manifest_info(manifest_path: str) -> tuple[dict[int, tuple[int, int]], s
     "id": "https://openapi.bnf.fr/iiif/presentation/v3/ark:/12148/bpt6k9742578x/f1/canvas",
     "type": "Canvas",
     "label": {
-        "fr": [
-        "NP"
-        ]
+    "fr": ["NP"]
     },
     "height": 6084,
     "width": 4584,
