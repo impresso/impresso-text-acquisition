@@ -60,8 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="rero.html">RERO Mets/Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swa.html">SWA Alto importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bl.html">British Library importers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="bnf-en.html">BNF-EN Mets/Alto importer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bnf.html">BNF Mets/Alto importers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="bcul.html">BCUL ABBYY importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="swissinfo.html">SWISSINFO PDF-embedded importer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sub.html">SUB Alto importer</a></li>
@@ -513,17 +512,27 @@ lines and tokens, each with their corresponding coordinates.</p>
 <li><p><strong>element</strong> (<em>Tag</em>) – Input XML element (<code class="docutils literal notranslate"><span class="pre">&lt;PrintSpace&gt;</span></code>).</p></li>
 <li><p><strong>mappings</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – Mapping from OCR component ids to their
 corresponding canonical Content Item ID.</p></li>
+<li><p><strong>section_mappings</strong> (<em>None</em><em> | </em><em>dict</em><em>[</em><em>str</em><em>, </em><em>list</em><em>[</em><em>str</em><em>]</em><em>]</em><em>, </em><em>optional</em>) – Mapping from OCR
+component ids of section headings to the IDs of the CIs composing that
+section (set as <code class="docutils literal notranslate"><span class="pre">section_pOf</span></code>). Defaults to None.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;ComposedBlock&gt;</span></code> elements are parsed recursively; their child blocks fall
+back to the ComposedBlock’s own content-item mapping if they have none.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><dl class="simple">
 <dt>List of page regions in the canonical</dt><dd><p>format and notes about potential parsing problems.</p>
 </dd>
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[list[dict], list[str]]</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[list[dict], list[str]]</p>
 </dd>
 </dl>
 </dd></dl>
