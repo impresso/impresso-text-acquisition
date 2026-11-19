@@ -18,15 +18,19 @@ The following importer CLI scripts are already available:
 - :py:mod:`text_preparation.scripts.swaimporter`: *ALTO flavor* of the `Basel University Library`.
 - :py:mod:`text_preparation.scripts.blimporter`: importer for the *Mets/ALTO flavor* used by the `British Library (BL) <https://www.bl.uk/>`_
   to encode and deliver its newspaper data.
-- :py:mod:`text_preparation.scripts.bnfimporter`: importer for the *Mets/ALTO flavor* used by the `Bibliothèque nationale de France (BNF)
-  <https://www.bnf.fr/en/>`_ to encode and deliver its newspaper data.
-- :py:mod:`text_preparation.scripts.bnfen_importer`: importer for the *Mets/ALTO flavor* used by the `Bibliothèque nationale de France (BNF)
-  <https://www.bnf.fr/en/>`_  to encode and deliver its newspaper data for the Europeana collection.
+- :py:mod:`text_preparation.importer_scripts.bnfimporter`, :py:mod:`text_preparation.importer_scripts.bnfmpimporter`
+  and :py:mod:`text_preparation.importer_scripts.bnfenimporter`: importers for the three *Mets/ALTO flavors* used by the
+  `Bibliothèque nationale de France (BNF) <https://www.bnf.fr/en/>`_ to deliver its newspaper data: titles without OLR,
+  "Marché Presse" titles with OLR, and "Europeana" titles with OLR.
 - :py:mod:`text_preparation.scripts.bcul_importer`: importer for the *ABBYY format* used by the `Bibliothèque Cantonale Universitaire de Lausanne (BCUL)
   <https://www.bcu-lausanne.ch/en/>`_  to encode and deliver the newspaper data which is on the `Scriptorium interface <https://scriptorium.bcu-lausanne.ch/page/home>`_.
 - :py:mod:`text_preparation.scripts.swissinfoimporter`: importer for the *JSON format extracted from PDF embedded OCR* used by Memoriav of the `Swissinfo <https://www.swissinfo.ch/eng/>`_
   collection to encore and deliver its radio-bulletin data.
-  - :py:mod:`text_preparation.scripts.inaimporter`: importer for the *AudioDoc ASR format* used by the `Institut National de L'audiovisuel (INA) <https://www.ina.fr/>`_
+- :py:mod:`text_preparation.scripts.subimporter`: importer for the *Mets/ALTO flavor* used by the `Hamburg State Library  (SUB)
+  <https://www.sub.uni-hamburg.de>`_ to encode and deliver its newspaper data.
+- :py:mod:`text_preparation.scripts.rtsimporter`: importer for the *AudioDoc ASR format* used by the `Radio Télévision Suisse (RTS) <https://www.rts.ch/>`_
+  to encode and deliver its radio data.
+- :py:mod:`text_preparation.scripts.inaimporter`: importer for the *AudioDoc ASR format* used by the `Institut National de L'audiovisuel (INA) <https://www.ina.fr/>`_
   to encode and deliver its radio data.
 - :py:mod:`text_preparation.scripts.tetml`: generic importer for the *TETML format*, produced by `PDFlib TET <https://www.pdflib.com/products/tet/overview/>`_.
 - :py:mod:`text_preparation.scripts.fedgaz`: importer for the *TETML format* with separate metadata file and a heuristic article segmentation,
@@ -45,9 +49,10 @@ For further details on any of these implementations, please do refer to its docu
    importers/swa
    importers/bl
    importers/bnf
-   importers/bnf-en
    importers/bcul
    importers/swissinfo
+   importers/sub
+   importers/rts
    importers/ina
    importers/tetml
    importers/fedgaz

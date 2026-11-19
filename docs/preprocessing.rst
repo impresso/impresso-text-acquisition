@@ -27,7 +27,7 @@ British Library
 - Reorganizes and copies exiting data into the desired directory structure, separating images and OCR files for each issue.
 - Logs all copies made and optionally skips issues if the copy was already done, after verification that all the desired files exist in the destination 
 
-.. automodule:: text_preparation.importer_scripts.preprocessing.bl_reorganize_original_data
+.. automodule:: text_preparation.importers.bl.bl_reorganize_original_data
   :members:
 
 
@@ -37,5 +37,5 @@ SWISSINFO
 - Extract the OCR from PDF files, creating JSON files and convert the images to JP2 format.
 - Reorganize and rename the files accordingly.
 
-.. automodule:: text_preparation.importer_scripts.preprocessing.swissinfo_extract_ocr_from_pdfs
+.. automodule:: text_preparation.importers.swissinfo.swissinfo_extract_ocr_from_pdfs
   :members:

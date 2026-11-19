@@ -56,8 +56,9 @@ def rebuild_audio_text(
                     section["s"] = len(string)
 
                     if token["tx"]:
-                        section["l"] = len(token["tx"])
-                        token_text = token["tx"]
+                        # remove excess spaces in the tokens
+                        token_text = token["tx"].strip()
+                        section["l"] = len(token_text)
                     else:
                         section["l"] = 0
                         token_text = ""
@@ -65,14 +66,17 @@ def rebuild_audio_text(
                     # don't add the tokens corresponding to the first part of a hyphenated word
                     if "hy" not in token:
                         next_token = (
-                            speech_seg["t"][n + 1]["tx"] if n != len(speech_seg["t"]) - 1 else None
+                            speech_seg["t"][n + 1]["tx"].strip()
+                            if n != len(speech_seg["t"]) - 1
+                            else None
                         )
                         ws = insert_whitespace(
-                            token["tx"],
+                            token_text,
                             next_t=next_token,
-                            prev_t=speech_seg["t"][n - 1]["tx"] if n != 0 else None,
+                            prev_t=speech_seg["t"][n - 1]["tx"].strip() if n != 0 else None,
                             lang=language,
                         )
+
                         string += f"{token_text} " if ws else f"{token_text}"
 
                     # if token is the last in a speech segment
@@ -178,7 +182,7 @@ def recompose_ci_from_audio_solr(
     Returns:
         dict[str, Any]: Rebuilt CI with the recomposed audio elements added to it.
     """
-    issue_id = "-".join(solr_ci["id"].split("-")[:-1])
+    issue_id = "-".join(solr_ci["ci_id"].split("-")[:-1])
     audio_file_names = {r: f"{issue_id}-r{str(r).zfill(4)}.json" for r in content_item["m"]["rr"]}
 
     fulltext = ""
@@ -307,3 +311,54 @@ def reconstruct_audios(
     cis.append(ci)
 
     return cis
+
+
+def filter_provided_metadata(add_metadata, ci):
+    """Process the additional metadata provided for radio audio boradcasts,
+
+    Only keep a small selection of the provided metadata,
+    which is not already part of the CI (channel, program name, and content summary)
+    The first version of this additional metadata list is based on what the RTS is
+    providing us.
+
+    We are keeping:
+        - whether the date is the first broadcast date (as opposed to recording date)
+        - the type of production (self produced of by a 3rd party)
+        - the place of recording of the broadcast
+        - whether the recording was broadcast live
+        - a list of geographical descriptors regarding the audio
+        - a list of thematic descriptors
+        - a list of participants, formatted as '[name] [surname] ([function within the boradcast]), [role or occupation]'
+    """
+    field_list = [
+        "date_is_broadcast_date",
+        "production_type",
+        "recording_place",
+        "live",
+        "geographical_descriptors",
+        "thematical_descriptors",
+        "participants",
+    ]
+
+    additional_metadata = []
+    for key, val in add_metadata.items():
+        if key in field_list:
+            if key == "participants":
+                participants = []
+                for s_dict in val:
+                    # the name will always be formatted as [surname], [firstname] unless we don't know it ("inconnu").
+                    name = (
+                        # separate the first and last name, swapp them and rejoin them.
+                        " ".join(s_dict["name"].split(", ")[::-1])
+                        if ", " in s_dict["name"]
+                        else s_dict["name"]
+                    )
+                    participants.append(f"{name} ({s_dict['function']}), {s_dict['role']}")
+                additional_metadata.append({"key": key, "value": participants})
+            else:
+                additional_metadata.append({"key": key, "value": val})
+        elif logger.level == logging.DEBUG:
+            msg = f"{ci['m']['id']} - Field '{key}' present in provider_metadata is not in the list of kept field, not keeping its value."
+            print(msg)
+
+    return additional_metadata

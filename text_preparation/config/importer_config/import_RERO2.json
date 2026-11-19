@@ -1,5 +1,5 @@
 {
-    "titles": {
+    "aliases": {
         "FZG": "1899/01/01-1950/01/01",
         "LLE": "1899/01/01-1950/01/01",
         "BNN": [],
@@ -11,6 +11,6 @@
         "NTS": [],
         "NZG": []
     },
-    "exclude_titles": [],
+    "exclude_aliases": [],
     "year_only": false
 }

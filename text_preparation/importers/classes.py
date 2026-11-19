@@ -15,14 +15,15 @@ import shutil
 from abc import ABC, abstractmethod
 from zipfile import ZipFile
 
-from impresso_essentials.utils import IssueDir, validate_against_schema
+from impresso_essentials.utils import IssueDir
 from impresso_essentials.io.fs_utils import canonical_path
+from text_preparation.utils import (
+    validate_issue_schema,
+    validate_page_schema,
+    validate_audio_schema,
+)
 
 logger = logging.getLogger(__name__)
-
-CANONICAL_ISSUE_SCHEMA_PATH = "impresso-schemas/json/canonical/issue.schema.json"
-CANONICAL_PAGE_SCHEMA_PATH = "impresso-schemas/json/canonical/page.schema.json"
-CANONICAL_AUDIO_SCHEMA_PATH = "impresso-schemas/json/canonical/audio_record.schema.json"
 
 
 class CanonicalIssue(ABC):
@@ -82,7 +83,7 @@ class CanonicalIssue(ABC):
             serialization of large amounts of issues it is recommendable to
             bypass schema validation.
         """
-        validate_against_schema(self.issue_data, CANONICAL_ISSUE_SCHEMA_PATH)
+        validate_issue_schema(self.issue_data)
 
 
 class CanonicalPage(ABC):
@@ -110,7 +111,7 @@ class CanonicalPage(ABC):
 
     def validate(self) -> None:
         """Validate ``self.page_data`` against the page canonical schema."""
-        validate_against_schema(self.page_data, CANONICAL_PAGE_SCHEMA_PATH)
+        validate_page_schema(self.page_data)
 
     @abstractmethod
     def add_issue(self, issue: CanonicalIssue) -> None:
@@ -155,7 +156,6 @@ class CanonicalAudioRecord(ABC):
 
     Attributes:
         id (str): Canonical Audio Record ID (e.g. ``INA-1900-01-02-a-r0001``).
-        number (int): Record number.
         record_data (dict[str, Any]): Audio record data according to canonical format.
         issue (CanonicalIssue | None): Issue this page is from.
     """
@@ -163,10 +163,10 @@ class CanonicalAudioRecord(ABC):
     def __init__(self, _id: str, number: int) -> None:
         self.id = _id
         self.number = number
-        if number != 1:
+        """if number != 1:
             msg = f"Warning! {id}: Audio record with another number than 1!"
-            logger.warning(msg)
-            print(msg)
+            logger.debug(msg)
+            print(msg)"""
         # kept for compatibility for testing but should be removed
         self.page_data = None
         self.record_data = {}
@@ -174,7 +174,7 @@ class CanonicalAudioRecord(ABC):
 
     def validate(self) -> None:
         """Validate ``self.record_data`` against the audio record canonical schema."""
-        validate_against_schema(self.record_data, CANONICAL_AUDIO_SCHEMA_PATH)
+        validate_audio_schema(self.record_data)
 
     @abstractmethod
     def add_issue(self, issue: CanonicalIssue) -> None:

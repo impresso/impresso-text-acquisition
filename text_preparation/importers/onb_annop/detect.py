@@ -94,7 +94,7 @@ def detect_issues(base_dir: str) -> list[OnbIssueDir]:
     Returns:
         list[SwaIssueDir]: list of ``OnbIssueDir`` instances, to be imported.
     """
-    # For now, only ANNO titles are in mets/alto format
+    # For now, only ANNO aliases are in mets/alto format
     anno_path = os.path.join(base_dir, "ANNO")
 
     dir_path, dirs, _ = next(os.walk(anno_path))
@@ -134,11 +134,13 @@ def select_issues(base_dir: str, config: dict) -> list[OnbIssueDir]:
         list[OnbIssueDir]: list of ``OnbIssueDir`` instances, to be imported.
     """
     try:
-        filter_dict = config.get("titles")
-        exclude_list = config["exclude_titles"]
+        filter_dict = config.get("aliases")
+        exclude_list = config["exclude_aliases"]
         year_flag = config["year_only"]
     except KeyError:
-        logger.critical("The key [titles|exclude_titles|year_only] is missing in the config file.")
+        logger.critical(
+            "The key [aliases|exclude_aliases|year_only] is missing in the config file."
+        )
         return []
 
     exclude_flag = False if not exclude_list else True
@@ -150,8 +152,8 @@ def select_issues(base_dir: str, config: dict) -> list[OnbIssueDir]:
     )
     logger.debug(msg)
 
-    filter_titles = set(filter_dict.keys()) if not exclude_flag else set(exclude_list)
-    msg = f"got filter_titles: {filter_titles}, " f"with exclude flag: {exclude_flag}"
+    filter_aliases = set(filter_dict.keys()) if not exclude_flag else set(exclude_list)
+    msg = f"got filter_aliases: {filter_aliases}, " f"with exclude flag: {exclude_flag}"
     logger.debug(msg)
 
     issues = detect_issues(base_dir)

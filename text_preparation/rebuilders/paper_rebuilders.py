@@ -191,7 +191,7 @@ def recompose_ci_from_page_solr(
     Returns:
         dict[str, Any]: Rebuilt CI with the recomposed audio elements added to it.
     """
-    issue_id = "-".join(solr_ci["id"].split("-")[:-1])
+    issue_id = "-".join(solr_ci["ci_id"].split("-")[:-1])
     page_file_names = {p: f"{issue_id}-p{str(p).zfill(4)}.json" for p in content_item["m"]["pp"]}
 
     fulltext = ""

@@ -168,12 +168,16 @@ def detect_issues(
         for _dir in dirs
         if _dir not in ["OLD", "wrong_BCUL", ".DS_Store"] and _dir in alias_mapping
     }
-    
+
     if "La_Veveysanne_–_La_Patrie" in dirs:
         if "VVS" in aliases_to_consider:
-            journal_dirs.update({"VVS": os.path.join(dir_path, "La_Veveysanne_–_La_Patrie/La_Veveysanne")})
-        if 'PAT' in aliases_to_consider:
-            journal_dirs.update({"PAT": os.path.join(dir_path, "La_Veveysanne_–_La_Patrie/La_Patrie")})
+            journal_dirs.update(
+                {"VVS": os.path.join(dir_path, "La_Veveysanne_–_La_Patrie/La_Veveysanne")}
+            )
+        if "PAT" in aliases_to_consider:
+            journal_dirs.update(
+                {"PAT": os.path.join(dir_path, "La_Veveysanne_–_La_Patrie/La_Patrie")}
+            )
 
     issue_dirs = []
     for alias, journal in journal_dirs.items():
@@ -218,13 +222,13 @@ def select_issues(base_dir: str, config: dict) -> list[BculIssueDir] | None:
 
     # read filters from json configuration (see config.example.json)
     try:
-        filter_dict = config["titles"]
-        exclude_list = config["exclude_titles"]
+        filter_dict = config["aliases"]
+        exclude_list = config["exclude_aliases"]
         year_flag = config["year_only"]
 
     except KeyError:
         logger.critical(
-            "The key [titles|exclude_titles|year_only] " "is missing in the config file."
+            "The key [aliases|exclude_aliases|year_only] " "is missing in the config file."
         )
         return
 

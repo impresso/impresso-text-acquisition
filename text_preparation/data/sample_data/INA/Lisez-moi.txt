@@ -1,0 +1,21 @@
+**********************************
+
+   Export INA Novembre 2025
+   
+**********************************
+
+
+Dans le dossier Data, il y a 47731 fichiers MP3 avec leurs JSON issus de transcriptions effectuées par l'outil Whisper (modèle Large V3).
+Les fichiers sont classés avec l'arborescence originale de notre outil de production d'asset "TOTEM". L'ensemble des données représente un volume de 3.6To environ.
+
+Les fichiers MP3 possèdent dans leurs métadonnées (Tag MP3) quelques informations de provenances (titres, date, notice...). Ces Métadonnées sont lisibles avec Mediainfo, FFprobe ou FFMPEG notamment.
+
+Le fichier texte avec tabulations "ListeDesFichiers.txt" liste ces 47731 fichiers avec quelques informations documentaires. La première ligne contient les entêtes de colonne.
+Le fichier texte avec tabulations "ListeDesNotices.txt" liste les 39608 notices documentaires liées à ces fichiers MP3 avec quelques informations documentaires. La première ligne contient les entêtes de colonne.
+
+Le nombre de notices documentaires est différent de celui des fichiers MP3 car une notice peut être sur plusieurs fichiers MP3 ou extraits MP3 et un fichier MP3 peut être sur plusieurs notices (plusieurs émissions sur un même matériel mais ce cas est peu probable ici).
+
+
+Dans les transcriptions Whisper il peut y avoir des hallucinations dans les silences comme "Radio-canada" "Sous-titrage" "Sous-titrage ST' 501". 
+Ce problème est un souci connu provenant du modèle Whisper et peut nécessiter un post-traitement dans certains cas.
+

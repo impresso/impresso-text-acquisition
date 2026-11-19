@@ -4,61 +4,74 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 
 
-def extract_time_coords_from_elem(elem: Tag) -> list[float] | None:
-    """Extract the time coordinates from a given speech element.
+def extract_time_coords_from_elem(elem: dict, is_sseg: bool = False) -> list[float] | None:
+    """Extract the time coordinates ``[start, duration]`` from a speech element.
 
     Args:
-        elem (Tag): Element from the beautifulsoup object extracted from the ASR.
-
-    Raises:
-        NotImplementedError: The element did not have one of the expected names.
+        elem (dict): A word-level or speech-segment-level dict from the ASR JSON
+            document, containing ``"start"`` / ``"end"`` timestamps and, for
+            speech segments, a ``"words"`` list.
+        is_sseg (bool): If ``True``, treat ``elem`` as a speech segment and
+            derive coordinates from its first and last word. If ``False``
+            (default), treat ``elem`` as a single word.
 
     Returns:
-        list[float] | None: The time coordinates for the given ASR element.
+        list[float] | None: A two-element list ``[start_time, duration]`` in
+        seconds, rounded to five decimal places for the duration.
     """
-    if elem.name == "SpeechSegment":
+    if is_sseg:
         return [
-            float(elem.get("stime")),
-            float(elem.get("etime")) - float(elem.get("stime")),
+            elem["words"][0]["start"],  # start time of the first word
+            # duration = end time of last word - start time of first word
+            round(elem["words"][-1]["end"] - elem["words"][0]["start"], 5),
         ]
-    if elem.name == "Word":
-        return [float(elem.get("stime")), float(elem.get("dur"))]
 
-    raise NotImplementedError()
+    return [elem["start"], round(elem["end"] - elem["start"], 5)]
 
 
-def get_utterances(xml_doc: BeautifulSoup) -> list[dict]:
-    """Construct the utterances composed of speech segments for a given record.
+def get_utterances(json_doc: list[dict]) -> list[dict]:
+    """Construct utterances from consecutive speech segments sharing the same speaker.
 
-    An utterance is a list of consecutive speechsegments with the same speaker ID.
+    Iterates over the speech segments in the ASR JSON document and groups
+    consecutive segments belonging to the same speaker into a single utterance.
+    Each utterance contains a time-code span, the speaker identifier, and the
+    constituent speech segments with their token-level time codes.
 
     Args:
-        xml_doc (BeautifulSoup): Contents of the ASR xml document of the record.
+        json_doc (list[dict]): Parsed ASR JSON document for one audio record.
+            Each element is a speech-segment dict with at least ``"speaker"``
+            and ``"words"`` keys.
 
     Returns:
-        list[dict]: List of utterances, composed of speechsegments for the record.
+        list[dict]: List of utterance dicts, each containing:
+
+            - ``"tc"`` (list[float]): ``[start_time, duration]`` of the utterance.
+            - ``"speaker"`` (str): Speaker identifier.
+            - ``"ss"`` (list[dict]): Speech segments belonging to this utterance.
     """
-    xml_speech_segs = xml_doc.findAll("SpeechSegment")
     utterances = []
 
     same_speaker_speech_segs = []
     last_speaker = None
     last_utt_stime = 0
     last_utt_etime = 0
-    for idx, xml_ss in enumerate(xml_speech_segs):
+
+    # the json file has already extracted speech segments
+    for idx, json_ss in enumerate(json_doc):
 
         tokens = [
-            {"tc": extract_time_coords_from_elem(word), "tx": word.get_text()}
-            for word in xml_ss.findAll("Word")
+            # each words start with a space, we want to remove them immediately
+            {"tc": extract_time_coords_from_elem(word), "tx": word["word"].strip()}
+            for word in json_ss["words"]
         ]
 
-        if xml_ss.get("spkid") == last_speaker:
+        if json_ss.get("speaker") == last_speaker:
             # case 1, same speaker as last speech segment
             same_speaker_speech_segs.append(
-                {"tc": extract_time_coords_from_elem(xml_ss), "t": tokens}
+                {"tc": extract_time_coords_from_elem(json_ss, is_sseg=True), "t": tokens}
             )
             # update the last end time for the current utterance
-            last_utt_etime = float(xml_ss.get("etime"))
+            last_utt_etime = json_ss["words"][-1]["end"]
         else:
             # case 2: new speaker, save the last utterance if possible and start a new one
             if last_speaker is not None:
@@ -71,12 +84,14 @@ def get_utterances(xml_doc: BeautifulSoup) -> list[dict]:
                 )
 
             # start the new utterance
-            last_utt_stime = float(xml_ss.get("stime"))
-            last_utt_etime = float(xml_ss.get("etime"))
-            last_speaker = xml_ss.get("spkid")
-            same_speaker_speech_segs = [{"tc": extract_time_coords_from_elem(xml_ss), "t": tokens}]
+            last_utt_stime = json_ss["words"][0]["start"]
+            last_utt_etime = json_ss["words"][-1]["end"]
+            last_speaker = json_ss["speaker"]
+            same_speaker_speech_segs = [
+                {"tc": extract_time_coords_from_elem(json_ss, is_sseg=True), "t": tokens}
+            ]
 
-        if idx == len(xml_speech_segs) - 1:
+        if idx == len(json_doc) - 1:
             # if it's the last speech segment, save the current utterance
             utterances.append(
                 {

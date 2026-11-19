@@ -4,6 +4,12 @@
 # Will use the environment variables in pvc (on mnt point of cdhvm0002)
 # "/home/$USER_NAME/dhlab-data/data/$USER_NAME-data/config_rebuilt_runai.sh" (or other provided script) for the various configuartions necessary.
 
+# Work around botocore >=1.36 defaulting to chunked/trailer-checksum PutObject
+# uploads, which SWITCHengines' S3-compatible endpoint rejects with
+# "MissingContentLength". Restores the pre-1.36 plain-PUT behavior.
+export AWS_REQUEST_CHECKSUM_CALCULATION='when_required'
+export AWS_RESPONSE_CHECKSUM_VALIDATION='when_required'
+
 # Default number of workers
 export DEFAULT_WORKERS='16'
 # Default config script
@@ -61,6 +67,12 @@ echo "Launching using configuration script $CONFIG with $WORKERS workers."
 
 # move to directory containing init script
 cd /rcp-scratch/$USER_NAME/impresso/impresso-text-acquisition
+
+# reinstall the package (editable) so the imports match this PVC-mounted
+# source rather than whatever snapshot was baked into the image. Root is
+# squashed on this NFS-backed PVC, so this must NOT use sudo; it installs
+# under ~/.local instead (see PATH fix in the Dockerfile).
+pip install -e .
 
 # make config script exectuable and execute it.
 chmod -x $CONFIG

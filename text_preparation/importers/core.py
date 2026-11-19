@@ -15,6 +15,7 @@ import logging
 import os
 import random
 import shutil
+import traceback
 from copy import copy
 from itertools import groupby
 from json import JSONDecodeError
@@ -74,6 +75,7 @@ def write_error(
     logger.exception(error)
 
     issuedir = None
+    note = ""
 
     if isinstance(thing, CanonicalPage):
         issuedir = thing.issue.issuedir
@@ -90,6 +92,11 @@ def write_error(
 
     if issuedir is not None:
         note = f"{canonical_path(issuedir)}: {error}"
+        # add where the error was raised (kept on one line: the failed log is line-based)
+        tb = getattr(error, "__traceback__", None)
+        if tb is not None:
+            frame = traceback.extract_tb(tb)[-1]
+            note += f" | raised at {frame.filename}:{frame.lineno} in {frame.name}"
 
     if failed_log is not None:
         with open(failed_log, "a+", encoding="utf-8") as f:
@@ -278,6 +285,10 @@ def serialize_supports(
             canonical_filename = canonical_path(
                 issue_dir, "r" + str(support.number).zfill(4), ".json"
             )
+            if support.record_data["s"] == []:
+                # some audio transcripts have no content at all - log these in the errors
+                err_msg = f"The record had empty sections - the audio transcript was empty (but processing did not fail). transcript path:{support.json_filepath}"
+                write_error(support, err_msg, failed_log)
         else:
             canonical_filename = canonical_path(
                 issue_dir, "p" + str(support.number).zfill(4), ".json"
